@@ -11,8 +11,6 @@ import viteReact from '@vitejs/plugin-react';
 import Sonda from 'sonda/vite';
 import { defineConfig } from 'vite-plus';
 
-import { tsrxScan } from './vite/tsrx-scan';
-
 const analyze = process.env.ANALYZE === '1';
 // An unset repository secret still reaches the job as an empty string, so a
 // presence check alone would run the upload with no credentials and fail the
@@ -72,7 +70,6 @@ const config = (command: 'build' | 'serve') =>
         }),
       tanstackStart(),
       tsrxReact(),
-      tsrxScan(),
       viteReact(),
       ...(analyze ? [Sonda()] : []),
       // Uploads source maps so Sentry stack traces point at real source. Only

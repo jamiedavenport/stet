@@ -395,8 +395,8 @@ catalogs:
       specifier: ^0.3.103
       version: 0.3.103
     '@tsrx/vite-plugin-react':
-      specifier: ^0.0.76
-      version: 0.0.76
+      specifier: ^0.0.86
+      version: 0.0.86
     '@types/better-sqlite3':
       specifier: ^7.6.13
       version: 7.6.13
@@ -883,7 +883,7 @@ importers:
         version: 0.3.103(@tsrx/react@0.2.44(react@19.2.7))(typescript@5.9.3)
       '@tsrx/vite-plugin-react':
         specifier: 'catalog:'
-        version: 0.0.76(@voidzero-dev/vite-plus-core@0.2.2(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(publint@0.3.21)(tsx@4.23.1)(typescript@5.9.3)(yaml@2.9.0))(react@19.2.7)
+        version: 0.0.86(@voidzero-dev/vite-plus-core@0.2.2(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(publint@0.3.21)(tsx@4.23.1)(typescript@5.9.3)(yaml@2.9.0))(react@19.2.7)
       '@types/node':
         specifier: 'catalog:'
         version: 26.1.1
@@ -5029,8 +5029,16 @@ packages:
   '@tsrx/core@0.1.44':
     resolution: {integrity: sha512-5RMassPG724kQ9wmcZwyu2mXkO9FLOiOFvRH9ejDdrCOd66WLnNLJM+XkBYVGYr9PLDecCe9yHXLicBRfOs5eA==}
 
+  '@tsrx/core@0.1.54':
+    resolution: {integrity: sha512-DbPskFFyJyako9pIRZDwipM/zIKDrfUcsHsGP8KHK5+Z2yY+tR2PUki+ThgnUA3+LqZo4Khc+07S62tFRX3TeQ==}
+
   '@tsrx/react@0.2.44':
     resolution: {integrity: sha512-5OVNqiNXf+Gp8ize7P12twjBickhfbyAkDsFNGQPeqpQnlrdBmbhPeRR0wrh9hveSDd67qW6QMfYiQjvVNXoUg==}
+    peerDependencies:
+      react: '>=18'
+
+  '@tsrx/react@0.2.54':
+    resolution: {integrity: sha512-+BIg13Vw9vy4AQH+dWdrXiHs2W5F+zRPGn0uwF7ZYHsMpl7i+cHe1bhsM+vwjWBTvdsVvxHMzvCLNlYP8s+I8w==}
     peerDependencies:
       react: '>=18'
 
@@ -5059,8 +5067,8 @@ packages:
       octane:
         optional: true
 
-  '@tsrx/vite-plugin-react@0.0.76':
-    resolution: {integrity: sha512-SFM8F1SZrMvqt7NKTRDre71TR5MwyEUIcW84Nr5nV4lmrFBYIBxhMHc+8vJ4riRLItPi0HkNd5goHGwOZqKcog==}
+  '@tsrx/vite-plugin-react@0.0.86':
+    resolution: {integrity: sha512-FNkWucQdpNBq0qL2lNUdDXjw0/I1tdAygELdA9cClsMOigYXI9/lcJsvVW7bmy2XqgADfUF7a39dFeOyvncyIA==}
     peerDependencies:
       vite: '*'
 
@@ -12752,9 +12760,33 @@ snapshots:
     transitivePeerDependencies:
       - '@typescript-eslint/types'
 
+  '@tsrx/core@0.1.54':
+    dependencies:
+      '@jridgewell/sourcemap-codec': 1.5.5
+      '@noble/hashes': 2.2.0
+      '@sveltejs/acorn-typescript': 1.0.11(acorn@8.17.0)
+      '@types/estree': 1.0.9
+      '@types/estree-jsx': 1.0.5
+      acorn: 8.17.0
+      esrap: 2.3.0
+      is-reference: 3.0.3
+      magic-string: 0.30.21
+      zimmerframe: 1.1.4
+    transitivePeerDependencies:
+      - '@typescript-eslint/types'
+
   '@tsrx/react@0.2.44(react@19.2.7)':
     dependencies:
       '@tsrx/core': 0.1.44
+      esrap: 2.3.0
+      react: 19.2.7
+      zimmerframe: 1.1.4
+    transitivePeerDependencies:
+      - '@typescript-eslint/types'
+
+  '@tsrx/react@0.2.54(react@19.2.7)':
+    dependencies:
+      '@tsrx/core': 0.1.54
       esrap: 2.3.0
       react: 19.2.7
       zimmerframe: 1.1.4
@@ -12769,9 +12801,10 @@ snapshots:
     optionalDependencies:
       '@tsrx/react': 0.2.44(react@19.2.7)
 
-  '@tsrx/vite-plugin-react@0.0.76(@voidzero-dev/vite-plus-core@0.2.2(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(publint@0.3.21)(tsx@4.23.1)(typescript@5.9.3)(yaml@2.9.0))(react@19.2.7)':
+  '@tsrx/vite-plugin-react@0.0.86(@voidzero-dev/vite-plus-core@0.2.2(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(publint@0.3.21)(tsx@4.23.1)(typescript@5.9.3)(yaml@2.9.0))(react@19.2.7)':
     dependencies:
-      '@tsrx/react': 0.2.44(react@19.2.7)
+      '@tsrx/core': 0.1.54
+      '@tsrx/react': 0.2.54(react@19.2.7)
       vite: '@voidzero-dev/vite-plus-core@0.2.2(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(publint@0.3.21)(tsx@4.23.1)(typescript@5.9.3)(yaml@2.9.0)'
     transitivePeerDependencies:
       - '@typescript-eslint/types'
