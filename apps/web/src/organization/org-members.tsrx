@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import type { OrganizationRole } from '@repo/auth/access';
 import { authClient } from '@repo/auth/client';
-import { m } from '@repo/i18n/messages';
 import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
 import { Button } from '@repo/ui/components/button';
 import {
@@ -46,9 +45,8 @@ export function OrgMembers() @{
       queryKey: fullOrganizationQuery(activeOrganization.id).queryKey,
     });
 
-  // Built in-render so m.*() resolves in the request's locale scope.
   const inviteSchema = z.object({
-    email: z.email(m.enter_a_valid_email_address()),
+    email: z.email("Enter a valid email address"),
   });
 
   const form = useAppForm({
@@ -61,7 +59,7 @@ export function OrgMembers() @{
         role: inviteRole,
       });
       if (error) {
-        setFormError(error.message ?? m.unable_to_send_invitation());
+        setFormError(error.message ?? "Unable to send invitation");
         return;
       }
       form.reset();
@@ -78,7 +76,7 @@ export function OrgMembers() @{
     });
     setRemoving(null);
     if (error) {
-      setMemberError(error.message ?? m.something_went_wrong_try_again());
+      setMemberError(error.message ?? "Something went wrong. Try again.");
       return;
     }
     await refresh();
@@ -88,8 +86,8 @@ export function OrgMembers() @{
 
   <Card>
     <CardHeader>
-      <CardTitle>{m.members()}</CardTitle>
-      <CardDescription>{m.people_with_access_to({ organizationName: org.name })}</CardDescription>
+      <CardTitle>{"Members"}</CardTitle>
+      <CardDescription>{`People with access to ${org.name}.`}</CardDescription>
     </CardHeader>
     <CardContent className="flex flex-col gap-4">
       @if (canManage) {
@@ -103,28 +101,28 @@ export function OrgMembers() @{
             <form.AppField name="email">
               {(field) => (
                 <field.TextField
-                  label={m.invite_email()}
+                  label={"Invite email"}
                   type="email"
                   placeholder="teammate@example.com"
                 />
               )}
             </form.AppField>
             <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">{m.role()}</span>
+              <span className="text-sm text-muted-foreground">{"Role"}</span>
               <Select
                 value={inviteRole}
                 onValueChange={(value) => setInviteRole(value as OrganizationRole)}
               >
-                <SelectTrigger className="h-8 w-28 text-xs capitalize" aria-label={m.role()}>
+                <SelectTrigger className="h-8 w-28 text-xs capitalize" aria-label={"Role"}>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectPositioner>
                   <SelectContent>
                     <SelectItem value="member" className="capitalize">
-                      {m.member()}
+                      {"member"}
                     </SelectItem>
                     <SelectItem value="admin" className="capitalize">
-                      {m.admin()}
+                      {"admin"}
                     </SelectItem>
                   </SelectContent>
                 </SelectPositioner>
@@ -134,7 +132,7 @@ export function OrgMembers() @{
               <FieldError>{formError}</FieldError>
             }
             <form.AppForm>
-              <form.SubmitButton label={m.invite()} pendingLabel={m.inviting()} />
+              <form.SubmitButton label={"Invite"} pendingLabel={"Inviting…"} />
             </form.AppForm>
           </FieldGroup>
         </form>
@@ -167,7 +165,7 @@ export function OrgMembers() @{
                   disabled={removing === member.id}
                   onClick={() => void removeMember(member.id)}
                 >
-                  {m.remove()}
+                  {"Remove"}
                 </Button>
               }
             </span>
@@ -187,7 +185,7 @@ export function OrgMembers() @{
 function PendingInvitations({ invitations }: { invitations: FullOrganization['invitations'] }) @{
   <>
     <Separator />
-    <p className="text-xs font-medium text-muted-foreground">{m.pending_invitations()}</p>
+    <p className="text-xs font-medium text-muted-foreground">{"Pending invitations"}</p>
     <ul className="flex flex-col gap-2">
       @for (const invitation of invitations; key invitation.id) {
         <li className="flex items-baseline justify-between gap-2 text-sm">

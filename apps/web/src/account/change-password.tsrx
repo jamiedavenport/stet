@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { authClient } from '@repo/auth/client';
-import { m } from '@repo/i18n/messages';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { FieldError, FieldGroup } from '@repo/ui/components/field';
 import { useRouter } from '@tanstack/react-router';
@@ -17,7 +16,7 @@ export function ChangePassword() @{
 
   <>
     @if (accounts === undefined) {
-      <p className="text-sm text-muted-foreground">{m.loading()}</p>
+      <p className="text-sm text-muted-foreground">{"Loading…"}</p>
     } @else {
       <PasswordForm credentialUser={hasPassword(accounts)} />
     }
@@ -32,14 +31,13 @@ function PasswordForm({ credentialUser }: { credentialUser: boolean }) @{
   const [formError, setFormError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
 
-  // Built in-render so m.*() resolves in the request's locale scope.
   const schema = z.object({
     // Social-only users never see this field; keep it a plain string so the
     // form's value types stay in sync, and only require it for credential users.
     currentPassword: credentialUser
-      ? z.string().min(1, m.enter_your_current_password())
+      ? z.string().min(1, "Enter your current password")
       : z.string(),
-    newPassword: z.string().min(8, m.password_must_be_at_least_8()),
+    newPassword: z.string().min(8, "Password must be at least 8 characters"),
     revokeOtherSessions: z.boolean(),
   });
 
@@ -56,13 +54,13 @@ function PasswordForm({ credentialUser }: { credentialUser: boolean }) @{
           revokeOtherSessions: value.revokeOtherSessions,
         });
         if (error) {
-          message = error.message ?? m.something_went_wrong_try_again();
+          message = error.message ?? "Something went wrong. Try again.";
         }
       } else {
         try {
           await setInitialPassword({ data: value.newPassword });
         } catch (thrown) {
-          message = thrown instanceof Error ? thrown.message : m.something_went_wrong_try_again();
+          message = thrown instanceof Error ? thrown.message : "Something went wrong. Try again.";
         }
       }
       if (message !== null) {
@@ -93,7 +91,7 @@ function PasswordForm({ credentialUser }: { credentialUser: boolean }) @{
         <form.AppField name="currentPassword">
           {(field) => (
             <field.TextField
-              label={m.current_password()}
+              label={"Current password"}
               type="password"
               autoComplete="current-password"
             />
@@ -102,7 +100,7 @@ function PasswordForm({ credentialUser }: { credentialUser: boolean }) @{
       }
       <form.AppField name="newPassword">
         {(field) => (
-          <field.TextField label={m.new_password()} type="password" autoComplete="new-password" />
+          <field.TextField label={"New password"} type="password" autoComplete="new-password" />
         )}
       </form.AppField>
       @if (credentialUser) {
@@ -115,7 +113,7 @@ function PasswordForm({ credentialUser }: { credentialUser: boolean }) @{
                 checked={field.state.value}
                 onChange={(event) => field.handleChange(event.target.checked)}
               />
-              {m.sign_out_other_devices()}
+              {"Sign out other devices"}
             </label>
           )}
         </form.AppField>
@@ -124,12 +122,12 @@ function PasswordForm({ credentialUser }: { credentialUser: boolean }) @{
         <FieldError>{formError}</FieldError>
       }
       @if (done) {
-        <p className="text-sm text-muted-foreground">{m.password_updated()}</p>
+        <p className="text-sm text-muted-foreground">{"Password updated"}</p>
       }
       <form.AppForm>
         <form.SubmitButton
-          label={credentialUser ? m.update_password() : m.set_password()}
-          pendingLabel={m.saving()}
+          label={credentialUser ? "Update password" : "Set password"}
+          pendingLabel={"Saving…"}
         />
       </form.AppForm>
     </FieldGroup>

@@ -13,8 +13,8 @@ export const mentionedInNotes = defineNotification({
     organizationName: z.string(),
   }),
   defaultChannels: ['app', 'email'],
-  render: (payload, t) => ({
-    title: t.notification_mentioned_in_notes(payload),
+  render: (payload) => ({
+    title: `${payload.mentionedByName} mentioned you in the ${payload.organizationName} notes`,
     href: '/app/notes',
   }),
 });

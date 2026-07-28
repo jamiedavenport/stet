@@ -1,25 +1,23 @@
 import { brand } from '@repo/brand';
-import type { Locale } from '@repo/i18n';
-import { localized } from '@repo/i18n/localized';
 
 import { ActionEmail } from './layout';
 
 export type ResetPasswordEmailProps = {
-  locale: Locale;
   name: string;
   resetLink: string;
 };
 
-export function ResetPasswordEmail({ locale, name, resetLink }: ResetPasswordEmailProps) {
-  const t = localized(locale);
+export function ResetPasswordEmail({ name, resetLink }: ResetPasswordEmailProps) {
   const brandName = brand.name;
   return (
     <ActionEmail
-      preview={t.reset_password_subject({ brandName })}
-      heading={t.reset_your_password()}
-      body={t.reset_password_body({ name, brandName })}
-      action={{ href: resetLink, label: t.reset_password() }}
-      footer={t.reset_password_footer()}
+      preview={`Reset your ${brandName} password`}
+      heading={'Reset your password'}
+      body={`Hi ${name}, we received a request to reset the password for your ${brandName} account. The link below expires in one hour.`}
+      action={{ href: resetLink, label: 'Reset password' }}
+      footer={
+        "If you didn't request a password reset, you can ignore this email. Your password won't change."
+      }
     />
   );
 }

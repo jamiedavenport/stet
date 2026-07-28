@@ -1,6 +1,4 @@
 import { brand } from '@repo/brand';
-import { getLocale } from '@repo/i18n';
-import { m } from '@repo/i18n/messages';
 import { createFileRoute } from '@tanstack/react-router';
 
 import { RailList, RailRow } from '@repo/ui/marketing/lists.tsrx';
@@ -12,8 +10,8 @@ import { seo } from '#/marketing/seo';
 export const Route = createFileRoute('/_marketing/changelog')({
   head: () =>
     seo({
-      title: `${m.marketing_changelog_eyebrow()} · ${brand.name}`,
-      description: m.marketing_changelog_seo_description(),
+      title: `${'Changelog'} · ${brand.name}`,
+      description: 'Every release: what shipped and when.',
       path: '/changelog',
     }),
   component: ChangelogPage,
@@ -21,7 +19,7 @@ export const Route = createFileRoute('/_marketing/changelog')({
 
 // Built per render so dates format in the request's locale.
 function formatDate(date: Date): string {
-  return new Intl.DateTimeFormat(getLocale(), {
+  return new Intl.DateTimeFormat('en-GB', {
     day: 'numeric',
     month: 'short',
     year: 'numeric',
@@ -34,9 +32,9 @@ function ChangelogPage() {
   return (
     <>
       <PageIntro
-        eyebrow={m.marketing_changelog_eyebrow()}
-        title={m.marketing_changelog_heading()}
-        lede={m.marketing_changelog_lede()}
+        eyebrow={'Changelog'}
+        title={'What shipped, when.'}
+        lede={'Every release: what shipped and when.'}
       />
       <RailList>
         {releases.map((release) => (

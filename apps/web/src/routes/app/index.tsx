@@ -1,4 +1,3 @@
-import { m } from '@repo/i18n/messages';
 import {
   Card,
   CardContent,
@@ -20,11 +19,13 @@ function Home() {
   return (
     <Card className="w-full max-w-sm">
       <CardHeader>
-        <CardTitle>{m.welcome_back()}</CardTitle>
-        <CardDescription>{m.signed_in_as_in({ email, organizationName })}</CardDescription>
+        <CardTitle>{'Welcome back'}</CardTitle>
+        <CardDescription>{`Signed in as ${email} in ${organizationName}.`}</CardDescription>
       </CardHeader>
       <CardContent>
-        <p className="text-sm text-muted-foreground">{m.use_the_sidebar_to_switch_or()}</p>
+        <p className="text-sm text-muted-foreground">
+          {'Use the sidebar to switch or create organizations.'}
+        </p>
       </CardContent>
     </Card>
   );

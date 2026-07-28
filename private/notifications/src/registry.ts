@@ -1,5 +1,3 @@
-import type { Locale } from '@repo/i18n';
-import { localized } from '@repo/i18n/localized';
 import type { z } from 'zod';
 
 import type { NotificationDefinition, RenderedNotification } from './define';
@@ -26,23 +24,23 @@ export type NotificationPayload<TType extends NotificationType> = z.output<
 export const notificationTypes = Object.keys(registry) as [NotificationType, ...NotificationType[]];
 
 /**
- * Re-renders a stored feed row's title in `locale`, so the feed follows the
- * viewer's current language instead of the language it was delivered in.
- * Falls back to the stored snapshot for types that left the registry or
- * payloads that no longer parse.
+ * Re-renders a stored feed row's title from the current registry, falling
+ * back to the stored snapshot for types that left the registry or payloads
+ * that no longer parse.
  */
-export function renderNotificationTitle(
-  row: { type: string; payload: string; title: string },
-  locale: Locale,
-): string {
+export function renderNotificationTitle(row: {
+  type: string;
+  payload: string;
+  title: string;
+}): string {
   const definition = (registry as Record<string, NotificationDefinition>)[row.type];
   if (definition === undefined) {
     return row.title;
   }
   try {
     const payload = definition.schema.parse(JSON.parse(row.payload));
-    const render = definition.render as (value: unknown, t: unknown) => RenderedNotification;
-    return render(payload, localized(locale)).title;
+    const render = definition.render as (value: unknown) => RenderedNotification;
+    return render(payload).title;
   } catch {
     return row.title;
   }

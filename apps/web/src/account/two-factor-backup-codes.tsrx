@@ -1,4 +1,3 @@
-import { m } from '@repo/i18n/messages';
 import { Button } from '@repo/ui/components/button';
 
 export function BackupCodeList({ codes }: { codes: string[] }) @{
@@ -13,10 +12,10 @@ export function BackupCodeList({ codes }: { codes: string[] }) @{
 // retrievable again, so the user must save them before dismissing.
 export function TwoFactorBackupCodes({ codes, onDone }: { codes: string[]; onDone: () => void }) @{
   <div className="flex flex-col gap-3">
-    <p className="text-sm">{m.save_these_backup_codes()}</p>
+    <p className="text-sm">{"Save these backup codes somewhere safe. Each can be used once."}</p>
     <BackupCodeList codes={codes} />
     <Button type="button" variant="outline" size="sm" onClick={onDone}>
-      {m.done()}
+      {"Done"}
     </Button>
   </div>
 }

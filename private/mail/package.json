@@ -15,7 +15,6 @@
   "dependencies": {
     "@react-email/components": "catalog:",
     "@repo/brand": "workspace:*",
-    "@repo/i18n": "workspace:*",
     "resend": "catalog:"
   },
   "devDependencies": {

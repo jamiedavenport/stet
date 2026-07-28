@@ -1,5 +1,4 @@
 import { database, schema } from '@repo/db';
-import { m } from '@repo/i18n/messages';
 import { verifyUnsubscribeToken } from '@repo/mail/unsubscribe';
 import type { UnsubscribeSubject } from '@repo/mail/unsubscribe';
 import { Button } from '@repo/ui/components/button';
@@ -111,25 +110,25 @@ function UnsubscribePage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-balance">
-            {state === 'done' ? m.you_are_unsubscribed() : m.unsubscribe_from_emails()}
+            {state === 'done' ? "You're unsubscribed" : 'Unsubscribe from emails'}
           </CardTitle>
           <CardDescription className="text-pretty">
             {invalid
-              ? m.unsubscribe_link_invalid()
+              ? 'This unsubscribe link is invalid.'
               : state === 'done'
-                ? m.unsubscribe_done_description()
-                : m.unsubscribe_confirm_description()}
+                ? "You won't receive these emails anymore. You can turn them back on in your notification settings at any time."
+                : 'Confirm to stop receiving these emails.'}
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-3">
           {!invalid && state !== 'done' ? (
             <Button onClick={() => void apply()} disabled={state === 'pending'}>
-              {state === 'pending' ? m.working() : m.unsubscribe()}
+              {state === 'pending' ? 'Working…' : 'Unsubscribe'}
             </Button>
           ) : null}
           <p className="text-center text-sm text-muted-foreground">
             <Link to="/app/settings" className="text-foreground underline underline-offset-4">
-              {m.manage_notification_settings()}
+              {'Manage notification settings'}
             </Link>
           </p>
         </CardContent>

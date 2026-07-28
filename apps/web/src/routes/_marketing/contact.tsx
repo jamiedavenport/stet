@@ -1,5 +1,4 @@
 import { brand } from '@repo/brand';
-import { m } from '@repo/i18n/messages';
 import { createFileRoute } from '@tanstack/react-router';
 
 import { TermRows } from '@repo/ui/marketing/lists.tsrx';
@@ -10,8 +9,8 @@ import { seo } from '#/marketing/seo';
 export const Route = createFileRoute('/_marketing/contact')({
   head: () =>
     seo({
-      title: `${m.marketing_contact_eyebrow()} · ${brand.name}`,
-      description: m.marketing_contact_seo_description(),
+      title: `${'Contact'} · ${brand.name}`,
+      description: 'Questions, bugs, and ideas: one email reaches the engineer.',
       path: '/contact',
     }),
   component: ContactPage,
@@ -21,16 +20,17 @@ export const Route = createFileRoute('/_marketing/contact')({
 function reasons() {
   return [
     {
-      term: m.marketing_contact_reason_questions_term(),
-      detail: m.marketing_contact_reason_questions_detail(),
+      term: 'Questions',
+      detail:
+        'Whether it fits your stack, how a feature works, or what is coming next. Ask anything.',
     },
     {
-      term: m.marketing_contact_reason_broken_term(),
-      detail: m.marketing_contact_reason_broken_detail(),
+      term: 'Something broken?',
+      detail: 'Include what you expected and what happened instead. Fixes land fast.',
     },
     {
-      term: m.marketing_contact_reason_feedback_term(),
-      detail: m.marketing_contact_reason_feedback_detail(),
+      term: 'Feedback',
+      detail: 'The experience is the product. If something feels ordinary, that is worth an email.',
     },
   ];
 }
@@ -39,9 +39,9 @@ function ContactPage() {
   return (
     <>
       <PageIntro
-        eyebrow={m.marketing_contact_eyebrow()}
-        title={m.marketing_contact_heading()}
-        lede={m.marketing_contact_lede()}
+        eyebrow={'Contact'}
+        title={'One email reaches the engineer.'}
+        lede={'No forms, no queues. Questions, bugs, and ideas all land in the same place.'}
       />
       <section className="border-t border-border">
         <div className="mx-auto max-w-7xl px-6 py-16 sm:py-20 lg:px-8">
@@ -52,7 +52,7 @@ function ContactPage() {
           </p>
           <TermRows rows={reasons()} className="mt-12" />
           <p className="mt-10 text-sm">
-            <ArrowLink href={brand.author.url}>{m.marketing_more_about_jxd()}</ArrowLink>
+            <ArrowLink href={brand.author.url}>{'More about JXD'}</ArrowLink>
           </p>
         </div>
       </section>

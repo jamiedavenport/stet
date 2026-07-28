@@ -6,9 +6,6 @@ export const user = sqliteTable('user', {
   email: text('email').notNull().unique(),
   emailVerified: integer('email_verified', { mode: 'boolean' }).notNull(),
   image: text('image'),
-  // BCP 47 base tag from @repo/i18n's locale list; null means "follow the
-  // browser". Written through Better Auth updateUser (additionalFields).
-  locale: text('locale'),
   // Set by the two-factor plugin once a user finishes TOTP enrolment; sign-in
   // then requires a second factor.
   twoFactorEnabled: integer('two_factor_enabled', { mode: 'boolean' }).notNull().default(false),

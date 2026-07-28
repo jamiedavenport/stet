@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { authClient } from '@repo/auth/client';
-import { m } from '@repo/i18n/messages';
 import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
 import {
   Card,
@@ -31,9 +30,8 @@ export function OrgGeneral() @{
   const membership = org.members.find((member) => member.userId === user.id);
   const canManage = membership?.role === 'owner' || membership?.role === 'admin';
 
-  // Built in-render so m.*() resolves in the request's locale scope.
   const schema = z.object({
-    name: z.string().min(1, m.enter_an_organization_name()),
+    name: z.string().min(1, "Enter an organization name"),
   });
 
   const form = useAppForm({
@@ -46,7 +44,7 @@ export function OrgGeneral() @{
         organizationId: activeOrganization.id,
       });
       if (error) {
-        setFormError(error.message ?? m.something_went_wrong_try_again());
+        setFormError(error.message ?? "Something went wrong. Try again.");
         return;
       }
       setDone(true);
@@ -61,8 +59,8 @@ export function OrgGeneral() @{
 
   <Card>
     <CardHeader>
-      <CardTitle>{m.organization()}</CardTitle>
-      <CardDescription>{m.your_organizations_name_and_details()}</CardDescription>
+      <CardTitle>{"Organization"}</CardTitle>
+      <CardDescription>{"Your organization's name and details."}</CardDescription>
     </CardHeader>
     <CardContent>
       @if (canManage) {
@@ -75,21 +73,21 @@ export function OrgGeneral() @{
         >
           <FieldGroup>
             <form.AppField name="name">
-              {(field) => <field.TextField label={m.organization_name()} />}
+              {(field) => <field.TextField label={"Organization name"} />}
             </form.AppField>
             @if (formError) {
               <FieldError>{formError}</FieldError>
             }
             @if (done) {
-              <p className="text-sm text-muted-foreground">{m.saved()}</p>
+              <p className="text-sm text-muted-foreground">{"Saved"}</p>
             }
             <form.AppForm>
-              <form.SubmitButton label={m.save()} pendingLabel={m.saving()} />
+              <form.SubmitButton label={"Save"} pendingLabel={"Saving…"} />
             </form.AppForm>
           </FieldGroup>
         </form>
       } @else {
-        <p className="text-sm text-muted-foreground">{m.only_owners_and_admins_can_manage()}</p>
+        <p className="text-sm text-muted-foreground">{"Only owners and admins can manage billing."}</p>
       }
     </CardContent>
   </Card>

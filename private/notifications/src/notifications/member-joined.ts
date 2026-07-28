@@ -14,8 +14,8 @@ export const memberJoined = defineNotification({
     organizationName: z.string(),
   }),
   defaultChannels: ['app', 'email'],
-  render: (payload, t) => ({
-    title: t.notification_member_joined(payload),
+  render: (payload) => ({
+    title: `${payload.memberName} joined ${payload.organizationName}`,
     href: '/app/organization',
   }),
 });

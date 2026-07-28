@@ -1,12 +1,9 @@
 import { brand } from '@repo/brand';
-import type { Locale } from '@repo/i18n';
-import { localized } from '@repo/i18n/localized';
 import { Link } from '@react-email/components';
 
 import { ActionEmail, emailLinkStyle } from './layout';
 
 export type InvitationReminderEmailProps = {
-  locale: Locale;
   inviterName: string;
   organizationName: string;
   inviteLink: string;
@@ -14,24 +11,22 @@ export type InvitationReminderEmailProps = {
 };
 
 export function InvitationReminderEmail({
-  locale,
   inviterName,
   organizationName,
   inviteLink,
   unsubscribeUrl,
 }: InvitationReminderEmailProps) {
-  const t = localized(locale);
   const brandName = brand.name;
   return (
     <ActionEmail
-      preview={t.invitation_reminder_preview({ inviterName, organizationName, brandName })}
-      heading={t.invitation_reminder_title({ organizationName })}
-      body={t.invitation_reminder_body({ inviterName, organizationName })}
-      action={{ href: inviteLink, label: t.accept_invitation() }}
-      footer={t.invitation_footer()}
+      preview={`Reminder: ${inviterName} invited you to join ${organizationName} on ${brandName}`}
+      heading={`Your invitation to ${organizationName} is waiting`}
+      body={`${inviterName} invited you to collaborate in the ${organizationName} organization. The invitation expires soon, so accept it while it's still valid.`}
+      action={{ href: inviteLink, label: 'Accept invitation' }}
+      footer={"If you weren't expecting this invitation, you can ignore this email."}
       footerLinks={
         <Link href={unsubscribeUrl} style={emailLinkStyle}>
-          {t.stop_invitation_reminders()}
+          {'Stop reminders about this invitation'}
         </Link>
       }
     />

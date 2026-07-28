@@ -1,16 +1,15 @@
 import { canManageOrganization } from '@repo/auth/access';
 import type { OrganizationRole } from '@repo/auth/access';
-import { m } from '@repo/i18n/messages';
 
 /** Displays a member role through the message catalog so it translates. */
 export function roleLabel(role: string): string {
   switch (role) {
     case 'owner':
-      return m.owner();
+      return 'owner';
     case 'admin':
-      return m.admin();
+      return 'admin';
     default:
-      return m.member();
+      return 'member';
   }
 }
 

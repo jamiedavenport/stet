@@ -3,8 +3,6 @@ import { ChatAgent as ChatAgentBase } from '@repo/ai/server';
 import { ai, BillingError } from '@repo/billing/server';
 import { handleScheduled } from '@repo/crons/server';
 import { and, database, eq, schema } from '@repo/db';
-import { cookieName, isLocale, type Locale } from '@repo/i18n';
-import { paraglideMiddleware } from '@repo/i18n/server';
 import { handleQueue } from '@repo/jobs/server';
 import { type HubEnv, NotificationHub as NotificationHubBase } from '@repo/notifications/server';
 import { PagePresenceRoom as PagePresenceRoomBase } from '@repo/realtime/server';
@@ -61,46 +59,9 @@ const entry = createServerEntry({
       return limited;
     }
 
-    // Pins the request's locale (cookie, then Accept-Language) in
-    // AsyncLocalStorage so getLocale() and every message function resolve it
-    // anywhere in SSR and server functions, isolated between concurrent
-    // requests. Queue consumers and Durable Objects run outside this scope
-    // and pass an explicit { locale } to messages instead.
-    return paraglideMiddleware(await withStoredLocale(request), async ({ request: localized }) =>
-      withSecurityHeaders(await handler.fetch(localized)),
-    );
+    return withSecurityHeaders(await handler.fetch(request));
   },
 });
-
-// A signed-in user's stored preference must win even when the locale cookie
-// is gone (new device, cleared cookies), so this render is already in their
-// language. Feeding the preference in as the cookie keeps Paraglide the only
-// locale resolver. Requests that carry the cookie skip the session lookup,
-// and anonymous requests resolve cheaply (no session token, no query); the
-// session context server fn re-pins the cookie for subsequent requests.
-async function withStoredLocale(request: Request): Promise<Request> {
-  const stored = await storedLocale(request);
-  if (stored === null) {
-    return request;
-  }
-  const forwarded = new Request(request);
-  const cookie = forwarded.headers.get('cookie');
-  const pin = `${cookieName}=${stored}`;
-  forwarded.headers.set('cookie', cookie === null ? pin : `${cookie}; ${pin}`);
-  return forwarded;
-}
-
-async function storedLocale(request: Request): Promise<Locale | null> {
-  if (request.headers.get('cookie')?.includes(`${cookieName}=`)) {
-    return null;
-  }
-  const session = await auth.api.getSession({ headers: request.headers });
-  const stored = session?.user.locale;
-  if (isLocale(stored)) {
-    return stored;
-  }
-  return null;
-}
 
 // withSentry instruments all three handlers, so an uncaught error is reported
 // with the trigger that produced it (request, cron, or queue batch).

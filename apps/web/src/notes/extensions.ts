@@ -1,4 +1,3 @@
-import { m } from '@repo/i18n/messages';
 import type { PageRoom } from '@repo/realtime/client';
 import type { PresenceUser } from '@repo/realtime/types';
 import type { Extensions } from '@tiptap/core';
@@ -48,7 +47,7 @@ export function noteExtensions(options: NoteExtensionOptions): Extensions {
       // (id, image, name) on top of the caret's color.
       user: options.user,
     }),
-    Placeholder.configure({ placeholder: m.write_something_or_press_slash() }),
+    Placeholder.configure({ placeholder: 'Write something, or press / for commands' }),
     CharacterCount.configure({ limit: null }),
     TaskList,
     TaskItem.configure({ nested: true }),

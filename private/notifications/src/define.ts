@@ -1,4 +1,3 @@
-import type { LocalizedMessages } from '@repo/i18n/localized';
 import type { z } from 'zod';
 
 export const notificationChannels = ['app', 'email'] as const;
@@ -23,11 +22,10 @@ export type NotificationDefinition<
   schema: TSchema;
   // Channels used when the recipient has no preference row for this type.
   defaultChannels: readonly NotificationChannel[];
-  // Pure render in the given language. Runs per recipient at delivery time
-  // (the row snapshot and the digest item) and again at read time so the feed
-  // follows the viewer's current locale; the snapshot keeps historical rows
+  // Pure render. Runs at delivery time (the row snapshot and the digest
+  // item) and again at read time; the snapshot keeps historical rows
   // rendering after this type changes shape or leaves the registry.
-  render: (payload: z.output<TSchema>, t: LocalizedMessages) => RenderedNotification;
+  render: (payload: z.output<TSchema>) => RenderedNotification;
 };
 
 export function defineNotification<TType extends string, TSchema extends z.ZodType>(

@@ -73,9 +73,7 @@ export type ActionEmailProps = {
 
 /**
  * The shell every template renders: a centred card with a heading, body, one
- * primary action, and a muted footer. Templates supply localized strings —
- * messages are bound to the recipient's locale by the caller, because emails
- * render outside any request scope (queue consumers, Durable Objects).
+ * primary action, and a muted footer.
  */
 export function ActionEmail({
   preview,

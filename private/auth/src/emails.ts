@@ -21,17 +21,7 @@ export type AuthEmails = {
   magicLink: MagicLinkOptions['sendMagicLink'];
 };
 
-// The callbacks type the user without additionalFields; the locale column
-// exists on every row.
-function localeOf(user: object): string | null | undefined {
-  return (user as { locale?: string | null }).locale;
-}
-
-/**
- * Binds every transactional email Better Auth sends to the app's mailer. The
- * recipient's stored locale rides along so each message is delivered in the
- * language they picked.
- */
+/** Binds every transactional email Better Auth sends to the app's mailer. */
 export function authEmails({
   mailer,
   database,
@@ -45,7 +35,6 @@ export function authEmails({
         to: user.email,
         name: user.name,
         resetLink: url,
-        locale: localeOf(user),
       });
     },
 
@@ -54,7 +43,6 @@ export function authEmails({
         to: user.email,
         name: user.name,
         verifyLink: url,
-        locale: localeOf(user),
       });
     },
 
@@ -67,7 +55,6 @@ export function authEmails({
         name: user.name,
         newEmail,
         confirmLink: url,
-        locale: localeOf(user),
       });
     },
 
@@ -76,7 +63,6 @@ export function authEmails({
         to: user.email,
         name: user.name,
         deleteLink: url,
-        locale: localeOf(user),
       });
     },
 
@@ -94,7 +80,6 @@ export function authEmails({
         to: email,
         name: recipient.name,
         magicLink: url,
-        locale: recipient.locale,
       });
     },
   };

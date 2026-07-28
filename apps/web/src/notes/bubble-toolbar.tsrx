@@ -1,4 +1,3 @@
-import { m } from '@repo/i18n/messages';
 import { Button } from '@repo/ui/components/button';
 import { Input } from '@repo/ui/components/input';
 import { Separator } from '@repo/ui/components/separator';
@@ -45,7 +44,7 @@ export function BubbleToolbar({ editor, state }: BubbleToolbarProps) @{
           autoFocus
           value={href}
           type="url"
-          aria-label={m.link_url()}
+          aria-label={"Link URL"}
           placeholder="https://example.com"
           className="h-7 w-56 text-sm"
           onChange={(event) => setHref(event.target.value)}
@@ -61,45 +60,45 @@ export function BubbleToolbar({ editor, state }: BubbleToolbarProps) @{
           }}
         />
         <Button type="button" size="sm" variant="ghost" onClick={applyLink}>
-          {m.apply()}
+          {"Apply"}
         </Button>
       </>
     } @else {
       <>
         <ToolbarButton
-          label={m.bold()}
+          label={"Bold"}
           icon={<BoldIcon />}
           active={state.bold}
           onClick={() => editor.chain().focus().toggleBold().run()}
         />
         <ToolbarButton
-          label={m.italic()}
+          label={"Italic"}
           icon={<ItalicIcon />}
           active={state.italic}
           onClick={() => editor.chain().focus().toggleItalic().run()}
         />
         <ToolbarButton
-          label={m.strikethrough()}
+          label={"Strikethrough"}
           icon={<StrikethroughIcon />}
           active={state.strike}
           onClick={() => editor.chain().focus().toggleStrike().run()}
         />
         <ToolbarButton
-          label={m.inline_code()}
+          label={"Inline code"}
           icon={<CodeIcon />}
           active={state.code}
           onClick={() => editor.chain().focus().toggleCode().run()}
         />
         <Separator orientation="vertical" className="mx-1 max-h-5" />
         <ToolbarButton
-          label={m.add_link()}
+          label={"Add link"}
           icon={<LinkIcon />}
           active={state.link}
           onClick={openLinkEditor}
         />
         @if (state.link) {
           <ToolbarButton
-            label={m.remove_link()}
+            label={"Remove link"}
             icon={<UnlinkIcon />}
             onClick={() => editor.chain().focus().unsetLink().run()}
           />

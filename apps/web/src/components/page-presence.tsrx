@@ -1,4 +1,3 @@
-import { m } from '@repo/i18n/messages';
 import { usePageRoomContext } from '@repo/realtime/client';
 import {
   Avatar,
@@ -20,7 +19,7 @@ export function PagePresence() @{
   const hiddenUsers = users.length - visibleUsers.length;
 
   @if (users.length > 0) {
-    <AvatarGroup aria-label={m.people_active_on_this_page()} data-size="sm">
+    <AvatarGroup aria-label={"People active on this page"} data-size="sm">
       @for (const presence of visibleUsers; key presence.id) {
         <Tooltip>
           <TooltipTrigger render={<Avatar size="sm" />}>

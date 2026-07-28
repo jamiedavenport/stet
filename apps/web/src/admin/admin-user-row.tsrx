@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { authClient } from '@repo/auth/client';
-import { m } from '@repo/i18n/messages';
 import { Badge } from '@repo/ui/components/badge';
 import { Button } from '@repo/ui/components/button';
 import { FieldError } from '@repo/ui/components/field';
@@ -31,7 +30,7 @@ export function AdminUserRow({
     const { error: failure } = await action();
     setBusy(false);
     if (failure !== null) {
-      setError(failure.message ?? m.something_went_wrong_try_again());
+      setError(failure.message ?? "Something went wrong. Try again.");
       return;
     }
     setConfirmingBan(false);
@@ -48,7 +47,7 @@ export function AdminUserRow({
     const { error: failure } = await authClient.admin.impersonateUser({ userId: user.id });
     if (failure !== null) {
       setBusy(false);
-      setError(failure.message ?? m.something_went_wrong_try_again());
+      setError(failure.message ?? "Something went wrong. Try again.");
       return;
     }
     window.location.href = '/app';
@@ -59,20 +58,20 @@ export function AdminUserRow({
       <span className="font-medium">{user.name}</span>
       <span className="min-w-0 flex-1 truncate text-sm text-muted-foreground">{user.email}</span>
       @if (isAdmin) {
-        <Badge variant="secondary">{m.platform_admin()}</Badge>
+        <Badge variant="secondary">{"Admin"}</Badge>
       }
       @if (user.banned) {
-        <Badge variant="destructive">{m.banned()}</Badge>
+        <Badge variant="destructive">{"Banned"}</Badge>
       }
     </div>
     @if (user.banned && user.banReason !== null) {
-      <p className="text-xs text-muted-foreground">{m.ban_reason({ reason: user.banReason })}</p>
+      <p className="text-xs text-muted-foreground">{`Reason: ${user.banReason}`}</p>
     }
     @if (confirmingBan) {
       <div className="flex flex-wrap gap-2">
         <Input
-          aria-label={m.ban_reason_label()}
-          placeholder={m.ban_reason_label()}
+          aria-label={"Ban reason (optional)"}
+          placeholder={"Ban reason (optional)"}
           value={reason}
           onChange={(event) => setReason(event.target.value)}
         />
@@ -90,10 +89,10 @@ export function AdminUserRow({
             )
           }
         >
-          {m.confirm_ban()}
+          {"Yes, ban"}
         </Button>
         <Button type="button" size="sm" variant="ghost" onClick={() => setConfirmingBan(false)}>
-          {m.cancel()}
+          {"Cancel"}
         </Button>
       </div>
     }
@@ -107,7 +106,7 @@ export function AdminUserRow({
             disabled={busy}
             onClick={() => void run(() => authClient.admin.unbanUser({ userId: user.id }))}
           >
-            {m.unban()}
+            {"Unban"}
           </Button>
         }
         @if (!user.banned) {
@@ -117,12 +116,12 @@ export function AdminUserRow({
             variant="outline"
             onClick={() => setConfirmingBan(true)}
           >
-            {m.ban()}
+            {"Ban"}
           </Button>
         }
         @if (!user.banned && !isAdmin) {
           <Button type="button" size="sm" variant="outline" disabled={busy} onClick={() => void impersonate()}>
-            {m.impersonate()}
+            {"Impersonate"}
           </Button>
         }
         <Button
@@ -136,7 +135,7 @@ export function AdminUserRow({
             )
           }
         >
-          {isAdmin ? m.revoke_admin() : m.make_admin()}
+          {isAdmin ? "Revoke admin" : "Make admin"}
         </Button>
       </div>
     }

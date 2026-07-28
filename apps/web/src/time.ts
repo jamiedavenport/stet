@@ -1,10 +1,9 @@
 /**
- * A timestamp as "3m ago", in the caller's locale. Coarsens as it goes back,
- * so anything older than a day reads in days rather than a running total of
- * hours.
+ * A timestamp as "3m ago". Coarsens as it goes back, so anything older than
+ * a day reads in days rather than a running total of hours.
  */
-export function timeAgo(value: Date | string, locale: string): string {
-  const format = new Intl.RelativeTimeFormat(locale, { numeric: 'auto', style: 'narrow' });
+export function timeAgo(value: Date | string): string {
+  const format = new Intl.RelativeTimeFormat('en-GB', { numeric: 'auto', style: 'narrow' });
   const seconds = Math.floor((Date.now() - new Date(value).getTime()) / 1000);
   if (seconds < 60) {
     return format.format(0, 'second');

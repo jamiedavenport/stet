@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { authClient } from '@repo/auth/client';
-import { m } from '@repo/i18n/messages';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   Card,
@@ -48,9 +47,8 @@ function NewOrganization() {
   const queryClient = useQueryClient();
   const [formError, setFormError] = useState<string | null>(null);
 
-  // Built in-render so m.*() resolves in the request's locale scope.
   const newOrgSchema = z.object({
-    name: z.string().min(1, m.enter_an_organization_name()),
+    name: z.string().min(1, 'Enter an organization name'),
   });
 
   const form = useAppForm({
@@ -60,7 +58,7 @@ function NewOrganization() {
       setFormError(null);
       const { data, error } = await createOrganization(value.name);
       if (error || !data) {
-        setFormError(error?.message ?? m.unable_to_create_organization());
+        setFormError(error?.message ?? 'Unable to create organization');
         return;
       }
       await authClient.organization.setActive({ organizationId: data.id });
@@ -73,9 +71,9 @@ function NewOrganization() {
     <PageShell>
       <Card>
         <CardHeader>
-          <CardTitle className="text-balance">{m.create_an_organization()}</CardTitle>
+          <CardTitle className="text-balance">{'Create an organization'}</CardTitle>
           <CardDescription className="text-pretty">
-            {m.organizations_keep_your_team_s_work()}
+            {"Organizations keep your team's work in one place."}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -87,11 +85,11 @@ function NewOrganization() {
           >
             <FieldGroup>
               <form.AppField name="name">
-                {(field) => <field.TextField label={m.name()} placeholder="Acme Inc" />}
+                {(field) => <field.TextField label={'Name'} placeholder="Acme Inc" />}
               </form.AppField>
               {formError ? <FieldError>{formError}</FieldError> : null}
               <form.AppForm>
-                <form.SubmitButton label={m.create_organization()} pendingLabel={m.creating()} />
+                <form.SubmitButton label={'Create organization'} pendingLabel={'Creating…'} />
               </form.AppForm>
             </FieldGroup>
           </form>

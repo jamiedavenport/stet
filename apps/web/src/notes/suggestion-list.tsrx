@@ -1,4 +1,3 @@
-import { m } from '@repo/i18n/messages';
 import { useEffect, useImperativeHandle, useState } from 'react';
 import type { Ref } from 'react';
 
@@ -75,7 +74,7 @@ export function SuggestionList({ items, command, ref }: SuggestionListProps) @{
       </button>
     } @empty {
       <p key="empty" className="px-2 py-1.5 text-sm text-muted-foreground">
-        {m.no_matches()}
+        {"No matches"}
       </p>
     }
   </div>

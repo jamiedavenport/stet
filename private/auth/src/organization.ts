@@ -88,8 +88,6 @@ export function organizationOptions({ baseURL, mailer }: { baseURL: string; mail
       afterAddMember: onMemberJoined,
     },
     sendInvitationEmail: async (data) => {
-      // The invitee may not have an account yet, so their locale is unknown;
-      // the mailer falls back to the default locale.
       await mailer.sendOrganizationInvitation({
         to: data.email,
         inviterName: data.inviter.user.name,

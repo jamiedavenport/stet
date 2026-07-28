@@ -1,5 +1,3 @@
-import { getLocale } from '@repo/i18n';
-import { m } from '@repo/i18n/messages';
 import {
   Card,
   CardContent,
@@ -15,19 +13,19 @@ export function PlatformStats() @{
   const { data } = useSuspenseQuery(platformStatsQuery);
 
   const cards = [
-    { key: 'users', label: m.total_users(), value: data.users, hint: null },
+    { key: 'users', label: "Total users", value: data.users, hint: null },
     {
       key: 'new-users',
-      label: m.new_users(),
+      label: "New users",
       value: data.newUsers,
-      hint: m.in_the_last_days({ days: data.windowDays }),
+      hint: `In the last ${data.windowDays} days`,
     },
-    { key: 'organizations', label: m.organizations(), value: data.organizations, hint: null },
+    { key: 'organizations', label: "Organizations", value: data.organizations, hint: null },
     {
       key: 'active-organizations',
-      label: m.active_organizations(),
+      label: "Active organizations",
       value: data.activeOrganizations,
-      hint: m.with_a_sign_in_in_the_last_days({ days: data.windowDays }),
+      hint: `With a sign-in in the last ${data.windowDays} days`,
     },
   ];
 
@@ -37,7 +35,7 @@ export function PlatformStats() @{
         <CardHeader>
           <CardDescription>{card.label}</CardDescription>
           <CardTitle className="text-3xl tabular-nums">
-            {card.value.toLocaleString(getLocale())}
+            {card.value.toLocaleString('en-GB')}
           </CardTitle>
         </CardHeader>
         @if (card.hint !== null) {

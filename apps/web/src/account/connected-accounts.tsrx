@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { authClient } from '@repo/auth/client';
-import { m } from '@repo/i18n/messages';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@repo/ui/components/button';
 import { FieldError } from '@repo/ui/components/field';
@@ -35,7 +34,7 @@ export function ConnectedAccounts() @{
     const { error: unlinkError } = await authClient.unlinkAccount({ providerId: provider });
     setPending(null);
     if (unlinkError) {
-      setError(unlinkError.message ?? m.something_went_wrong_try_again());
+      setError(unlinkError.message ?? "Something went wrong. Try again.");
       return;
     }
     await queryClient.invalidateQueries({ queryKey: accountsQuery.queryKey });
@@ -47,10 +46,10 @@ export function ConnectedAccounts() @{
 
   <>
     @if (!ready) {
-      <p className="text-sm text-muted-foreground">{m.loading()}</p>
+      <p className="text-sm text-muted-foreground">{"Loading…"}</p>
     } @else {
       @if (providerList.length === 0) {
-        <p className="text-sm text-muted-foreground">{m.no_social_providers_configured()}</p>
+        <p className="text-sm text-muted-foreground">{"No social providers are configured."}</p>
       } @else {
         <div className="flex flex-col gap-3">
           <ul className="flex flex-col gap-2">
@@ -65,7 +64,7 @@ export function ConnectedAccounts() @{
                     disabled={pending === provider}
                     onClick={() => void disconnect(provider)}
                   >
-                    {m.disconnect()}
+                    {"Disconnect"}
                   </Button>
                 } @else {
                   <Button
@@ -74,7 +73,7 @@ export function ConnectedAccounts() @{
                     size="sm"
                     onClick={() => void connect(provider)}
                   >
-                    {m.connect()}
+                    {"Connect"}
                   </Button>
                 }
               </li>

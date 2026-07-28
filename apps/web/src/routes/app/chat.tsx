@@ -32,7 +32,6 @@ import {
   CardTitle,
 } from '@repo/ui/components/card';
 import { brand } from '@repo/brand';
-import { m } from '@repo/i18n/messages';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { LockIcon } from 'lucide-react';
 import { useSuspenseQuery } from '@tanstack/react-query';
@@ -56,9 +55,9 @@ function ChatPage() {
   return (
     <Card className="mx-auto flex min-h-0 w-full max-w-2xl flex-1 flex-col">
       <CardHeader>
-        <CardTitle>{m.chat()}</CardTitle>
+        <CardTitle>{'Chat'}</CardTitle>
         <CardDescription>
-          {m.your_assistant_in_conversations_persist_across({ organizationName })}
+          {`Your assistant in ${organizationName}. Conversations persist across visits.`}
         </CardDescription>
       </CardHeader>
       {/* The AI assistant is a paid feature; the worker enforces the same
@@ -80,12 +79,12 @@ function UpgradePrompt() {
     <CardContent className="flex flex-1 flex-col items-center justify-center gap-3 p-8 text-center">
       <LockIcon aria-hidden className="size-6 text-muted-foreground" />
       <div className="flex flex-col gap-1">
-        <p className="font-medium">{m.the_ai_assistant_is_a_paid()}</p>
+        <p className="font-medium">{'The AI assistant is a paid feature'}</p>
         <p className="text-sm text-muted-foreground">
-          {m.upgrade_your_organization_to_chat_with({ brandName })}
+          {`Upgrade your organization to chat with the ${brandName} assistant.`}
         </p>
       </div>
-      <Button render={<Link to="/app/organization" />}>{m.view_plans()}</Button>
+      <Button render={<Link to="/app/organization" />}>{'View plans'}</Button>
     </CardContent>
   );
 }
@@ -96,12 +95,12 @@ function Chat({ name }: { name: string }) {
 
   return (
     <CardContent className="flex min-h-0 flex-1 flex-col gap-3">
-      <Conversation aria-label={m.conversation()} className="min-h-0 flex-1">
+      <Conversation aria-label={'Conversation'} className="min-h-0 flex-1">
         <ConversationContent>
           {messages.length === 0 ? (
             <ConversationEmptyState
-              title={m.no_messages_yet()}
-              description={m.ask_the_assistant_anything({ brandName })}
+              title={'No messages yet'}
+              description={`Ask the ${brandName} assistant anything. The conversation is saved to your account.`}
             />
           ) : (
             messages.map((message) => <ChatMessage key={message.id} message={message} />)
@@ -112,7 +111,7 @@ function Chat({ name }: { name: string }) {
       </Conversation>
       {status === 'error' ? (
         <p role="alert" className="text-sm text-destructive">
-          {m.something_went_wrong_try_sending_your()}
+          {'Something went wrong. Try sending your message again.'}
         </p>
       ) : null}
       <PromptInput
@@ -126,8 +125,8 @@ function Chat({ name }: { name: string }) {
       >
         <PromptInputBody>
           <PromptInputTextarea
-            aria-label={m.message_the_assistant()}
-            placeholder={m.message_the_assistant()}
+            aria-label={'Message the assistant'}
+            placeholder={'Message the assistant'}
           />
         </PromptInputBody>
         <PromptInputFooter>
@@ -140,11 +139,11 @@ function Chat({ name }: { name: string }) {
                 clearHistory();
               }}
             >
-              {m.clear()}
+              {'Clear'}
             </Button>
           </PromptInputTools>
           <PromptInputSubmit
-            aria-label={m.send()}
+            aria-label={'Send'}
             status={status}
             disabled={status === 'submitted' || status === 'streaming'}
           />

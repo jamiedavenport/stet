@@ -1,6 +1,4 @@
 import { useEffect, useState } from 'react';
-import { getLocale } from '@repo/i18n';
-import { m } from '@repo/i18n/messages';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@repo/ui/components/button';
 import {
@@ -68,7 +66,7 @@ export function NotificationBell() @{
   <DropdownMenu>
     <DropdownMenuTrigger
       render={
-        <Button variant="ghost" size="icon" className="relative" aria-label={m.notifications()} />
+        <Button variant="ghost" size="icon" className="relative" aria-label={"Notifications"} />
       }
     >
       <Bell />
@@ -80,10 +78,10 @@ export function NotificationBell() @{
     </DropdownMenuTrigger>
     <DropdownMenuContent align="end" className="w-80">
       <div className="flex items-center justify-between px-2 py-1.5">
-        <p className="text-sm font-medium">{m.notifications()}</p>
+        <p className="text-sm font-medium">{"Notifications"}</p>
         @if (unread > 0) {
           <Button type="button" variant="ghost" size="xs" onClick={() => void onMarkAllRead()}>
-            {m.mark_all_read()}
+            {"Mark all read"}
           </Button>
         }
       </div>
@@ -97,16 +95,16 @@ export function NotificationBell() @{
             <span className="flex w-full items-center gap-2">
               <span className="flex-1 text-sm">{item.title}</span>
               @if (item.readAt === null) {
-                <span className="size-2 shrink-0 rounded-full bg-primary" aria-label={m.unread()} />
+                <span className="size-2 shrink-0 rounded-full bg-primary" aria-label={"Unread"} />
               }
             </span>
             <span className="text-xs text-muted-foreground">
-              {timeAgo(item.createdAt, getLocale())}
+              {timeAgo(item.createdAt)}
             </span>
           </DropdownMenuItem>
         } @empty {
           <p className="px-2 py-6 text-center text-sm text-muted-foreground">
-            {m.nothing_yet_you_will_see_activity()}
+            {"Nothing yet. You will see activity from your organization here."}
           </p>
         }
       </div>

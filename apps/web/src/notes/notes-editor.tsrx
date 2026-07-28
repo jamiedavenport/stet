@@ -1,4 +1,3 @@
-import { m } from '@repo/i18n/messages';
 import type { PageRoom } from '@repo/realtime/client';
 import type { PresenceUser } from '@repo/realtime/types';
 import { DragHandle } from '@tiptap/extension-drag-handle-react';
@@ -50,7 +49,7 @@ export function NotesEditor({ room, user, members, onMention }: NotesEditorProps
       }),
       editorProps: {
         attributes: {
-          'aria-label': m.notes_editor(),
+          'aria-label': "Notes editor",
           class: 'tiptap-notes',
         },
       },
@@ -75,7 +74,7 @@ type EditorSurfaceProps = {
  */
 function EditorSurface({ editor, pickerRef, dropRef }: EditorSurfaceProps) @{
   const state = useNoteEditorState(editor);
-  const images = useNoteImages(editor, m.images_must_be_jpeg_png_webp());
+  const images = useNoteImages(editor, "Images must be JPEG, PNG, WebP, or GIF, and 5 MB or smaller.");
 
   pickerRef.current = images.openPicker;
   dropRef.current = images.uploadFiles;
@@ -114,10 +113,10 @@ function EditorSurface({ editor, pickerRef, dropRef }: EditorSurfaceProps) @{
     />
 
     <p className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
-      <span>{m.words_count({ count: state.words })}</span>
-      <span>{m.characters_count({ count: state.characters })}</span>
+      <span>{`${state.words} words`}</span>
+      <span>{`${state.characters} characters`}</span>
       @if (images.uploading) {
-        <span>{m.uploading()}</span>
+        <span>{"Uploading..."}</span>
       }
       @if (images.error !== null) {
         <span className="text-destructive">{images.error}</span>

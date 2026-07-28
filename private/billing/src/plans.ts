@@ -1,5 +1,4 @@
 import { and, database, eq, inArray, schema, sql } from '@repo/db';
-import { m } from '@repo/i18n/messages';
 
 import { createFeatures, definePlan } from './define';
 import { planByName } from './entitlements';
@@ -10,13 +9,13 @@ import type { FeatureName, PlanName, PlanSummary } from './types';
 const defineFeature = createFeatures(() => plans);
 
 /** The AI assistant (the chat agent and its worker route). */
-export const ai = defineFeature({ name: 'ai', label: m.billing_label_ai });
+export const ai = defineFeature({ name: 'ai', label: 'AI assistant' });
 
 /** Organization members. Usage counts current members plus pending
  * invitations, so outstanding invites cannot over-commit seats. */
 export const members = defineFeature({
   name: 'members',
-  label: m.billing_label_members,
+  label: 'members',
   window: null,
   measure: async (organizationId: string) => {
     const db = await database();
@@ -38,7 +37,7 @@ export const members = defineFeature({
  * request by the API middleware. */
 export const apiRequests = defineFeature({
   name: 'apiRequests',
-  label: m.billing_label_api_requests,
+  label: 'API requests',
   meter: { window: 'month' },
 });
 
@@ -52,7 +51,7 @@ export const megabyte = 1024 * 1024;
  * reclaims abandoned ones. Deleting a file frees the space at once. */
 export const storage = defineFeature({
   name: 'storage',
-  label: m.billing_label_storage,
+  label: 'MB of storage',
   window: null,
   measure: async (organizationId: string) => {
     const db = await database();
@@ -77,14 +76,14 @@ export const features = [ai, members, apiRequests, storage] as const;
 
 const free = definePlan({
   name: 'free',
-  label: m.free,
+  label: 'Free',
   pricePerSeat: 0,
   features: [members.limit(3), apiRequests.limit(1_000), storage.limit(100), ai.excluded()],
 });
 
 const paid = definePlan({
   name: 'paid',
-  label: m.paid,
+  label: 'Paid',
   pricePerSeat: 10,
   features: [members.limit(25), apiRequests.limit(100_000), storage.limit(10_000), ai.included()],
 });

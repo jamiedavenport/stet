@@ -1,4 +1,3 @@
-import { m } from '@repo/i18n/messages';
 import { registry } from '@repo/notifications/registry';
 import type { NotificationChannel, NotificationType } from '@repo/notifications/registry';
 import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
@@ -31,7 +30,7 @@ function hourLabel(hour: number): string {
 function typeLabel(type: NotificationType): string {
   switch (type) {
     case 'member-joined':
-      return m.someone_joins_your_organization();
+      return "Someone joins your organization";
   }
 }
 
@@ -89,9 +88,9 @@ export function NotificationSettings() @{
   <div className="flex flex-col gap-6">
       <label className="flex items-center justify-between gap-2 text-sm">
         <span>
-          <span className="font-medium">{m.email_notifications()}</span>
+          <span className="font-medium">{"Email notifications"}</span>
           <span className="block text-xs text-muted-foreground">
-            {m.email_notifications_description()}
+            {"The master switch for every notification email, including digests."}
           </span>
         </span>
         <input
@@ -104,22 +103,22 @@ export function NotificationSettings() @{
       <div className="flex flex-col gap-2">
         <div className="grid grid-cols-[1fr_auto_auto] items-center gap-x-6 gap-y-2 text-sm">
           <span />
-          <span className="text-xs text-muted-foreground">{m.in_app()}</span>
-          <span className="text-xs text-muted-foreground">{m.email()}</span>
+          <span className="text-xs text-muted-foreground">{"In-app"}</span>
+          <span className="text-xs text-muted-foreground">{"Email"}</span>
           @for (const definition of types; key definition.type) {
             <>
               <span>{typeLabel(definition.type)}</span>
               <input
                 type="checkbox"
                 className="size-4 justify-self-center accent-primary"
-                aria-label={m.label_in_app({ label: typeLabel(definition.type) })}
+                aria-label={`${typeLabel(definition.type)} in-app`}
                 checked={isEnabled(definition.type, 'app')}
                 onChange={() => void onToggle(definition.type, 'app')}
               />
               <input
                 type="checkbox"
                 className="size-4 justify-self-center accent-primary"
-                aria-label={m.label_by_email({ label: typeLabel(definition.type) })}
+                aria-label={`${typeLabel(definition.type)} by email`}
                 checked={isEnabled(definition.type, 'email')}
                 onChange={() => void onToggle(definition.type, 'email')}
               />
@@ -128,9 +127,9 @@ export function NotificationSettings() @{
         </div>
       </div>
       <div className="flex flex-col gap-2">
-        <p className="text-sm font-medium">{m.quiet_hours()}</p>
+        <p className="text-sm font-medium">{"Quiet hours"}</p>
         <p className="text-xs text-muted-foreground">
-          {m.notification_emails_are_held_and_delivered()}
+          {"Notification emails are held and delivered as a digest after quiet hours end. In-app notifications are never delayed."}
         </p>
         <div className="flex items-center gap-2">
           <Select
@@ -139,31 +138,31 @@ export function NotificationSettings() @{
               void onQuietHoursChange(value === 'off' ? null : Number(value), quietEnd)
             }
           >
-            <SelectTrigger className="w-28" aria-label={m.quiet_hours_start()}>
+            <SelectTrigger className="w-28" aria-label={"Quiet hours start"}>
               <SelectValue />
             </SelectTrigger>
             <SelectPositioner>
               <SelectContent>
-                <SelectItem value="off">{m.off()}</SelectItem>
+                <SelectItem value="off">{"Off"}</SelectItem>
                 @for (const hour of hours; key hour) {
                   <SelectItem value={String(hour)}>{hourLabel(hour)}</SelectItem>
                 }
               </SelectContent>
             </SelectPositioner>
           </Select>
-          <span className="text-sm text-muted-foreground">{m.until()}</span>
+          <span className="text-sm text-muted-foreground">{"until"}</span>
           <Select
             value={quietEnd === null ? 'off' : String(quietEnd)}
             onValueChange={(value) =>
               void onQuietHoursChange(quietStart, value === 'off' ? null : Number(value))
             }
           >
-            <SelectTrigger className="w-28" aria-label={m.quiet_hours_end()}>
+            <SelectTrigger className="w-28" aria-label={"Quiet hours end"}>
               <SelectValue />
             </SelectTrigger>
             <SelectPositioner>
               <SelectContent>
-                <SelectItem value="off">{m.off()}</SelectItem>
+                <SelectItem value="off">{"Off"}</SelectItem>
                 @for (const hour of hours; key hour) {
                   <SelectItem value={String(hour)}>{hourLabel(hour)}</SelectItem>
                 }

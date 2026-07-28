@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { authClient } from '@repo/auth/client';
-import { m } from '@repo/i18n/messages';
 import { useQueryClient } from '@tanstack/react-query';
 import { FieldError, FieldGroup } from '@repo/ui/components/field';
 import { useRouter } from '@tanstack/react-router';
@@ -18,9 +17,8 @@ export function DisplayName() @{
   const [formError, setFormError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
 
-  // Built in-render so m.*() resolves in the request's locale scope.
   const schema = z.object({
-    name: z.string().min(1, m.enter_your_name()),
+    name: z.string().min(1, "Enter your name"),
   });
 
   const form = useAppForm({
@@ -30,7 +28,7 @@ export function DisplayName() @{
       setFormError(null);
       const { error } = await authClient.updateUser({ name: value.name });
       if (error) {
-        setFormError(error.message ?? m.something_went_wrong_try_again());
+        setFormError(error.message ?? "Something went wrong. Try again.");
         return;
       }
       setDone(true);
@@ -48,16 +46,16 @@ export function DisplayName() @{
   >
     <FieldGroup>
       <form.AppField name="name">
-        {(field) => <field.TextField label={m.name()} autoComplete="name" />}
+        {(field) => <field.TextField label={"Name"} autoComplete="name" />}
       </form.AppField>
       @if (formError) {
         <FieldError>{formError}</FieldError>
       }
       @if (done) {
-        <p className="text-sm text-muted-foreground">{m.saved()}</p>
+        <p className="text-sm text-muted-foreground">{"Saved"}</p>
       }
       <form.AppForm>
-        <form.SubmitButton label={m.save()} pendingLabel={m.saving()} />
+        <form.SubmitButton label={"Save"} pendingLabel={"Saving…"} />
       </form.AppForm>
     </FieldGroup>
   </form>

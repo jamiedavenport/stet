@@ -52,7 +52,7 @@ CI (`.github/workflows/ci.yml`) runs typegen, `vp check`, a recursive type check
 - Use Conventional Commit messages.
 - Test features with Vitest or Playwright.
 - File an issue for known bugs and future work.
-- Write user-facing copy as Paraglide messages: add the key to `private/i18n/messages/en/{web,marketing,mail,common}.json`, fill the `es`/`fr` equivalents, and call `m.your_key()` from `@repo/i18n/messages`. See [private/i18n](private/i18n).
+- Write user-facing copy as plain English strings in the components; the app is English-only.
 
 ## Releases
 

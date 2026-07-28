@@ -1,12 +1,11 @@
 import { authClient } from '@repo/auth/client';
-import { m } from '@repo/i18n/messages';
 import { Button } from '@repo/ui/components/button';
 
 import type { SocialProvider } from '#/auth/functions';
 
-const labels: Record<SocialProvider, () => string> = {
-  google: m.continue_with_google,
-  github: m.continue_with_github,
+const labels: Record<SocialProvider, string> = {
+  google: 'Continue with Google',
+  github: 'Continue with GitHub',
 };
 
 function GoogleIcon() @{
@@ -73,13 +72,13 @@ export function SocialSignIn({
               onClick={() => void onClick(provider)}
             >
               <ProviderIcon provider={provider} />
-              {labels[provider]()}
+              {labels[provider]}
             </Button>
           }
         </div>
         <div className="flex items-center gap-3">
           <span className="h-px flex-1 bg-border" />
-          <span className="text-xs text-muted-foreground">{m.or_continue_with_email()}</span>
+          <span className="text-xs text-muted-foreground">{"or continue with email"}</span>
           <span className="h-px flex-1 bg-border" />
         </div>
       </div>

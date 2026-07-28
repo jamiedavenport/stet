@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { authClient } from '@repo/auth/client';
-import { m } from '@repo/i18n/messages';
 import { FieldError, FieldGroup } from '@repo/ui/components/field';
 import { z } from 'zod';
 
@@ -15,9 +14,8 @@ export function ChangeEmail() @{
   const [formError, setFormError] = useState<string | null>(null);
   const [sent, setSent] = useState(false);
 
-  // Built in-render so m.*() resolves in the request's locale scope.
   const schema = z.object({
-    newEmail: z.email(m.enter_a_valid_email_address()),
+    newEmail: z.email("Enter a valid email address"),
   });
 
   const form = useAppForm({
@@ -31,7 +29,7 @@ export function ChangeEmail() @{
         callbackURL: '/app/settings',
       });
       if (error) {
-        setFormError(error.message ?? m.something_went_wrong_try_again());
+        setFormError(error.message ?? "Something went wrong. Try again.");
         return;
       }
       form.reset();
@@ -41,7 +39,7 @@ export function ChangeEmail() @{
 
   <div className="flex flex-col gap-3">
     <p className="text-sm text-muted-foreground">
-      {m.your_current_email_is({ email: user.email })}
+      {`Your current email is ${user.email}.`}
     </p>
     <form
       onSubmit={(event) => {
@@ -53,7 +51,7 @@ export function ChangeEmail() @{
         <form.AppField name="newEmail">
           {(field) => (
             <field.TextField
-              label={m.new_email()}
+              label={"New email"}
               type="email"
               autoComplete="email"
               placeholder="you@example.com"
@@ -64,10 +62,10 @@ export function ChangeEmail() @{
           <FieldError>{formError}</FieldError>
         }
         @if (sent) {
-          <p className="text-sm text-muted-foreground">{m.check_your_current_email_to_confirm()}</p>
+          <p className="text-sm text-muted-foreground">{"Check your current email to confirm the change."}</p>
         }
         <form.AppForm>
-          <form.SubmitButton label={m.change_email_action()} pendingLabel={m.saving()} />
+          <form.SubmitButton label={"Change email"} pendingLabel={"Saving…"} />
         </form.AppForm>
       </FieldGroup>
     </form>

@@ -1,4 +1,3 @@
-import { m } from '@repo/i18n/messages';
 import {
   Card,
   CardContent,
@@ -13,7 +12,6 @@ import { ChangePassword } from '#/account/change-password.tsrx';
 import { ConnectedAccounts } from '#/account/connected-accounts.tsrx';
 import { DeleteAccount } from '#/account/delete-account.tsrx';
 import { DisplayName } from '#/account/display-name.tsrx';
-import { LanguageSettings } from '#/account/language-settings.tsrx';
 import { NotificationSettings } from '#/notifications/notification-settings.tsrx';
 import { PasskeySettings } from '#/account/passkey-settings.tsrx';
 import { ProfilePhoto } from '#/account/profile-photo.tsrx';
@@ -25,8 +23,8 @@ export function AccountSettings() @{
   <div className="flex w-full max-w-lg flex-col gap-4">
     <Card>
       <CardHeader>
-        <CardTitle>{m.profile()}</CardTitle>
-        <CardDescription>{m.your_profile_shown_to_everyone_in()}</CardDescription>
+        <CardTitle>{"Profile"}</CardTitle>
+        <CardDescription>{"Your profile, shown to everyone in your organizations."}</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-6">
         <ProfilePhoto />
@@ -35,17 +33,8 @@ export function AccountSettings() @{
     </Card>
     <Card>
       <CardHeader>
-        <CardTitle>{m.language()}</CardTitle>
-        <CardDescription>{m.used_across_the_app_and_in()}</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <LanguageSettings />
-      </CardContent>
-    </Card>
-    <Card>
-      <CardHeader>
-        <CardTitle>{m.password()}</CardTitle>
-        <CardDescription>{m.keep_your_account_secure_with_a()}</CardDescription>
+        <CardTitle>{"Password"}</CardTitle>
+        <CardDescription>{"Keep your account secure with a strong password."}</CardDescription>
       </CardHeader>
       <CardContent>
         <ChangePassword />
@@ -53,8 +42,8 @@ export function AccountSettings() @{
     </Card>
     <Card>
       <CardHeader>
-        <CardTitle>{m.two_factor_authentication()}</CardTitle>
-        <CardDescription>{m.add_an_extra_layer_of_security()}</CardDescription>
+        <CardTitle>{"Two-factor authentication"}</CardTitle>
+        <CardDescription>{"Add an extra layer of security with an authenticator app."}</CardDescription>
       </CardHeader>
       <CardContent>
         <TwoFactorSettings />
@@ -62,8 +51,8 @@ export function AccountSettings() @{
     </Card>
     <Card>
       <CardHeader>
-        <CardTitle>{m.passkeys()}</CardTitle>
-        <CardDescription>{m.sign_in_without_a_password_using()}</CardDescription>
+        <CardTitle>{"Passkeys"}</CardTitle>
+        <CardDescription>{"Sign in without a password using your device's screen lock or a security key."}</CardDescription>
       </CardHeader>
       <CardContent>
         <PasskeySettings />
@@ -71,8 +60,8 @@ export function AccountSettings() @{
     </Card>
     <Card>
       <CardHeader>
-        <CardTitle>{m.connected_accounts()}</CardTitle>
-        <CardDescription>{m.sign_in_with_a_linked_provider()}</CardDescription>
+        <CardTitle>{"Connected accounts"}</CardTitle>
+        <CardDescription>{"Sign in with a linked provider."}</CardDescription>
       </CardHeader>
       <CardContent>
         <ConnectedAccounts />
@@ -80,8 +69,8 @@ export function AccountSettings() @{
     </Card>
     <Card>
       <CardHeader>
-        <CardTitle>{m.email()}</CardTitle>
-        <CardDescription>{m.change_the_address_you_sign_in()}</CardDescription>
+        <CardTitle>{"Email"}</CardTitle>
+        <CardDescription>{"Change the address you sign in with."}</CardDescription>
       </CardHeader>
       <CardContent>
         <ChangeEmail />
@@ -89,8 +78,8 @@ export function AccountSettings() @{
     </Card>
     <Card>
       <CardHeader>
-        <CardTitle>{m.active_sessions()}</CardTitle>
-        <CardDescription>{m.devices_currently_signed_in_to_your()}</CardDescription>
+        <CardTitle>{"Active sessions"}</CardTitle>
+        <CardDescription>{"Devices currently signed in to your account."}</CardDescription>
       </CardHeader>
       <CardContent>
         <ActiveSessions />
@@ -98,8 +87,8 @@ export function AccountSettings() @{
     </Card>
     <Card>
       <CardHeader>
-        <CardTitle>{m.notifications()}</CardTitle>
-        <CardDescription>{m.what_you_are_notified_about_and()}</CardDescription>
+        <CardTitle>{"Notifications"}</CardTitle>
+        <CardDescription>{"What you are notified about, and on which channels."}</CardDescription>
       </CardHeader>
       <CardContent>
         <NotificationSettings />
@@ -107,8 +96,8 @@ export function AccountSettings() @{
     </Card>
     <Card className="border-destructive/40">
       <CardHeader>
-        <CardTitle className="text-destructive">{m.danger_zone()}</CardTitle>
-        <CardDescription>{m.permanently_delete_your_account()}</CardDescription>
+        <CardTitle className="text-destructive">{"Danger zone"}</CardTitle>
+        <CardDescription>{"Permanently delete your account and all of its data."}</CardDescription>
       </CardHeader>
       <CardContent>
         <DeleteAccount />

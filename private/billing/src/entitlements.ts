@@ -1,5 +1,4 @@
 import { and, database, eq, schema, sql } from '@repo/db';
-import { m } from '@repo/i18n/messages';
 
 import { BillingError } from './error';
 import type { CountedFeature, Entitlement, MeteredFeature, Plan, Window } from './types';
@@ -65,15 +64,11 @@ export async function usedOf(
   return row?.used ?? 0;
 }
 
-// Guard messages resolve their locale when the error is built: inside a
-// request Paraglide's AsyncLocalStorage scope pins the caller's locale, and
-// outside one (tests, jobs, the public API) they fall back to English.
-
 /** The guard error for a feature the plan excludes. */
 export function unavailable(
   plans: readonly Plan[],
   plan: Plan,
-  feature: { name: string; label: () => string },
+  feature: { name: string; label: string },
 ): BillingError {
   const upgrade = plans.find((candidate) => {
     const terms = candidate.features.find((e) => e.feature === feature.name);
@@ -81,8 +76,8 @@ export function unavailable(
   });
   const message =
     upgrade === undefined
-      ? m.billing_feature_unavailable({ label: feature.label() })
-      : m.billing_plan_required({ plan: upgrade.label() });
+      ? `The ${feature.label} feature is not available.`
+      : `The ${upgrade.label} plan is required for this feature.`;
   return new BillingError('feature-unavailable', plan.name, feature.name, message);
 }
 
@@ -90,7 +85,7 @@ export function unavailable(
 export function limitReached(
   plans: readonly Plan[],
   plan: Plan,
-  feature: { name: string; label: () => string },
+  feature: { name: string; label: string },
   cap: number,
 ): BillingError {
   // Only hint at upgrading when some other plan actually offers more.
@@ -104,10 +99,8 @@ export function limitReached(
     }
     return terms.kind === 'unlimited' || (terms.kind === 'limit' && (terms.cap ?? 0) > cap);
   });
-  const inputs = { plan: plan.label(), cap, label: feature.label() };
-  const message = better
-    ? m.billing_limit_reached_upgrade(inputs)
-    : m.billing_limit_reached(inputs);
+  const base = `The ${plan.label} plan is limited to ${cap} ${feature.label}.`;
+  const message = better ? `${base} Upgrade for more.` : base;
   return new BillingError('limit-reached', plan.name, feature.name, message);
 }
 

@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { authClient } from '@repo/auth/client';
 import { brand } from '@repo/brand';
-import { m } from '@repo/i18n/messages';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   Card,
@@ -39,11 +38,10 @@ function SignUp() {
   const captcha = useCaptcha();
   const brandName = brand.name;
 
-  // Built in-render so m.*() resolves in the request's locale scope.
   const signUpSchema = z.object({
-    name: z.string().min(1, m.enter_your_name()),
-    email: z.email(m.enter_a_valid_email_address()),
-    password: z.string().min(8, m.password_must_be_at_least_8()),
+    name: z.string().min(1, 'Enter your name'),
+    email: z.email('Enter a valid email address'),
+    password: z.string().min(8, 'Password must be at least 8 characters'),
   });
 
   const form = useAppForm({
@@ -62,7 +60,7 @@ function SignUp() {
       });
       if (error) {
         captcha.reset();
-        setFormError(error.message ?? m.unable_to_create_account());
+        setFormError(error.message ?? 'Unable to create account');
         return;
       }
       clearSessionContext(queryClient);
@@ -74,9 +72,9 @@ function SignUp() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-balance">{m.create_your_account()}</CardTitle>
+        <CardTitle className="text-balance">{'Create your account'}</CardTitle>
         <CardDescription className="text-pretty">
-          {m.get_started_with_in_seconds({ brandName })}
+          {`Get started with ${brandName} in seconds.`}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -90,13 +88,13 @@ function SignUp() {
           <FieldGroup>
             <form.AppField name="name">
               {(field) => (
-                <field.TextField label={m.name()} autoComplete="name" placeholder={m.your_name()} />
+                <field.TextField label={'Name'} autoComplete="name" placeholder={'Your name'} />
               )}
             </form.AppField>
             <form.AppField name="email">
               {(field) => (
                 <field.TextField
-                  label={m.email()}
+                  label={'Email'}
                   type="email"
                   autoComplete="email"
                   placeholder="you@example.com"
@@ -105,22 +103,22 @@ function SignUp() {
             </form.AppField>
             <form.AppField name="password">
               {(field) => (
-                <field.TextField label={m.password()} type="password" autoComplete="new-password" />
+                <field.TextField label={'Password'} type="password" autoComplete="new-password" />
               )}
             </form.AppField>
             {captcha.widgetProps !== null ? <Turnstile {...captcha.widgetProps} /> : null}
             {formError ? <FieldError>{formError}</FieldError> : null}
             <form.AppForm>
               <form.SubmitButton
-                label={m.create_account()}
-                pendingLabel={m.creating_account()}
+                label={'Create account'}
+                pendingLabel={'Creating account…'}
                 disabled={captcha.submitDisabled}
               />
             </form.AppForm>
             <p className="text-center text-sm text-muted-foreground">
-              {m.already_have_an_account()}{' '}
+              {'Already have an account?'}{' '}
               <Link to="/sign/in" search className="text-foreground underline underline-offset-4">
-                {m.sign_in_link()}
+                {'Sign in'}
               </Link>
             </p>
           </FieldGroup>

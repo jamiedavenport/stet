@@ -1,12 +1,11 @@
 import { canManageOrganization } from '@repo/auth/access';
 import type { OrganizationRole } from '@repo/auth/access';
 import { and, database, eq, schema } from '@repo/db';
-import { cookieMaxAge, cookieName, isLocale } from '@repo/i18n';
 import { queryOptions } from '@tanstack/react-query';
 import type { QueryClient } from '@tanstack/react-query';
 import { notFound, redirect } from '@tanstack/react-router';
 import { createMiddleware, createServerFn } from '@tanstack/react-start';
-import { getRequestHeaders, setCookie } from '@tanstack/react-start/server';
+import { getRequestHeaders } from '@tanstack/react-start/server';
 
 import { auth } from '#/auth-server';
 import { requireActiveOrganization } from '#/organization/membership';
@@ -74,18 +73,7 @@ export const organizationAdminMiddleware = createMiddleware({ type: 'function' }
 // private/auth/src/server.ts), not a D1 query, so root can run it per-request.
 const getSession = createServerFn({ method: 'GET' })
   .middleware([sessionMiddleware])
-  .handler(({ context }) => {
-    // Mirror the account's locale preference into the Paraglide cookie so the
-    // choice follows the account across devices and survives sign-out.
-    // Unconditional: the request cookie may be the preference the server
-    // entry injected for a cookie-less request, and the browser needs the
-    // real Set-Cookie before hydration resolves (and pins) its own locale.
-    const stored = context.session?.user.locale;
-    if (isLocale(stored)) {
-      setCookie(cookieName, stored, { path: '/', maxAge: cookieMaxAge });
-    }
-    return context.session;
-  });
+  .handler(({ context }) => context.session);
 
 export type Session = Awaited<ReturnType<typeof getSession>>;
 

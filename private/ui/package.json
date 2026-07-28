@@ -20,7 +20,6 @@
     "@fontsource-variable/geist": "catalog:",
     "@fontsource-variable/geist-mono": "catalog:",
     "@repo/brand": "workspace:*",
-    "@repo/i18n": "workspace:*",
     "@tanstack/react-router": "catalog:",
     "@tsrx/react": "catalog:",
     "ai": "catalog:",

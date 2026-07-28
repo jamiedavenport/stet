@@ -1,4 +1,3 @@
-import { m } from '@repo/i18n/messages';
 import { Button } from '@repo/ui/components/button';
 import { Input } from '@repo/ui/components/input';
 
@@ -20,11 +19,11 @@ export function AdminSearchForm({ label, list }: { label: string; list: AdminLis
       onChange={(event) => list.setDraft(event.target.value)}
     />
     <Button type="submit" variant="outline">
-      {m.search()}
+      {"Search"}
     </Button>
     @if (list.search !== '') {
       <Button type="button" variant="ghost" onClick={list.clear}>
-        {m.clear()}
+        {"Clear"}
       </Button>
     }
   </form>
@@ -44,7 +43,7 @@ export function AdminPagination({
 
   <div className="flex items-center justify-between gap-2">
     <p className="text-xs text-muted-foreground tabular-nums">
-      {m.showing_range_of_total({ from, to, total })}
+      {`${from} to ${to} of ${total}`}
     </p>
     <div className="flex gap-2">
       <Button
@@ -54,7 +53,7 @@ export function AdminPagination({
         disabled={list.page === 0}
         onClick={list.previous}
       >
-        {m.previous()}
+        {"Previous"}
       </Button>
       <Button
         type="button"
@@ -63,7 +62,7 @@ export function AdminPagination({
         disabled={to >= total}
         onClick={list.next}
       >
-        {m.next()}
+        {"Next"}
       </Button>
     </div>
   </div>

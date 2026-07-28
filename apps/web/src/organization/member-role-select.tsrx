@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import type { OrganizationRole } from '@repo/auth/access';
 import { authClient } from '@repo/auth/client';
-import { m } from '@repo/i18n/messages';
 import {
   Select,
   SelectContent,
@@ -40,7 +39,7 @@ export function MemberRoleSelect({
     });
     setPending(false);
     if (error) {
-      onError(error.message ?? m.something_went_wrong_try_again());
+      onError(error.message ?? "Something went wrong. Try again.");
       return;
     }
     await onChanged();
@@ -53,7 +52,7 @@ export function MemberRoleSelect({
   >
     <SelectTrigger
       className="h-7 w-28 text-xs capitalize"
-      aria-label={m.role_for({ email: member.user.email })}
+      aria-label={`Role for ${member.user.email}`}
     >
       <SelectValue />
     </SelectTrigger>

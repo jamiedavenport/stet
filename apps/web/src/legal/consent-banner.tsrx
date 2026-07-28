@@ -1,16 +1,15 @@
 import { useConsent } from '@policystack/react/consent';
-import { m } from '@repo/i18n/messages';
 import { Button } from '@repo/ui/components/button';
 import { Link } from '@tanstack/react-router';
 
-// Category copy is the app's own (localized through Paraglide) rather than
-// PolicyStack-derived labels, keyed by the category keys in policystack.ts.
+// Category copy is the app's own rather than PolicyStack-derived labels,
+// keyed by the category keys in policystack.ts.
 function categoryLabel(key: string): string {
   switch (key) {
     case 'essential':
-      return m.essential_cookies();
+      return "Essential";
     case 'analytics':
-      return m.analytics_cookies();
+      return "Analytics";
     default:
       return key;
   }
@@ -19,9 +18,9 @@ function categoryLabel(key: string): string {
 function categoryDescription(key: string): string | null {
   switch (key) {
     case 'essential':
-      return m.essential_cookies_description();
+      return "Sign-in, security, and your language choice. Always on.";
     case 'analytics':
-      return m.analytics_cookies_description();
+      return "Product analytics that help us understand usage. Off until you allow it.";
     default:
       return null;
   }
@@ -50,11 +49,11 @@ export function ConsentBanner() @{
   <div className="pointer-events-none fixed inset-x-0 bottom-0 z-50 p-4 sm:p-6">
     <div className="pointer-events-auto mx-auto flex w-full max-w-xl flex-col gap-4 rounded-xl border border-border bg-background p-5 shadow-lg">
       <div className="flex flex-col gap-1">
-        <p className="text-sm font-medium">{m.cookie_banner_title()}</p>
+        <p className="text-sm font-medium">{"Cookies and privacy"}</p>
         <p className="text-sm text-muted-foreground">
-          {m.cookie_banner_body()}{' '}
+          {"We use essential cookies to run the app, and analytics only with your permission."}{' '}
           <Link to="/cookies" className="text-foreground underline underline-offset-4">
-            {m.cookie_policy()}
+            {"Cookie policy"}
           </Link>
         </p>
       </div>
@@ -84,26 +83,26 @@ export function ConsentBanner() @{
         </ul>
         <div className="flex flex-wrap justify-end gap-2">
           <Button variant="outline" size="sm" onClick={() => consent.acceptNecessary()}>
-            {m.reject_non_essential()}
+            {"Essential only"}
           </Button>
           <Button variant="outline" size="sm" onClick={() => consent.save()}>
-            {m.save_preferences()}
+            {"Save preferences"}
           </Button>
           <Button size="sm" onClick={() => consent.acceptAll()}>
-            {m.accept_all()}
+            {"Accept all"}
           </Button>
         </div>
         </>
       } @else {
         <div className="flex flex-wrap justify-end gap-2">
           <Button variant="outline" size="sm" onClick={() => consent.setRoute('preferences')}>
-            {m.cookie_preferences()}
+            {"Preferences"}
           </Button>
           <Button variant="outline" size="sm" onClick={() => consent.acceptNecessary()}>
-            {m.reject_non_essential()}
+            {"Essential only"}
           </Button>
           <Button size="sm" onClick={() => consent.acceptAll()}>
-            {m.accept_all()}
+            {"Accept all"}
           </Button>
         </div>
       }

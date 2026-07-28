@@ -107,16 +107,6 @@ export function createAuth({
       autoSignInAfterVerification: true,
     },
     user: {
-      additionalFields: {
-        // The user's preferred UI and email locale. Client-writable via
-        // updateUser; consumers validate with @repo/i18n's isLocale() when
-        // reading, so an out-of-catalog value degrades to browser detection.
-        locale: {
-          type: 'string',
-          required: false,
-          input: true,
-        },
-      },
       changeEmail: {
         enabled: true,
         sendChangeEmailConfirmation: emails.changeEmail,

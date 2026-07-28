@@ -33,7 +33,6 @@
     "@repo/brand": "workspace:*",
     "@repo/crons": "workspace:*",
     "@repo/db": "workspace:*",
-    "@repo/i18n": "workspace:*",
     "@repo/jobs": "workspace:*",
     "@repo/logging": "workspace:*",
     "@repo/mail": "workspace:*",

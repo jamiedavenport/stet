@@ -1,4 +1,3 @@
-import { m } from '@repo/i18n/messages';
 import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
 import {
   Card,
@@ -44,8 +43,10 @@ function Webhooks() {
     <div className="flex w-full max-w-2xl flex-col gap-4">
       <Card>
         <CardHeader>
-          <CardTitle>{m.webhooks()}</CardTitle>
-          <CardDescription>{m.endpoints_receive_signed_posts()}</CardDescription>
+          <CardTitle>{'Webhooks'}</CardTitle>
+          <CardDescription>
+            {'Endpoints receive signed POST requests for the events they subscribe to.'}
+          </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
           <CreateEndpointForm onCreated={refresh} />
@@ -55,7 +56,7 @@ function Webhooks() {
       </Card>
       <Card>
         <CardHeader>
-          <CardTitle>{m.recent_deliveries()}</CardTitle>
+          <CardTitle>{'Recent deliveries'}</CardTitle>
         </CardHeader>
         <CardContent>
           <RecentDeliveries deliveries={data.deliveries} />

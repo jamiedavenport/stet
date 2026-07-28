@@ -1,25 +1,21 @@
 import { brand } from '@repo/brand';
-import type { Locale } from '@repo/i18n';
-import { localized } from '@repo/i18n/localized';
 
 import { ActionEmail } from './layout';
 
 export type MagicLinkEmailProps = {
-  locale: Locale;
   name: string;
   magicLink: string;
 };
 
-export function MagicLinkEmail({ locale, name, magicLink }: MagicLinkEmailProps) {
-  const t = localized(locale);
+export function MagicLinkEmail({ name, magicLink }: MagicLinkEmailProps) {
   const brandName = brand.name;
   return (
     <ActionEmail
-      preview={t.magic_link_preview({ brandName })}
-      heading={t.magic_link_title()}
-      body={t.magic_link_body({ name, brandName })}
-      action={{ href: magicLink, label: t.magic_link_button() }}
-      footer={t.magic_link_footer()}
+      preview={`Your sign-in link for ${brandName}`}
+      heading={'Your sign-in link'}
+      body={`Hi ${name}, click below to sign in to your ${brandName} account. The link expires in five minutes and can be used once.`}
+      action={{ href: magicLink, label: 'Sign in' }}
+      footer={"If you didn't request this link, you can ignore this email."}
     />
   );
 }

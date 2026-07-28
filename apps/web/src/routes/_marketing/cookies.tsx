@@ -1,5 +1,4 @@
 import { brand } from '@repo/brand';
-import { m } from '@repo/i18n/messages';
 import { CookiePolicy } from '@policystack/react/policy';
 import { createFileRoute } from '@tanstack/react-router';
 
@@ -11,8 +10,8 @@ import { seo } from '#/marketing/seo';
 export const Route = createFileRoute('/_marketing/cookies')({
   head: () =>
     seo({
-      title: `${m.cookie_policy_title()} · ${brand.name}`,
-      description: m.cookie_policy_seo_description(),
+      title: `${'Cookie policy'} · ${brand.name}`,
+      description: 'The cookies this product sets and the choices you have.',
       path: '/cookies',
     }),
   component: CookiesPage,
@@ -21,7 +20,7 @@ export const Route = createFileRoute('/_marketing/cookies')({
 function CookiesPage() {
   return (
     <>
-      <PageIntro eyebrow={m.legal()} title={m.cookie_policy_title()} />
+      <PageIntro eyebrow={'Legal'} title={'Cookie policy'} />
       <PolicyPageBody>
         <CookiePolicy config={policystack} locale={policyLocale()} />
       </PolicyPageBody>

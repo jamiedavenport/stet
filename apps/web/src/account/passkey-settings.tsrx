@@ -1,7 +1,5 @@
 import { useState } from 'react';
 import { authClient } from '@repo/auth/client';
-import { getLocale } from '@repo/i18n';
-import { m } from '@repo/i18n/messages';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@repo/ui/components/button';
 import { FieldError } from '@repo/ui/components/field';
@@ -9,7 +7,7 @@ import { FieldError } from '@repo/ui/components/field';
 import { passkeysQuery } from '#/account/functions';
 
 function formatDate(date: Date | string): string {
-  return new Date(date).toLocaleDateString(getLocale(), {
+  return new Date(date).toLocaleDateString('en-GB', {
     month: 'short',
     day: 'numeric',
     year: 'numeric',
@@ -33,7 +31,7 @@ export function PasskeySettings() @{
     const result = await authClient.passkey.addPasskey();
     setAdding(false);
     if (result?.error) {
-      setError(result.error.message ?? m.unable_to_add_a_passkey());
+      setError(result.error.message ?? "Unable to add a passkey.");
       return;
     }
     await refresh();
@@ -45,7 +43,7 @@ export function PasskeySettings() @{
     const { error: removeError } = await authClient.passkey.deletePasskey({ id });
     setRemoving(null);
     if (removeError) {
-      setError(removeError.message ?? m.something_went_wrong_try_again());
+      setError(removeError.message ?? "Something went wrong. Try again.");
       return;
     }
     await refresh();
@@ -53,17 +51,17 @@ export function PasskeySettings() @{
 
   <>
     @if (passkeys === undefined) {
-      <p className="text-sm text-muted-foreground">{m.loading()}</p>
+      <p className="text-sm text-muted-foreground">{"Loading…"}</p>
     } @else {
       <div className="flex flex-col gap-3">
         @if (passkeys.length === 0) {
-          <p className="text-sm text-muted-foreground">{m.no_passkeys_added_yet()}</p>
+          <p className="text-sm text-muted-foreground">{"You haven't added any passkeys yet."}</p>
         } @else {
           <ul className="flex flex-col gap-3">
             @for (const item of passkeys; key item.id) {
               <li className="flex items-center justify-between gap-2 text-sm">
                 <div className="flex min-w-0 flex-col">
-                  <span className="truncate">{item.name ?? m.passkey_fallback_name()}</span>
+                  <span className="truncate">{item.name ?? "Passkey"}</span>
                   @if (item.createdAt) {
                     <span className="text-xs text-muted-foreground">
                       {formatDate(item.createdAt)}
@@ -77,7 +75,7 @@ export function PasskeySettings() @{
                   disabled={removing === item.id}
                   onClick={() => void remove(item.id)}
                 >
-                  {m.remove()}
+                  {"Remove"}
                 </Button>
               </li>
             }
@@ -85,7 +83,7 @@ export function PasskeySettings() @{
         }
         <div>
           <Button type="button" size="sm" disabled={adding} onClick={() => void add()}>
-            {adding ? m.waiting_for_your_device() : m.add_a_passkey()}
+            {adding ? "Waiting for your device…" : "Add a passkey"}
           </Button>
         </div>
         @if (error) {

@@ -1,5 +1,4 @@
 import { brand } from '@repo/brand';
-import { m } from '@repo/i18n/messages';
 import { Link, createFileRoute } from '@tanstack/react-router';
 
 import { RailList, RailRow } from '@repo/ui/marketing/lists.tsrx';
@@ -11,8 +10,8 @@ import { seo } from '#/marketing/seo';
 export const Route = createFileRoute('/_marketing/blog/')({
   head: () =>
     seo({
-      title: `${m.marketing_blog_eyebrow()} · ${brand.name}`,
-      description: m.marketing_blog_seo_description(),
+      title: `${'Blog'} · ${brand.name}`,
+      description: 'Notes from the build: design decisions and engineering write-ups.',
       path: '/blog',
     }),
   component: BlogIndexPage,
@@ -24,9 +23,9 @@ function BlogIndexPage() {
   return (
     <>
       <PageIntro
-        eyebrow={m.marketing_blog_eyebrow()}
-        title={m.marketing_blog_heading()}
-        lede={m.marketing_blog_lede()}
+        eyebrow={'Blog'}
+        title={'Notes from the build.'}
+        lede={'Design notes and engineering decisions from the build.'}
       />
       <RailList>
         {posts.map((post) => (

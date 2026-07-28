@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { authClient } from '@repo/auth/client';
-import { m } from '@repo/i18n/messages';
 import { Button } from '@repo/ui/components/button';
 
 import { useAppRoute } from '#/use-app-route';
@@ -21,7 +20,7 @@ export function ImpersonationBanner() @{
 
   @if (session.session.impersonatedBy !== undefined && session.session.impersonatedBy !== null) {
     <div className="flex flex-wrap items-center gap-2 border-b bg-destructive/10 px-4 py-2 text-sm">
-      <span className="text-destructive">{m.viewing_as({ name: user.name })}</span>
+      <span className="text-destructive">{`Viewing as ${user.name}`}</span>
       <Button
         type="button"
         size="sm"
@@ -30,7 +29,7 @@ export function ImpersonationBanner() @{
         disabled={busy}
         onClick={() => void stop()}
       >
-        {m.stop_impersonating()}
+        {"Stop impersonating"}
       </Button>
     </div>
   }

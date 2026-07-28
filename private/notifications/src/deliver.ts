@@ -1,6 +1,4 @@
 import { and, database, eq, inArray, schema } from '@repo/db';
-import { baseLocale, isLocale, type Locale } from '@repo/i18n';
-import { localized } from '@repo/i18n/localized';
 import { env } from 'cloudflare:workers';
 import { z } from 'zod';
 
@@ -40,34 +38,14 @@ export async function deliverNotification(input: DeliverNotificationInput): Prom
   // registry with a union of types loses that correlation and widens `render`
   // to demand the intersection of every payload. The parse above is what
   // actually guarantees the shape reaching it.
-  const render = definition.render as (value: unknown, t: unknown) => RenderedNotification;
+  const render = definition.render as (value: unknown) => RenderedNotification;
 
   const recipients = await expandRecipients(input.to);
   if (recipients.length === 0) {
     return;
   }
 
-  // Each recipient gets the snapshot and digest item in their own stored
-  // language; the feed re-renders in the viewer's current locale at read
-  // time, so this only decides what emails and stale clients show.
-  const users = await db.query.user.findMany({
-    where: inArray(schema.user.id, recipients),
-    columns: { id: true, locale: true },
-  });
-  const localeOf = new Map(
-    users.map((user) => [user.id, isLocale(user.locale) ? user.locale : baseLocale]),
-  );
-  const renderedByLocale = new Map<Locale, RenderedNotification>();
-  const renderedFor = (userId: string): RenderedNotification => {
-    const locale = localeOf.get(userId) ?? baseLocale;
-    const cached = renderedByLocale.get(locale);
-    if (cached !== undefined) {
-      return cached;
-    }
-    const rendered = render(payload, localized(locale));
-    renderedByLocale.set(locale, rendered);
-    return rendered;
-  };
+  const rendered = render(payload);
 
   const preferenceRows = await db.query.notificationPreference.findMany({
     where: and(
@@ -98,7 +76,6 @@ export async function deliverNotification(input: DeliverNotificationInput): Prom
     if (channels.length === 0) {
       continue;
     }
-    const rendered = renderedFor(userId);
     if (channels.includes('app')) {
       rows.push({
         id: crypto.randomUUID(),

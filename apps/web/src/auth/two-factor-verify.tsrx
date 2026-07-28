@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { authClient } from '@repo/auth/client';
-import { m } from '@repo/i18n/messages';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   Card,
@@ -30,9 +29,8 @@ export function TwoFactorVerify() @{
   const [trustDevice, setTrustDevice] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
-  // Built in-render so m.*() resolves in the request's locale scope.
   const schema = z.object({
-    code: z.string().min(6, m.enter_the_code_from_your_authenticator()),
+    code: z.string().min(6, "Enter the code from your authenticator app."),
   });
 
   const form = useAppForm({
@@ -45,7 +43,7 @@ export function TwoFactorVerify() @{
         ? await authClient.twoFactor.verifyBackupCode({ code })
         : await authClient.twoFactor.verifyTotp({ code, trustDevice });
       if (error) {
-        setFormError(error.message ?? m.unable_to_verify_this_code());
+        setFormError(error.message ?? "Unable to verify this code");
         return;
       }
       clearSessionContext(queryClient);
@@ -56,11 +54,11 @@ export function TwoFactorVerify() @{
 
   <Card>
     <CardHeader>
-      <CardTitle className="text-balance">{m.two_step_verification()}</CardTitle>
+      <CardTitle className="text-balance">{"Two-step verification"}</CardTitle>
       <CardDescription className="text-pretty">
         {useBackup
-          ? m.enter_one_of_your_backup_codes()
-          : m.enter_the_code_from_your_authenticator()}
+          ? "Enter one of your backup codes."
+          : "Enter the code from your authenticator app."}
       </CardDescription>
     </CardHeader>
     <CardContent>
@@ -74,7 +72,7 @@ export function TwoFactorVerify() @{
           <form.AppField name="code">
             {(field) => (
               <field.TextField
-                label={useBackup ? m.backup_code() : m.authentication_code()}
+                label={useBackup ? "Backup code" : "Authentication code"}
                 autoComplete="one-time-code"
                 inputMode={useBackup ? 'text' : 'numeric'}
                 placeholder={useBackup ? 'XXXXX-XXXXX' : '123456'}
@@ -89,14 +87,14 @@ export function TwoFactorVerify() @{
                 checked={trustDevice}
                 onChange={(event) => setTrustDevice(event.target.checked)}
               />
-              {m.trust_this_device_for_30_days()}
+              {"Trust this device for 30 days"}
             </label>
           }
           @if (formError) {
             <FieldError>{formError}</FieldError>
           }
           <form.AppForm>
-            <form.SubmitButton label={m.verify()} pendingLabel={m.verifying()} />
+            <form.SubmitButton label={"Verify"} pendingLabel={"Verifying…"} />
           </form.AppForm>
           <p className="text-center text-sm">
             <button
@@ -108,7 +106,7 @@ export function TwoFactorVerify() @{
                 form.reset();
               }}
             >
-              {useBackup ? m.use_your_authenticator_app() : m.use_a_backup_code()}
+              {useBackup ? "Use your authenticator app" : "Use a backup code"}
             </button>
           </p>
         </FieldGroup>

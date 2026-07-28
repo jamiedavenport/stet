@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { authClient } from '@repo/auth/client';
-import { m } from '@repo/i18n/messages';
 import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
 import { Button } from '@repo/ui/components/button';
 import {
@@ -46,7 +45,7 @@ export function OrgDanger() @{
     });
     setPending(false);
     if (leaveError) {
-      setError(leaveError.message ?? m.something_went_wrong_try_again());
+      setError(leaveError.message ?? "Something went wrong. Try again.");
       return;
     }
     await afterChange();
@@ -60,7 +59,7 @@ export function OrgDanger() @{
     });
     setPending(false);
     if (deleteError) {
-      setError(deleteError.message ?? m.something_went_wrong_try_again());
+      setError(deleteError.message ?? "Something went wrong. Try again.");
       return;
     }
     await afterChange();
@@ -68,12 +67,12 @@ export function OrgDanger() @{
 
   <Card className="border-destructive/40">
     <CardHeader>
-      <CardTitle className="text-destructive">{m.danger_zone()}</CardTitle>
-      <CardDescription>{m.leave_or_delete_this_organization()}</CardDescription>
+      <CardTitle className="text-destructive">{"Danger zone"}</CardTitle>
+      <CardDescription>{"Leave or delete this organization."}</CardDescription>
     </CardHeader>
     <CardContent className="flex flex-col gap-4">
       <div className="flex items-center justify-between gap-2">
-        <p className="text-sm text-muted-foreground">{m.leave_this_organization()}</p>
+        <p className="text-sm text-muted-foreground">{"Leave this organization."}</p>
         @if (confirming === 'leave') {
           <div className="flex gap-2">
             <Button
@@ -83,10 +82,10 @@ export function OrgDanger() @{
               disabled={pending}
               onClick={() => void leave()}
             >
-              {pending ? m.working() : m.confirm_leave()}
+              {pending ? "Working…" : "Yes, leave"}
             </Button>
             <Button type="button" variant="ghost" size="sm" onClick={() => setConfirming(null)}>
-              {m.cancel()}
+              {"Cancel"}
             </Button>
           </div>
         } @else {
@@ -99,13 +98,13 @@ export function OrgDanger() @{
               setConfirming('leave');
             }}
           >
-            {m.leave()}
+            {"Leave"}
           </Button>
         }
       </div>
       @if (isOwner) {
         <div className="flex items-center justify-between gap-2">
-          <p className="text-sm text-muted-foreground">{m.delete_this_organization_permanently()}</p>
+          <p className="text-sm text-muted-foreground">{"Permanently delete this organization and its data."}</p>
           @if (confirming === 'delete') {
             <div className="flex gap-2">
               <Button
@@ -115,10 +114,10 @@ export function OrgDanger() @{
                 disabled={pending}
                 onClick={() => void remove()}
               >
-                {pending ? m.working() : m.confirm_delete()}
+                {pending ? "Working…" : "Yes, delete"}
               </Button>
               <Button type="button" variant="ghost" size="sm" onClick={() => setConfirming(null)}>
-                {m.cancel()}
+                {"Cancel"}
               </Button>
             </div>
           } @else {
@@ -131,7 +130,7 @@ export function OrgDanger() @{
                 setConfirming('delete');
               }}
             >
-              {m.delete_organization()}
+              {"Delete organization"}
             </Button>
           }
         </div>

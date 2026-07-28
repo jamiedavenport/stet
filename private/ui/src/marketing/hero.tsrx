@@ -1,5 +1,4 @@
 import { brand } from '@repo/brand';
-import { m } from '@repo/i18n/messages';
 import { Link } from '@tanstack/react-router';
 
 import { Button } from '../components/button';
@@ -23,7 +22,7 @@ function ClientCodeCard() @{
     </pre>
     <p className="mt-1 font-mono text-xs/6 text-muted-foreground">
       {'// '}
-      {m.marketing_code_comment()}
+      {"all fully typed from the model marketing built"}
     </p>
   </div>
 }
@@ -34,14 +33,14 @@ export function HeroSplit() @{
       <div>
         <Label>{brand.description}</Label>
         <DisplayHeading as="h1" className="mt-6 max-w-[20ch] text-5xl sm:text-7xl">
-          {m.marketing_hero_headline()}
+          {"Both teams at full speed."}
         </DisplayHeading>
-        <Lede className="mt-6">{m.marketing_hero_lede({ brandName: brand.name })}</Lede>
+        <Lede className="mt-6">{`Every CMS makes one side compromise. Developer-first tools bury content teams in JSON; marketer-first tools hand engineers an untyped API. ${brand.name} refuses the trade-off: marketing owns the content model, engineering gets a typed client generated from it, and nothing breaks between them.`}</Lede>
         <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-4">
           <Button size="lg" render={<Link to="/sign/up" />}>
-            {m.marketing_get_started()}
+            {"Get started"}
           </Button>
-          <ArrowLink href={brand.docs}>{m.marketing_read_the_docs()}</ArrowLink>
+          <ArrowLink href={brand.docs}>{"Read the docs"}</ArrowLink>
         </div>
       </div>
       <div className="flex items-center justify-center max-lg:hidden">

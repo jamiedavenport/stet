@@ -1,5 +1,4 @@
 import { brand } from '@repo/brand';
-import { m } from '@repo/i18n/messages';
 import { PrivacyPolicy } from '@policystack/react/policy';
 import { createFileRoute } from '@tanstack/react-router';
 
@@ -11,8 +10,8 @@ import { seo } from '#/marketing/seo';
 export const Route = createFileRoute('/_marketing/privacy')({
   head: () =>
     seo({
-      title: `${m.privacy_policy()} · ${brand.name}`,
-      description: m.privacy_policy_seo_description(),
+      title: `${'Privacy policy'} · ${brand.name}`,
+      description: 'How this product collects, uses, and protects your data.',
       path: '/privacy',
     }),
   component: PrivacyPage,
@@ -21,7 +20,7 @@ export const Route = createFileRoute('/_marketing/privacy')({
 function PrivacyPage() {
   return (
     <>
-      <PageIntro eyebrow={m.legal()} title={m.privacy_policy()} />
+      <PageIntro eyebrow={'Legal'} title={'Privacy policy'} />
       <PolicyPageBody>
         <PrivacyPolicy config={policystack} locale={policyLocale()} />
       </PolicyPageBody>

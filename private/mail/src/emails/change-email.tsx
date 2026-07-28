@@ -1,26 +1,24 @@
 import { brand } from '@repo/brand';
-import type { Locale } from '@repo/i18n';
-import { localized } from '@repo/i18n/localized';
 
 import { ActionEmail } from './layout';
 
 export type ChangeEmailProps = {
-  locale: Locale;
   name: string;
   newEmail: string;
   confirmLink: string;
 };
 
-export function ChangeEmail({ locale, name, newEmail, confirmLink }: ChangeEmailProps) {
-  const t = localized(locale);
+export function ChangeEmail({ name, newEmail, confirmLink }: ChangeEmailProps) {
   const brandName = brand.name;
   return (
     <ActionEmail
-      preview={t.change_email_preview({ brandName })}
-      heading={t.confirm_email_change()}
-      body={t.change_email_body({ name, newEmail, brandName })}
-      action={{ href: confirmLink, label: t.confirm_change() }}
-      footer={t.change_email_footer()}
+      preview={`Confirm the email change for your ${brandName} account`}
+      heading={'Confirm your email change'}
+      body={`Hi ${name}, we received a request to change the email on your ${brandName} account to ${newEmail}. Confirm below to make the change. The link expires in one hour.`}
+      action={{ href: confirmLink, label: 'Confirm change' }}
+      footer={
+        "If you didn't request this change, you can ignore this email and your email address won't change."
+      }
     />
   );
 }

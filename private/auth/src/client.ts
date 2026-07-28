@@ -26,8 +26,6 @@ export const authClient = createAuthClient({
     // admin panel, and adds role/banned to the user type it infers.
     adminClient(),
     stripeClient({ subscription: true }),
-    // Types the server's user.additionalFields (locale) on updateUser and
-    // session reads.
     inferAdditionalFields<Auth>(),
   ],
 });

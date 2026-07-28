@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { m } from '@repo/i18n/messages';
 import { Badge } from '@repo/ui/components/badge';
 import { Button } from '@repo/ui/components/button';
 
@@ -24,7 +23,7 @@ export function WebhookEndpoints({
 }) @{
   <>
     @if (endpoints.length === 0) {
-      <p className="text-sm text-muted-foreground">{m.no_endpoints_yet()}</p>
+      <p className="text-sm text-muted-foreground">{"No endpoints yet. Add one to start receiving events."}</p>
     }
     @if (endpoints.length > 0) {
       <ul className="flex flex-col gap-6">
@@ -78,11 +77,11 @@ function EndpointRow({
     <div className="flex items-center justify-between gap-2">
       <span className="truncate font-mono text-sm">{endpoint.url}</span>
       <Badge variant={endpoint.enabled ? 'secondary' : 'destructive'}>
-        {endpoint.enabled ? m.enabled() : m.disabled()}
+        {endpoint.enabled ? "Enabled" : "Disabled"}
       </Badge>
     </div>
     @if (!endpoint.enabled && endpoint.failureCount > 0) {
-      <p className="text-xs text-destructive">{m.disabled_after_repeated_failures()}</p>
+      <p className="text-xs text-destructive">{"Disabled after repeated delivery failures."}</p>
     }
     <div className="flex flex-wrap gap-1">
       @for (const event of endpoint.events; key event) {
@@ -95,28 +94,28 @@ function EndpointRow({
           {secret}
         </code>
         @if (rotated) {
-          <p className="text-xs text-muted-foreground">{m.the_previous_secret_remains_valid()}</p>
+          <p className="text-xs text-muted-foreground">{"The previous secret remains valid for 24 hours."}</p>
         }
       </div>
     }
     @if (testQueued) {
-      <p className="text-xs text-muted-foreground">{m.test_event_queued()}</p>
+      <p className="text-xs text-muted-foreground">{"Test event queued."}</p>
     }
     <div className="flex flex-wrap gap-2">
       <Button type="button" size="sm" variant="outline" onClick={() => void reveal()}>
-        {m.reveal_secret()}
+        {"Reveal secret"}
       </Button>
       <Button type="button" size="sm" variant="outline" onClick={() => void rotate()}>
-        {m.rotate_secret()}
+        {"Rotate secret"}
       </Button>
       <Button type="button" size="sm" variant="outline" onClick={() => void sendTest()}>
-        {m.send_test()}
+        {"Send test"}
       </Button>
       <Button type="button" size="sm" variant="outline" onClick={() => void toggleEnabled()}>
-        {endpoint.enabled ? m.disable() : m.enable()}
+        {endpoint.enabled ? "Disable" : "Enable"}
       </Button>
       <Button type="button" size="sm" variant="destructive" onClick={() => void remove()}>
-        {m.delete()}
+        {"Delete"}
       </Button>
     </div>
   </li>
@@ -125,7 +124,7 @@ function EndpointRow({
 export function RecentDeliveries({ deliveries }: { deliveries: WebhooksData['deliveries'] }) @{
   <>
     @if (deliveries.length === 0) {
-      <p className="text-sm text-muted-foreground">{m.no_deliveries_yet()}</p>
+      <p className="text-sm text-muted-foreground">{"No deliveries yet. Send a test event to try an endpoint."}</p>
     }
     @if (deliveries.length > 0) {
       <ul className="flex flex-col gap-2">
@@ -152,15 +151,15 @@ function DeliveryRow({ delivery }: { delivery: WebhooksData['deliveries'][number
     </span>
     <span className="text-xs text-muted-foreground">{delivery.responseStatus}</span>
     <Badge variant={delivery.status === 'success' ? 'secondary' : 'destructive'}>
-      {delivery.status === 'success' ? m.delivered() : m.failed()}
+      {delivery.status === 'success' ? "Delivered" : "Failed"}
     </Badge>
     @if (delivery.status !== 'success' && !queued) {
       <Button type="button" size="sm" variant="outline" onClick={() => void redeliver()}>
-        {m.redeliver()}
+        {"Redeliver"}
       </Button>
     }
     @if (queued) {
-      <span className="text-xs text-muted-foreground">{m.redelivery_queued()}</span>
+      <span className="text-xs text-muted-foreground">{"Redelivery queued."}</span>
     }
   </li>
 }

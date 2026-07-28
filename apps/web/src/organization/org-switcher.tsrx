@@ -1,5 +1,4 @@
 import { authClient } from '@repo/auth/client';
-import { m } from '@repo/i18n/messages';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   DropdownMenu,
@@ -56,7 +55,7 @@ export function OrgSwitcher() @{
           sideOffset={4}
         >
           <DropdownMenuGroup>
-            <DropdownMenuLabel>{m.organizations()}</DropdownMenuLabel>
+            <DropdownMenuLabel>{"Organizations"}</DropdownMenuLabel>
             @for (const org of organizations; key org.id) {
               <DropdownMenuItem onClick={() => void switchOrganization(org.id)}>
                 {org.name}
@@ -67,7 +66,7 @@ export function OrgSwitcher() @{
           <DropdownMenuSeparator />
           <DropdownMenuItem render={<Link to="/orgs/new" />}>
             <PlusIcon />
-            {m.new_organization()}
+            {"New organization"}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

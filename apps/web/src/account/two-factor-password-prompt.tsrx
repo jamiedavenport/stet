@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { m } from '@repo/i18n/messages';
 import { Button } from '@repo/ui/components/button';
 import { FieldError } from '@repo/ui/components/field';
 import { Input } from '@repo/ui/components/input';
@@ -27,7 +26,7 @@ export function TwoFactorPasswordPrompt({
 
   <div className="flex flex-col gap-3">
     <div className="flex flex-col gap-2">
-      <Label htmlFor="tfa-password">{m.confirm_your_password()}</Label>
+      <Label htmlFor="tfa-password">{"Confirm your password"}</Label>
       <Input
         id="tfa-password"
         type="password"
@@ -47,10 +46,10 @@ export function TwoFactorPasswordPrompt({
         disabled={pending || password.length === 0}
         onClick={() => onConfirm(password)}
       >
-        {pending ? m.saving() : m.continue_action()}
+        {pending ? "Saving…" : "Continue"}
       </Button>
       <Button type="button" variant="ghost" size="sm" onClick={onCancel}>
-        {m.cancel()}
+        {"Cancel"}
       </Button>
     </div>
   </div>

@@ -1,5 +1,4 @@
 import { type ChangeEvent, useRef, useState } from 'react';
-import { m } from '@repo/i18n/messages';
 import { useQueryClient } from '@tanstack/react-query';
 import { Avatar, AvatarFallback, AvatarImage } from '@repo/ui/components/avatar';
 import { Button } from '@repo/ui/components/button';
@@ -26,10 +25,10 @@ export function ProfilePhoto() @{
   // round-trip; the server stays the source of truth.
   const validateFile = (file: File): string | null => {
     if (!acceptsContentType('avatar', file.type)) {
-      return m.choose_a_jpeg_png_or_webp();
+      return "Choose a JPEG, PNG, or WebP image";
     }
     if (!acceptsSize('avatar', file.size)) {
-      return m.choose_an_image_2_mb_or();
+      return "Choose an image 2 MB or smaller";
     }
     return null;
   };
@@ -56,7 +55,7 @@ export function ProfilePhoto() @{
       clearSessionContext(queryClient);
       await router.invalidate();
     } catch (uploadError) {
-      setError(uploadError instanceof Error ? uploadError.message : m.upload_failed());
+      setError(uploadError instanceof Error ? uploadError.message : "Upload failed");
     } finally {
       setPending(false);
     }
@@ -70,7 +69,7 @@ export function ProfilePhoto() @{
       clearSessionContext(queryClient);
       await router.invalidate();
     } catch (removeError) {
-      setError(removeError instanceof Error ? removeError.message : m.remove_failed());
+      setError(removeError instanceof Error ? removeError.message : "Remove failed");
     } finally {
       setPending(false);
     }
@@ -91,7 +90,7 @@ export function ProfilePhoto() @{
             disabled={pending}
             onClick={() => inputRef.current?.click()}
           >
-            {pending ? m.working() : m.upload_photo()}
+            {pending ? "Working…" : "Upload photo"}
           </Button>
           @if (typeof user.image === 'string') {
             <Button
@@ -101,11 +100,11 @@ export function ProfilePhoto() @{
               disabled={pending}
               onClick={() => void onRemove()}
             >
-              {m.remove()}
+              {"Remove"}
             </Button>
           }
         </div>
-        <p className="text-xs text-muted-foreground">{m.jpeg_png_or_webp_up_to()}</p>
+        <p className="text-xs text-muted-foreground">{"JPEG, PNG, or WebP, up to 2 MB."}</p>
       </div>
     </div>
     <input
@@ -113,7 +112,7 @@ export function ProfilePhoto() @{
       type="file"
       accept={acceptAttribute('avatar')}
       className="sr-only"
-      aria-label={m.choose_profile_photo()}
+      aria-label={"Choose profile photo"}
       onChange={(event) => void onFileSelected(event)}
     />
     @if (error !== null) {

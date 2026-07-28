@@ -1,5 +1,4 @@
 import { brand } from '@repo/brand';
-import { m } from '@repo/i18n/messages';
 import { createFileRoute } from '@tanstack/react-router';
 
 import { HeroSplit } from '@repo/ui/marketing/hero.tsrx';
@@ -13,7 +12,8 @@ export const Route = createFileRoute('/_marketing/')({
   head: () => ({
     ...seo({
       title: `${brand.name} · ${brand.description}`,
-      description: m.marketing_landing_description(),
+      description:
+        'The CMS that refuses the marketing-vs-engineering trade-off: marketing owns the content model, engineering gets a typed client generated from it, and nothing breaks between them.',
       path: '/',
     }),
     scripts: [organizationJsonLd()],
@@ -25,8 +25,8 @@ function LandingPage() {
   return (
     <>
       <HeroSplit />
-      <LabeledSection title={m.marketing_section_content_teams()}>
-        <FeatureGrid items={contentFeatures()} />
+      <LabeledSection title={'For content teams'}>
+        <FeatureGrid items={contentFeatures} />
       </LabeledSection>
       <ForEngineers />
       <CtaSection />

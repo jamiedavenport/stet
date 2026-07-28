@@ -1,7 +1,5 @@
 import { useState } from 'react';
 import { authClient } from '@repo/auth/client';
-import { getLocale } from '@repo/i18n';
-import { m } from '@repo/i18n/messages';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Badge } from '@repo/ui/components/badge';
 import { Button } from '@repo/ui/components/button';
@@ -11,7 +9,7 @@ import { useAppRoute } from '#/use-app-route';
 import { sessionsQuery } from '#/account/functions';
 
 function formatDate(date: Date | string): string {
-  return new Date(date).toLocaleString(getLocale(), {
+  return new Date(date).toLocaleString('en-GB', {
     month: 'short',
     day: 'numeric',
     year: 'numeric',
@@ -39,7 +37,7 @@ export function ActiveSessions() @{
     const { error: revokeError } = await authClient.revokeSession({ token });
     setPending(null);
     if (revokeError) {
-      setError(revokeError.message ?? m.something_went_wrong_try_again());
+      setError(revokeError.message ?? "Something went wrong. Try again.");
       return;
     }
     await refresh();
@@ -49,7 +47,7 @@ export function ActiveSessions() @{
     setError(null);
     const { error: revokeError } = await authClient.revokeOtherSessions();
     if (revokeError) {
-      setError(revokeError.message ?? m.something_went_wrong_try_again());
+      setError(revokeError.message ?? "Something went wrong. Try again.");
       return;
     }
     await refresh();
@@ -59,7 +57,7 @@ export function ActiveSessions() @{
 
   <>
     @if (sessions === undefined) {
-      <p className="text-sm text-muted-foreground">{m.loading()}</p>
+      <p className="text-sm text-muted-foreground">{"Loading…"}</p>
     } @else {
       <div className="flex flex-col gap-3">
         <ul className="flex flex-col gap-3">
@@ -67,9 +65,9 @@ export function ActiveSessions() @{
             <li className="flex items-center justify-between gap-2 text-sm">
               <div className="flex min-w-0 flex-col">
                 <span className="flex items-center gap-2 truncate">
-                  <span className="truncate">{item.userAgent ?? m.unknown_device()}</span>
+                  <span className="truncate">{item.userAgent ?? "Unknown device"}</span>
                   @if (item.token === currentToken) {
-                    <Badge>{m.this_device()}</Badge>
+                    <Badge>{"This device"}</Badge>
                   }
                 </span>
                 <span className="text-xs text-muted-foreground">{formatDate(item.createdAt)}</span>
@@ -82,7 +80,7 @@ export function ActiveSessions() @{
                   disabled={pending === item.token}
                   onClick={() => void revoke(item.token)}
                 >
-                  {m.revoke()}
+                  {"Revoke"}
                 </Button>
               }
             </li>
@@ -91,7 +89,7 @@ export function ActiveSessions() @{
         @if (list.length > 1) {
           <div>
             <Button type="button" variant="outline" size="sm" onClick={() => void revokeOthers()}>
-              {m.sign_out_all_other_sessions()}
+              {"Sign out all other sessions"}
             </Button>
           </div>
         }

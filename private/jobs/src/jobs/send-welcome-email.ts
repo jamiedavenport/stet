@@ -24,7 +24,6 @@ export const sendWelcomeEmail = defineJob({
       to: user.email,
       name: user.name,
       appLink: context.baseURL,
-      locale: user.locale,
     });
   },
 });

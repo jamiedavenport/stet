@@ -1,6 +1,5 @@
 import type { ReactNode } from 'react';
 import { brand } from '@repo/brand';
-import { getLocale } from '@repo/i18n';
 import type { QueryClient } from '@tanstack/react-query';
 import { HeadContent, Outlet, Scripts, createRootRouteWithContext } from '@tanstack/react-router';
 
@@ -52,10 +51,8 @@ function RootComponent() {
 }
 
 function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
-  // During SSR the Paraglide middleware pins the locale per request; in the
-  // browser the same call reads the cookie, so both sides agree.
   return (
-    <html lang={getLocale()}>
+    <html lang="en">
       <head>
         <HeadContent />
       </head>

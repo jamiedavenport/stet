@@ -42,7 +42,7 @@ describe('definePlan and definePlans', () => {
     expect(() =>
       definePlan({
         name: 'broken',
-        label: () => 'Broken',
+        label: 'Broken',
         pricePerSeat: 0,
         features: [
           members.limit(1),
@@ -60,7 +60,7 @@ describe('definePlan and definePlans', () => {
       // @ts-expect-error every feature needs an entitlement; ai is missing
       definePlan({
         name: 'partial',
-        label: () => 'Partial',
+        label: 'Partial',
         pricePerSeat: 0,
         features: [members.limit(1), apiRequests.limit(1)],
       });

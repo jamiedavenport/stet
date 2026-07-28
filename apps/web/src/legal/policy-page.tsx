@@ -1,5 +1,4 @@
 import type { ReactNode } from 'react';
-import { getLocale } from '@repo/i18n';
 import type { Locale as PolicyLocale } from '@policystack/sdk';
 
 // PolicyStack components ship unstyled with data-op-* attributes; these
@@ -15,13 +14,9 @@ const policyStyles = [
   '**:data-op-table-cell:border **:data-op-table-cell:border-border **:data-op-table-cell:px-3 **:data-op-table-cell:py-2 **:data-op-table-cell:align-top **:data-op-table-cell:text-left',
 ].join(' ');
 
-/**
- * PolicyStack translates the boilerplate it emits (headings, disclosures,
- * dates) for the site locale; config-authored content stays in the language
- * the config wrote it.
- */
+/** The site is English-only; PolicyStack renders its boilerplate to match. */
 export function policyLocale(): PolicyLocale {
-  return getLocale() as PolicyLocale;
+  return 'en' as PolicyLocale;
 }
 
 export function PolicyPageBody({ children }: { children: ReactNode }) {

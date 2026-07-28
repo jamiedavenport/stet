@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { authClient } from '@repo/auth/client';
-import { m } from '@repo/i18n/messages';
 import { Button } from '@repo/ui/components/button';
 import { FieldError } from '@repo/ui/components/field';
 
@@ -19,7 +18,7 @@ export function DeleteAccount() @{
     const { error: deleteError } = await authClient.deleteUser({ callbackURL: '/' });
     setPending(false);
     if (deleteError) {
-      setError(deleteError.message ?? m.something_went_wrong_try_again());
+      setError(deleteError.message ?? "Something went wrong. Try again.");
       return;
     }
     setConfirming(false);
@@ -28,10 +27,10 @@ export function DeleteAccount() @{
 
   <>
     @if (sent) {
-      <p className="text-sm text-muted-foreground">{m.check_your_email_to_confirm_deletion()}</p>
+      <p className="text-sm text-muted-foreground">{"Check your email to confirm account deletion."}</p>
     } @else {
       <div className="flex flex-col gap-3">
-        <p className="text-sm text-muted-foreground">{m.deleting_your_account_is_permanent()}</p>
+        <p className="text-sm text-muted-foreground">{"Deleting your account is permanent and can't be undone."}</p>
         @if (confirming) {
           <div className="flex gap-2">
             <Button
@@ -41,10 +40,10 @@ export function DeleteAccount() @{
               disabled={pending}
               onClick={() => void requestDeletion()}
             >
-              {pending ? m.working() : m.yes_delete_my_account()}
+              {pending ? "Working…" : "Yes, delete my account"}
             </Button>
             <Button type="button" variant="ghost" size="sm" onClick={() => setConfirming(false)}>
-              {m.cancel()}
+              {"Cancel"}
             </Button>
           </div>
         } @else {
@@ -55,7 +54,7 @@ export function DeleteAccount() @{
               size="sm"
               onClick={() => setConfirming(true)}
             >
-              {m.delete_account_action()}
+              {"Delete account"}
             </Button>
           </div>
         }

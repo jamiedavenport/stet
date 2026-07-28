@@ -1,8 +1,6 @@
-import { m } from '@repo/i18n/messages';
 import { usePageRoomContext } from '@repo/realtime/client';
 import type { PageRoom } from '@repo/realtime/client';
 import type { PresenceUser } from '@repo/realtime/types';
-import { getLocale } from '@repo/i18n';
 import {
   Card,
   CardContent,
@@ -42,9 +40,9 @@ function NotesPage() {
   return (
     <Card className="w-full max-w-3xl">
       <CardHeader>
-        <CardTitle>{m.notes()}</CardTitle>
+        <CardTitle>{'Notes'}</CardTitle>
         <CardDescription>
-          {m.a_shared_document_for_everyone_edits({ organizationName })}
+          {`A shared document for ${organizationName}. Everyone edits the same page, live.`}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -72,9 +70,9 @@ function SavedNote({ organizationId }: { organizationId: string }) {
 
 function savedLabel(savedAt: string | null): string {
   if (savedAt === null) {
-    return m.not_saved_to_the_database_yet();
+    return 'Not saved to the database yet';
   }
-  return m.saved_to_the_database({ time: timeAgo(savedAt, getLocale()) });
+  return `Saved to the database ${timeAgo(savedAt)}`;
 }
 
 type NotesBodyProps = {

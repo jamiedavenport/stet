@@ -2,7 +2,6 @@ import { cloudflare } from '@cloudflare/vite-plugin';
 import contentCollections from '@content-collections/vite';
 import { policyStack } from '@policystack/vite';
 import { cronsConfig } from '@repo/crons/config';
-import { paraglide } from '@repo/i18n/vite';
 import { workflowsConfig } from '@repo/workflows/config';
 import { sentryVitePlugin } from '@sentry/vite-plugin';
 import tailwindcss from '@tailwindcss/vite';
@@ -75,9 +74,6 @@ const config = (command: 'build' | 'serve') =>
       tsrxReact(),
       tsrxScan(),
       viteReact(),
-      // Recompiles @repo/i18n's message files on edit so translations
-      // hot-reload in dev. Builds fall back to the output from `pnpm compile`.
-      paraglide(),
       ...(analyze ? [Sonda()] : []),
       // Uploads source maps so Sentry stack traces point at real source. Only
       // in CI, where the token exists: a local build has nothing to upload to,

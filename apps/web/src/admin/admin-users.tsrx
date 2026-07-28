@@ -1,4 +1,3 @@
-import { m } from '@repo/i18n/messages';
 import {
   Card,
   CardContent,
@@ -28,13 +27,13 @@ export function AdminUsers() @{
 
   <Card>
     <CardHeader>
-      <CardTitle>{m.users()}</CardTitle>
-      <CardDescription>{m.every_account_on_the_platform()}</CardDescription>
+      <CardTitle>{"Users"}</CardTitle>
+      <CardDescription>{"Every account on the platform."}</CardDescription>
     </CardHeader>
     <CardContent className="flex flex-col gap-4">
-      <AdminSearchForm label={m.search_by_email()} list={list} />
+      <AdminSearchForm label={"Search by email"} list={list} />
       @if (users.length === 0) {
-        <p className="text-sm text-muted-foreground">{m.no_users_found()}</p>
+        <p className="text-sm text-muted-foreground">{"No users found."}</p>
       }
       @if (users.length > 0) {
         <ul className="flex flex-col gap-3">

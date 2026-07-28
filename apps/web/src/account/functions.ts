@@ -1,5 +1,4 @@
 import { authClient } from '@repo/auth/client';
-import { m } from '@repo/i18n/messages';
 import { queryOptions } from '@tanstack/react-query';
 import { createServerFn } from '@tanstack/react-start';
 
@@ -26,7 +25,7 @@ export const accountsQuery = queryOptions({
   queryFn: async () => {
     const { data, error } = await authClient.listAccounts();
     if (error) {
-      throw new Error(error.message ?? m.something_went_wrong_try_again());
+      throw new Error(error.message ?? 'Something went wrong. Try again.');
     }
     return data ?? [];
   },
@@ -38,7 +37,7 @@ export const passkeysQuery = queryOptions({
   queryFn: async () => {
     const { data, error } = await authClient.passkey.listUserPasskeys();
     if (error) {
-      throw new Error(error.message ?? m.something_went_wrong_try_again());
+      throw new Error(error.message ?? 'Something went wrong. Try again.');
     }
     return data ?? [];
   },
@@ -50,7 +49,7 @@ export const sessionsQuery = queryOptions({
   queryFn: async () => {
     const { data, error } = await authClient.listSessions();
     if (error) {
-      throw new Error(error.message ?? m.something_went_wrong_try_again());
+      throw new Error(error.message ?? 'Something went wrong. Try again.');
     }
     return data ?? [];
   },

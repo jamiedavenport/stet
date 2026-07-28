@@ -1,7 +1,5 @@
 import type { ReactElement } from 'react';
 import { brand } from '@repo/brand';
-import { baseLocale, isLocale, type Locale } from '@repo/i18n';
-import { localized } from '@repo/i18n/localized';
 import { Resend } from 'resend';
 
 import { ChangeEmail } from './emails/change-email';
@@ -26,27 +24,20 @@ export type CreateMailerOptions = {
   from: string;
 };
 
-// Every send option accepts the recipient's stored locale (user.locale).
-// Values are untrusted strings from the database; anything outside the
-// catalog falls back to the default locale.
-type LocaleOption = {
-  locale?: string | null;
-};
-
-export type SendOrganizationInvitationOptions = LocaleOption & {
+export type SendOrganizationInvitationOptions = {
   to: string;
   inviterName: string;
   organizationName: string;
   inviteLink: string;
 };
 
-export type SendWelcomeEmailOptions = LocaleOption & {
+export type SendWelcomeEmailOptions = {
   to: string;
   name: string;
   appLink: string;
 };
 
-export type SendInvitationReminderOptions = LocaleOption & {
+export type SendInvitationReminderOptions = {
   to: string;
   inviterName: string;
   organizationName: string;
@@ -56,41 +47,41 @@ export type SendInvitationReminderOptions = LocaleOption & {
   unsubscribeUrl: string;
 };
 
-export type SendMagicLinkOptions = LocaleOption & {
+export type SendMagicLinkOptions = {
   to: string;
   name: string;
   magicLink: string;
 };
 
-export type SendResetPasswordOptions = LocaleOption & {
+export type SendResetPasswordOptions = {
   to: string;
   name: string;
   resetLink: string;
 };
 
-export type SendVerificationEmailOptions = LocaleOption & {
+export type SendVerificationEmailOptions = {
   to: string;
   name: string;
   verifyLink: string;
 };
 
-export type SendChangeEmailOptions = LocaleOption & {
+export type SendChangeEmailOptions = {
   to: string;
   name: string;
   newEmail: string;
   confirmLink: string;
 };
 
-export type SendDeleteAccountOptions = LocaleOption & {
+export type SendDeleteAccountOptions = {
   to: string;
   name: string;
   deleteLink: string;
 };
 
-export type SendNotificationDigestOptions = LocaleOption & {
+export type SendNotificationDigestOptions = {
   to: string;
   // Null when the organization no longer exists; the email falls back to a
-  // localized generic phrase.
+  // generic phrase.
   organizationName: string | null;
   items: NotificationDigestItem[];
   appLink: string;
@@ -98,13 +89,6 @@ export type SendNotificationDigestOptions = LocaleOption & {
   // footer link. Turns off the recipient's notification emails.
   unsubscribeUrl: string;
 };
-
-function localeOf(value: string | null | undefined): Locale {
-  if (isLocale(value)) {
-    return value;
-  }
-  return baseLocale;
-}
 
 export function createMailer({ apiKey, from }: CreateMailerOptions) {
   const resend = apiKey ? new Resend(apiKey) : null;
@@ -150,23 +134,19 @@ export function createMailer({ apiKey, from }: CreateMailerOptions) {
 
   return {
     async sendOrganizationInvitation(options: SendOrganizationInvitationOptions) {
-      const locale = localeOf(options.locale);
-      const t = localized(locale);
       await deliver({
         kind: 'invitation',
         to: options.to,
-        subject: t.join_org_on_brand({ organizationName: options.organizationName, brandName }),
-        react: <OrganizationInvitationEmail {...options} locale={locale} />,
+        subject: `Join ${options.organizationName} on ${brandName}`,
+        react: <OrganizationInvitationEmail {...options} />,
       });
     },
     async sendWelcomeEmail(options: SendWelcomeEmailOptions) {
-      const locale = localeOf(options.locale);
-      const t = localized(locale);
       await deliver({
         kind: 'welcome',
         to: options.to,
-        subject: t.welcome_to_brand({ brandName }),
-        react: <WelcomeEmail {...options} locale={locale} />,
+        subject: `Welcome to ${brandName}`,
+        react: <WelcomeEmail {...options} />,
       });
     },
     // One email per flush of a user's notification outbox (see the
@@ -176,100 +156,72 @@ export function createMailer({ apiKey, from }: CreateMailerOptions) {
       if (options.items.length === 0) {
         return;
       }
-      const locale = localeOf(options.locale);
-      const t = localized(locale);
-      const organizationLabel = options.organizationName ?? t.your_organization();
+      const organizationLabel = options.organizationName ?? 'your organization';
       // With one item its stored title is the subject; the count line only
-      // ever renders for two or more, so it needs no singular form. Titles
-      // are snapshots rendered at notification time and keep their original
-      // language.
+      // ever renders for two or more, so it needs no singular form.
       const subject =
         options.items.length === 1
           ? options.items[0].title
-          : t.new_notifications_in_org({
-              count: options.items.length,
-              organizationName: organizationLabel,
-            });
+          : `${options.items.length} new notifications in ${organizationLabel}`;
       await deliver({
         kind: 'notification digest',
         to: options.to,
         subject,
-        react: (
-          <NotificationDigestEmail
-            {...options}
-            locale={locale}
-            organizationName={organizationLabel}
-          />
-        ),
+        react: <NotificationDigestEmail {...options} organizationName={organizationLabel} />,
         unsubscribe: options.unsubscribeUrl,
       });
     },
     async sendInvitationReminder(options: SendInvitationReminderOptions) {
-      const locale = localeOf(options.locale);
-      const t = localized(locale);
       await deliver({
         kind: 'invitation reminder',
         to: options.to,
-        subject: t.invitation_reminder_subject({
-          organizationName: options.organizationName,
-          brandName,
-        }),
-        react: <InvitationReminderEmail {...options} locale={locale} />,
+        subject: `Reminder: join ${options.organizationName} on ${brandName}`,
+        react: <InvitationReminderEmail {...options} />,
         unsubscribe: options.unsubscribeUrl,
       });
     },
     async sendMagicLink(options: SendMagicLinkOptions) {
-      const locale = localeOf(options.locale);
-      const t = localized(locale);
       await deliver({
         kind: 'magic link',
         to: options.to,
-        subject: t.magic_link_subject({ brandName }),
-        react: <MagicLinkEmail {...options} locale={locale} />,
+        subject: `Sign in to ${brandName}`,
+        react: <MagicLinkEmail {...options} />,
         link: options.magicLink,
       });
     },
     async sendResetPassword(options: SendResetPasswordOptions) {
-      const locale = localeOf(options.locale);
-      const t = localized(locale);
       await deliver({
         kind: 'password reset',
         to: options.to,
-        subject: t.reset_password_subject({ brandName }),
-        react: <ResetPasswordEmail {...options} locale={locale} />,
+        subject: `Reset your ${brandName} password`,
+        react: <ResetPasswordEmail {...options} />,
         link: options.resetLink,
       });
     },
     async sendVerificationEmail(options: SendVerificationEmailOptions) {
-      const locale = localeOf(options.locale);
-      const t = localized(locale);
       await deliver({
         kind: 'email verification',
         to: options.to,
-        subject: t.verify_email_subject({ brandName }),
-        react: <VerifyEmail {...options} locale={locale} />,
+        subject: `Verify your email for ${brandName}`,
+        react: <VerifyEmail {...options} />,
         link: options.verifyLink,
       });
     },
     async sendChangeEmail(options: SendChangeEmailOptions) {
-      const locale = localeOf(options.locale);
-      const t = localized(locale);
       await deliver({
         kind: 'email change',
         to: options.to,
-        subject: t.change_email_subject({ brandName }),
-        react: <ChangeEmail {...options} locale={locale} />,
+        subject: `Confirm your ${brandName} email change`,
+        react: <ChangeEmail {...options} />,
         link: options.confirmLink,
       });
     },
     async sendDeleteAccount(options: SendDeleteAccountOptions) {
-      const locale = localeOf(options.locale);
-      const t = localized(locale);
       await deliver({
         kind: 'account deletion',
         to: options.to,
-        subject: t.delete_account_subject({ brandName }),
-        react: <DeleteAccountEmail {...options} locale={locale} />,
+        subject: `Confirm deleting your ${brandName} account`,
+        react: <DeleteAccountEmail {...options} />,
         link: options.deleteLink,
       });
     },

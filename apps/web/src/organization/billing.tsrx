@@ -1,6 +1,4 @@
 import { authClient } from '@repo/auth/client';
-import { getLocale } from '@repo/i18n';
-import { m } from '@repo/i18n/messages';
 import type { PlanName, PlanSummary, Usage } from '@repo/billing/types';
 import { Badge } from '@repo/ui/components/badge';
 import { Button } from '@repo/ui/components/button';
@@ -25,8 +23,8 @@ function useOrgBilling() {
   return useSuspenseQuery(orgBillingQuery(activeOrganization.id)).data;
 }
 
-function formatDate(date: Date, locale: string): string {
-  return new Date(date).toLocaleDateString(locale, {
+function formatDate(date: Date): string {
+  return new Date(date).toLocaleDateString('en-GB', {
     month: 'short',
     day: 'numeric',
     year: 'numeric',
@@ -34,18 +32,17 @@ function formatDate(date: Date, locale: string): string {
 }
 
 function formatCount(count: number): string {
-  return new Intl.NumberFormat(getLocale()).format(count);
+  return new Intl.NumberFormat('en-GB').format(count);
 }
 
-// Plan and feature labels come through the i18n catalog, keyed by the names
-// in @repo/billing. Both switches are exhaustive, so adding a plan or a
-// feature fails compilation here until it gets a label.
+// Labels keyed by the names in @repo/billing. Both switches are exhaustive,
+// so adding a plan or a feature fails compilation here until it gets a label.
 function planLabel(name: PlanName): string {
   switch (name) {
     case 'free':
-      return m.free();
+      return "Free";
     case 'paid':
-      return m.paid();
+      return "Paid";
   }
 }
 
@@ -55,30 +52,30 @@ function entitlementLabel(entitlement: PlanEntitlement): string {
   switch (entitlement.feature) {
     case 'members':
       if (entitlement.kind === 'limit' && entitlement.cap !== null) {
-        return m.up_to_members({ memberLimit: entitlement.cap });
+        return entitlement.cap === 1 ? 'Up to 1 member' : `Up to ${entitlement.cap} members`;
       }
       if (entitlement.kind === 'unlimited') {
-        return m.unlimited_members();
+        return "Unlimited members";
       }
-      return m.members();
+      return "Members";
     case 'apiRequests':
       if (entitlement.kind === 'limit' && entitlement.cap !== null) {
-        return m.api_requests_per_month({ count: formatCount(entitlement.cap) });
+        return `${formatCount(entitlement.cap)} API requests / month`;
       }
       if (entitlement.kind === 'unlimited') {
-        return m.unlimited_api_requests();
+        return "Unlimited API requests";
       }
-      return m.api_requests();
+      return "API requests";
     case 'storage':
       if (entitlement.kind === 'limit' && entitlement.cap !== null) {
-        return m.storage_of_mb({ limit: formatCount(entitlement.cap) });
+        return `${formatCount(entitlement.cap)} MB of storage`;
       }
       if (entitlement.kind === 'unlimited') {
-        return m.unlimited_storage();
+        return "Unlimited storage";
       }
-      return m.storage();
+      return "Storage";
     case 'ai':
-      return m.ai_assistant();
+      return "AI assistant";
   }
 }
 
@@ -86,33 +83,22 @@ function usageLine(usage: Usage): string {
   let label: string;
   switch (usage.feature) {
     case 'members':
-      label = m.members();
+      label = "Members";
       break;
     case 'apiRequests':
-      label = usage.window === 'month' ? m.api_requests_this_month() : m.api_requests();
+      label = usage.window === 'month' ? "API requests this month" : "API requests";
       break;
     case 'storage':
       // Counted in megabytes, so both halves carry the unit.
       if (usage.cap === null) {
-        return m.usage_no_limit({
-          label: m.storage(),
-          count: m.megabytes({ count: formatCount(usage.used) }),
-        });
+        return `Storage: ${formatCount(usage.used)} MB`;
       }
-      return m.usage_of_limit({
-        label: m.storage(),
-        count: formatCount(usage.used),
-        limit: m.megabytes({ count: formatCount(usage.cap) }),
-      });
+      return `Storage: ${formatCount(usage.used)} of ${formatCount(usage.cap)} MB`;
   }
   if (usage.cap === null) {
-    return m.usage_no_limit({ label, count: formatCount(usage.used) });
+    return `${label}: ${formatCount(usage.used)}`;
   }
-  return m.usage_of_limit({
-    label,
-    count: formatCount(usage.used),
-    limit: formatCount(usage.cap),
-  });
+  return `${label}: ${formatCount(usage.used)} of ${formatCount(usage.cap)}`;
 }
 
 export function Billing() @{
@@ -145,7 +131,7 @@ function usePlanMutation() {
           cancelUrl: '/app/organization',
         });
         if (error !== null) {
-          throw new Error(error.message ?? m.something_went_wrong_try_again());
+          throw new Error(error.message ?? "Something went wrong. Try again.");
         }
         return data?.url ?? null;
       }
@@ -155,13 +141,13 @@ function usePlanMutation() {
           returnUrl: '/app/organization',
         });
         if (error !== null) {
-          throw new Error(error.message ?? m.something_went_wrong_try_again());
+          throw new Error(error.message ?? "Something went wrong. Try again.");
         }
         return data?.url ?? null;
       }
       const { error } = await authClient.subscription.restore(reference);
       if (error !== null) {
-        throw new Error(error.message ?? m.something_went_wrong_try_again());
+        throw new Error(error.message ?? "Something went wrong. Try again.");
       }
       return null;
     },
@@ -184,8 +170,8 @@ function PlanCard() @{
 
   <Card>
     <CardHeader>
-      <CardTitle>{m.plan()}</CardTitle>
-      <CardDescription>{m.billing_is_per_organization_and_covers()}</CardDescription>
+      <CardTitle>{"Plan"}</CardTitle>
+      <CardDescription>{"Billing is per organization and covers every member."}</CardDescription>
     </CardHeader>
     <CardContent className="grid gap-3 sm:grid-cols-2">
       @for (const summary of billing.catalog; key summary.name) {
@@ -199,21 +185,21 @@ function PlanCard() @{
       <PlanStatus />
       @if (!billing.canManage) {
         <p className="text-xs text-muted-foreground">
-          {m.only_owners_and_admins_can_manage()}
+          {"Only owners and admins can manage billing."}
         </p>
       } @else {
         @if (billing.plan === 'free') {
           <Button onClick={() => plan.mutate('upgrade')} disabled={plan.isPending}>
-            {m.upgrade_to_paid()}
+            {"Upgrade to Paid"}
           </Button>
         } @else {
           @if (billing.subscription?.cancelAtPeriodEnd === true) {
             <Button onClick={() => plan.mutate('restore')} disabled={plan.isPending}>
-              {m.restore_subscription()}
+              {"Restore subscription"}
             </Button>
           } @else {
             <Button variant="outline" onClick={() => plan.mutate('cancel')} disabled={plan.isPending}>
-              {m.cancel_subscription()}
+              {"Cancel subscription"}
             </Button>
           }
         }
@@ -227,13 +213,13 @@ function PlanOption({ summary, current }: { summary: PlanSummary; current: boole
     <div className="flex items-center justify-between gap-2">
       <span className="font-medium">{planLabel(summary.name)}</span>
       @if (current) {
-        <Badge>{m.current()}</Badge>
+        <Badge>{"Current"}</Badge>
       }
     </div>
     <p className="text-sm text-muted-foreground">
       {summary.pricePerSeat === 0
-        ? m.free_forever()
-        : m.price_per_member_month({ pricePerSeat: summary.pricePerSeat })}
+        ? "Free forever"
+        : `\$${summary.pricePerSeat} per member / month`}
     </p>
     <ul className="flex flex-col gap-1 text-sm">
       @for (const entitlement of summary.features; key entitlement.feature) {
@@ -265,13 +251,13 @@ function PlanStatus() @{
 
   let status: string;
   if (plan === 'free' || subscription === null) {
-    status = m.you_are_on_the_free_plan();
+    status = "You are on the Free plan.";
   } else if (subscription.periodEnd === null) {
-    status = m.subscription({ status: subscription.status });
+    status = `Subscription ${subscription.status}.`;
   } else if (subscription.cancelAtPeriodEnd) {
-    status = m.cancels_on({ date: formatDate(subscription.periodEnd, getLocale()) });
+    status = `Cancels on ${formatDate(subscription.periodEnd)}.`;
   } else {
-    status = m.renews_on({ date: formatDate(subscription.periodEnd, getLocale()) });
+    status = `Renews on ${formatDate(subscription.periodEnd)}.`;
   }
 
   <p className="text-sm text-muted-foreground">{status}</p>
@@ -282,15 +268,15 @@ function UsageCard() @{
 
   <Card>
     <CardHeader>
-      <CardTitle>{m.usage()}</CardTitle>
-      <CardDescription>{m.what_your_organization_uses_today()}</CardDescription>
+      <CardTitle>{"Usage"}</CardTitle>
+      <CardDescription>{"What your organization uses today."}</CardDescription>
     </CardHeader>
     <CardContent className="flex flex-col gap-1 text-sm">
       @for (const usage of billing.usage; key usage.feature) {
         <p>{usageLine(usage)}</p>
       }
       @if (billing.subscription !== null && billing.subscription.seats !== null) {
-        <p>{m.seats_billed({ count: billing.subscription.seats })}</p>
+        <p>{`Seats billed: ${billing.subscription.seats}`}</p>
       }
     </CardContent>
   </Card>

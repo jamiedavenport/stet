@@ -14,7 +14,6 @@
   },
   "dependencies": {
     "@repo/db": "workspace:*",
-    "@repo/i18n": "workspace:*",
     "@repo/mail": "workspace:*",
     "zod": "catalog:"
   },

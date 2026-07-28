@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { authClient } from '@repo/auth/client';
-import { m } from '@repo/i18n/messages';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@repo/ui/components/button';
 import { useRouter } from '@tanstack/react-router';
@@ -56,7 +55,7 @@ export function TwoFactorSettings() @{
     const { data, error: enableError } = await authClient.twoFactor.enable({ password });
     setPending(false);
     if (enableError || data === null) {
-      setError(enableError?.message ?? m.something_went_wrong_try_again());
+      setError(enableError?.message ?? "Something went wrong. Try again.");
       return;
     }
     setError(null);
@@ -69,7 +68,7 @@ export function TwoFactorSettings() @{
     const { error: verifyError } = await authClient.twoFactor.verifyTotp({ code: code.trim() });
     setPending(false);
     if (verifyError) {
-      setError(verifyError.message ?? m.unable_to_verify_this_code());
+      setError(verifyError.message ?? "Unable to verify this code");
       return;
     }
     setBackupCodes(setup?.backupCodes ?? null);
@@ -83,7 +82,7 @@ export function TwoFactorSettings() @{
     const { error: disableError } = await authClient.twoFactor.disable({ password });
     setPending(false);
     if (disableError) {
-      setError(disableError.message ?? m.something_went_wrong_try_again());
+      setError(disableError.message ?? "Something went wrong. Try again.");
       return;
     }
     setBackupCodes(null);
@@ -97,7 +96,7 @@ export function TwoFactorSettings() @{
     const { data, error: genError } = await authClient.twoFactor.generateBackupCodes({ password });
     setPending(false);
     if (genError || data === null) {
-      setError(genError?.message ?? m.something_went_wrong_try_again());
+      setError(genError?.message ?? "Something went wrong. Try again.");
       return;
     }
     setBackupCodes(data.backupCodes);
@@ -151,7 +150,7 @@ export function TwoFactorSettings() @{
       @default: {
         <div className="flex flex-col gap-3">
           <p className="text-sm text-muted-foreground">
-            {enabled ? m.two_factor_is_on() : m.two_factor_is_off()}
+            {enabled ? "Two-factor authentication is on." : "Two-factor authentication is off."}
           </p>
           @if (enabled) {
             <div className="flex flex-wrap gap-2">
@@ -161,21 +160,21 @@ export function TwoFactorSettings() @{
                 size="sm"
                 onClick={() => setMode('regenerate')}
               >
-                {m.regenerate_backup_codes()}
+                {"Regenerate backup codes"}
               </Button>
               <Button type="button" variant="outline" size="sm" onClick={() => setMode('disable')}>
-                {m.turn_off()}
+                {"Turn off"}
               </Button>
             </div>
           } @else {
             @if (needsPassword) {
               <p className="text-sm text-muted-foreground">
-                {m.set_a_password_before_two_factor()}
+                {"Set a password above before turning on two-factor authentication."}
               </p>
             } @else {
               <div>
                 <Button type="button" size="sm" onClick={() => setMode('enable')}>
-                  {m.set_up_two_factor()}
+                  {"Set up"}
                 </Button>
               </div>
             }

@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { authClient } from '@repo/auth/client';
 import { brand } from '@repo/brand';
-import { m } from '@repo/i18n/messages';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   Card,
@@ -49,7 +48,7 @@ function SignIn() {
     setFormError(null);
     const { data, error } = await authClient.signIn.passkey();
     if (error) {
-      setFormError(error.message ?? m.unable_to_sign_in_with_passkey());
+      setFormError(error.message ?? 'Unable to sign in with a passkey.');
       return;
     }
     if (data !== null) {
@@ -82,10 +81,9 @@ function SignIn() {
     };
   }, []);
 
-  // Built in-render so m.*() resolves in the request's locale scope.
   const signInSchema = z.object({
-    email: z.email(m.enter_a_valid_email_address()),
-    password: z.string().min(8, m.password_must_be_at_least_8()),
+    email: z.email('Enter a valid email address'),
+    password: z.string().min(8, 'Password must be at least 8 characters'),
   });
 
   const form = useAppForm({
@@ -106,10 +104,12 @@ function SignIn() {
         // what carries over into the signed-out user's own language.
         captcha.reset();
         if (error.code === 'BANNED_USER') {
-          setFormError(m.your_account_has_been_suspended());
+          setFormError(
+            'Your account has been suspended. Contact support if you think this is a mistake.',
+          );
           return;
         }
-        setFormError(error.message ?? m.unable_to_sign_in());
+        setFormError(error.message ?? 'Unable to sign in');
         return;
       }
       // Enrolled users aren't signed in yet: send them to the second-factor
@@ -127,9 +127,9 @@ function SignIn() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-balance">{m.welcome_back()}</CardTitle>
+        <CardTitle className="text-balance">{'Welcome back'}</CardTitle>
         <CardDescription className="text-pretty">
-          {m.sign_in_to_your_account({ brandName })}
+          {`Sign in to your ${brandName} account.`}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -144,7 +144,7 @@ function SignIn() {
             <form.AppField name="email">
               {(field) => (
                 <field.TextField
-                  label={m.email()}
+                  label={'Email'}
                   type="email"
                   autoComplete="email webauthn"
                   placeholder="you@example.com"
@@ -154,7 +154,7 @@ function SignIn() {
             <form.AppField name="password">
               {(field) => (
                 <field.TextField
-                  label={m.password()}
+                  label={'Password'}
                   type="password"
                   autoComplete="current-password"
                 />
@@ -166,15 +166,15 @@ function SignIn() {
                 search
                 className="text-muted-foreground underline underline-offset-4"
               >
-                {m.forgot_password()}
+                {'Forgot password?'}
               </Link>
             </p>
             {captcha.widgetProps !== null ? <Turnstile {...captcha.widgetProps} /> : null}
             {formError ? <FieldError>{formError}</FieldError> : null}
             <form.AppForm>
               <form.SubmitButton
-                label={m.sign_in()}
-                pendingLabel={m.signing_in()}
+                label={'Sign in'}
+                pendingLabel={'Signing in…'}
                 disabled={captcha.submitDisabled}
               />
             </form.AppForm>
@@ -184,7 +184,7 @@ function SignIn() {
                 onClick={() => void signInWithPasskey()}
                 className="text-muted-foreground underline underline-offset-4"
               >
-                {m.sign_in_with_a_passkey()}
+                {'Sign in with a passkey'}
               </button>
             </p>
             <p className="text-center text-sm">
@@ -193,13 +193,13 @@ function SignIn() {
                 search
                 className="text-muted-foreground underline underline-offset-4"
               >
-                {m.email_me_a_sign_in_link()}
+                {'Email me a sign-in link'}
               </Link>
             </p>
             <p className="text-center text-sm text-muted-foreground">
-              {m.new_to_brand({ brandName })}{' '}
+              {`New to ${brandName}?`}{' '}
               <Link to="/sign/up" search className="text-foreground underline underline-offset-4">
-                {m.create_an_account_link()}
+                {'Create an account'}
               </Link>
             </p>
           </FieldGroup>

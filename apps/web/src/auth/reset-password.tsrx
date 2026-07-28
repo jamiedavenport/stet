@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { authClient } from '@repo/auth/client';
 import { brand } from '@repo/brand';
-import { m } from '@repo/i18n/messages';
 import {
   Card,
   CardContent,
@@ -26,9 +25,8 @@ export function ResetPassword() @{
   const [formError, setFormError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
 
-  // Built in-render so m.*() resolves in the request's locale scope.
   const resetSchema = z.object({
-    password: z.string().min(8, m.password_must_be_at_least_8()),
+    password: z.string().min(8, "Password must be at least 8 characters"),
   });
 
   const form = useAppForm({
@@ -46,7 +44,7 @@ export function ResetPassword() @{
         token,
       });
       if (resetError) {
-        setFormError(resetError.message ?? m.unable_to_reset_password());
+        setFormError(resetError.message ?? "Unable to reset password");
         return;
       }
       setDone(true);
@@ -67,9 +65,9 @@ export function ResetPassword() @{
       @case 'invalid': {
         <>
           <CardHeader>
-            <CardTitle className="text-balance">{m.reset_link_invalid()}</CardTitle>
+            <CardTitle className="text-balance">{"Reset link invalid"}</CardTitle>
             <CardDescription className="text-pretty">
-              {m.this_password_reset_link_is_invalid()}
+              {"This password reset link is invalid or has expired. Request a new one to continue."}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -79,7 +77,7 @@ export function ResetPassword() @{
                 search
                 className="text-foreground underline underline-offset-4"
               >
-                {m.request_a_new_reset_link()}
+                {"Request a new reset link"}
               </Link>
             </p>
           </CardContent>
@@ -88,15 +86,15 @@ export function ResetPassword() @{
       @case 'updated': {
         <>
           <CardHeader>
-            <CardTitle className="text-balance">{m.password_updated()}</CardTitle>
+            <CardTitle className="text-balance">{"Password updated"}</CardTitle>
             <CardDescription className="text-pretty">
-              {m.your_password_has_been_reset_sign()}
+              {"Your password has been reset. Sign in with your new password."}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <p className="text-center text-sm text-muted-foreground">
               <Link to="/sign/in" search className="text-foreground underline underline-offset-4">
-                {m.go_to_sign_in()}
+                {"Go to sign in"}
               </Link>
             </p>
           </CardContent>
@@ -105,9 +103,9 @@ export function ResetPassword() @{
       @default: {
         <>
           <CardHeader>
-            <CardTitle className="text-balance">{m.choose_a_new_password()}</CardTitle>
+            <CardTitle className="text-balance">{"Choose a new password"}</CardTitle>
             <CardDescription className="text-pretty">
-              {m.enter_a_new_password_for_your({ brandName })}
+              {`Enter a new password for your ${brandName} account.`}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -121,7 +119,7 @@ export function ResetPassword() @{
                 <form.AppField name="password">
                   {(field) => (
                     <field.TextField
-                      label={m.new_password()}
+                      label={"New password"}
                       type="password"
                       autoComplete="new-password"
                     />
@@ -131,7 +129,7 @@ export function ResetPassword() @{
                   <FieldError>{formError}</FieldError>
                 }
                 <form.AppForm>
-                  <form.SubmitButton label={m.reset_password()} pendingLabel={m.resetting()} />
+                  <form.SubmitButton label={"Reset password"} pendingLabel={"Resetting…"} />
                 </form.AppForm>
               </FieldGroup>
             </form>

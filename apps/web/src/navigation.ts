@@ -1,6 +1,5 @@
 import { canManageOrganization } from '@repo/auth/access';
 import type { OrganizationRole } from '@repo/auth/access';
-import { m } from '@repo/i18n/messages';
 import type { LinkProps } from '@tanstack/react-router';
 import {
   Building2Icon,
@@ -14,8 +13,7 @@ import {
 import type { LucideIcon } from 'lucide-react';
 
 export type NavItem = {
-  /** A message function, so it resolves against the locale at render. */
-  readonly label: () => string;
+  readonly label: string;
   /** Typed against the route tree: renaming a route stops this compiling. */
   readonly to: LinkProps['to'];
   readonly icon: LucideIcon;
@@ -24,16 +22,16 @@ export type NavItem = {
 };
 
 const navItems = [
-  { label: m.home, to: '/app', icon: HomeIcon, key: 'h' },
-  { label: m.notes, to: '/app/notes', icon: NotebookPenIcon, key: 'n' },
-  { label: m.chat, to: '/app/chat', icon: SparklesIcon, key: 'c' },
-  { label: m.webhooks, to: '/app/webhooks', icon: WebhookIcon, key: 'w' },
-  { label: m.settings, to: '/app/settings', icon: SettingsIcon, key: 's' },
-  { label: m.organization, to: '/app/organization', icon: Building2Icon, key: 'o' },
+  { label: 'Home', to: '/app', icon: HomeIcon, key: 'h' },
+  { label: 'Notes', to: '/app/notes', icon: NotebookPenIcon, key: 'n' },
+  { label: 'Chat', to: '/app/chat', icon: SparklesIcon, key: 'c' },
+  { label: 'Webhooks', to: '/app/webhooks', icon: WebhookIcon, key: 'w' },
+  { label: 'Settings', to: '/app/settings', icon: SettingsIcon, key: 's' },
+  { label: 'Organization', to: '/app/organization', icon: Building2Icon, key: 'o' },
 ] as const satisfies readonly NavItem[];
 
 const adminItem = {
-  label: m.admin_panel,
+  label: 'Admin',
   to: '/app/admin',
   icon: ShieldIcon,
   key: 'a',

@@ -1,25 +1,21 @@
 import { brand } from '@repo/brand';
-import type { Locale } from '@repo/i18n';
-import { localized } from '@repo/i18n/localized';
 
 import { ActionEmail } from './layout';
 
 export type WelcomeEmailProps = {
-  locale: Locale;
   name: string;
   appLink: string;
 };
 
-export function WelcomeEmail({ locale, name, appLink }: WelcomeEmailProps) {
-  const t = localized(locale);
+export function WelcomeEmail({ name, appLink }: WelcomeEmailProps) {
   const brandName = brand.name;
   return (
     <ActionEmail
-      preview={t.welcome_preview({ brandName, name })}
-      heading={t.welcome_to_brand({ brandName })}
-      body={t.welcome_body({ name })}
-      action={{ href: appLink, label: t.open_brand({ brandName }) }}
-      footer={t.welcome_footer()}
+      preview={`Welcome to ${brandName}, ${name}`}
+      heading={`Welcome to ${brandName}`}
+      body={`Hi ${name}, your account is ready. Create an organization, invite your team, and start collaborating on tasks and notes in real time.`}
+      action={{ href: appLink, label: `Open ${brandName}` }}
+      footer={"If you didn't create this account, you can ignore this email."}
     />
   );
 }

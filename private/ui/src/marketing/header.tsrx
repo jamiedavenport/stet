@@ -1,20 +1,17 @@
 import { useState } from 'react';
 import { brand } from '@repo/brand';
-import { m } from '@repo/i18n/messages';
 import { Link } from '@tanstack/react-router';
 import type { LinkProps } from '@tanstack/react-router';
 
 import { Button } from '../components/button';
 import { Wordmark } from './ui.tsrx';
 
-type PageLink = { label: () => string; to: LinkProps['to']; hash?: string };
+type PageLink = { label: string; to: LinkProps['to']; hash?: string };
 
-// Message functions, not calls: the array is module scope, so calling here
-// would freeze the locale at import time. Each render invokes item.label().
 const pageLinks: PageLink[] = [
-  { label: m.marketing_nav_blog, to: '/blog' },
-  { label: m.marketing_nav_changelog, to: '/changelog' },
-  { label: m.marketing_nav_contact, to: '/contact' },
+  { label: 'Blog', to: '/blog' },
+  { label: 'Changelog', to: '/changelog' },
+  { label: 'Contact', to: '/contact' },
 ];
 
 const navLink = 'text-muted-foreground hover:text-foreground';
@@ -28,7 +25,7 @@ function activeProps(link: PageLink) {
 
 function DocsLink({ className }: { className: string }) @{
   <a href={brand.docs} target="_blank" rel="noreferrer" className={className}>
-    {m.marketing_nav_docs()}
+    {"Docs"}
   </a>
 }
 
@@ -47,7 +44,7 @@ function DesktopNav() @{
   <nav className="hidden items-center gap-6 text-sm lg:flex">
     @for (const link of pageLinks; key link.to) {
       <Link to={link.to} hash={link.hash} className={navLink} activeProps={activeProps(link)}>
-        {link.label()}
+        {link.label}
       </Link>
     }
     <DocsLink className={navLink} />
@@ -61,7 +58,7 @@ function MobileMenu({ onNavigate }: { onNavigate: () => void }) @{
     <div className="mx-auto max-w-7xl px-6 py-4 text-sm">
       @for (const link of pageLinks; key link.to) {
         <Link to={link.to} hash={link.hash} onClick={onNavigate} className={mobileLink}>
-          {link.label()}
+          {link.label}
         </Link>
       }
       <DocsLink className={mobileLink} />
@@ -72,12 +69,12 @@ function MobileMenu({ onNavigate }: { onNavigate: () => void }) @{
 export function MarketingHeader({ signedIn }: { signedIn: boolean }) @{
   const [open, setOpen] = useState(false);
   const cta = signedIn
-    ? { label: m.marketing_dashboard(), to: '/app' as const }
-    : { label: m.marketing_sign_in(), to: '/sign/in' as const };
+    ? { label: "Dashboard", to: '/app' as const }
+    : { label: "Sign in", to: '/sign/in' as const };
 
   <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur">
     <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8">
-      <Link to="/" aria-label={m.marketing_homepage()}>
+      <Link to="/" aria-label={"Homepage"}>
         <Wordmark />
       </Link>
       <div className="flex items-center gap-6">
@@ -88,7 +85,7 @@ export function MarketingHeader({ signedIn }: { signedIn: boolean }) @{
         <button
           type="button"
           onClick={() => setOpen(!open)}
-          aria-label={open ? m.marketing_close_menu() : m.marketing_open_menu()}
+          aria-label={open ? "Close menu" : "Open menu"}
           aria-expanded={open}
           aria-controls="mobile-menu"
           className="flex items-center text-muted-foreground hover:text-foreground lg:hidden"

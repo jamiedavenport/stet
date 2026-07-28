@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { useMemo, useState } from 'react';
 import { authClient } from '@repo/auth/client';
-import { m } from '@repo/i18n/messages';
 import { Button } from '@repo/ui/components/button';
 import {
   Command,
@@ -141,12 +140,12 @@ export function CommandMenu() {
     if (page === 'organizations') {
       return [
         {
-          value: m.organizations(),
+          value: 'Organizations',
           items: organizations.map(
             (organization): Entry => ({
               id: `org:${organization.id}`,
               label: organization.name,
-              hint: organization.id === activeOrganization.id ? m.active() : organization.slug,
+              hint: organization.id === activeOrganization.id ? 'Active' : organization.slug,
               icon: BuildingIcon,
               run: () => void switchOrganization(organization.id),
             }),
@@ -158,20 +157,20 @@ export function CommandMenu() {
     const actions: Entry[] = [
       {
         id: 'action:switch-organization',
-        label: m.switch_organization(),
+        label: 'Switch organization…',
         icon: Repeat2Icon,
         run: () => openPage('organizations'),
       },
       {
         id: 'action:new-organization',
-        label: m.new_organization(),
+        label: 'New organization',
         icon: PlusIcon,
         run: () => {
           dismiss();
           void router.navigate({ to: '/orgs/new' });
         },
       },
-      { id: 'action:sign-out', label: m.sign_out(), icon: LogOutIcon, run: () => void signOut() },
+      { id: 'action:sign-out', label: 'Sign out', icon: LogOutIcon, run: () => void signOut() },
     ];
 
     // Static entries are matched here because the server results arrive
@@ -181,12 +180,12 @@ export function CommandMenu() {
 
     return [
       {
-        value: m.go_to(),
+        value: 'Go to',
         items: destinations
           .map(
             (destination): Entry => ({
               id: `nav:${destination.to}`,
-              label: destination.label(),
+              label: destination.label,
               icon: destination.icon,
               shortcut: `${navLeaderKey.toUpperCase()} ${destination.key.toUpperCase()}`,
               run: () => go(destination.to),
@@ -194,9 +193,9 @@ export function CommandMenu() {
           )
           .filter(matches),
       },
-      { value: m.actions(), items: actions.filter(matches) },
+      { value: 'Actions', items: actions.filter(matches) },
       {
-        value: m.files(),
+        value: 'Files',
         items: hits
           .filter((hit) => hit.kind === 'file')
           .map(
@@ -213,7 +212,7 @@ export function CommandMenu() {
           ),
       },
       {
-        value: m.people(),
+        value: 'People',
         items: hits
           .filter((hit) => hit.kind === 'member')
           .map(
@@ -234,18 +233,20 @@ export function CommandMenu() {
       <Button
         variant="outline"
         size="sm"
-        aria-label={m.open_command_menu()}
+        aria-label={'Open command menu'}
         aria-keyshortcuts="Meta+K Control+K"
         onClick={() => setOpen(true)}
       >
         <SearchIcon />
-        <span className="hidden text-muted-foreground sm:inline">{m.search()}</span>
+        <span className="hidden text-muted-foreground sm:inline">{'Search'}</span>
         <CommandShortcut className="hidden sm:flex">⌘K</CommandShortcut>
       </Button>
-      <CommandDialog open={open} onOpenChange={onOpenChange} title={m.command_menu()}>
+      <CommandDialog open={open} onOpenChange={onOpenChange} title={'Command menu'}>
         <Command items={groups} value={query} onValueChange={setQuery}>
           <CommandInput
-            placeholder={page === 'organizations' ? m.switch_organization() : m.search_or_jump_to()}
+            placeholder={
+              page === 'organizations' ? 'Switch organization…' : 'Search or jump to a page…'
+            }
             onKeyDown={onInputKeyDown}
           />
           <CommandList>
@@ -269,7 +270,7 @@ export function CommandMenu() {
               </CommandGroup>
             )}
           </CommandList>
-          <CommandEmpty>{m.no_results_found()}</CommandEmpty>
+          <CommandEmpty>{'No results found'}</CommandEmpty>
         </Command>
       </CommandDialog>
     </>

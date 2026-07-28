@@ -148,7 +148,6 @@ export class NotificationHub extends DurableObject<HubEnv> {
       organizationName: organization?.name ?? null,
       items: outbox,
       appLink: this.env.BETTER_AUTH_URL,
-      locale: user.locale,
       unsubscribeUrl: await unsubscribeUrl(this.env.BETTER_AUTH_URL, this.env.BETTER_AUTH_SECRET, {
         kind: 'notification-emails',
         id: meta.userId,

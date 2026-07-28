@@ -1,5 +1,4 @@
 import { brand } from '@repo/brand';
-import { m } from '@repo/i18n/messages';
 import { BrandMark } from '@repo/brand/mark';
 import { Link } from '@tanstack/react-router';
 import type { LinkProps } from '@tanstack/react-router';
@@ -107,7 +106,7 @@ export function PostMeta({
 }) @{
   <p className={cn('text-sm text-muted-foreground', className)}>
     {author ? `${author} · ` : ''}
-    {m.marketing_min_read({ minutes: readingTime })}
+    {`${readingTime} min read`}
   </p>
 }
 

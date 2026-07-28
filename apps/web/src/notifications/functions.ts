@@ -1,5 +1,4 @@
 import { and, database, desc, eq, isNull, schema } from '@repo/db';
-import { getLocale } from '@repo/i18n';
 import {
   notificationChannels,
   notificationTypes,
@@ -32,10 +31,9 @@ const getNotifications = createServerFn({ method: 'GET' })
       orderBy: desc(schema.notification.createdAt),
       limit: feedLimit,
     });
-    // Titles re-render in the viewer's current locale; the stored title is
-    // only the fallback for rows whose type left the registry.
-    const locale = getLocale();
-    const items = rows.map((row) => ({ ...row, title: renderNotificationTitle(row, locale) }));
+    // Titles re-render from the current registry; the stored title is only
+    // the fallback for rows whose type left the registry.
+    const items = rows.map((row) => ({ ...row, title: renderNotificationTitle(row) }));
     const unread = await db.$count(
       schema.notification,
       and(scope, isNull(schema.notification.readAt)),

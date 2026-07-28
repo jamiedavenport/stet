@@ -17,9 +17,8 @@ export type Entitlement<TFeature extends string = string> = {
 
 export type Plan<TName extends string = string> = {
   name: TName;
-  /** Localized label message, resolved when a guard error is built so the
-   * text follows the caller's locale. */
-  label: () => string;
+  /** Human-readable label used in guard errors and the billing UI. */
+  label: string;
   /** Monthly price per seat in USD. */
   pricePerSeat: number;
   features: readonly Entitlement[];
@@ -40,14 +39,14 @@ type Guarded = {
 export type FlagFeature<TName extends string = string> = Guarded & {
   kind: 'flag';
   name: TName;
-  label: () => string;
+  label: string;
   included: () => Entitlement<TName>;
   excluded: () => Entitlement<TName>;
 };
 
 type MeasuredFeature<TName extends string> = Guarded & {
   name: TName;
-  label: () => string;
+  label: string;
   window: Window;
   limit: (cap: number) => Entitlement<TName>;
   unlimited: () => Entitlement<TName>;

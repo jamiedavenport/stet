@@ -22,7 +22,7 @@ import type {
   Window,
 } from './types';
 
-type FlagConfig<TName extends string> = { name: TName; label: () => string };
+type FlagConfig<TName extends string> = { name: TName; label: string };
 type CountedConfig<TName extends string> = FlagConfig<TName> & {
   window: Window;
   measure: Measure;
@@ -151,7 +151,7 @@ type MissingEntitlements<E extends readonly Entitlement[]> = Exclude<
  * omitting a feature fails the build naming the missing entitlements, so a
  * plan must price, cap, or explicitly exclude every feature. */
 export function definePlan<const TName extends string, const E extends readonly Entitlement[]>(
-  config: { name: TName; label: () => string; pricePerSeat: number; features: E } & ([
+  config: { name: TName; label: string; pricePerSeat: number; features: E } & ([
     MissingEntitlements<E>,
   ] extends [never]
     ? unknown

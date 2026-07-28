@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { authClient } from '@repo/auth/client';
-import { m } from '@repo/i18n/messages';
 import { useQueryClient } from '@tanstack/react-query';
 import { Button } from '@repo/ui/components/button';
 import {
@@ -43,7 +42,7 @@ function InvitePage() {
     });
     if (acceptError || !data) {
       setAccepting(false);
-      setError(acceptError?.message ?? m.unable_to_accept_invitation());
+      setError(acceptError?.message ?? 'Unable to accept invitation');
       return;
     }
     await authClient.organization.setActive({ organizationId: data.invitation.organizationId });
@@ -56,24 +55,19 @@ function InvitePage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-balance">
-            {invitation
-              ? m.join_org({ organizationName: invitation.organizationName })
-              : m.invitation_not_found()}
+            {invitation ? `Join ${invitation.organizationName}` : 'Invitation not found'}
           </CardTitle>
           <CardDescription className="text-pretty">
             {invitation
-              ? m.invited_you_to_join({
-                  inviterEmail: invitation.inviterEmail,
-                  organizationName: invitation.organizationName,
-                })
-              : m.this_invitation_is_invalid_expired_or()}
+              ? `${invitation.inviterEmail} invited you to join ${invitation.organizationName}.`
+              : 'This invitation is invalid, expired, or was sent to a different email address.'}
           </CardDescription>
         </CardHeader>
         {invitation ? (
           <CardContent className="flex flex-col gap-3">
             {error ? <FieldError>{error}</FieldError> : null}
             <Button onClick={() => void accept()} disabled={accepting}>
-              {accepting ? m.joining() : m.accept_invitation()}
+              {accepting ? 'Joining…' : 'Accept invitation'}
             </Button>
           </CardContent>
         ) : null}

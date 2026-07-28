@@ -13,8 +13,7 @@
     "test": "vp test run"
   },
   "dependencies": {
-    "@repo/db": "workspace:*",
-    "@repo/i18n": "workspace:*"
+    "@repo/db": "workspace:*"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "catalog:",

@@ -1,4 +1,3 @@
-import { m } from '@repo/i18n/messages';
 import { Extension } from '@tiptap/core';
 import type { Editor, Range } from '@tiptap/core';
 import Suggestion from '@tiptap/suggestion';
@@ -44,31 +43,31 @@ function item(
 
 function slashItems(options: SlashCommandOptions): SlashItem[] {
   return [
-    item('h1', m.heading_1(), 'title h1', Heading1Icon, (editor, range) =>
+    item('h1', 'Heading 1', 'title h1', Heading1Icon, (editor, range) =>
       editor.chain().focus().deleteRange(range).setNode('heading', { level: 1 }).run(),
     ),
-    item('h2', m.heading_2(), 'subtitle h2', Heading2Icon, (editor, range) =>
+    item('h2', 'Heading 2', 'subtitle h2', Heading2Icon, (editor, range) =>
       editor.chain().focus().deleteRange(range).setNode('heading', { level: 2 }).run(),
     ),
-    item('h3', m.heading_3(), 'h3', Heading3Icon, (editor, range) =>
+    item('h3', 'Heading 3', 'h3', Heading3Icon, (editor, range) =>
       editor.chain().focus().deleteRange(range).setNode('heading', { level: 3 }).run(),
     ),
-    item('bullet-list', m.bullet_list(), 'unordered ul', ListIcon, (editor, range) =>
+    item('bullet-list', 'Bullet list', 'unordered ul', ListIcon, (editor, range) =>
       editor.chain().focus().deleteRange(range).toggleBulletList().run(),
     ),
-    item('ordered-list', m.numbered_list(), 'ordered ol', ListOrderedIcon, (editor, range) =>
+    item('ordered-list', 'Numbered list', 'ordered ol', ListOrderedIcon, (editor, range) =>
       editor.chain().focus().deleteRange(range).toggleOrderedList().run(),
     ),
-    item('task-list', m.task_list(), 'todo checkbox', CheckSquareIcon, (editor, range) =>
+    item('task-list', 'Task list', 'todo checkbox', CheckSquareIcon, (editor, range) =>
       editor.chain().focus().deleteRange(range).toggleTaskList().run(),
     ),
-    item('blockquote', m.quote(), 'blockquote citation', QuoteIcon, (editor, range) =>
+    item('blockquote', 'Quote', 'blockquote citation', QuoteIcon, (editor, range) =>
       editor.chain().focus().deleteRange(range).toggleBlockquote().run(),
     ),
-    item('code-block', m.code_block(), 'snippet pre', CodeIcon, (editor, range) =>
+    item('code-block', 'Code block', 'snippet pre', CodeIcon, (editor, range) =>
       editor.chain().focus().deleteRange(range).toggleCodeBlock().run(),
     ),
-    item('table', m.table(), 'grid rows columns', TableIcon, (editor, range) =>
+    item('table', 'Table', 'grid rows columns', TableIcon, (editor, range) =>
       editor
         .chain()
         .focus()
@@ -76,10 +75,10 @@ function slashItems(options: SlashCommandOptions): SlashItem[] {
         .insertTable({ rows: 3, cols: 3, withHeaderRow: true })
         .run(),
     ),
-    item('divider', m.divider(), 'horizontal rule hr', MinusIcon, (editor, range) =>
+    item('divider', 'Divider', 'horizontal rule hr', MinusIcon, (editor, range) =>
       editor.chain().focus().deleteRange(range).setHorizontalRule().run(),
     ),
-    item('image', m.image(), 'picture photo upload', ImageIcon, (editor, range) => {
+    item('image', 'Image', 'picture photo upload', ImageIcon, (editor, range) => {
       editor.chain().focus().deleteRange(range).run();
       options.onInsertImage();
     }),

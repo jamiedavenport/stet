@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { authClient } from '@repo/auth/client';
-import { m } from '@repo/i18n/messages';
 import { Button } from '@repo/ui/components/button';
 import {
   Card,
@@ -37,19 +36,19 @@ export function DeviceApproval() @{
     });
     if (verifyError || !data) {
       setBusy(false);
-      setError(verifyError?.error_description ?? m.unable_to_verify_this_code());
+      setError(verifyError?.error_description ?? "Unable to verify this code");
       return;
     }
     if (data.status !== 'pending') {
       setBusy(false);
-      setError(m.this_code_has_already_been_used());
+      setError("This code has already been used. Start a new login from your device.");
       return;
     }
     if (decision === 'approve') {
       const { error: approveError } = await authClient.device.approve({ userCode });
       setBusy(false);
       if (approveError) {
-        setError(approveError.error_description ?? m.unable_to_approve_this_device());
+        setError(approveError.error_description ?? "Unable to approve this device");
         return;
       }
       setOutcome('approved');
@@ -57,7 +56,7 @@ export function DeviceApproval() @{
       const { error: denyError } = await authClient.device.deny({ userCode });
       setBusy(false);
       if (denyError) {
-        setError(denyError.error_description ?? m.unable_to_deny_this_device());
+        setError(denyError.error_description ?? "Unable to deny this device");
         return;
       }
       setOutcome('denied');
@@ -68,32 +67,32 @@ export function DeviceApproval() @{
     @switch (outcome) {
       @case 'approved': {
         <CardHeader>
-          <CardTitle className="text-balance">{m.device_connected()}</CardTitle>
+          <CardTitle className="text-balance">{"Device connected"}</CardTitle>
           <CardDescription className="text-pretty">
-            {m.you_can_close_this_tab_and()}
+            {"You can close this tab and return to your terminal."}
           </CardDescription>
         </CardHeader>
       }
       @case 'denied': {
         <CardHeader>
-          <CardTitle className="text-balance">{m.request_denied()}</CardTitle>
+          <CardTitle className="text-balance">{"Request denied"}</CardTitle>
           <CardDescription className="text-pretty">
-            {m.the_device_was_not_connected_you()}
+            {"The device was not connected. You can close this tab."}
           </CardDescription>
         </CardHeader>
       }
       @default: {
         <>
           <CardHeader>
-            <CardTitle className="text-balance">{m.device_authorization()}</CardTitle>
+            <CardTitle className="text-balance">{"Device authorization"}</CardTitle>
             <CardDescription className="text-pretty">
-              {m.a_device_is_asking_to_access()}
+              {"A device is asking to access your account. Check that the code below matches the one shown on the device."}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <FieldGroup>
               <div className="flex flex-col gap-2">
-                <Label htmlFor="user-code">{m.device_code()}</Label>
+                <Label htmlFor="user-code">{"Device code"}</Label>
                 <Input
                   id="user-code"
                   value={code}
@@ -108,14 +107,14 @@ export function DeviceApproval() @{
               }
               <div className="flex flex-col gap-2">
                 <Button onClick={() => void decide('approve')} disabled={busy || !code.trim()}>
-                  {busy ? m.working() : m.approve()}
+                  {busy ? "Working…" : "Approve"}
                 </Button>
                 <Button
                   variant="outline"
                   onClick={() => void decide('deny')}
                   disabled={busy || !code.trim()}
                 >
-                  {m.deny()}
+                  {"Deny"}
                 </Button>
               </div>
             </FieldGroup>

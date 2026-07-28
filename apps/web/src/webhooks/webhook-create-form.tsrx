@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { m } from '@repo/i18n/messages';
 import { webhookEventTypes } from '@repo/webhooks/registry';
 import type { WebhookEventType } from '@repo/webhooks/registry';
 import { Button } from '@repo/ui/components/button';
@@ -14,9 +13,8 @@ export function CreateEndpointForm({ onCreated }: { onCreated: () => Promise<voi
   const [events, setEvents] = useState<WebhookEventType[]>([]);
   const [formError, setFormError] = useState<string | null>(null);
 
-  // Built in-render so m.*() resolves in the request's locale scope.
   const urlSchema = z.object({
-    url: z.url(m.enter_a_valid_url()),
+    url: z.url("Enter a valid URL"),
   });
 
   const form = useAppForm({
@@ -25,13 +23,13 @@ export function CreateEndpointForm({ onCreated }: { onCreated: () => Promise<voi
     onSubmit: async ({ value }) => {
       setFormError(null);
       if (events.length === 0) {
-        setFormError(m.select_at_least_one_event());
+        setFormError("Select at least one event");
         return;
       }
       try {
         await createWebhook({ data: { url: value.url, events } });
       } catch {
-        setFormError(m.webhook_urls_must_use_https());
+        setFormError("Webhook URLs must use https (localhost may use http).");
         return;
       }
       form.reset();
@@ -56,14 +54,14 @@ export function CreateEndpointForm({ onCreated }: { onCreated: () => Promise<voi
       <form.AppField name="url">
         {(field) => (
           <field.TextField
-            label={m.endpoint_url()}
+            label={"Endpoint URL"}
             type="url"
             placeholder="https://example.com/webhooks"
           />
         )}
       </form.AppField>
       <div className="flex flex-col gap-2">
-        <Label>{m.events()}</Label>
+        <Label>{"Events"}</Label>
         <div className="flex flex-wrap gap-2">
           @for (const event of webhookEventTypes; key event) {
             <Button
@@ -84,7 +82,7 @@ export function CreateEndpointForm({ onCreated }: { onCreated: () => Promise<voi
         <FieldError>{formError}</FieldError>
       }
       <form.AppForm>
-        <form.SubmitButton label={m.create_endpoint()} pendingLabel={m.creating()} />
+        <form.SubmitButton label={"Create endpoint"} pendingLabel={"Creating…"} />
       </form.AppForm>
     </FieldGroup>
   </form>

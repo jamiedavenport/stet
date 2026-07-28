@@ -1,4 +1,3 @@
-import { m } from '@repo/i18n/messages';
 import {
   Select,
   SelectContent,
@@ -32,7 +31,7 @@ export function LanguagePicker({ editor }: { editor: Editor }) @{
       }
     }}
   >
-    <SelectTrigger className="h-7 w-36 text-xs" aria-label={m.code_language()}>
+    <SelectTrigger className="h-7 w-36 text-xs" aria-label={"Code language"}>
       <SelectValue />
     </SelectTrigger>
     <SelectPositioner>

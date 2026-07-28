@@ -1,5 +1,3 @@
-import { getLocale } from '@repo/i18n';
-import { m } from '@repo/i18n/messages';
 import { Badge } from '@repo/ui/components/badge';
 import {
   Card,
@@ -22,13 +20,13 @@ export function AdminOrganizations() @{
 
   <Card>
     <CardHeader>
-      <CardTitle>{m.organizations()}</CardTitle>
-      <CardDescription>{m.every_organization_on_the_platform()}</CardDescription>
+      <CardTitle>{"Organizations"}</CardTitle>
+      <CardDescription>{"Every organization on the platform."}</CardDescription>
     </CardHeader>
     <CardContent className="flex flex-col gap-4">
-      <AdminSearchForm label={m.search_by_name()} list={list} />
+      <AdminSearchForm label={"Search by name"} list={list} />
       @if (organizations.length === 0) {
-        <p className="text-sm text-muted-foreground">{m.no_organizations_found()}</p>
+        <p className="text-sm text-muted-foreground">{"No organizations found."}</p>
       }
       @if (organizations.length > 0) {
         <ul className="flex flex-col gap-3">
@@ -39,13 +37,13 @@ export function AdminOrganizations() @{
                 {organization.slug}
               </span>
               <span className="text-xs text-muted-foreground">
-                {m.member_count({ members: organization.members })}
+                {organization.members === 1 ? '1 member' : `${organization.members} members`}
               </span>
               <span className="text-xs text-muted-foreground">
-                {organization.createdAt.toLocaleDateString(getLocale())}
+                {organization.createdAt.toLocaleDateString('en-GB')}
               </span>
               <Badge variant={organization.plan === 'paid' ? 'default' : 'outline'}>
-                {organization.plan === 'paid' ? m.paid() : m.free()}
+                {organization.plan === 'paid' ? "Paid" : "Free"}
               </Badge>
             </li>
           }

@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { m } from '@repo/i18n/messages';
 import { Button } from '@repo/ui/components/button';
 import { FieldError } from '@repo/ui/components/field';
 import { Input } from '@repo/ui/components/input';
@@ -30,13 +29,13 @@ export function TwoFactorEnroll({
   const [code, setCode] = useState('');
 
   <div className="flex flex-col gap-4">
-    <p className="text-sm">{m.scan_this_qr_code_with_your()}</p>
+    <p className="text-sm">{"Scan this QR code with your authenticator app."}</p>
     <div
       className="size-40 rounded-lg bg-white p-2 [&_svg]:size-full"
       dangerouslySetInnerHTML={{ __html: renderSVG(totpURI) }}
     />
     <div className="flex flex-col gap-2">
-      <Label htmlFor="totp-code">{m.authentication_code()}</Label>
+      <Label htmlFor="totp-code">{"Authentication code"}</Label>
       <Input
         id="totp-code"
         inputMode="numeric"
@@ -46,17 +45,17 @@ export function TwoFactorEnroll({
         onChange={(event) => setCode(event.target.value)}
       />
     </div>
-    <p className="text-xs text-muted-foreground">{m.save_these_backup_codes()}</p>
+    <p className="text-xs text-muted-foreground">{"Save these backup codes somewhere safe. Each can be used once."}</p>
     <BackupCodeList codes={backupCodes} />
     @if (error) {
       <FieldError>{error}</FieldError>
     }
     <div className="flex gap-2">
       <Button type="button" size="sm" disabled={pending} onClick={() => onVerify(code)}>
-        {pending ? m.saving() : m.verify_and_finish()}
+        {pending ? "Saving…" : "Verify and finish"}
       </Button>
       <Button type="button" variant="ghost" size="sm" onClick={onCancel}>
-        {m.cancel()}
+        {"Cancel"}
       </Button>
     </div>
   </div>
