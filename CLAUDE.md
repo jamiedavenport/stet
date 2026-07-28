@@ -19,11 +19,11 @@ Marketing copy and docs describe the product Stet is becoming; keep them aligned
 
 # React
 
-- Use TSRX for components where it makes sense.
+- Use TSRX for components.
 
 # Testing
 
-- Features should be properly tested using Vitest or Playwright.
+- For now only test critical features as to keep the codebase lean.
 
 # Logging
 
