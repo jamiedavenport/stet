@@ -1,5 +1,5 @@
 {
-  "name": "@stet/cli",
+  "name": "@stetcms/cli",
   "version": "0.1.0",
   "description": "Command line interface for Stet.",
   "keywords": [
@@ -40,7 +40,7 @@
     "picocolors": "catalog:"
   },
   "devDependencies": {
-    "@stet/client": "workspace:*",
+    "@stetcms/client": "workspace:*",
     "@types/node": "catalog:",
     "publint": "catalog:",
     "typescript": "catalog:",

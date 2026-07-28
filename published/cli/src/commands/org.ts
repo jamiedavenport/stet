@@ -1,4 +1,4 @@
-import { createStetClient, safe } from '@stet/client';
+import { createStetClient, safe } from '@stetcms/client';
 import { Command } from 'commander';
 
 import { resolveOrigin } from '#/client';

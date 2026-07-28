@@ -34,7 +34,7 @@ The gap between marketing and engineering is Stet's whole job. Every benefit com
 The content model marketing designs becomes an API your editor autocompletes.
 
 ```ts
-import { stet } from '@stet/client';
+import { stet } from '@stetcms/client';
 
 const posts = await stet.posts.list(); // a collection
 const post = await stet.posts.get('hello-world'); // one entry

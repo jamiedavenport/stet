@@ -9,14 +9,14 @@ import { ArrowLink, DisplayHeading, Label, Lede } from './ui.tsrx';
 // trailing comment is translated.
 function ClientCodeCard() @{
   const codeLines = [
-    'import { stet } from "@stet/client";',
+    'import { stet } from "@stetcms/client";',
     '',
     'const posts = await stet.posts.list();',
     'const post = await stet.posts.get("hello-world");',
     'const landing = await stet.landing.get();',
   ];
   <div className="w-full max-w-md rounded-xl border border-border bg-card p-6">
-    <p className="font-mono text-xs font-medium text-muted-foreground">@stet/client</p>
+    <p className="font-mono text-xs font-medium text-muted-foreground">@stetcms/client</p>
     <pre className="mt-4 overflow-x-auto font-mono text-xs/6 text-foreground">
       {codeLines.join('\n')}
     </pre>

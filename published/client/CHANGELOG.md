@@ -1,1 +1,1 @@
-# @stet/client
+# @stetcms/client

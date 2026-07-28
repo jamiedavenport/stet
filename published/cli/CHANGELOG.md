@@ -1,1 +1,1 @@
-# @stet/cli
+# @stetcms/cli

@@ -1,1 +1,1 @@
-# @stet/vite
+# @stetcms/vite

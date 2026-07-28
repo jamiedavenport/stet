@@ -1,13 +1,13 @@
-# @stet/cli
+# @stetcms/cli
 
 Stet from the command line, for scripting, seeding, and CI.
 
 ## Install
 
 ```bash
-npm install -g @stet/cli
+npm install -g @stetcms/cli
 # or run without installing
-npx @stet/cli login
+npx @stetcms/cli login
 ```
 
 ## Usage
@@ -56,7 +56,7 @@ This package lives in the [Stet](https://github.com/jamiedavenport/stet) monorep
 
 ```bash
 vp install
-vp run build --filter @stet/cli
+vp run build --filter @stetcms/cli
 ```
 
 ## License

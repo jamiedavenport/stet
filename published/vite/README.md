@@ -1,18 +1,18 @@
-# @stet/vite
+# @stetcms/vite
 
 Vite plugin for products built on [Stet](https://github.com/jamiedavenport/stet). It is the scaffold the typed-client codegen grows on: typed options, a `virtual:stet` module exposing config to application code, and a codegen hook that runs before every build. Generating the content client from your project's model will plug into that hook.
 
 ## Install
 
 ```bash
-npm install -D @stet/vite
+npm install -D @stetcms/vite
 ```
 
 ## Usage
 
 ```ts
 // vite.config.ts
-import { stet } from '@stet/vite';
+import { stet } from '@stetcms/vite';
 import { defineConfig } from 'vite';
 
 export default defineConfig({

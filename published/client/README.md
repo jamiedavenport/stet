@@ -1,4 +1,4 @@
-# @stet/client
+# @stetcms/client
 
 Typed client for the [Stet](https://github.com/jamiedavenport/stet) API. The types come straight from the oRPC contract the server implements, so calls and responses are fully typed end to end.
 
@@ -7,13 +7,13 @@ This is the transport layer Stet's generated content client will build on: today
 ## Install
 
 ```bash
-npm install @stet/client
+npm install @stetcms/client
 ```
 
 ## Usage
 
 ```ts
-import { createStetClient, safe } from '@stet/client';
+import { createStetClient, safe } from '@stetcms/client';
 
 const client = createStetClient({
   apiKey: process.env.STET_API_KEY, // organization API key (stet_...)
