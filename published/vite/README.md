@@ -18,7 +18,7 @@ import { defineConfig } from 'vite';
 export default defineConfig({
   plugins: [
     stet({
-      config: { origin: 'https://stet.jxd.dev' },
+      config: { origin: 'https://stetcms.com' },
       generate: async ({ root, command, mode }) => {
         // Write generated files under `root` here.
       },

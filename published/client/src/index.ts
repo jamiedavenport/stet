@@ -15,7 +15,7 @@ export type ApiOutputs = InferContractRouterOutputs<typeof contract>;
 
 // The hosted Stet deployment. Pass `origin` to target a local dev server or
 // a self-hosted instance instead.
-export const DEFAULT_ORIGIN = 'https://stet.jxd.dev';
+export const DEFAULT_ORIGIN = 'https://stetcms.com';
 
 export type StetClient = ContractRouterClient<typeof contract>;
 

@@ -7,8 +7,8 @@ export const brand = {
   // but live in wrangler.jsonc, which cannot import this file.
   slug: 'stet',
   description: 'The CMS for marketing and engineering',
-  url: 'https://stet.jxd.dev',
-  docs: 'https://stet-docs.jxd.dev',
+  url: 'https://stetcms.com',
+  docs: 'https://docs.stetcms.com',
   repository: 'https://github.com/jamiedavenport/stet',
   email: 'hello@jxd.dev',
   author: {

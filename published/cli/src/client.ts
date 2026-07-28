@@ -1,7 +1,7 @@
 import { createAuthClient } from 'better-auth/client';
 import { deviceAuthorizationClient, organizationClient } from 'better-auth/client/plugins';
 
-const DEFAULT_ORIGIN = 'https://stet.jxd.dev';
+const DEFAULT_ORIGIN = 'https://stetcms.com';
 
 // Identifies this CLI in device authorization requests.
 export const CLI_CLIENT_ID = 'stet-cli';

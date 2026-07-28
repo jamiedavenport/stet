@@ -13,7 +13,7 @@
   "main": "src/server.ts",
   "routes": [
     {
-      "pattern": "stet-docs.jxd.dev",
+      "pattern": "docs.stetcms.com",
       "custom_domain": true,
     },
   ],

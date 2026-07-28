@@ -10,7 +10,7 @@ OpenAPI spec, so it always matches what is deployed.
 ## Base URL
 
 ```
-https://stet.jxd.dev/api/v1
+https://stetcms.com/api/v1
 ```
 
 On your own deployment, the API lives at your origin followed by `/api/v1`.
@@ -21,7 +21,7 @@ Every endpoint except the health check requires an organization-scoped API
 key, sent in the `x-api-key` header:
 
 ```bash
-curl https://stet.jxd.dev/api/v1/org \
+curl https://stetcms.com/api/v1/org \
   -H "x-api-key: $STET_API_KEY"
 ```
 

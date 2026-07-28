@@ -17,12 +17,12 @@
   "main": "src/server.ts",
   "routes": [
     {
-      "pattern": "stet.jxd.dev",
+      "pattern": "stetcms.com",
       "custom_domain": true,
     },
   ],
   "vars": {
-    "BETTER_AUTH_URL": "https://stet.jxd.dev",
+    "BETTER_AUTH_URL": "https://stetcms.com",
     // Swap for a Resend-verified domain before inviting real users;
     // onboarding@resend.dev only delivers to the Resend account owner.
     "MAIL_FROM": "Stet <onboarding@resend.dev>",
