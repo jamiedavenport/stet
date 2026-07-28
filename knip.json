@@ -1,0 +1,25 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "ignoreDependencies": ["vite-plus", "vitest", "publint", "tailwindcss", "cloudflare"],
+  "workspaces": {
+    ".": {
+      "ignoreDependencies": ["vite"]
+    },
+    "apps/*": {},
+    "private/*": {},
+    "published/*": {},
+    "apps/web": {
+      "entry": ["src/routes/**/*.{ts,tsx,tsrx}", "content-collections.ts", "e2e/**/*.setup.ts"]
+    },
+    "private/db": {
+      "drizzle": false,
+      "ignore": ["drizzle.config.ts"]
+    },
+    "private/ui": {
+      "includeEntryExports": true
+    },
+    "published/client": {
+      "ignoreDependencies": ["zod"]
+    }
+  }
+}

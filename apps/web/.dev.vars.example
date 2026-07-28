@@ -1,0 +1,38 @@
+# Local development secrets: `cp .dev.vars.example .dev.vars`.
+# CI copies this file verbatim, so every uncommented value must work against
+# a local dev server with no external accounts.
+
+# Public by design: signs sessions for the local server only. Production sets
+# its own with `wrangler secret put BETTER_AUTH_SECRET`. Fixed rather than
+# generated so CI and every contributor share one file; regenerate with
+# `openssl rand -hex 32` if you want your local sessions to be yours alone.
+BETTER_AUTH_SECRET=a19bd96b08be9cb7dd86eb877b65275fd5479e5ed54f0334fc3bc2eafbb56459
+BETTER_AUTH_URL=http://localhost:3000
+
+# Blank overrides the committed production client id so local traffic stays
+# out of the real analytics project; events log as [analytics] lines instead.
+OPENPANEL_CLIENT_ID=
+
+# Same reason: blank overrides the committed production DSN so local and CI
+# errors do not report to the real Sentry project. Local failures are already
+# in the dev server output. Set a DSN here only to test reporting itself.
+SENTRY_DSN=
+
+# Cloudflare's public always-pass test pair, so the widget and the
+# server-side check both run. Comment both out to skip bot protection.
+TURNSTILE_SITE_KEY=1x00000000000000000000AA
+TURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA
+
+# Optional. Without them: emails log to the console with their action links,
+# the chat agent is disabled, and billing runs against the built-in fake
+# Stripe. Each social button appears only when both halves of its pair are
+# set (callback URL http://localhost:3000/api/auth/callback/{google|github}).
+# RESEND_API_KEY=
+# ANTHROPIC_API_KEY=
+# STRIPE_SECRET_KEY=
+# STRIPE_WEBHOOK_SECRET=
+# STRIPE_PRICE_PAID=
+# GOOGLE_CLIENT_ID=
+# GOOGLE_CLIENT_SECRET=
+# GITHUB_CLIENT_ID=
+# GITHUB_CLIENT_SECRET=

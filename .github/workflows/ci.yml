@@ -1,0 +1,89 @@
+name: CI
+
+# Branch pushes are covered by pull_request, so push only runs on main. This
+# stops a branch with an open PR from triggering every job twice.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# A newer commit on the same ref supersedes in-flight runs.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: voidzero-dev/setup-vp@v1
+        with:
+          node-version: '24'
+          cache: true
+      - run: vp install --frozen-lockfile
+      - run: vp run cf-typegen
+        working-directory: apps/web
+      - run: vp check
+      - run: vp run knip
+      - run: vp run -r tc
+      - run: vp run -r build
+      - run: vp run -r test
+      # Bundle size budgets; measures the dist output of the build above.
+      - run: vp run web#size
+      - run: vp run docs#size
+
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      # The e2e setup shells out to pnpm (seed script), so put it on PATH.
+      - uses: pnpm/action-setup@v6
+      - uses: voidzero-dev/setup-vp@v1
+        with:
+          node-version: '24'
+          cache: true
+      - run: vp install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium
+        working-directory: apps/web
+      # .dev.vars is gitignored; the dev server needs it to boot.
+      - name: Create dev vars
+        run: cp .dev.vars.example .dev.vars
+        working-directory: apps/web
+      - run: pnpm test:e2e
+        working-directory: apps/web
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: playwright-report
+          path: apps/web/playwright-report
+          retention-days: 7
+
+  deploy:
+    if: github.event_name == 'push'
+    needs: [verify, e2e]
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      # Source maps upload only from here, not from the verify job, so pull
+      # requests do not each create a Sentry release. Unset secrets arrive as
+      # empty strings and the build skips the upload.
+      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+      SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+      SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: voidzero-dev/setup-vp@v1
+        with:
+          node-version: '24'
+          cache: true
+      - run: vp install --frozen-lockfile
+      # No-op while private/db/migrations is empty; applies committed
+      # migrations once a fork switches off push (private/db/README.md).
+      - run: vp run web#migrate:remote
+      - run: vp run web#deploy
+      - run: vp run docs#deploy

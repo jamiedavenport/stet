@@ -1,0 +1,151 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "onyx-web",
+  "compatibility_date": "2026-07-19",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": {
+    "enabled": true,
+    // OpenTelemetry spans for every fetch and binding call, so a slow request
+    // can be read as a waterfall instead of inferred from log timestamps.
+    "traces": {
+      "enabled": true,
+    },
+  },
+  // Readable stack traces in Workers Logs and Sentry. Wrangler uploads the
+  // maps to Cloudflare; they are never served to the browser.
+  "upload_source_maps": true,
+  "main": "src/server.ts",
+  "routes": [
+    {
+      "pattern": "onyx.jxd.dev",
+      "custom_domain": true,
+    },
+  ],
+  "vars": {
+    "BETTER_AUTH_URL": "https://onyx.jxd.dev",
+    // Swap for a Resend-verified domain before inviting real users;
+    // onboarding@resend.dev only delivers to the Resend account owner.
+    "MAIL_FROM": "Onyx <onboarding@resend.dev>",
+    // How long notification emails wait in a user's outbox so a burst
+    // collapses into one digest. Override in .dev.vars to test quickly.
+    "NOTIFICATIONS_FLUSH_SECONDS": "300",
+    // Stripe price id (per-seat, monthly) for the paid plan. Empty locally:
+    // without STRIPE_SECRET_KEY billing runs against the built-in fake
+    // Stripe, which supplies its own price id.
+    "STRIPE_PRICE_PAID": "price_1TwMQgIdr8Yx5Wu4pQcDdvtU",
+    // OpenPanel client id (public, ships to the browser). Set it to "" in
+    // .dev.vars to keep local traffic out of the production project; with it
+    // blank (and no secret) analytics logs to the console instead.
+    "OPENPANEL_CLIENT_ID": "fb8ebc94-919a-4d2b-872f-184779f72db7",
+    // Sentry error tracking. The DSN is public (it ships in the worker and
+    // only accepts event submissions). Blank disables reporting entirely, so
+    // the template runs with no Sentry account.
+    "SENTRY_DSN": "https://89a61a5144b9a8be6cc482b6ae04d2fa@o4504352086884352.ingest.us.sentry.io/4511808956989440",
+    // Turnstile bot protection on the auth forms. Blank disables it; local
+    // dev overrides in .dev.vars with the always-pass test pair, production
+    // overrides the secret half with `wrangler secret put` (which shadows
+    // the var) and sets the real site key here.
+    "TURNSTILE_SITE_KEY": "",
+    "TURNSTILE_SECRET_KEY": "",
+  },
+  // Wrangler refuses to deploy while a listed secret is unset, so only
+  // genuinely mandatory secrets belong here. The optional GOOGLE_*/GITHUB_*
+  // social sign-in pairs are typed in src/env.d.ts instead; leave them unset
+  // and the app simply shows no social buttons.
+  "secrets": {
+    "required": [
+      "ANTHROPIC_API_KEY",
+      "BETTER_AUTH_SECRET",
+      "OPENPANEL_CLIENT_SECRET",
+      "RESEND_API_KEY",
+      "STRIPE_SECRET_KEY",
+      "STRIPE_WEBHOOK_SECRET",
+    ],
+  },
+  // Cron triggers and workflows are generated from the @repo/crons and
+  // @repo/workflows registries in the root vite.config.ts.
+  // Per-colo token buckets (no storage, no cost). AUTH_RATE_LIMIT throttles
+  // the credential endpoints per IP+path; API_RATE_LIMIT throttles /api/v1
+  // per API key. Limits are generous enough for the e2e suite from one IP.
+  "ratelimits": [
+    {
+      "name": "AUTH_RATE_LIMIT",
+      "namespace_id": "1001",
+      "simple": {
+        "limit": 30,
+        "period": 60,
+      },
+    },
+    {
+      "name": "API_RATE_LIMIT",
+      "namespace_id": "1002",
+      "simple": {
+        "limit": 120,
+        "period": 60,
+      },
+    },
+  ],
+  "queues": {
+    "producers": [
+      {
+        "binding": "JOBS",
+        "queue": "onyx-jobs",
+      },
+    ],
+    "consumers": [
+      {
+        "queue": "onyx-jobs",
+        "max_retries": 5,
+        "dead_letter_queue": "onyx-jobs-dlq",
+      },
+    ],
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "onyx-db",
+      "database_id": "38255c5a-48ac-4f56-9f90-28e203f8ce10",
+      "migrations_dir": "../../private/db/migrations",
+    },
+  ],
+  "r2_buckets": [
+    {
+      "binding": "STORAGE",
+      "bucket_name": "onyx-storage",
+    },
+  ],
+  // Resizes and re-encodes uploaded images on the way out of /api/files.
+  "images": {
+    "binding": "IMAGES",
+  },
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "PAGE_PRESENCE",
+        "class_name": "PagePresenceRoom",
+      },
+      {
+        "name": "CHAT_AGENT",
+        "class_name": "ChatAgent",
+      },
+      {
+        "name": "NOTIFICATION_HUB",
+        "class_name": "NotificationHub",
+      },
+    ],
+  },
+  "exports": {
+    "PagePresenceRoom": {
+      "type": "durable-object",
+      "storage": "sqlite",
+    },
+    "ChatAgent": {
+      "type": "durable-object",
+      "storage": "sqlite",
+    },
+    "NotificationHub": {
+      "type": "durable-object",
+      "storage": "sqlite",
+    },
+  },
+}

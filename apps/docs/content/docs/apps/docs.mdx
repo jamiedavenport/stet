@@ -1,0 +1,49 @@
+---
+title: apps/docs
+description: This documentation site, built with Fumadocs.
+---
+
+`apps/docs` is the site you are reading, built with Fumadocs on TanStack
+Start and deployed as the `onyx-docs` Worker. Fork it, replace the content,
+and you have your own product docs.
+
+## Running it
+
+```bash
+vp dev apps/docs       # http://localhost:3100
+pnpm run deploy        # build and deploy to Cloudflare
+```
+
+## Writing content
+
+Pages are MDX files in `content/docs`, served from the site root:
+`content/docs/index.mdx` is `/`. Sidebar structure and order live in
+`meta.json` files next to the content.
+
+```mdx
+---
+title: My page
+description: One line shown in the sidebar and search.
+---
+
+Regular markdown, plus components like Cards and Callout.
+```
+
+The API Reference section is generated from `private/api/openapi.json` at
+runtime. After changing the contract, regenerate the spec and the pages
+follow:
+
+```bash
+cd private/api && pnpm generate:openapi
+```
+
+## AI-friendly output
+
+Every page is also served as raw markdown by appending `.md` to its URL, and
+the whole site is exposed at `/llms.txt` and `/llms-full.txt` for language
+models.
+
+## Branding
+
+The name, logo, and titles come from [`@repo/brand`](/private/brand), so a
+rebrand there restyles this site too.

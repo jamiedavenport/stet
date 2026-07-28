@@ -1,0 +1,62 @@
+---
+title: '@repo/logging'
+description: Wide-event structured logging, with Cloudflare traces and Sentry error tracking.
+---
+
+Observability in Onyx is three layers, none of which need infrastructure you have to run:
+
+| Layer              | What it answers                                               | Where it lives                      |
+| ------------------ | ------------------------------------------------------------- | ----------------------------------- |
+| Cloudflare Workers | What did this request do, and how long did each step take?    | `observability` in `wrangler.jsonc` |
+| `@repo/logging`    | What happened during this job, cron run, or webhook delivery? | wide events in the console          |
+| Sentry             | What is broken, and who should be told?                       | `SENTRY_DSN`, off by default        |
+
+## Cloudflare logs and traces
+
+Both Workers ship with `observability.enabled` and `observability.traces.enabled`, so every invocation is logged and every fetch and binding call is captured as an OpenTelemetry span. Nothing to install: read them in the Cloudflare dashboard, and filter with the [Query Builder](https://developers.cloudflare.com/workers/observability/query-builder/). `upload_source_maps` means stack traces name real source files rather than a minified bundle.
+
+Retention is 7 days on the Workers Paid plan. To keep logs longer, or to put them next to the rest of your stack, point evlog at a drain (below) or export the traces to any OTLP endpoint.
+
+## Wide events
+
+A wide event is one log line per unit of work carrying everything known about it, instead of a scatter of lines to stitch back together. `@repo/logging` wraps [evlog](https://www.evlog.dev) with the repo's field vocabulary, so a query means the same thing wherever the event came from:
+
+```ts
+import { createLogger } from '@repo/logging';
+
+const log = createLogger({ job: { name: 'deliver-webhook', messageId: message.id } });
+try {
+  log.set({ organization: { id: organizationId } });
+  await run();
+} finally {
+  log.emit();
+}
+```
+
+One row then tells you the job, the organization, how long it took, and whether it failed. The queue consumer, the cron runner, and webhook delivery are already instrumented this way; HTTP requests are left to Cloudflare's invocation logs, which already cover them.
+
+Fields are typed: `job.nmae` fails to compile. See the [package README](https://github.com/jamiedavenport/onyx/tree/main/private/logging) for the vocabulary and for the drain adapters (Axiom, OTLP, Better Stack) that ship events elsewhere without touching a call site.
+
+## Errors
+
+Cloudflare logs tell you an error happened if you go looking. Sentry tells you without being asked, groups repeats into one issue, and resolves the stack trace against uploaded source maps.
+
+Set the `SENTRY_DSN` var in `apps/web/wrangler.jsonc` to switch it on; blank, the SDK is disabled and the template runs with no Sentry account. The worker's `fetch`, `scheduled`, and `queue` handlers are wrapped once in `src/server.ts`, and each Durable Object and workflow is wrapped separately because they run outside the fetch handler and would otherwise report nothing.
+
+Tracing stays with Cloudflare (`tracesSampleRate: 0`), so Sentry only carries exceptions and a free-tier project is enough.
+
+### Expected failures
+
+Not every thrown error is a defect. A customer's webhook endpoint being down is an outage at their end, and the queue's five retry attempts against a dead URL are not five bugs. Those throw `ExpectedFailure`, which the queue consumer retries and logs but keeps out of Sentry:
+
+```ts
+import { ExpectedFailure } from '@repo/logging';
+
+throw new ExpectedFailure(`${retryable} of ${targets.length} deliveries failed`);
+```
+
+Reach for it when an exception is only being used to ask for a retry. Anything that means "someone should look at this" should stay a plain `Error`.
+
+## Alerting and status
+
+Cloudflare has no alerting for Worker errors, so it comes from Sentry: an alert rule on new issues, plus the uptime monitor and cron monitor that every Sentry plan includes. Status pages are separate again; [DEPLOY.md](https://github.com/jamiedavenport/onyx/blob/main/DEPLOY.md) covers both as deployment steps, since neither is anything in the repo.

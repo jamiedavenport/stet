@@ -1,0 +1,29 @@
+---
+title: Public packages
+description: The npm packages your users install to work with your API.
+---
+
+Packages under `published/*` are versioned with Changesets and released to
+npm. They are the outward-facing surface of your deployment: your users
+install them to call your public API.
+
+<Cards>
+  <Card
+    title="@jxdltd/onyx-client"
+    href="/public/client"
+    description="The typed client for your public API."
+  />
+  <Card
+    title="@jxdltd/onyx-cli"
+    href="/public/cli"
+    description="The onyx command line interface, with browser login."
+  />
+  <Card
+    title="@jxdltd/onyx-vite"
+    href="/public/vite"
+    description="The Vite plugin scaffold for product build integration."
+  />
+</Cards>
+
+The client and the CLI are generated from the same oRPC contract as the
+[API Reference](/openapi), so they never drift from what is deployed.

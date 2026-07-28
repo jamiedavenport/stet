@@ -1,0 +1,47 @@
+{
+  "name": "@repo/ui",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./globals.css": "./src/styles/globals.css",
+    "./components/*": "./src/components/*.tsx",
+    "./hooks/*": "./src/hooks/*.ts",
+    "./lib/*": "./src/lib/*.ts",
+    "./marketing/*.tsrx": "./src/marketing/*.tsrx",
+    "./marketing/*": "./src/marketing/*.ts"
+  },
+  "scripts": {
+    "build": "tsrx-tsc --noEmit",
+    "tc": "tsrx-tsc --noEmit"
+  },
+  "dependencies": {
+    "@base-ui/react": "catalog:",
+    "@fontsource-variable/geist": "catalog:",
+    "@fontsource-variable/geist-mono": "catalog:",
+    "@repo/brand": "workspace:*",
+    "@repo/i18n": "workspace:*",
+    "@tanstack/react-router": "catalog:",
+    "@tsrx/react": "catalog:",
+    "ai": "catalog:",
+    "class-variance-authority": "catalog:",
+    "cnfast": "catalog:",
+    "lucide-react": "catalog:",
+    "shadcn": "catalog:",
+    "shiki": "catalog:",
+    "streamdown": "catalog:",
+    "tw-animate-css": "catalog:",
+    "use-stick-to-bottom": "catalog:"
+  },
+  "devDependencies": {
+    "@tsrx/typescript-plugin": "catalog:",
+    "@types/react": "catalog:",
+    "react": "catalog:",
+    "tailwindcss": "catalog:",
+    "typescript": "catalog:",
+    "vite-plus": "catalog:"
+  },
+  "peerDependencies": {
+    "react": "*"
+  }
+}

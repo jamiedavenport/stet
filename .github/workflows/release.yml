@@ -1,0 +1,40 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+# One release run at a time so version PRs and publishes never race.
+concurrency: release
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      # changesets/action and the version command shell out to pnpm.
+      - uses: pnpm/action-setup@v6
+      - uses: voidzero-dev/setup-vp@v1
+        with:
+          node-version: '24'
+          cache: true
+      - run: vp install --frozen-lockfile
+      # While unreleased changesets exist this maintains a "Version Packages"
+      # PR; once that PR merges it builds published/* and publishes to npm,
+      # then creates a GitHub release per new tag.
+      - uses: changesets/action@v1
+        with:
+          version: pnpm run changeset:version
+          publish: pnpm run release
+          title: 'chore: version packages'
+          commit: 'chore: version packages'
+          createGithubReleases: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

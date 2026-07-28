@@ -1,0 +1,12 @@
+# Static assets are served by the assets binding without running the worker,
+# so they never pass through withSecurityHeaders in src/security.ts. Repeat
+# the two headers that matter for non-HTML responses here.
+/*
+  X-Content-Type-Options: nosniff
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+
+# Build assets are content-hashed, so they can be cached forever; the HTML
+# referencing them changes instead. Without this, Workers static assets serve
+# max-age=0 and every full page load revalidates each asset.
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable

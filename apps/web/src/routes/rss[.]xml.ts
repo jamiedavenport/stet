@@ -1,0 +1,49 @@
+import { brand } from '@repo/brand';
+import { createFileRoute } from '@tanstack/react-router';
+
+import { sortedPosts } from '#/marketing/content';
+import { siteUrl } from '#/marketing/seo';
+
+function escapeXml(value: string) {
+  return value
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;');
+}
+
+export const Route = createFileRoute('/rss.xml')({
+  server: {
+    handlers: {
+      GET: () => {
+        const posts = sortedPosts();
+        const items = posts
+          .map(
+            (post) => `    <item>
+      <title>${escapeXml(post.title)}</title>
+      <link>${siteUrl}/blog/${post.slug}</link>
+      <guid isPermaLink="true">${siteUrl}/blog/${post.slug}</guid>
+      <description>${escapeXml(post.summary)}</description>
+      <pubDate>${new Date(post.date).toUTCString()}</pubDate>
+    </item>`,
+          )
+          .join('\n');
+
+        const rss = `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>${brand.name} Blog</title>
+    <link>${siteUrl}/blog</link>
+    <description>${escapeXml(`Notes from building ${brand.name}: architecture decisions and Cloudflare patterns.`)}</description>
+    <language>en-gb</language>
+${items}
+  </channel>
+</rss>`;
+
+        return new Response(rss, {
+          headers: { 'Content-Type': 'application/rss+xml' },
+        });
+      },
+    },
+  },
+});

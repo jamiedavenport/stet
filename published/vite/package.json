@@ -1,0 +1,55 @@
+{
+  "name": "@jxdltd/onyx-vite",
+  "version": "0.1.0",
+  "description": "Vite plugin for products built on Onyx: typed options, a virtual config module, and a build-time codegen hook.",
+  "keywords": [
+    "onyx",
+    "plugin",
+    "vite",
+    "vite-plugin"
+  ],
+  "homepage": "https://github.com/jamiedavenport/onyx/tree/main/published/vite#readme",
+  "bugs": "https://github.com/jamiedavenport/onyx/issues",
+  "license": "Apache-2.0",
+  "author": "Jamie Davenport (https://jxd.dev)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jamiedavenport/onyx.git",
+    "directory": "published/vite"
+  },
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "publishConfig": {
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      }
+    },
+    "access": "public"
+  },
+  "scripts": {
+    "build": "vp pack",
+    "tc": "tsc --noEmit",
+    "test": "vp test run"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "publint": "catalog:",
+    "typescript": "catalog:",
+    "vite": "npm:@voidzero-dev/vite-plus-core@0.2.2",
+    "vite-plus": "catalog:",
+    "vitest": "catalog:"
+  },
+  "peerDependencies": {
+    "vite": ">=6.0.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "title": "Private packages",
+  "defaultOpen": true,
+  "pages": [
+    "index",
+    "ui",
+    "auth",
+    "billing",
+    "db",
+    "api",
+    "mail",
+    "i18n",
+    "ai",
+    "realtime",
+    "notifications",
+    "webhooks",
+    "analytics",
+    "logging",
+    "crons",
+    "jobs",
+    "workflows",
+    "brand"
+  ]
+}

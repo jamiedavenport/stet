@@ -1,0 +1,17 @@
+# Weekly dependency PRs. Minor and patch updates arrive as one grouped PR so
+# the noise stays proportional to the risk; majors stay individual.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      minor-and-patch:
+        update-types:
+          - minor
+          - patch
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly

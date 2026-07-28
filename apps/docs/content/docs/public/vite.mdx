@@ -1,0 +1,76 @@
+---
+title: '@jxdltd/onyx-vite'
+description: Vite plugin scaffold with typed options, a virtual config module, and a build-time codegen hook.
+---
+
+`@jxdltd/onyx-vite` is the published Vite plugin for products built on Onyx. It ships as a small working scaffold: typed plugin options, a `virtual:onyx` module that exposes config to application code, and a `generate` hook for codegen at build time. Grow it into whatever build integration your product needs, such as config injection, generated clients, or route manifests.
+
+## Installation
+
+```bash
+npm install -D @jxdltd/onyx-vite
+```
+
+## Usage
+
+Add the plugin in `vite.config.ts`:
+
+```ts
+import { onyx } from '@jxdltd/onyx-vite';
+import { defineConfig } from 'vite';
+
+export default defineConfig({
+  plugins: [
+    onyx({
+      config: { origin: 'https://onyx.jxd.dev' },
+      generate: async ({ root, command, mode }) => {
+        // Write generated files under `root` here.
+      },
+    }),
+  ],
+});
+```
+
+## The virtual module
+
+Whatever you pass as `config` becomes the default export of the `virtual:onyx` module, serialized with `JSON.stringify`:
+
+```ts
+import config from 'virtual:onyx';
+
+console.log(config.origin);
+```
+
+Declare the module with your config's shape so imports are typed (for example in `src/onyx.d.ts`):
+
+```ts
+declare module 'virtual:onyx' {
+  const config: { origin: string };
+  export default config;
+}
+```
+
+## Codegen
+
+The `generate` hook is awaited once when a build starts, and again whenever the dev server starts, before any module is loaded. It receives the resolved root, command, and mode:
+
+```ts
+onyx({
+  generate: async ({ root, command, mode }) => {
+    if (command === 'build') {
+      // Emit production-only artifacts.
+    }
+  },
+});
+```
+
+## Options
+
+| Option     | Description                                                                                     |
+| ---------- | ----------------------------------------------------------------------------------------------- |
+| `config`   | Values exposed as the default export of `virtual:onyx`. Must be JSON-safe.                      |
+| `generate` | Awaited once when a build starts (and when the dev server starts), before any module is loaded. |
+
+## Extending
+
+The plugin lives in `published/vite` and is released to npm through the same Changesets pipeline as the client and the CLI. Its test suite runs the plugin through Vite's `build` API, so additions to the plugin can be covered the same way.

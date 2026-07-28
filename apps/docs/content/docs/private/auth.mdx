@@ -1,0 +1,103 @@
+---
+title: '@repo/auth'
+description: Better Auth configuration shared by the web app and the CLI.
+---
+
+`@repo/auth` packages the [Better Auth](https://better-auth.com) setup used across Onyx. It covers email + password with verification and reset, Google and GitHub social sign-in, emailed magic links, WebAuthn passkeys, two-factor authentication (TOTP), email change and account deletion, organizations with invitations, organization API keys, platform administration (roles, bans, impersonation), and the OAuth device flow used by `onyx login`. Sessions are stored in D1 through the Drizzle adapter. The web app already constructs the server instance and serves it at `/api/auth/*`, so you only ever call the two APIs below.
+
+## Client
+
+`@repo/auth/client` exports a ready-made `authClient` (and its type `AuthClient`) with the organization and device authorization plugins enabled. This is what components call:
+
+```tsx
+import { authClient } from '@repo/auth/client';
+
+const { error } = await authClient.signIn.email(value);
+const { error } = await authClient.signUp.email(value);
+await authClient.signIn.social({ provider: 'google', callbackURL: '/app' });
+await authClient.signIn.magicLink({ email, callbackURL: '/app' }); // emails a one-time link
+await authClient.signIn.passkey(); // WebAuthn prompt
+
+// Account management (see the personal settings page).
+await authClient.changePassword({ currentPassword, newPassword, revokeOtherSessions: true });
+await authClient.changeEmail({ newEmail, callbackURL: '/app/settings' });
+await authClient.twoFactor.enable({ password }); // returns { totpURI, backupCodes }
+await authClient.twoFactor.verifyTotp({ code }); // finishes enrolment
+await authClient.passkey.addPasskey(); // register the current device
+await authClient.passkey.listUserPasskeys();
+await authClient.listSessions();
+await authClient.revokeOtherSessions();
+await authClient.deleteUser({ callbackURL: '/' }); // mails a confirmation link
+
+await authClient.organization.create({ name, slug });
+await authClient.organization.inviteMember({ email, role: 'member' });
+await authClient.organization.setActive({ organizationId });
+
+// Platform staff only (see the admin panel).
+await authClient.admin.banUser({ userId, banReason });
+await authClient.admin.unbanUser({ userId });
+await authClient.admin.setRole({ userId, role: 'admin' });
+await authClient.admin.impersonateUser({ userId });
+await authClient.admin.stopImpersonating();
+```
+
+## Server
+
+The configured instance is exported as `auth` from `apps/web/src/auth-server.ts`. Server-side code calls the typed API on it directly:
+
+```ts
+import { auth } from '#/auth-server';
+
+const session = await auth.api.getSession({ headers: request.headers });
+const result = await auth.api.verifyApiKey({ body: { key } });
+```
+
+### What the instance enables
+
+- Email + password with verification on signup and password reset. All emails go through `@repo/mail`.
+- Google and GitHub social sign-in. Each provider turns on only when both its id and secret are set, and matching verified emails auto-link to an existing account.
+- Emailed magic links, requested from `/sign/link`. Sign-in only (`disableSignUp`): unknown addresses get no email but the same success response, so account existence stays unguessable. Tokens are stored hashed and expire after five minutes.
+- WebAuthn passkeys, registered from the personal settings page. The relying party id is the hostname of `BETTER_AUTH_URL`, so passkeys are bound to the deployed origin. The sign-in page also preloads conditional UI, so browsers offer saved passkeys directly in the email field's autofill.
+- Two-factor authentication (TOTP with backup codes). An enrolled user's sign-in stops after the password and the client finishes on `/sign/2fa`.
+- Email change (confirmed from the current inbox) and account deletion (confirmed by a mailed link), both surfaced on the personal settings page.
+- Organizations with invitation emails. Invite links point at `{baseURL}/invite/{id}`. Members hold one of three roles: `owner`, `admin`, or `member`. Owners and admins manage the roster, invitations, webhooks, and API keys; only owners may touch other owners, and Better Auth refuses to leave an organization without one. The statements live in `@repo/auth/access`, which also exports `canManageOrganization`, the shared owner-or-admin rule.
+- Organization-owned API keys (prefix `onyx_`) for the public `/api/v1` surface, sent as `x-api-key`. Key management requires the `apiKey` permission, granted to owners and admins by the custom access control.
+- The OAuth device flow (`/device` verification page) plus bearer token support, so CLIs can authenticate with `Authorization: Bearer <session token>`.
+- A five minute session cookie cache, so `getSession` avoids a D1 query on most requests.
+- Optional Cloudflare Turnstile on the credential endpoints (sign-in, sign-up, password reset, magic link): set `TURNSTILE_SITE_KEY` and `TURNSTILE_SECRET_KEY` and the web app renders the widget, sending the token as `x-captcha-response`.
+- Platform administration: `user.role` (`user` or `admin`), bans, and impersonation, surfaced at `/app/admin`. See [Admin panel](#admin-panel).
+
+### Admin panel
+
+`user.role` is a platform-wide role, unrelated to a member's role inside an organization. It is not client-writable, so the first admin is promoted with SQL:
+
+```bash
+wrangler d1 execute onyx-db --remote --command "UPDATE user SET role = 'admin' WHERE email = 'you@example.com'"
+```
+
+From then on admins promote others from `/app/admin/users`. Locally, `pnpm --filter @repo/db seed` creates `admin@example.com` with the role already set.
+
+The panel lives behind a route guard that 404s for everyone else, and each of its server functions repeats the check, so a leaked URL exposes nothing. It lists and searches users and organizations, shows signup and activity counts, and offers three actions per user:
+
+- **Ban**, with an optional reason. Banned users cannot sign in (`BANNED_USER`) and their existing sessions are revoked.
+- **Impersonate**, which swaps the admin's session for an hour-long one as the target. Every page then shows a banner until the admin stops. Admins and banned users cannot be impersonated.
+- **Make admin** / **Revoke admin**.
+
+### Side effects
+
+Signup enqueues the `send-welcome-email` job (`@repo/jobs`), sending an invitation starts the `invitation-reminder` workflow (`@repo/workflows`), and members joining an organization fan out a `member-joined` notification (`@repo/notifications`). New sessions start with `activeOrganizationId` set to the user's first organization.
+
+## Configuration
+
+| Name                   | Where                                            | Purpose                                    |
+| ---------------------- | ------------------------------------------------ | ------------------------------------------ |
+| `BETTER_AUTH_SECRET`   | `.dev.vars` locally, Worker secret in production | Signing secret                             |
+| `BETTER_AUTH_URL`      | `wrangler.jsonc` vars                            | Absolute origin, also used in invite links |
+| `GOOGLE_CLIENT_ID`     | `.dev.vars` locally, Worker secret in production | Google OAuth; omit to hide the button      |
+| `GOOGLE_CLIENT_SECRET` | `.dev.vars` locally, Worker secret in production | Google OAuth                               |
+| `GITHUB_CLIENT_ID`     | `.dev.vars` locally, Worker secret in production | GitHub OAuth; omit to hide the button      |
+| `GITHUB_CLIENT_SECRET` | `.dev.vars` locally, Worker secret in production | GitHub OAuth                               |
+
+Set each provider's OAuth callback URL to `{BETTER_AUTH_URL}/api/auth/callback/{google|github}`. A provider stays hidden until both its id and secret are present, so social sign-in is entirely optional.
+
+Emails additionally need `RESEND_API_KEY` and `MAIL_FROM`; without an API key locally, emails are logged to the console with their action links.

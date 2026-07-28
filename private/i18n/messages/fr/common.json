@@ -1,0 +1,14 @@
+{
+  "accept_invitation": "Accepter l'invitation",
+  "billing_feature_unavailable": "La fonctionnalité {label} n'est pas disponible.",
+  "billing_label_ai": "assistant IA",
+  "billing_label_api_requests": "requêtes API",
+  "billing_label_members": "membres",
+  "billing_label_storage": "Mo de stockage",
+  "billing_limit_reached": "Le plan {plan} est limité à {cap} {label}.",
+  "billing_limit_reached_upgrade": "Le plan {plan} est limité à {cap} {label}. Passez à un plan supérieur pour en obtenir plus.",
+  "billing_plan_required": "Le plan {plan} est requis pour cette fonctionnalité.",
+  "notification_member_joined": "{memberName} a rejoint {organizationName}",
+  "notification_mentioned_in_notes": "{mentionedByName} vous a mentionné dans les notes de {organizationName}",
+  "reset_password": "Réinitialiser le mot de passe"
+}

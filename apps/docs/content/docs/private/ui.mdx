@@ -1,0 +1,102 @@
+---
+title: '@repo/ui'
+description: Shared shadcn/ui components on Base UI with Tailwind v4.
+---
+
+`@repo/ui` is the shared component library: shadcn/ui components built on Base UI (the shadcn default) with Tailwind v4. Components are plain source files exported directly from the package, so apps import exactly the pieces they use and Tailwind scans the sources as part of the app build. The default typeface is Geist via Fontsource.
+
+## Exports
+
+The export map exposes source files by path rather than a barrel:
+
+| Import path             | What it provides                                                   |
+| ----------------------- | ------------------------------------------------------------------ |
+| `@repo/ui/globals.css`  | The theme, design tokens, and Tailwind setup. Import once per app. |
+| `@repo/ui/components/*` | The component library, one module per component.                   |
+| `@repo/ui/hooks/*`      | Shared hooks, for example `use-mobile`.                            |
+| `@repo/ui/lib/*`        | Utilities, for example `cn()` in `lib/utils`.                      |
+| `@repo/ui/marketing/*`  | The marketing design system: shell, sections, lists, and copy.     |
+
+## Consuming components
+
+Import each component from its own module. Typical usage in `apps/web`:
+
+```tsx
+import { Button } from '@repo/ui/components/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@repo/ui/components/card';
+import { Field, FieldError, FieldLabel } from '@repo/ui/components/field';
+import { Input } from '@repo/ui/components/input';
+```
+
+The library covers the usual primitives (button, card, dialog, dropdown-menu, select, sheet, sidebar, tooltip, and so on) plus `components/ai-elements/*`, the chat building blocks used by the AI assistant (conversation, message, prompt-input, tool, code-block, loader).
+
+The `cn()` helper merges conditional class names with Tailwind-aware deduping. It is re-exported from the [`cnfast`](https://npmjs.com/package/cnfast) package (`src/lib/utils.ts` is just `export { cn } from 'cnfast'`), but keep importing it from `@repo/ui/lib/utils`:
+
+```tsx
+import { cn } from '@repo/ui/lib/utils';
+
+<div className={cn('flex items-center', className)} />;
+```
+
+## Styles and theming
+
+Each app imports the stylesheet once. In `apps/web/src/style.css`:
+
+```css
+@import '@repo/ui/globals.css';
+```
+
+`globals.css` imports Tailwind, `tw-animate-css`, the shadcn Tailwind layer, and the Geist font, then defines the theme:
+
+- Design tokens are CSS variables on `:root` (light) and `.dark` (dark), in oklch: `--background`, `--foreground`, `--primary`, `--muted`, `--destructive`, `--border`, `--ring`, the `--sidebar-*` family, and more.
+- An `@theme inline` block maps them to Tailwind color utilities, so `bg-background`, `text-muted-foreground`, or `border-border` resolve to the tokens.
+- Radius scales derive from a single `--radius` variable (`--radius-sm` through `--radius-4xl`).
+- Dark mode is a class: `@custom-variant dark (&:is(.dark *))`, so toggling `.dark` on a root element switches the palette.
+
+To rebrand, edit the token values in `globals.css`; components pick the changes up through the Tailwind utilities.
+
+## Adding components
+
+Components are vendored source, not a dependency. Add new ones by copying from the shadcn `base` registry variant (the Base UI builds) into `private/ui/src/components/`. The package's `components.json` configures the shadcn CLI for this layout, including the `@basecn` registry (`https://basecn.dev/r/{name}.json`), so from `private/ui` you can run:
+
+```bash
+npx shadcn@latest add @basecn/<component>
+```
+
+After adding a file under `src/components/`, it is immediately importable as `@repo/ui/components/<name>` through the wildcard export. Adjust imports inside the copied file to the package aliases if needed (`@/lib/utils` maps to `src/lib/utils`).
+
+## Marketing components
+
+`src/marketing/` holds the public-site design system in the jxd.dev visual
+language: `header.tsrx` and `footer.tsrx` (page chrome, composed by the
+app's `_marketing` layout route), `section.tsrx` (`LabeledSection`,
+`PageIntro`), `lists.tsrx` (`FeatureGrid`, `TermRows`, and the `RailList` /
+`RailRow` pair behind /blog and /changelog), `hero.tsrx`, `sections.tsrx`,
+`pricing.tsrx`, `extras.tsrx` (FAQ and blog teaser), `ui.tsrx` (typographic
+primitives and `MarketingLink`, which renders a router `Link` for `to` and an
+anchor for `href`), and `data` (the features, FAQ, stack, and pricing copy,
+plain data with no JSX). The components are presentational: anything sourced
+from the app's content collections (posts) arrives as props, so the package
+never depends on generated modules.
+
+Every component module is a [TSRX](https://tsrx.dev) file. The package's
+`tsconfig.json` loads `@tsrx/typescript-plugin`, `build` typechecks with
+`tsrx-tsc`, and `.tsrx` modules are exported with their extension:
+
+```tsx
+import { MarketingHeader } from '@repo/ui/marketing/header.tsrx';
+import { PricingCards } from '@repo/ui/marketing/pricing.tsrx';
+```
+
+The installed TSRX parser (`@tsrx/core` 0.1.44) mis-lexes non-ASCII JSX text
+(e.g. `→`) anywhere except a component's sole top-level render node; give the
+glyph its own component if it needs to appear inside a ternary or ` const`.
+Branching between two different root element types (e.g. `Link` vs `a`)
+needs a plain ternary wrapped in a Fragment, not sibling `@if`/`@if (!cond)`
+blocks -- those only work for optional children within one shared parent
+(`tsrx-tsc` errors with "Not implemented: JSXIfExpression" otherwise).
+
+The marketing fonts (Inter, Mona Sans, Geist Mono via Fontsource) and the
+`grid-lines` and `prose` utilities live in `globals.css`; the `@font-face`
+declarations are global, but browsers only download fonts where they are
+used, so app pages never fetch them.

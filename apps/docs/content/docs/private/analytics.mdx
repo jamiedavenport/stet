@@ -1,0 +1,62 @@
+---
+title: '@repo/analytics'
+description: Type-safe product analytics on OpenPanel.
+---
+
+`@repo/analytics` records product events with [OpenPanel](https://openpanel.dev). The tracking plan lives in the repo as a Zod event registry, so browser and Worker capture calls are typed end to end: a typo'd event name or a missing property fails to compile. Identity is automatic; the client follows the session (identify on sign-in, organization group on org switch, clear on sign-out) and server captures take the user and organization explicitly.
+
+## Recording events
+
+Browser interactions use `track()`, typed from the registry:
+
+```ts
+import { track } from '@repo/analytics/client';
+
+track('task_created');
+track('subscription_started', { plan: 'paid' }); // properties required by the schema
+```
+
+Domain truths are captured server-side where they happen, so ad blockers and closed tabs cannot lose them. Real usage from `@repo/auth`:
+
+```ts
+import { capture } from '@repo/analytics/server';
+
+capture('user_signed_up', { userId: user.id });
+capture('subscription_started', {
+  organizationId: subscription.referenceId,
+  properties: { plan: plan.name },
+});
+```
+
+`capture()` validates properties against the event's schema, delivers via `waitUntil` so responses are never blocked, and never throws. `userId` becomes the OpenPanel profile id; `organizationId` becomes both a group and an `organizationId` property.
+
+## Defining a new event
+
+Add a definition to `src/events.ts` and list it in the registry:
+
+```ts
+export const reportExported = defineEvent({
+  name: 'report_exported',
+  schema: z.object({ format: z.enum(['csv', 'pdf']) }),
+});
+
+export const registry = {
+  // ...existing events
+  [reportExported.name]: reportExported,
+} as const;
+```
+
+Both `track()` and `capture()` pick it up immediately with full property typing. Keep names snake_case and past tense; keep identity out of schemas.
+
+## Built-in events
+
+- `user_signed_up`: user-create hook in `@repo/auth`.
+- `organization_created`: organization hook in `@repo/auth`; also names the OpenPanel group.
+- `subscription_started` / `subscription_canceled`: Stripe webhook callbacks in `@repo/auth`.
+- `task_created`: the tasks page, as the client-side example.
+
+Screen views and outgoing links are tracked automatically by the browser SDK.
+
+## Configuration
+
+`OPENPANEL_CLIENT_ID` (public var) and `OPENPANEL_CLIENT_SECRET` (secret) in `apps/web/wrangler.jsonc`. Without them, events are logged as `[analytics]` console lines instead of sent, which is the recommended local-dev default; see the package README for sending real events locally.

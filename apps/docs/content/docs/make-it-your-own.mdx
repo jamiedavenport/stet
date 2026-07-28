@@ -1,0 +1,128 @@
+---
+title: Make it your own
+description: The checklist for turning the template into your product.
+---
+
+Onyx is a template: you fork it, rebrand it, and replace the demo product
+with yours. This page is the full checklist, in the order that works best.
+Identity first, then infrastructure, then content, then the demo product.
+
+## 1. Rebrand
+
+Everything prose-level reads from [`@repo/brand`](/private/brand), so this
+step is small:
+
+1. Edit the `brand` object in `private/brand/src/index.ts`: name, slug,
+   description, URLs, email, and author. The `slug` drives the locale and
+   consent cookies, the API key prefix, the log service, and the analytics
+   SDK tag.
+2. Replace `private/brand/src/assets/logo.svg` and the polygons in
+   `private/brand/src/mark.tsx` with your logo. Favicons and OG images derive
+   from these.
+3. Delete `private/brand/src/author-mark.tsx` and its "built by" usages, and
+   replace `assets/banner.png` (the README banner).
+4. Regenerate the OG snapshot baselines, which capture the old logo and name:
+   `cd apps/web && pnpm test:e2e -- --update-snapshots og.spec.ts`.
+
+## 2. Rename the infrastructure
+
+Cloudflare resource names live in config, which cannot import `@repo/brand`.
+The convention is `<slug>-<thing>`. In `apps/web/wrangler.jsonc` and
+`apps/docs/wrangler.jsonc`:
+
+- Worker names `onyx-web` and `onyx-docs`, and both `routes` patterns.
+- `onyx-db` (also in the `migrate` scripts in `apps/web/package.json`),
+  `onyx-storage`, `onyx-jobs`, and `onyx-jobs-dlq`. Create your own resources
+  per DEPLOY.md in the repository root and put the new `database_id` in
+  `wrangler.jsonc`.
+- The vars carry the template's live values and are all yours to replace:
+  `BETTER_AUTH_URL`, `MAIL_FROM`, `STRIPE_PRICE_PAID`, `OPENPANEL_CLIENT_ID`,
+  and `SENTRY_DSN` (blank disables Sentry).
+
+Run `pnpm cf-typegen` in `apps/web` after editing.
+
+## 3. Connect your services
+
+DEPLOY.md walks through every account and secret. Required: Cloudflare,
+Stripe, Resend, Anthropic, and OpenPanel. Optional: Sentry, Turnstile, and
+Google/GitHub OAuth. CI deploys on push to `main` once the repository secrets
+listed there exist.
+
+## 4. Set your plans and pricing
+
+The whole catalog, features, plans, limits, and display prices, is
+[`private/billing/src/plans.ts`](/private/billing). Register each paid plan's
+Stripe price in `private/auth/src/stripe.ts`.
+
+## 5. Replace the content
+
+All of it is placeholder describing Onyx itself:
+
+- **Messages**: user-facing copy lives in
+  [`private/i18n/messages`](/private/i18n). The `marketing.json` keys are
+  Onyx sales copy to rewrite in each locale; a unit test enforces key parity,
+  so change all three together.
+- **Blog and changelog**: `apps/web/content/posts` and
+  `apps/web/content/releases`. The architecture section in
+  `private/ui/src/marketing/sections.tsrx` links to the `one-worker` post by
+  slug; update it with your posts.
+- **Marketing structure**: feature cards, FAQ, and stack list in
+  `private/ui/src/marketing/data.ts`; prices in `pricing.tsrx`.
+- **OG titles** in `apps/web/og/config.ts` and the pitch paragraph in
+  `apps/web/src/routes/llms[.]txt.ts`.
+- **Docs**: this site. The `private/*` pages document the packages and stay
+  accurate; the introduction and the `public/*` pages describe Onyx and its
+  npm packages.
+
+## 6. Replace the demo product
+
+Tasks, Notes, and the AI chat exist to prove the realtime, editor, and agent
+plumbing. Their content lives in realtime rooms (Durable Objects, snapshotted
+to the generic `document` table), not in tables of their own, so there is no
+demo schema to drop. Deleting a demo page means also removing its tendrils:
+
+- `/app/tasks` (`apps/web/src/tasks`): the `task_created` event in
+  `private/analytics/src/events.ts`.
+- `/app/notes` (`apps/web/src/notes`): the `mentioned-in-notes` notification,
+  the `note-image` kind in `apps/web/src/files/kinds.ts`, and the
+  `/org/notes` route in the [`@repo/api`](/private/api) contract and
+  `apps/web/src/api/router.ts`.
+- `/app/chat` (`private/ai`): the `ai` feature in the billing catalog, which
+  exists to demo a plan-gated feature.
+- All three: their nav items in `app-sidebar.tsrx`, their message keys, their
+  e2e specs, the "tasks and notes" sentence in the `welcome_body` mail
+  message, and the "Workspace Content" category in
+  `apps/web/src/policystack.ts`.
+
+Your own entities get a schema file in [`private/db/src/schema`](/private/db)
+and server functions in `apps/web/src`; the webhooks, notifications, and
+analytics registries show the pattern for fanning out from them.
+
+## 7. Legal
+
+- In `apps/web/src/policystack.ts`, replace the company block (legal name and
+  address are placeholders), review every purpose and retention, and describe
+  what your product actually collects. Have a lawyer read the rendered
+  `/privacy` and `/cookies` before launch.
+- The repository's LICENSE.md is the Onyx License, which covers the template
+  itself. Its End Products grant means your product ships under terms you
+  choose; the template code you redistribute keeps its license and copyright
+  notices, and the Onyx name stays JXD's.
+- There is no terms-of-service page; add your own.
+
+## 8. The published packages
+
+`published/*` ships the API client, CLI, and Vite plugin to npm as
+`@jxdltd/onyx-*`. If your product has no public API story, delete the
+directory and `.github/workflows/release.yml`. To keep them, rename the
+package scope and the identifiers they carry: the `onyx` CLI binary,
+`ONYX_API_URL`/`ONYX_API_KEY`, the `~/.config/onyx` directory,
+`DEFAULT_ORIGIN` in both client and CLI, the `virtual:onyx` module id, and
+the device-flow `client_id: 'onyx-cli'`, which the auth server sees.
+
+## 9. Before your first release
+
+- Promote your first admin with the SQL one-liner in DEPLOY.md.
+- Switch from `drizzle-kit push` to committed migrations once anyone besides
+  you runs the product; "Switching to migrations" in `private/db/README.md`
+  is the recipe.

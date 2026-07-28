@@ -1,0 +1,28 @@
+{
+  "name": "@repo/api",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./openapi.json": "./openapi.json"
+  },
+  "scripts": {
+    "build": "tsc --noEmit && node scripts/generate-openapi.ts",
+    "generate:openapi": "node scripts/generate-openapi.ts",
+    "postinstall": "node scripts/generate-openapi.ts",
+    "tc": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@orpc/contract": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@orpc/openapi": "catalog:",
+    "@orpc/zod": "catalog:",
+    "@repo/brand": "workspace:*",
+    "@types/node": "catalog:",
+    "typescript": "catalog:",
+    "vite-plus": "catalog:"
+  }
+}

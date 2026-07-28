@@ -1,0 +1,30 @@
+{
+  "name": "@repo/mail",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.tsx",
+    "./unsubscribe": "./src/unsubscribe.ts"
+  },
+  "scripts": {
+    "build": "tsc --noEmit",
+    "tc": "tsc --noEmit",
+    "test": "vp test run"
+  },
+  "dependencies": {
+    "@react-email/components": "catalog:",
+    "@repo/brand": "workspace:*",
+    "@repo/i18n": "workspace:*",
+    "resend": "catalog:"
+  },
+  "devDependencies": {
+    "@types/react": "catalog:",
+    "react": "catalog:",
+    "typescript": "catalog:",
+    "vite-plus": "catalog:"
+  },
+  "peerDependencies": {
+    "react": "*"
+  }
+}

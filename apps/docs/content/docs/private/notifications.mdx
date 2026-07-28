@@ -1,0 +1,84 @@
+---
+title: '@repo/notifications'
+description: Typed in-app and email notifications on the jobs queue, Durable Objects, and D1.
+---
+
+`@repo/notifications` delivers typed notifications to organization members over
+two channels: the in-app feed (with a live bell) and batched email digests.
+`notify()` puts one message on the jobs queue and the platform handles fan-out,
+per-user channel preferences, live delivery, and digest batching from there.
+All of that wiring already exists; you send notifications and define new types.
+
+## Sending a notification
+
+Call `notify()` from any server-side code (it is exported from
+`@repo/notifications/client`, but like `enqueue` in `@repo/jobs` it is
+server-only). The payload is typed from the notification's Zod schema. This is
+how `@repo/auth` announces a new member:
+
+```ts
+import { notify } from '@repo/notifications/client';
+
+await notify({
+  type: 'member-joined',
+  to: { organizationId: organization.id, except: [user.id] },
+  payload: {
+    memberName: user.name,
+    organizationName: organization.name,
+  },
+});
+```
+
+`to` always names an organization. Add `users` and/or `roles` to narrow the
+audience and `except` to drop ids; put the acting user in `except` so nobody
+is notified about their own action. Membership is resolved when the delivery
+job runs, not when `notify()` is called, and the call costs one queue send
+regardless of fan-out size.
+
+## Defining a notification type
+
+Create a definition in `src/notifications/` and list it in `src/registry.ts`.
+`notify()`, delivery, preference filtering, and the settings UI all pick it up
+automatically:
+
+```ts
+export const taskAssigned = defineNotification({
+  type: 'task-assigned',
+  label: 'A task is assigned to you',
+  schema: z.object({ taskTitle: z.string(), assignedBy: z.string() }),
+  defaultChannels: ['app', 'email'],
+  render: (payload) => ({
+    title: `${payload.assignedBy} assigned you "${payload.taskTitle}"`,
+    href: '/tasks',
+  }),
+});
+```
+
+`render` runs at delivery time and its result is denormalized into the feed
+row, so historical rows keep rendering after the type changes or is removed.
+`defaultChannels` applies when the recipient has no preference row; users
+override channels per type on the `/app/settings` page.
+
+## Reading the registry
+
+`@repo/notifications/registry` is safe to import everywhere: it exposes the
+type registry plus the `NotificationType`, `NotificationPayload`, and
+`NotificationChannel` types. The settings UI and server functions in
+`apps/web` read from it.
+
+## Behavior worth knowing
+
+- In-app delivery is live and never delayed: open tabs see the bell update
+  immediately.
+- Email is batched: a burst of activity lands as one digest per user (sent
+  with `@repo/mail`). Quiet hours configured in `/app/settings` defer email
+  digests only.
+
+## Configuration
+
+| Name                          | Kind               | Purpose                                                                                |
+| ----------------------------- | ------------------ | -------------------------------------------------------------------------------------- |
+| `NOTIFICATIONS_FLUSH_SECONDS` | var, default `300` | Seconds an email waits in the outbox. Override in `.dev.vars` to test digests quickly. |
+
+The email channel has a per-user master switch, `notification_settings.email_enabled`: delivery skips queuing for opted-out users, the hub drops an already-queued outbox rather than send refused mail, and the digest's one-click unsubscribe (see [@repo/mail](/docs/private/mail)) flips it off. The settings page turns it back on; per-type preference rows survive underneath.
+| `RESEND_API_KEY`, `MAIL_FROM` | see `@repo/mail` | Used to send digest emails. |

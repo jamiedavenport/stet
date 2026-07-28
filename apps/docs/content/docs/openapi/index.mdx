@@ -1,0 +1,46 @@
+---
+title: API Reference
+description: The public REST API, generated from the oRPC contract.
+---
+
+The public API is defined once as an oRPC contract in `private/api` and served
+from the Worker at `/api/v1`. This reference is generated from that contract's
+OpenAPI spec, so it always matches what is deployed.
+
+## Base URL
+
+```
+https://onyx.jxd.dev/api/v1
+```
+
+On your own deployment, the API lives at your origin followed by `/api/v1`.
+
+## Authentication
+
+Every endpoint except the health check requires an organization-scoped API
+key, sent in the `x-api-key` header:
+
+```bash
+curl https://onyx.jxd.dev/api/v1/org \
+  -H "x-api-key: $ONYX_API_KEY"
+```
+
+API keys are created in the web app under organization settings, or with the
+`onyx` CLI after a browser login.
+
+## Typed access
+
+Prefer the typed client over hand-written requests:
+
+<Cards>
+  <Card
+    title="@jxdltd/onyx-client"
+    href="/public/client"
+    description="Typed client generated from the same contract."
+  />
+  <Card
+    title="@jxdltd/onyx-cli"
+    href="/public/cli"
+    description="Call the API from the terminal with device-flow login."
+  />
+</Cards>

@@ -1,0 +1,52 @@
+{
+  "name": "@jxdltd/onyx-client",
+  "version": "0.4.0",
+  "description": "Typed client for the Onyx API, generated from the oRPC contract.",
+  "keywords": [
+    "api",
+    "client",
+    "onyx",
+    "orpc"
+  ],
+  "homepage": "https://github.com/jamiedavenport/onyx/tree/main/published/client#readme",
+  "bugs": "https://github.com/jamiedavenport/onyx/issues",
+  "license": "Apache-2.0",
+  "author": "Jamie Davenport (https://jxd.dev)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jamiedavenport/onyx.git",
+    "directory": "published/client"
+  },
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "publishConfig": {
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    },
+    "access": "public"
+  },
+  "scripts": {
+    "build": "vp pack",
+    "tc": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@orpc/client": "catalog:",
+    "@orpc/contract": "catalog:",
+    "@orpc/openapi-client": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@repo/api": "workspace:*",
+    "publint": "catalog:",
+    "typescript": "catalog:",
+    "vite-plus": "catalog:"
+  }
+}

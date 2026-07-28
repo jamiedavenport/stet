@@ -1,0 +1,38 @@
+{
+  "name": "@repo/auth",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./server": "./src/server.ts",
+    "./client": "./src/client.ts",
+    "./access": "./src/access.ts"
+  },
+  "scripts": {
+    "build": "tsc --noEmit",
+    "tc": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@better-auth/api-key": "catalog:",
+    "@better-auth/passkey": "catalog:",
+    "@better-auth/stripe": "catalog:",
+    "@repo/analytics": "workspace:*",
+    "@repo/billing": "workspace:*",
+    "@repo/brand": "workspace:*",
+    "@repo/db": "workspace:*",
+    "@repo/jobs": "workspace:*",
+    "@repo/mail": "workspace:*",
+    "@repo/notifications": "workspace:*",
+    "@repo/webhooks": "workspace:*",
+    "@repo/workflows": "workspace:*",
+    "better-auth": "catalog:",
+    "stripe": "catalog:"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "catalog:",
+    "@types/react": "catalog:",
+    "react": "catalog:",
+    "typescript": "catalog:",
+    "vite-plus": "catalog:"
+  }
+}

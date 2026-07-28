@@ -1,0 +1,28 @@
+{
+  "name": "@repo/i18n",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./messages": "./src/paraglide/messages.js",
+    "./localized": "./src/localized.ts",
+    "./server": "./src/paraglide/server.js",
+    "./vite": "./src/vite.ts"
+  },
+  "scripts": {
+    "build": "pnpm compile && tsc --noEmit",
+    "compile": "node src/compile.ts",
+    "prepare": "node src/compile.ts",
+    "tc": "tsc --noEmit",
+    "test": "vp test run"
+  },
+  "devDependencies": {
+    "@inlang/paraglide-js": "catalog:",
+    "@repo/brand": "workspace:*",
+    "typescript": "catalog:",
+    "vite": "npm:@voidzero-dev/vite-plus-core@0.2.2",
+    "vite-plus": "catalog:",
+    "vitest": "catalog:"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "web",
+      "runtimeExecutable": "vp",
+      "runtimeArgs": ["dev", "apps/web"],
+      "port": 3000
+    },
+    {
+      "name": "docs",
+      "runtimeExecutable": "vp",
+      "runtimeArgs": ["dev", "apps/docs"],
+      "port": 3100
+    }
+  ]
+}

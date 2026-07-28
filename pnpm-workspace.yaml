@@ -1,0 +1,168 @@
+packages:
+  - apps/*
+  - private/*
+  - published/*
+
+catalogMode: prefer
+
+catalog:
+  '@policystack/core': ^1.2.0
+  '@policystack/react': ^1.2.0
+  '@policystack/sdk': ^1.2.0
+  '@policystack/vite': ^1.2.0
+  '@ai-sdk/anthropic': ^3.0.99
+  '@better-auth/api-key': ^1.6.25
+  '@better-auth/passkey': ^1.6.25
+  '@better-auth/stripe': ^1.6.25
+  '@ai-sdk/react': ^3.0.235
+  '@base-ui/react': ^1.6.0
+  '@changesets/cli': ^2.31.1
+  '@clack/prompts': ^1.7.0
+  '@cloudflare/ai-chat': ^0.9.3
+  '@cloudflare/vite-plugin': ^1.45.1
+  '@cloudflare/workers-types': ^5.20260723.1
+  '@content-collections/cli': ^0.1.9
+  '@content-collections/core': ^0.15.2
+  '@content-collections/markdown': ^0.1.4
+  '@content-collections/vite': ^0.3.0
+  '@fontsource-variable/geist': ^5.3.0
+  '@fontsource-variable/geist-mono': ^5.3.0
+  '@inlang/paraglide-js': ^2.22.0
+  '@nerdfolio/drizzle-d1-helpers': ^0.1.5
+  '@openpanel/sdk': ^1.3.1
+  '@openpanel/web': ^1.4.1
+  '@orpc/client': ^1.14.8
+  '@orpc/contract': ^1.14.8
+  '@orpc/openapi': ^1.14.8
+  '@orpc/openapi-client': ^1.14.8
+  '@orpc/server': ^1.14.8
+  '@orpc/zod': ^1.14.8
+  '@playwright/test': ^1.58.2
+  '@react-email/components': ^1.0.12
+  '@sentry/cloudflare': ^10.68.0
+  '@sentry/vite-plugin': ^5.4.0
+  '@shikijs/rehype': ^4.3.1
+  '@size-limit/file': ^12.1.0
+  '@tailwindcss/vite': ^4.3.3
+  '@tanstack/react-form': ^1.33.2
+  '@tanstack/react-query': ^5.101.4
+  '@tanstack/react-router': ^1.170.18
+  '@tanstack/react-router-ssr-query': ^1.167.1
+  '@tanstack/react-start': ^1.168.30
+  '@tiptap/core': ^3.28.0
+  '@tiptap/extension-code-block-lowlight': ^3.28.0
+  '@tiptap/extension-collaboration': ^3.28.0
+  '@tiptap/extension-collaboration-caret': ^3.28.0
+  '@tiptap/extension-drag-handle': ^3.28.0
+  '@tiptap/extension-drag-handle-react': ^3.28.0
+  '@tiptap/extension-file-handler': ^3.28.0
+  '@tiptap/extension-image': ^3.28.0
+  '@tiptap/extension-list': ^3.28.0
+  '@tiptap/extension-mention': ^3.28.0
+  '@tiptap/extension-table': ^3.28.0
+  '@tiptap/extension-typography': ^3.28.0
+  '@tiptap/extensions': ^3.28.0
+  '@tiptap/pm': ^3.28.0
+  '@tiptap/react': ^3.28.0
+  '@tiptap/starter-kit': ^3.28.0
+  '@tiptap/suggestion': ^3.28.0
+  '@tiptap/y-tiptap': ^3.0.7
+  '@tsrx/react': ^0.2.44
+  '@tsrx/typescript-plugin': ^0.3.103
+  '@tsrx/vite-plugin-react': ^0.0.76
+  '@types/better-sqlite3': ^7.6.13
+  '@types/mdx': ^2.0.14
+  '@types/node': ^26.1.1
+  '@types/react': ^19.2.17
+  '@types/react-dom': ^19.2.3
+  '@vitejs/plugin-react': ^6.0.3
+  agents: ^0.17.4
+  ai: ^6.0.233
+  better-auth: ^1.6.25
+  better-sqlite3: ^12.11.1
+  class-variance-authority: ^0.7.1
+  cnfast: ^0.0.8
+  commander: ^15.0.0
+  conf: ^15.1.0
+  drizzle-kit: ^0.31.10
+  evlog: ^2.22.4
+  fumadocs-core: ^16.12.0
+  fumadocs-mdx: ^15.2.0
+  fumadocs-openapi: ^11.2.2
+  drizzle-orm: ^0.45.2
+  highlight.js: ^11.11.1
+  lowlight: ^3.3.0
+  lucide-react: ^0.552.0
+  open: ^11.0.0
+  partyserver: ^0.5.8
+  picocolors: ^1.1.1
+  publint: ^0.3.21
+  react: ^19.2.7
+  react-dom: ^19.2.7
+  resend: ^6.17.2
+  shadcn: ^4.13.1
+  shiki: ^4.3.1
+  size-limit: ^12.1.0
+  sonda: ^0.14.0
+  standardwebhooks: ^1.0.0
+  streamdown: ^2.5.0
+  stripe: ^22.3.0
+  tailwindcss: ^4.3.3
+  tsx: ^4.23.1
+  tw-animate-css: ^1.4.0
+  typescript: ^5.9.3
+  uqr: ^0.1.3
+  use-stick-to-bottom: ^1.1.6
+  vitest: ^4.1.9
+  vite-plus: 0.2.2
+  wrangler: ^4.113.0
+  y-partyserver: ^2.2.0
+  y-protocols: ^1.0.7
+  yjs: ^13.6.31
+  zod: ^4.4.3
+  knip: 6.29.0
+  '@marsidev/react-turnstile': ^1.5.3
+
+overrides:
+  vite: npm:@voidzero-dev/vite-plus-core@0.2.2
+
+peerDependencyRules:
+  allowAny:
+    - vite
+  allowedVersions:
+    vite: '*'
+
+allowBuilds:
+  '@sentry/cli': true
+  better-sqlite3: true
+  core-js-pure: false
+  esbuild: true
+  sharp: true
+  workerd: true
+
+minimumReleaseAgeExclude:
+  - '@fontsource-variable/geist@5.3.0'
+  - '@fontsource-variable/geist-mono@5.3.0'
+  - '@ai-sdk/anthropic@3.0.99'
+  - '@ai-sdk/gateway@3.0.155'
+  - '@ai-sdk/react@3.0.235'
+  - ai@6.0.233
+  - '@tanstack/query-core@5.101.4'
+  - '@tanstack/react-query@5.101.4'
+  - '@better-auth/api-key@1.6.24'
+  - '@better-auth/core@1.6.24'
+  - '@better-auth/stripe@1.6.24'
+  - '@better-auth/drizzle-adapter@1.6.24'
+  - '@better-auth/kysely-adapter@1.6.24'
+  - '@better-auth/memory-adapter@1.6.24'
+  - '@better-auth/mongo-adapter@1.6.24'
+  - '@better-auth/prisma-adapter@1.6.24'
+  - '@better-auth/telemetry@1.6.24'
+  - better-auth@1.6.24
+  - '@fumadocs/base-ui@16.12.0'
+  - fumadocs-core@16.12.0
+  - '@jxdltd/tanstack@0.1.0 || 0.1.1 || 0.1.2'
+  - '@policystack/core@1.2.0'
+  - '@policystack/react@1.2.0'
+  - '@policystack/sdk@1.2.0'
+  - '@policystack/vite@1.2.0'

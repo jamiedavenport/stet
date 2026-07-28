@@ -1,0 +1,20 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "onyx-docs",
+  "compatibility_date": "2026-07-19",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": {
+    "enabled": true,
+    "traces": {
+      "enabled": true,
+    },
+  },
+  "upload_source_maps": true,
+  "main": "src/server.ts",
+  "routes": [
+    {
+      "pattern": "onyx-docs.jxd.dev",
+      "custom_domain": true,
+    },
+  ],
+}

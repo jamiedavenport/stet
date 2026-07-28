@@ -1,0 +1,84 @@
+---
+title: '@repo/ai'
+description: The AI assistant on the Cloudflare Agents SDK and the AI SDK.
+---
+
+`@repo/ai` powers the in-app assistant. Agents are defined as plain data
+(instructions plus AI SDK tools), executed by a `ChatAgent` Durable Object
+that persists each conversation, and consumed from React through a single
+hook. Conversations are scoped per organization and user, survive page
+reloads, and resume streaming after a disconnect. The Durable Object, its
+routing, and its authentication are already wired into the Worker.
+
+## Using the chat hook
+
+The chat route in `apps/web` connects with an instance name of
+`organizationId:userId`, so each user gets their own conversation per
+organization:
+
+```tsx
+import { useChatAgent } from '@repo/ai/client';
+
+// Route renders with ssr: false; the hook opens a WebSocket.
+function Chat({ name }: { name: string }) {
+  const { messages, sendMessage, clearHistory, status } = useChatAgent({ name });
+
+  return (
+    <PromptInput onSubmit={(message) => void sendMessage({ text: message.text })}>
+      {/* render messages, status, tool parts ... */}
+    </PromptInput>
+  );
+}
+
+// <Chat name={`${activeOrganization.id}:${user.id}`} />
+```
+
+Messages load from the agent's storage on mount and streams resume when the
+client reconnects mid-response (`resume: true` is built into the hook).
+
+The `name` must be the caller's own `organizationId:userId`: the server
+rejects any other name, so a client can never reach someone else's
+conversation.
+
+`@repo/ai/client` also re-exports the `UIMessage` and `ToolUIPart` types from
+the AI SDK for rendering messages and tool calls.
+
+## Customizing the agent
+
+The shipped `chat` agent is an `AgentDefinition` (`id`, `instructions`,
+`tools`) in `private/ai/src/agents.ts`. Edit its instructions or add tools
+there; tools are standard AI SDK `tool()` definitions with Zod input schemas:
+
+```ts
+import { tool } from 'ai';
+import { z } from 'zod';
+
+const myTool = tool({
+  description: 'Look something up for the user',
+  inputSchema: z.object({ query: z.string() }),
+  execute: async ({ query }) => {
+    // return a JSON-serializable result
+  },
+});
+```
+
+Responses stream with a step limit of 8, so multi-tool turns work out of the
+box.
+
+## Choosing a model
+
+`createChatModel(env)` in `@repo/ai/model` is the single seam for model
+selection. Swap providers or route through an AI gateway there and every
+agent picks it up.
+
+## Adding another agent
+
+Add a new `AgentDefinition` in `private/ai/src/agents.ts`, then give it its
+own Durable Object class in the package's `./server` export with a matching
+binding in `apps/web/wrangler.jsonc`.
+
+## Configuration
+
+| Name                | Kind   | Purpose                                                                                              |
+| ------------------- | ------ | ---------------------------------------------------------------------------------------------------- |
+| `ANTHROPIC_API_KEY` | secret | Anthropic API key used by `createChatModel`. Optional locally; the chat feature needs it to respond. |
