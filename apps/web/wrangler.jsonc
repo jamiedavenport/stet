@@ -31,12 +31,14 @@
     "NOTIFICATIONS_FLUSH_SECONDS": "300",
     // Stripe price id (per-seat, monthly) for the paid plan. Empty locally:
     // without STRIPE_SECRET_KEY billing runs against the built-in fake
-    // Stripe, which supplies its own price id.
+    // Stripe, which supplies its own price id. This one is the Onyx-era
+    // price; replace it when pricing is decided (see README open questions).
     "STRIPE_PRICE_PAID": "price_1TwMQgIdr8Yx5Wu4pQcDdvtU",
-    // OpenPanel client id (public, ships to the browser). Set it to "" in
-    // .dev.vars to keep local traffic out of the production project; with it
-    // blank (and no secret) analytics logs to the console instead.
-    "OPENPANEL_CLIENT_ID": "fb8ebc94-919a-4d2b-872f-184779f72db7",
+    // OpenPanel client id (public, ships to the browser). Blank (and no
+    // secret) means analytics logs to the console instead; set it once a
+    // Stet OpenPanel project exists, and keep "" in .dev.vars so local
+    // traffic stays out of it.
+    "OPENPANEL_CLIENT_ID": "",
     // Sentry error tracking. The DSN is public (it ships in the worker and
     // only accepts event submissions). Blank disables reporting entirely, so
     // the app runs with no Sentry account.
@@ -50,13 +52,12 @@
   },
   // Wrangler refuses to deploy while a listed secret is unset, so only
   // genuinely mandatory secrets belong here. The optional GOOGLE_*/GITHUB_*
-  // social sign-in pairs are typed in src/env.d.ts instead; leave them unset
-  // and the app simply shows no social buttons.
+  // social sign-in pairs and OPENPANEL_CLIENT_SECRET (analytics runs
+  // log-only without it) are typed in src/env.d.ts instead.
   "secrets": {
     "required": [
       "ANTHROPIC_API_KEY",
       "BETTER_AUTH_SECRET",
-      "OPENPANEL_CLIENT_SECRET",
       "RESEND_API_KEY",
       "STRIPE_SECRET_KEY",
       "STRIPE_WEBHOOK_SECRET",
