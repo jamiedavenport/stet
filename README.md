@@ -1,93 +1,82 @@
-[![Onyx](./assets/banner.png)](https://onyx.jxd.dev)
+# Stet
 
-The TypeScript starter kit from [jxd.dev](https://jxd.dev): a full-stack SaaS foundation on Cloudflare, powered by Vite+ and pnpm workspaces.
+**Both teams at full speed. Neither waits, nothing breaks.**
 
-- Cloudflare by default. Portable to other deployment targets.
-- End-to-end type safety, from the D1 schema to the published API client.
-- World class developer experience: one command runs the whole platform locally.
+Every CMS makes one side compromise. Developer-first tools bury content teams in JSON and Git. Marketer-first tools hand developers an untyped API and a prayer. Stet refuses the trade-off.
+
+## Benefits
+
+The gap between marketing and engineering is Stet's whole job. Every benefit comes from closing it:
+
+- **Marketing owns the model.** New collections, maps, and fields without a ticket or a wait.
+- **Engineering gets a contract.** The generated client autocompletes the model marketing built and checks it at build time.
+- **Nothing breaks across the gap.** Changes cross it as information, never as breakage: a deleted field becomes a deprecation in the client, not a failed build or a broken page, and each team migrates on its own schedule.
+- **One shared workspace.** Writing, comments, reviews, and performance numbers live on the content itself instead of being spread across four tools.
+- **Analytics included.** First-party, cookieless, and routed through your own infrastructure. No consent banner, no blocked pixel, no data silo.
+- **AI that does the work.** Drafting, editorial suggestions, translations, and whole delegated tasks, in the same realtime session as the humans.
+- **Yours to run.** Open source, as a hosted cloud or self-hosted on your own infrastructure.
 
 ## Features
 
-- Authentication with email verification and password reset, Google and GitHub sign-in, magic links, passkeys, and two-factor (TOTP) with backup codes.
-- Account security: change password or email, passkeys, connected social accounts, and active-session management.
-- Admin panel: platform stats, user and organization search, bans, and impersonation.
-- Organizations with invitations and member management.
-- Stripe subscriptions per organization: free and paid plans, per-seat billing, usage metering with per-plan quotas, and plan guards at every layer.
-- Public REST API with API keys, a typed client, and a CLI with browser login.
-- Outbound webhooks per organization, signed per the Standard Webhooks spec.
-- File uploads: organization-scoped assets stored in R2, uploaded straight from the browser, served with per-tenant authorization and on-the-fly image resizing.
-- Transactional email.
-- Internationalization: English, Spanish, and French out of the box, per-user language, localized emails.
-- Realtime collaboration and presence, with a rich text editor: formatting toolbar, slash commands, `@` mentions that notify, tables, task lists, syntax-highlighted code, and image uploads. Shared documents persist to the database, so server functions, the public API, and exports can read them without a live session.
-- AI assistant.
-- Product analytics with a type-safe event registry, gated behind consent.
-- Privacy and cookie policies plus a consent banner, generated from one typed [PolicyStack](https://www.policystack.dev) config.
-- Scheduled tasks, background jobs, and durable workflows.
-- Observability: Cloudflare logs and traces, wide-event structured logging, and optional Sentry error tracking.
-- Accessible UI component library.
-- Marketing site and blog powered by content-collections, with a changelog, RSS, sitemap, llms.txt, and OG images.
-- End-to-end tests and CI.
-- Automated npm releases.
-- Documentation site with a generated OpenAPI reference.
+### For content teams
 
-## License
+- Model your content in the UI, the way you think about it: collections and maps, with fields, bodies, and validation rules, as intuitive as Notion.
+- Realtime collaboration: write together with live cursors, and discuss in realtime comments on any piece of content.
+- Drafts, scheduled publishing, version history, and rollback: publish when it is ready, and undo it when it is not.
+- Localized content built in: per-locale entries, translation status, and AI translation into every locale you serve.
+- Roles and publish permissions per collection, so the right people review before anything ships.
+- AI everywhere you work: draft and rewrite copy, get editorial suggestions you accept or reject, or delegate a whole task to an agent in the session.
+- Analytics next to the content: see how every page performs, annotated with the context that explains why. Cookieless and privacy-first, so there is no consent banner between you and your readers.
+- A fast, beautiful editor you actually want to write in.
 
-The template is source-available under the [Onyx License](LICENSE.md): the Functional Source License (FSL-1.1-Apache-2.0) plus an End Products grant, so you can build and even open-source commercial products on it, but not resell it as a starter kit. It converts to Apache 2.0 two years after each release. The `published/*` npm packages are plain [Apache 2.0](published/client/LICENSE).
+### For engineers
 
-## Quick start
+The content model marketing designs becomes an API your editor autocompletes.
+
+```ts
+import { stet } from "@stet/client";
+
+const posts = await stet.posts.list(); // a collection
+const post = await stet.posts.get("hello-world"); // one entry
+const landing = await stet.landing.get(); // a map
+// all fully typed from the model marketing built
+```
+
+- A Vite plugin that generates a typed client from your project's content model and keeps it current as the model evolves.
+- Drafts and published entries are separate, typed views, so previews are yours to build in your own app with the same client.
+- A REST API, SDKs, and drop-in components when you want them.
+- A CLI for scripting, seeding, and CI.
+- Content served through the client reports its own performance, so every entry has analytics from the moment its page exists, with no instrumentation written.
+- Type-safe analytics events, routed through your own infrastructure: cookieless, enriched server-side, immune to ad-blockers, and compliant by design. Marketing builds dashboards on the same events in the UI.
+- Webhooks on content events to trigger rebuilds and syncs.
+
+## Principles
+
+These hold everywhere, in the product and in this codebase:
+
+- Stet owns no customer-facing UI. Rendering, previews, and draft views are built by developers in their own app with the client. Never pitch or build hosted previews.
+- Not a page builder, and not a host. Stet manages content; building and serving the site is the developer's job.
+- The experience is the product: superhuman UX for editors, fluent DX for engineers. If either feels ordinary, it is not done.
+- Never break the customer's build or runtime. Sync cannot fail a build, tracking never throws, and schema changes surface as deprecations, never as errors.
+- Analytics routes through the customer's infrastructure. Content delivery does not; it is served through Stet's API and clients.
+- The server is the trusted side. Server-provided context wins over anything the browser sends.
+- The platform learns the schema from sync, not by inferring it from incoming data.
+- Calm by default: light, spacious, unhurried, in both the UI and the brand.
+
+## Open questions
+
+Decisions not yet made. Do not assume a shape for these in code or copy:
+
+- Localization: per-locale entries is the goal, but the shape (in the model, the UI, and the client API) is undecided.
+- Entry bodies: probably markdown, and not always exactly one per entry (a post might carry two bodies, a map might carry none). Shape undecided.
+- Pricing: current thinking is simple $10/user on the cloud version. Not committed.
+- License: "open source" is the intent; the repo still carries the Onyx FSL license.
+
+## Development
 
 ```bash
 vp install
 vp run dev   # http://localhost:3000
 ```
 
-Local dev simulates everything: D1, R2, Queues, Cron Triggers, Workflows, and Durable Objects.
-
-- [CONTRIBUTING.md](CONTRIBUTING.md): development workflow, checks, conventions, releases.
-- [DEPLOY.md](DEPLOY.md): shipping to Cloudflare.
-- [Make it your own](apps/docs/content/docs/make-it-your-own.mdx): the checklist for turning the template into your product.
-
-## What's inside
-
-Everything runs in a single Cloudflare Worker (`onyx-web`). Each piece lives in a focused package with its own README.
-
-### Apps
-
-| Package                  | Description                                                                    |
-| ------------------------ | ------------------------------------------------------------------------------ |
-| [`apps/web`](apps/web)   | Primary web application (TanStack Start). Wires every package into the Worker. |
-| [`apps/docs`](apps/docs) | Documentation site (Fumadocs on TanStack Start), deployed as its own Worker.   |
-
-### Private packages
-
-Internal packages shared by the applications. Not intended for external distribution.
-
-| Package                                          | Description                                                                                                                 |
-| ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
-| [`private/ui`](private/ui)                       | shadcn/ui components on Base UI with Tailwind v4.                                                                           |
-| [`private/brand`](private/brand)                 | Product identity (name, logo) shared by every app and package.                                                              |
-| [`private/auth`](private/auth)                   | Better Auth: email + password, Google/GitHub OAuth, two-factor, organizations, API keys, device flow, Stripe subscriptions. |
-| [`private/billing`](private/billing)             | Feature catalog, plans, usage metering, and guards for organization billing.                                                |
-| [`private/db`](private/db)                       | Drizzle schema and typed data access on Cloudflare D1.                                                                      |
-| [`private/api`](private/api)                     | Public API contract (oRPC + Zod) and OpenAPI generation.                                                                    |
-| [`private/mail`](private/mail)                   | React Email templates delivered with Resend.                                                                                |
-| [`private/i18n`](private/i18n)                   | Paraglide internationalization: compiled messages, per-user locales, localized email.                                       |
-| [`private/ai`](private/ai)                       | Chat agent on the Cloudflare Agents SDK.                                                                                    |
-| [`private/realtime`](private/realtime)           | Yjs collaboration and presence on Durable Objects.                                                                          |
-| [`private/notifications`](private/notifications) | In-app notification feed and batched email digests.                                                                         |
-| [`private/webhooks`](private/webhooks)           | Outbound per-organization webhooks with Standard Webhooks signatures.                                                       |
-| [`private/analytics`](private/analytics)         | Type-safe product analytics on OpenPanel.                                                                                   |
-| [`private/logging`](private/logging)             | Wide-event structured logging on evlog.                                                                                     |
-| [`private/crons`](private/crons)                 | Scheduled jobs on Cron Triggers.                                                                                            |
-| [`private/jobs`](private/jobs)                   | Typed background jobs on Cloudflare Queues.                                                                                 |
-| [`private/workflows`](private/workflows)         | Durable multi-step processes on Cloudflare Workflows.                                                                       |
-
-### Published packages
-
-Reusable libraries versioned with Changesets and published to npm.
-
-| Package                                | Description                                                  |
-| -------------------------------------- | ------------------------------------------------------------ |
-| [`published/client`](published/client) | `@jxdltd/onyx-client`, the typed client for the Onyx API.    |
-| [`published/cli`](published/cli)       | `@jxdltd/onyx-cli`, the `onyx` command line interface.       |
-| [`published/vite`](published/vite)     | `@jxdltd/onyx-vite`, the Vite plugin scaffold for consumers. |
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the workflow and [DEPLOY.md](DEPLOY.md) for shipping to Cloudflare.
