@@ -5,7 +5,6 @@ import type { LinkProps } from '@tanstack/react-router';
 import {
   Building2Icon,
   HomeIcon,
-  ListTodoIcon,
   NotebookPenIcon,
   SettingsIcon,
   ShieldIcon,
@@ -26,7 +25,6 @@ export type NavItem = {
 
 const navItems = [
   { label: m.home, to: '/app', icon: HomeIcon, key: 'h' },
-  { label: m.tasks, to: '/app/tasks', icon: ListTodoIcon, key: 't' },
   { label: m.notes, to: '/app/notes', icon: NotebookPenIcon, key: 'n' },
   { label: m.chat, to: '/app/chat', icon: SparklesIcon, key: 'c' },
   { label: m.webhooks, to: '/app/webhooks', icon: WebhookIcon, key: 'w' },

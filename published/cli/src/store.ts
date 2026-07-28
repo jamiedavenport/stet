@@ -13,14 +13,13 @@ type AuthConfig = Partial<StoredAuth>;
 function configDir(): string {
   const xdgConfigHome = process.env.XDG_CONFIG_HOME;
   if (xdgConfigHome !== undefined && xdgConfigHome !== '') {
-    return path.join(xdgConfigHome, 'onyx');
+    return path.join(xdgConfigHome, 'stet');
   }
-  return path.join(homedir(), '.config', 'onyx');
+  return path.join(homedir(), '.config', 'stet');
 }
 
-// `cwd` pins conf to ~/.config/onyx/auth.json (the documented location,
-// shared with earlier CLI versions) instead of the OS-native preferences
-// directory conf would pick on its own.
+// `cwd` pins conf to ~/.config/stet/auth.json (the documented location)
+// instead of the OS-native preferences directory conf would pick on its own.
 function createStore(): Conf<AuthConfig> {
   return new Conf<AuthConfig>({
     cwd: configDir(),

@@ -12,7 +12,6 @@ type PageLink = { label: () => string; to: LinkProps['to']; hash?: string };
 // Message functions, not calls: the array is module scope, so calling here
 // would freeze the locale at import time. Each render invokes item.label().
 const pageLinks: PageLink[] = [
-  { label: m.marketing_nav_pricing, to: '/', hash: 'pricing' },
   { label: m.marketing_nav_blog, to: '/blog' },
   { label: m.marketing_nav_changelog, to: '/changelog' },
   { label: m.marketing_nav_contact, to: '/contact' },
@@ -74,7 +73,7 @@ export function MarketingHeader({ signedIn }: { signedIn: boolean }) @{
   const [open, setOpen] = useState(false);
   const cta = signedIn
     ? { label: m.marketing_dashboard(), to: '/app' as const }
-    : { label: m.marketing_see_demo(), to: '/sign/in' as const };
+    : { label: m.marketing_sign_in(), to: '/sign/in' as const };
 
   <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur">
     <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8">

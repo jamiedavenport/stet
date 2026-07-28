@@ -47,24 +47,24 @@ async function pollForToken(client: Client, device: DeviceCode): Promise<string>
       ui.fail('The request was denied in the browser.');
     }
     if (error.error === 'expired_token') {
-      ui.fail('The code expired before the login was approved. Run `onyx login` again.');
+      ui.fail('The code expired before the login was approved. Run `stet login` again.');
     }
     ui.fail(error.error_description ?? 'Device authorization failed.');
   }
 
   waiting.stop('Timed out');
-  ui.fail('The code expired before the login was approved. Run `onyx login` again.');
+  ui.fail('The code expired before the login was approved. Run `stet login` again.');
 }
 
 export const loginCommand = new Command('login')
-  .description('Log in to Onyx from this machine')
-  .option('--url <origin>', 'Onyx server origin (defaults to $ONYX_API_URL or the hosted app)')
+  .description('Log in to Stet from this machine')
+  .option('--url <origin>', 'Stet server origin (defaults to $STET_API_URL or the hosted app)')
   .option('--no-open', 'Print the verification link instead of opening a browser')
   .action(async (options: { url?: string; open: boolean }) => {
     const origin = resolveOrigin(options.url);
     const client = createClient(origin);
 
-    ui.begin('onyx login');
+    ui.begin('stet login');
 
     const { data: device, error } = await client.device.code({ client_id: CLI_CLIENT_ID });
     if (error !== null || device === null) {

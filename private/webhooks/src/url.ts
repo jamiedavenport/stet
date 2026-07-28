@@ -2,8 +2,8 @@
 // against `vp dev` and local request bins; a deployed Worker's fetch to
 // localhost goes nowhere harmful. Everything else must be https, and IP
 // literals are rejected outright: signatures authenticate but do not
-// encrypt, and a raw IP is the classic SSRF shape on non-Cloudflare targets
-// buyers may port this template to.
+// encrypt, and a raw IP is the classic SSRF shape on any non-Cloudflare
+// runtime this may be ported to.
 const localHosts = new Set(['localhost', '127.0.0.1', '[::1]']);
 
 export function isDeliverableWebhookUrl(value: string): boolean {

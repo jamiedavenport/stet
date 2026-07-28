@@ -3,7 +3,7 @@ import { build } from 'vite';
 import { describe, expect, it } from 'vite-plus/test';
 
 import type { GenerateContext } from './index';
-import { onyx } from './index';
+import { stet } from './index';
 
 const entryId = 'entry.js';
 
@@ -45,21 +45,21 @@ async function buildWith(plugins: Plugin[]): Promise<string> {
   return result.output[0].code;
 }
 
-describe('onyx', () => {
-  it('exposes config through the virtual:onyx module', async () => {
+describe('stet', () => {
+  it('exposes config through the virtual:stet module', async () => {
     const code = await buildWith([
-      entryPlugin(`import config from 'virtual:onyx';\nconsole.log(config);`),
-      onyx({ config: { origin: 'https://onyx.example.com', channel: 'stable' } }),
+      entryPlugin(`import config from 'virtual:stet';\nconsole.log(config);`),
+      stet({ config: { origin: 'https://stet.example.com', channel: 'stable' } }),
     ]);
 
-    expect(code).toContain('https://onyx.example.com');
+    expect(code).toContain('https://stet.example.com');
     expect(code).toContain('stable');
   });
 
   it('resolves the virtual module with no options', async () => {
     const code = await buildWith([
-      entryPlugin(`import config from 'virtual:onyx';\nconsole.log(config);`),
-      onyx(),
+      entryPlugin(`import config from 'virtual:stet';\nconsole.log(config);`),
+      stet(),
     ]);
 
     expect(code.length).toBeGreaterThan(0);
@@ -73,7 +73,7 @@ describe('onyx', () => {
       entryPlugin(`console.log('entry');`, () => {
         sequence.push('load');
       }),
-      onyx({
+      stet({
         generate: async (context) => {
           await new Promise((resolve) => {
             setTimeout(resolve, 10);

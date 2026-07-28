@@ -34,7 +34,7 @@ test('org endpoint rejects a session cookie without an API key', async ({ reques
 
 test('org endpoint rejects an invalid API key', async ({ request }) => {
   const response = await request.get('/api/v1/org', {
-    headers: { 'x-api-key': 'onyx_not_a_real_key' },
+    headers: { 'x-api-key': 'stet_not_a_real_key' },
   });
   expect(response.status()).toBe(401);
   expect(await response.json()).toEqual(unauthorizedBody);

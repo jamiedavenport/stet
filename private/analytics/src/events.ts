@@ -34,11 +34,6 @@ export const subscriptionCanceled = defineEvent({
   }),
 });
 
-export const taskCreated = defineEvent({
-  name: 'task_created',
-  schema: z.object({}),
-});
-
 // Every event the product can record. Adding an event means defining it
 // above and listing it here; track() and capture() pick it up with full
 // property typing.
@@ -47,7 +42,6 @@ export const registry = {
   [organizationCreated.name]: organizationCreated,
   [subscriptionStarted.name]: subscriptionStarted,
   [subscriptionCanceled.name]: subscriptionCanceled,
-  [taskCreated.name]: taskCreated,
 } as const;
 
 export type Registry = typeof registry;

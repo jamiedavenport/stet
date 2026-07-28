@@ -81,7 +81,7 @@ const config = (command: 'build' | 'serve') =>
       ...(analyze ? [Sonda()] : []),
       // Uploads source maps so Sentry stack traces point at real source. Only
       // in CI, where the token exists: a local build has nothing to upload to,
-      // and a fork without a Sentry account never triggers it.
+      // and a build without a Sentry account never triggers it.
       ...(uploadSourceMaps
         ? [
             sentryVitePlugin({

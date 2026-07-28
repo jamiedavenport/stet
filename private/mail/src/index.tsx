@@ -21,7 +21,7 @@ export type CreateMailerOptions = {
   // When omitted (e.g. local dev without the secret), emails are logged
   // instead of sent so flows depending on mail still work.
   apiKey?: string;
-  // Sender address, e.g. 'Onyx <hello@yourdomain.com>'. Deployment config —
+  // Sender address, e.g. 'Stet <hello@yourdomain.com>'. Deployment config —
   // the domain must be verified with Resend.
   from: string;
 };

@@ -12,10 +12,6 @@ export function sortedPosts(): Post[] {
   return newestFirst(allPosts);
 }
 
-export function latestPosts(count: number): Post[] {
-  return sortedPosts().slice(0, count);
-}
-
 export function findPost(slug: string): Post | undefined {
   return allPosts.find((post) => post.slug === slug);
 }

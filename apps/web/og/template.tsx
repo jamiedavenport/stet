@@ -93,7 +93,7 @@ export default defineOgTemplate({
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
-        <BrandMark size={52} />
+        <BrandMark size={52} color={INK} />
         <span style={{ fontSize: 34, fontWeight: 500 }}>{brand.name}</span>
       </div>
       {/* Bottom-anchored, not centered, so a taller wrapped title grows into

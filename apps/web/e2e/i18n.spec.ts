@@ -73,21 +73,17 @@ test('anonymous visitors are served their browser language', async ({ browser })
 test('the marketing footer switches language for anonymous visitors', async ({ page, context }) => {
   await gotoHydrated(page, '/');
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
-  await expect(
-    page.getByRole('heading', { name: 'Ship the product, not the plumbing.' }),
-  ).toBeVisible();
 
   // The footer select writes the cookie and reloads into the new locale.
+  // Asserted through `lang` and the cookie, not copy, so the pitch can
+  // change without touching this test.
   await page.getByLabel('Language').selectOption('es');
 
   await expect(page.locator('html')).toHaveAttribute('lang', 'es');
-  await expect(
-    page.getByRole('heading', { name: 'Lanza el producto, no la fontanería.' }),
-  ).toBeVisible();
   const cookies = await context.cookies();
   expect(cookies.find((cookie) => cookie.name === localeCookie)?.value).toBe('es');
 
   // The choice follows the visitor to another marketing page.
   await gotoHydrated(page, '/contact');
-  await expect(page.getByText('Un solo correo llega al ingeniero.')).toBeVisible();
+  await expect(page.locator('html')).toHaveAttribute('lang', 'es');
 });

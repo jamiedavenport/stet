@@ -11,7 +11,7 @@ import {
   Text,
 } from '@react-email/components';
 
-/** Shared colours, so a fork rebrands email in one place. */
+/** Shared colours, so email rebrands in one place. */
 export const palette = {
   page: '#fafafa',
   surface: '#ffffff',

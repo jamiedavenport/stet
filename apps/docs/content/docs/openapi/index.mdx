@@ -10,7 +10,7 @@ OpenAPI spec, so it always matches what is deployed.
 ## Base URL
 
 ```
-https://onyx.jxd.dev/api/v1
+https://stet.jxd.dev/api/v1
 ```
 
 On your own deployment, the API lives at your origin followed by `/api/v1`.
@@ -21,26 +21,17 @@ Every endpoint except the health check requires an organization-scoped API
 key, sent in the `x-api-key` header:
 
 ```bash
-curl https://onyx.jxd.dev/api/v1/org \
-  -H "x-api-key: $ONYX_API_KEY"
+curl https://stet.jxd.dev/api/v1/org \
+  -H "x-api-key: $STET_API_KEY"
 ```
 
 API keys are created in the web app under organization settings, or with the
-`onyx` CLI after a browser login.
+`stet` CLI after a browser login.
 
 ## Typed access
 
 Prefer the typed client over hand-written requests:
-
-<Cards>
-  <Card
-    title="@jxdltd/onyx-client"
-    href="/public/client"
-    description="Typed client generated from the same contract."
-  />
-  <Card
-    title="@jxdltd/onyx-cli"
-    href="/public/cli"
-    description="Call the API from the terminal with device-flow login."
-  />
-</Cards>
+[`@stet/client`](https://github.com/jamiedavenport/stet/tree/main/published/client)
+is generated from the same contract, and
+[`@stet/cli`](https://github.com/jamiedavenport/stet/tree/main/published/cli)
+calls the API from the terminal after a device-flow login.

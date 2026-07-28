@@ -1,5 +1,5 @@
 import { and, eq, schema, setDatabase } from '@repo/db';
-import type { Database as OnyxDatabase } from '@repo/db';
+import type { Database as StetDatabase } from '@repo/db';
 import Sqlite from 'better-sqlite3';
 import { drizzle } from 'drizzle-orm/better-sqlite3';
 import { generateSQLiteDrizzleJson, generateSQLiteMigration } from 'drizzle-kit/api';
@@ -21,7 +21,7 @@ import {
 // in-memory sqlite database with the actual schema pushed into it, injected
 // with setDatabase() in place of the worker's ambient D1 binding.
 
-let db: OnyxDatabase;
+let db: StetDatabase;
 let rowCounter = 0;
 
 function rowId(): string {
@@ -124,7 +124,7 @@ beforeEach(async () => {
   for (const statement of statements) {
     sqlite.exec(statement);
   }
-  db = drizzle(sqlite, { schema }) as unknown as OnyxDatabase;
+  db = drizzle(sqlite, { schema }) as unknown as StetDatabase;
   setDatabase(db);
   await db.insert(schema.organization).values({
     id: orgId,

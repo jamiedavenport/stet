@@ -8,7 +8,7 @@ import { initWorkersLogger } from 'evlog/workers';
  * emitted. Every field is optional at the call site: evlog makes the shape
  * deeply partial, and each log sets only the subset it knows about.
  */
-export type OnyxEvent = {
+export type StetEvent = {
   user: { id: string };
   organization: { id: string };
   job: { name: string; messageId: string; attempt: number };
@@ -25,7 +25,7 @@ export type OnyxEvent = {
   };
 };
 
-export type Logger = AuditableLogger<OnyxEvent>;
+export type Logger = AuditableLogger<StetEvent>;
 
 /**
  * What `set()` and `emit()` accept, and what the initial context is checked
@@ -33,7 +33,7 @@ export type Logger = AuditableLogger<OnyxEvent>;
  * would leave the fields most call sites open with — the job, cron, and webhook
  * identifiers — unchecked.
  */
-export type OnyxEventContext = FieldContext<OnyxEvent>;
+export type StetEventContext = FieldContext<StetEvent>;
 
 export type InitLoggingOptions = {
   service: string;
@@ -74,12 +74,12 @@ export function initLogging(options: InitLoggingOptions): void {
  * }
  * ```
  */
-export function createLogger(context?: OnyxEventContext): Logger {
-  // evlog's parameter is Record<string, unknown>, which OnyxEventContext does
+export function createLogger(context?: StetEventContext): Logger {
+  // evlog's parameter is Record<string, unknown>, which StetEventContext does
   // not satisfy for want of an index signature. The cast is the whole reason
   // this wrapper exists: it is what puts the initial context under the same
   // vocabulary as set() and emit().
-  return createEvlogLogger<OnyxEvent>(context as Record<string, unknown> | undefined);
+  return createEvlogLogger<StetEvent>(context as Record<string, unknown> | undefined);
 }
 
 /**

@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test';
 // Public marketing pages: no seeded database or session required. These are
 // deliberately thin -- they check that the routes render and that the
 // machine-readable surface responds, never the copy or the number of posts,
-// both of which change the moment someone builds their own product on Onyx.
+// both of which change as the pitch and the blog evolve.
 
 test('landing page renders', async ({ page }) => {
   await page.goto('/');

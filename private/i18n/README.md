@@ -2,7 +2,7 @@
 
 Internationalization on [Paraglide JS](https://inlang.com/m/gerre34r/library-inlang-paraglideJs): messages live in `messages/{locale}/*.json`, the compiler turns them into tree-shakable typed functions, and components call `m.some_key()` like any other import. No extraction step, no Babel, and the same plain function call works in `.tsx`, `.tsrx`, and server code. The app ships `en`, `es`, and `fr`.
 
-- `.` — re-exports from the generated runtime: `locales`, `Locale`, `isLocale`, `getLocale`, `setLocale`, `baseLocale`, and the `onyx-locale` cookie constants.
+- `.` — re-exports from the generated runtime: `locales`, `Locale`, `isLocale`, `getLocale`, `setLocale`, `baseLocale`, and the `stet-locale` cookie constants.
 - `./messages` — the compiled message functions, imported as `m`.
 - `./server` — `paraglideMiddleware`, which pins each request's locale in AsyncLocalStorage.
 - `./vite` — `paraglide()`, the Vite plugin that recompiles messages on edit, plus the shared compiler options.
@@ -37,7 +37,7 @@ Missing translations fall back to the English text at compile time, so a half-tr
 ## How the locale is chosen
 
 1. A signed-in user's stored preference (`user.locale`, written by the Language card on the settings page through Better Auth `updateUser`).
-2. The `onyx-locale` cookie (pinned by `setLocale` when the user picks a language, re-pinned by the session context server fn on every load, and injected by the server entry when a signed-in request arrives without it, so a new device renders in the account's language immediately).
+2. The `stet-locale` cookie (pinned by `setLocale` when the user picks a language, re-pinned by the session context server fn on every load, and injected by the server entry when a signed-in request arrives without it, so a new device renders in the account's language immediately).
 3. The browser's `Accept-Language` (Paraglide's `preferredLanguage` strategy).
 4. `en`.
 

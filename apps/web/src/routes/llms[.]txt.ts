@@ -1,7 +1,7 @@
 import { brand } from '@repo/brand';
 import { createFileRoute } from '@tanstack/react-router';
 
-import { features, packages } from '@repo/ui/marketing/data';
+import { contentFeatures, engineerPoints } from '@repo/ui/marketing/data';
 import { sortedPosts } from '#/marketing/content';
 import { siteUrl } from '#/marketing/seo';
 
@@ -17,17 +17,17 @@ export const Route = createFileRoute('/llms.txt')({
         const text = [
           `# ${brand.name}`,
           '',
-          `> ${brand.description}. A full-stack TypeScript starter kit on Cloudflare: authentication, organizations, Stripe billing, a public REST API with a typed client and CLI, file uploads, transactional email, realtime collaboration, an AI assistant, and background work. Everything runs in a single Cloudflare Worker and is typed end to end.`,
+          `> ${brand.description}. Marketing owns the content model; engineering gets a typed client generated from it; changes cross the gap as deprecations, never as breakage. Realtime collaboration, drafts and scheduled publishing, localization, AI assistance, and first-party analytics are built in.`,
           '',
-          `${brand.name} is sold as a template and included in every engagement with ${brand.author.name} (${brand.author.url}).`,
+          `${brand.name} is built by ${brand.author.name} (${brand.author.url}). Source: ${brand.repository}`,
           '',
-          '## Features',
+          '## For content teams',
           '',
-          ...features().map((feature) => `- ${feature.name}: ${feature.description}`),
+          ...contentFeatures().map((feature) => `- ${feature.name}: ${feature.description}`),
           '',
-          '## Packages',
+          '## For engineers',
           '',
-          ...packages().map((pkg) => `- ${pkg.name}: ${pkg.description}`),
+          ...engineerPoints().map((point) => `- ${point.term}: ${point.detail}`),
           '',
           '## Docs',
           '',

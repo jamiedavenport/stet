@@ -59,8 +59,8 @@ describe('messages', () => {
   });
 
   it('render localized mail subjects with parameters', () => {
-    expect(m.reset_password_subject({ brandName: 'Onyx' }, { locale: 'fr' })).toBe(
-      'Réinitialisez votre mot de passe Onyx',
+    expect(m.reset_password_subject({ brandName: 'Stet' }, { locale: 'fr' })).toBe(
+      'Réinitialisez votre mot de passe Stet',
     );
   });
 });

@@ -106,11 +106,11 @@ To run real checkout locally, use the [Stripe CLI](https://docs.stripe.com/strip
 ```bash
 stripe login    # pick your sandbox
 stripe prices create --currency=usd --unit-amount=1000 \
-  -d "recurring[interval]=month" -d "product_data[name]=Onyx Paid" -d "lookup_key=onyx-paid"
+  -d "recurring[interval]=month" -d "product_data[name]=Stet Paid" -d "lookup_key=stet-paid"
 stripe listen --forward-to http://localhost:3000/api/auth/stripe/webhook
 ```
 
-The lookup key makes the price findable later (`stripe prices list --lookup-keys onyx-paid`), so the create step never needs repeating. Keep `stripe listen` running while you develop; it forwards webhooks to the dev server. Set the three values in `apps/web/.dev.vars` and restart `vp dev`:
+The lookup key makes the price findable later (`stripe prices list --lookup-keys stet-paid`), so the create step never needs repeating. Keep `stripe listen` running while you develop; it forwards webhooks to the dev server. Set the three values in `apps/web/.dev.vars` and restart `vp dev`:
 
 ```
 STRIPE_SECRET_KEY=sk_test_...      # sandbox secret key

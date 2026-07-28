@@ -16,7 +16,7 @@ export type EventDefinition<
 
 /**
  * Declares an analytics event for the registry in events.ts. Names are
- * snake_case and past tense (`task_created`), matching how they appear in
+ * snake_case and past tense (`organization_created`), matching how they appear in
  * OpenPanel.
  */
 export function defineEvent<TName extends string, TSchema extends z.ZodType>(definition: {

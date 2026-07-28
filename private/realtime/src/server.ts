@@ -16,8 +16,8 @@ const flushDelayMs = 5_000;
 
 // One Durable Object per `${organizationId}:${page}` room. YServer speaks the
 // Yjs sync + awareness protocols over WebSockets: presence is the awareness
-// states of connected clients, and the shared Y.Doc carries page state (task
-// list, notes document). The doc snapshot lives in the DO's SQLite storage so
+// states of connected clients, and the shared Y.Doc carries page state (the
+// notes document). The doc snapshot lives in the DO's SQLite storage so
 // state survives hibernation and restarts, and is mirrored to D1 so it also
 // survives the Durable Object itself and can be read outside a session.
 export class PagePresenceRoom extends YServer {

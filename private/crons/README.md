@@ -1,6 +1,6 @@
 # @repo/crons
 
-Scheduled jobs on Cloudflare Cron Triggers, hosted in the `onyx-web` Worker.
+Scheduled jobs on Cloudflare Cron Triggers, hosted in the `stet-web` Worker.
 
 - Define handlers in `src/crons/` and register them per cron expression in `src/registry.ts`. The registry is the single source of truth: the wrangler `triggers` config is generated from it at build time, so adding a cron never touches `wrangler.jsonc`.
 - Ships a daily sweep of expired auth rows: sessions, verification tokens, device codes, and pending invitations.

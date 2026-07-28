@@ -1,16 +1,16 @@
 # Deploying
 
-The whole app deploys as one Cloudflare Worker, `onyx-web`, configured in `apps/web/wrangler.jsonc`. The docs site deploys as a second Worker, `onyx-docs`, which has no bindings or secrets of its own.
+The whole app deploys as one Cloudflare Worker, `stet-web`, configured in `apps/web/wrangler.jsonc`. The docs site deploys as a second Worker, `stet-docs`, which has no bindings or secrets of its own.
 
 ## One-time setup
 
 Create the resources the Worker binds to:
 
 ```bash
-wrangler d1 create onyx-db              # put the database_id in wrangler.jsonc
-wrangler r2 bucket create onyx-storage
-wrangler queues create onyx-jobs
-wrangler queues create onyx-jobs-dlq
+wrangler d1 create stet-db              # put the database_id in wrangler.jsonc
+wrangler r2 bucket create stet-storage
+wrangler queues create stet-jobs
+wrangler queues create stet-jobs-dlq
 ```
 
 The `IMAGES` binding, which `/api/files/$id` uses to resize and re-encode
@@ -62,7 +62,7 @@ Update the vars in `wrangler.jsonc`:
 The admin panel at `/app/admin` is gated on `user.role`, which nothing client-facing can set. Promote yourself once the account exists, then add any further admins from the panel:
 
 ```bash
-wrangler d1 execute onyx-db --remote --command "UPDATE user SET role = 'admin' WHERE email = 'you@example.com'"
+wrangler d1 execute stet-db --remote --command "UPDATE user SET role = 'admin' WHERE email = 'you@example.com'"
 ```
 
 ## Stripe
@@ -101,7 +101,7 @@ Pushing is the pre-release workflow. Once other people deploy and upgrade their 
 
 ## Deploy
 
-Pushes to `main` deploy automatically: once every CI check passes, the `deploy` job in `.github/workflows/ci.yml` ships `onyx-web` and `onyx-docs` with `wrangler deploy`. Two repository secrets authenticate it:
+Pushes to `main` deploy automatically: once every CI check passes, the `deploy` job in `.github/workflows/ci.yml` ships `stet-web` and `stet-docs` with `wrangler deploy`. Two repository secrets authenticate it:
 
 - `CLOUDFLARE_API_TOKEN`: an API token created from the "Edit Cloudflare Workers" template.
 - `CLOUDFLARE_ACCOUNT_ID`: the target account id (shown by `wrangler whoami`).

@@ -28,7 +28,6 @@ import { Route as AppChatRouteImport } from './routes/app/chat'
 import { Route as AppNotesRouteImport } from './routes/app/notes'
 import { Route as AppOrganizationRouteImport } from './routes/app/organization'
 import { Route as AppSettingsRouteImport } from './routes/app/settings'
-import { Route as AppTasksRouteImport } from './routes/app/tasks'
 import { Route as AppWebhooksRouteImport } from './routes/app/webhooks'
 import { Route as InviteIdRouteImport } from './routes/invite/$id'
 import { Route as MailUnsubscribeRouteImport } from './routes/mail/unsubscribe'
@@ -142,11 +141,6 @@ const AppSettingsRoute = AppSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => AppRouteRoute,
 } as any)
-const AppTasksRoute = AppTasksRouteImport.update({
-  id: '/tasks',
-  path: '/tasks',
-  getParentRoute: () => AppRouteRoute,
-} as any)
 const AppWebhooksRoute = AppWebhooksRouteImport.update({
   id: '/webhooks',
   path: '/webhooks',
@@ -256,7 +250,6 @@ export interface FileRoutesByFullPath {
   '/app/notes': typeof AppNotesRoute
   '/app/organization': typeof AppOrganizationRoute
   '/app/settings': typeof AppSettingsRoute
-  '/app/tasks': typeof AppTasksRoute
   '/app/webhooks': typeof AppWebhooksRoute
   '/invite/$id': typeof InviteIdRoute
   '/mail/unsubscribe': typeof MailUnsubscribeRoute
@@ -292,7 +285,6 @@ export interface FileRoutesByTo {
   '/app/notes': typeof AppNotesRoute
   '/app/organization': typeof AppOrganizationRoute
   '/app/settings': typeof AppSettingsRoute
-  '/app/tasks': typeof AppTasksRoute
   '/app/webhooks': typeof AppWebhooksRoute
   '/invite/$id': typeof InviteIdRoute
   '/mail/unsubscribe': typeof MailUnsubscribeRoute
@@ -333,7 +325,6 @@ export interface FileRoutesById {
   '/app/notes': typeof AppNotesRoute
   '/app/organization': typeof AppOrganizationRoute
   '/app/settings': typeof AppSettingsRoute
-  '/app/tasks': typeof AppTasksRoute
   '/app/webhooks': typeof AppWebhooksRoute
   '/invite/$id': typeof InviteIdRoute
   '/mail/unsubscribe': typeof MailUnsubscribeRoute
@@ -375,7 +366,6 @@ export interface FileRouteTypes {
     | '/app/notes'
     | '/app/organization'
     | '/app/settings'
-    | '/app/tasks'
     | '/app/webhooks'
     | '/invite/$id'
     | '/mail/unsubscribe'
@@ -411,7 +401,6 @@ export interface FileRouteTypes {
     | '/app/notes'
     | '/app/organization'
     | '/app/settings'
-    | '/app/tasks'
     | '/app/webhooks'
     | '/invite/$id'
     | '/mail/unsubscribe'
@@ -451,7 +440,6 @@ export interface FileRouteTypes {
     | '/app/notes'
     | '/app/organization'
     | '/app/settings'
-    | '/app/tasks'
     | '/app/webhooks'
     | '/invite/$id'
     | '/mail/unsubscribe'
@@ -626,13 +614,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppSettingsRouteImport
       parentRoute: typeof AppRouteRoute
     }
-    '/app/tasks': {
-      id: '/app/tasks'
-      path: '/tasks'
-      fullPath: '/app/tasks'
-      preLoaderRoute: typeof AppTasksRouteImport
-      parentRoute: typeof AppRouteRoute
-    }
     '/app/webhooks': {
       id: '/app/webhooks'
       path: '/webhooks'
@@ -784,7 +765,6 @@ interface AppRouteRouteChildren {
   AppNotesRoute: typeof AppNotesRoute
   AppOrganizationRoute: typeof AppOrganizationRoute
   AppSettingsRoute: typeof AppSettingsRoute
-  AppTasksRoute: typeof AppTasksRoute
   AppWebhooksRoute: typeof AppWebhooksRoute
   AppIndexRoute: typeof AppIndexRoute
 }
@@ -795,7 +775,6 @@ const AppRouteRouteChildren: AppRouteRouteChildren = {
   AppNotesRoute: AppNotesRoute,
   AppOrganizationRoute: AppOrganizationRoute,
   AppSettingsRoute: AppSettingsRoute,
-  AppTasksRoute: AppTasksRoute,
   AppWebhooksRoute: AppWebhooksRoute,
   AppIndexRoute: AppIndexRoute,
 }

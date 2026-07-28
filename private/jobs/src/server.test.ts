@@ -16,7 +16,7 @@ vi.mock('./registry', () => ({ registry: { 'send-welcome-email': { run: () => ru
 // Only the consumer's own behaviour is under test, so the services it builds
 // for handlers need to exist, not work.
 const env: JobsEnv = {
-  MAIL_FROM: 'Onyx <onboarding@resend.dev>',
+  MAIL_FROM: 'Stet <onboarding@resend.dev>',
   BETTER_AUTH_URL: 'http://localhost:3000',
   STORAGE: {
     delete: vi.fn(),

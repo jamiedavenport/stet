@@ -21,16 +21,16 @@ export const Route = createFileRoute('/_marketing/contact')({
 function reasons() {
   return [
     {
-      term: m.marketing_contact_reason_buy_term(),
-      detail: m.marketing_contact_reason_buy_detail(),
+      term: m.marketing_contact_reason_questions_term(),
+      detail: m.marketing_contact_reason_questions_detail(),
     },
     {
       term: m.marketing_contact_reason_broken_term(),
       detail: m.marketing_contact_reason_broken_detail(),
     },
     {
-      term: m.marketing_contact_reason_built_term(),
-      detail: m.marketing_contact_reason_built_detail(),
+      term: m.marketing_contact_reason_feedback_term(),
+      detail: m.marketing_contact_reason_feedback_detail(),
     },
   ];
 }

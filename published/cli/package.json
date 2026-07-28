@@ -1,24 +1,24 @@
 {
-  "name": "@jxdltd/onyx-cli",
-  "version": "0.3.1",
-  "description": "Command line interface for Onyx.",
+  "name": "@stet/cli",
+  "version": "0.1.0",
+  "description": "Command line interface for Stet.",
   "keywords": [
     "auth",
     "cli",
     "device-flow",
-    "onyx"
+    "stet"
   ],
-  "homepage": "https://github.com/jamiedavenport/onyx/tree/main/published/cli#readme",
-  "bugs": "https://github.com/jamiedavenport/onyx/issues",
+  "homepage": "https://github.com/jamiedavenport/stet/tree/main/published/cli#readme",
+  "bugs": "https://github.com/jamiedavenport/stet/issues",
   "license": "Apache-2.0",
   "author": "Jamie Davenport (https://jxd.dev)",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jamiedavenport/onyx.git",
+    "url": "git+https://github.com/jamiedavenport/stet.git",
     "directory": "published/cli"
   },
   "bin": {
-    "onyx": "./dist/index.mjs"
+    "stet": "./dist/index.mjs"
   },
   "files": [
     "dist"
@@ -40,7 +40,7 @@
     "picocolors": "catalog:"
   },
   "devDependencies": {
-    "@jxdltd/onyx-client": "workspace:*",
+    "@stet/client": "workspace:*",
     "@types/node": "catalog:",
     "publint": "catalog:",
     "typescript": "catalog:",

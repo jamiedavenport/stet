@@ -13,13 +13,13 @@ export type { Organization } from '@repo/api';
 export type ApiInputs = InferContractRouterInputs<typeof contract>;
 export type ApiOutputs = InferContractRouterOutputs<typeof contract>;
 
-// The hosted Onyx deployment. Pass `origin` to target a local dev server or
+// The hosted Stet deployment. Pass `origin` to target a local dev server or
 // a self-hosted instance instead.
-export const DEFAULT_ORIGIN = 'https://onyx.jxd.dev';
+export const DEFAULT_ORIGIN = 'https://stet.jxd.dev';
 
-export type OnyxClient = ContractRouterClient<typeof contract>;
+export type StetClient = ContractRouterClient<typeof contract>;
 
-export type OnyxClientOptions = {
+export type StetClientOptions = {
   origin?: string;
   // Organization API key, sent as `x-api-key`. Created by an organization
   // member through the Better Auth api-key endpoints.
@@ -27,7 +27,7 @@ export type OnyxClientOptions = {
   fetch?: typeof globalThis.fetch;
 };
 
-export function createOnyxClient(options: OnyxClientOptions = {}): OnyxClient {
+export function createStetClient(options: StetClientOptions = {}): StetClient {
   const origin = options.origin ?? DEFAULT_ORIGIN;
 
   const link = new OpenAPILink(contract, {

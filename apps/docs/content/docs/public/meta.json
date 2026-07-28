@@ -1,5 +1,0 @@
-{
-  "title": "Public packages",
-  "defaultOpen": true,
-  "pages": ["index", "client", "cli", "vite"]
-}

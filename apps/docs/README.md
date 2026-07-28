@@ -1,6 +1,6 @@
 # apps/docs
 
-The documentation site, built with [Fumadocs](https://fumadocs.dev) on TanStack Start and deployed as its own Cloudflare Worker (`onyx-docs`).
+The documentation site, built with [Fumadocs](https://fumadocs.dev) on TanStack Start and deployed as its own Cloudflare Worker (`stet-docs`).
 
 ## Development
 

@@ -16,9 +16,9 @@ const columns: { title: () => string; links: FooterLink[] }[] = [
   {
     title: m.marketing_footer_product,
     links: [
-      { label: m.marketing_nav_pricing, to: '/', hash: 'pricing' },
       { label: m.marketing_nav_changelog, to: '/changelog' },
       { label: m.marketing_nav_docs, href: brand.docs },
+      { label: m.marketing_nav_github, href: brand.repository },
     ],
   },
   {
@@ -48,7 +48,7 @@ function FooterColumn({ title, children }: { title: string; children: ReactNode 
 }
 
 // A native select rather than the app's Select: the marketing footer keeps to
-// plain elements a fork can restyle freely.
+// plain elements that restyle freely.
 function LanguageSelect({ onSelect }: { onSelect: (locale: Locale) => void }) @{
   <label className="flex items-center gap-2">
     <span>{m.marketing_language()}</span>

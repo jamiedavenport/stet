@@ -6,7 +6,7 @@ import { findPost } from '../src/marketing/content';
 
 export default defineOgConfig({
   '/': () => ({
-    title: 'Ship the product, not the plumbing.',
+    title: 'Both teams at full speed.',
     tag: brand.description,
   }),
   '/blog/': () => ({

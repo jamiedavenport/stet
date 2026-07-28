@@ -34,7 +34,7 @@ export const Route = createFileRoute('/rss.xml')({
   <channel>
     <title>${brand.name} Blog</title>
     <link>${siteUrl}/blog</link>
-    <description>${escapeXml(`Notes from building ${brand.name}: architecture decisions and Cloudflare patterns.`)}</description>
+    <description>${escapeXml(`Notes from building ${brand.name}: design decisions and engineering write-ups.`)}</description>
     <language>en-gb</language>
 ${items}
   </channel>

@@ -3,7 +3,7 @@ import { env } from 'cloudflare:workers';
 
 import type { WebhookEventPayload, WebhookEventType } from './registry';
 
-// Webhook events ride the onyx-jobs queue as the deliver-webhook job. The
+// Webhook events ride the stet-jobs queue as the deliver-webhook job. The
 // envelope is written here instead of calling @repo/jobs enqueue() so the
 // dependency stays one-way: @repo/jobs imports this package for the job
 // handler, so importing it back would be a workspace cycle. The shape must

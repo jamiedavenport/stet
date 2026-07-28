@@ -2,11 +2,9 @@
 
 ## Reporting a vulnerability
 
-Email [hello@jxd.dev](mailto:hello@jxd.dev) with a description and, where possible, steps to reproduce. Do not open a public issue for anything exploitable. Reports are acknowledged within a few days, and fixes ship in the template for every future fork.
+Email [hello@jxd.dev](mailto:hello@jxd.dev) with a description and, where possible, steps to reproduce. Do not open a public issue for anything exploitable. Reports are acknowledged within a few days.
 
-Forks: replace the address above with your own security contact, and consider publishing it at `/.well-known/security.txt` on your deployed origin.
-
-## What the template ships
+## What ships
 
 - Session, socket, and agent entry points verify organization membership server-side on every request.
 - Credential endpoints are rate limited per IP and support Cloudflare Turnstile (set `TURNSTILE_SITE_KEY` / `TURNSTILE_SECRET_KEY`).

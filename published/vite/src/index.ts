@@ -1,6 +1,6 @@
 import type { Plugin, ResolvedConfig } from 'vite';
 
-const id = 'virtual:onyx';
+const id = 'virtual:stet';
 const resolvedId = `\0${id}`;
 
 /**
@@ -16,11 +16,11 @@ export type GenerateContext = {
   mode: string;
 };
 
-/** Options for {@link onyx}. */
-export type OnyxPluginOptions = {
+/** Options for {@link stet}. */
+export type StetPluginOptions = {
   /**
    * Values exposed to application code as the default export of the
-   * `virtual:onyx` module. Serialized with `JSON.stringify`, so they must be
+   * `virtual:stet` module. Serialized with `JSON.stringify`, so they must be
    * JSON-safe.
    */
   config?: Record<string, unknown>;
@@ -32,15 +32,15 @@ export type OnyxPluginOptions = {
 };
 
 /**
- * Vite plugin scaffold for products built on Onyx. Exposes `config` to
- * application code through the `virtual:onyx` module and runs the `generate`
+ * Vite plugin scaffold for products built on Stet. Exposes `config` to
+ * application code through the `virtual:stet` module and runs the `generate`
  * hook before each build.
  */
-export function onyx(options: OnyxPluginOptions = {}): Plugin {
+export function stet(options: StetPluginOptions = {}): Plugin {
   let resolvedConfig: ResolvedConfig;
 
   return {
-    name: 'onyx',
+    name: 'stet',
     configResolved(config) {
       resolvedConfig = config;
     },

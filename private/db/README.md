@@ -57,7 +57,7 @@ its whole table, so `user_fts` matches people in every organization.
 
 ## Switching to migrations
 
-`push` diffs the schema straight onto one database, which is right while you are the only deployer and the schema is moving fast. But it has no history, so it cannot safely upgrade a database it has never seen: run unattended it turns a rename into a drop, and it has nowhere to carry a data backfill. Once other people deploy your fork, switch to committed migrations at your first release.
+`push` diffs the schema straight onto one database, which is right while you are the only deployer and the schema is moving fast. But it has no history, so it cannot safely upgrade a database it has never seen: run unattended it turns a rename into a drop, and it has nowhere to carry a data backfill. Once anyone else runs an instance, switch to committed migrations at your first release.
 
 The plumbing is already wired and dormant: `pnpm generate` writes SQL files to `migrations/`, `apps/web/wrangler.jsonc` points its `migrations_dir` there, and both `vp run web#migrate` (local) and the deploy job's `web#migrate:remote` apply whatever the folder holds with `wrangler d1 migrations apply`, recording each file in a `d1_migrations` table inside the database. While the folder is empty, all of that is a no-op.
 
@@ -67,7 +67,7 @@ To switch:
 2. A database built with `push` already matches the baseline, so record it as applied instead of running it (which would fail on the existing tables):
 
    ```bash
-   cd apps/web && pnpm exec wrangler d1 execute onyx-db --remote --command \
+   cd apps/web && pnpm exec wrangler d1 execute stet-db --remote --command \
      "CREATE TABLE IF NOT EXISTS d1_migrations (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT UNIQUE, applied_at TIMESTAMP NOT NULL DEFAULT current_timestamp); \
       INSERT INTO d1_migrations (name) VALUES ('0000_init.sql');"
    ```

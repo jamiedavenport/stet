@@ -2,7 +2,7 @@ import { rateLimitError } from '@repo/api';
 import { env } from 'cloudflare:workers';
 
 // Report-only for now: violations surface in the browser console (and any
-// reporting endpoint a fork wires up) without breaking anything. Flipping to
+// reporting endpoint a deployment wires up) without breaking anything. Flipping to
 // enforcement means renaming the header and moving the inline hydration
 // script to nonces. 'unsafe-inline' scripts and https: images are the two
 // deliberate loosenings: TanStack Start hydrates with inline scripts, and

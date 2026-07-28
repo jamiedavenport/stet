@@ -2,38 +2,29 @@ import { brand } from '@repo/brand';
 import { m } from '@repo/i18n/messages';
 import { Link } from '@tanstack/react-router';
 
-import { Badge } from '../components/badge';
 import { Button } from '../components/button';
 import { ArrowLink, DisplayHeading, Label, Lede } from './ui.tsrx';
 
-// Text-only sketch of the one-Worker deployment; doubles as the hero visual.
-function PlatformDiagram() @{
-  const surfaces = [
-    m.marketing_surface_web(),
-    m.marketing_surface_api(),
-    m.marketing_surface_auth(),
-    m.marketing_surface_ai(),
-    m.marketing_surface_realtime(),
-    m.marketing_surface_jobs(),
-    m.marketing_surface_crons(),
-    m.marketing_surface_workflows(),
+// The typed client against the model marketing built; doubles as the hero
+// visual. Identifiers stay hardcoded (identical in every locale), only the
+// trailing comment is translated.
+function ClientCodeCard() @{
+  const codeLines = [
+    'import { stet } from "@stet/client";',
+    '',
+    'const posts = await stet.posts.list();',
+    'const post = await stet.posts.get("hello-world");',
+    'const landing = await stet.landing.get();',
   ];
-  const bindings = ['D1', 'R2', 'Queues', 'Durable Objects'];
   <div className="w-full max-w-md rounded-xl border border-border bg-card p-6">
-    <p className="text-xs font-medium text-muted-foreground">
-      {brand.slug}-web · {m.marketing_one_worker()}
+    <p className="font-mono text-xs font-medium text-muted-foreground">@stet/client</p>
+    <pre className="mt-4 overflow-x-auto font-mono text-xs/6 text-foreground">
+      {codeLines.join('\n')}
+    </pre>
+    <p className="mt-1 font-mono text-xs/6 text-muted-foreground">
+      {'// '}
+      {m.marketing_code_comment()}
     </p>
-    <div className="mt-3 flex flex-wrap gap-2">
-      @for (const surface of surfaces; key surface) {
-        <Badge variant="secondary">{surface}</Badge>
-      }
-    </div>
-    <p className="mt-6 text-xs font-medium text-muted-foreground">{m.marketing_bound_to()}</p>
-    <div className="mt-3 flex flex-wrap gap-2">
-      @for (const binding of bindings; key binding) {
-        <Badge variant="outline">{binding}</Badge>
-      }
-    </div>
   </div>
 }
 
@@ -47,14 +38,14 @@ export function HeroSplit() @{
         </DisplayHeading>
         <Lede className="mt-6">{m.marketing_hero_lede({ brandName: brand.name })}</Lede>
         <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-4">
-          <Button size="lg" render={<Link to="/" hash="pricing" />}>
-            {m.marketing_get_onyx({ brandName: brand.name })}
+          <Button size="lg" render={<Link to="/sign/up" />}>
+            {m.marketing_get_started()}
           </Button>
           <ArrowLink href={brand.docs}>{m.marketing_read_the_docs()}</ArrowLink>
         </div>
       </div>
       <div className="flex items-center justify-center max-lg:hidden">
-        <PlatformDiagram />
+        <ClientCodeCard />
       </div>
     </div>
   </section>

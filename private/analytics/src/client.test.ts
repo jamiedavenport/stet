@@ -7,8 +7,8 @@ import { clearAnalyticsIdentity, identifyUser, setActiveOrganization, track } fr
 describe('client without an OpenPanel client', () => {
   it('logs tracked events to the console', () => {
     const log = vi.spyOn(console, 'log').mockImplementation(() => undefined);
-    track('task_created');
-    expect(log).toHaveBeenCalledWith('[analytics] task_created', {});
+    track('organization_created');
+    expect(log).toHaveBeenCalledWith('[analytics] organization_created', {});
     log.mockRestore();
   });
 

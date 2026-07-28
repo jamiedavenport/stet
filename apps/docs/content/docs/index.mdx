@@ -1,47 +1,17 @@
 ---
 title: Introduction
-description: What Onyx is and how the pieces fit together.
-icon: Gem
+description: What Stet is and where the documentation stands.
+icon: BookOpen
 ---
 
-Onyx is a full-stack SaaS starter kit on Cloudflare, built by
-[jxd.dev](https://jxd.dev). Everything deploys as a single Worker: the web
-app, the public API, background jobs, scheduled tasks, realtime
-collaboration, and the AI assistant.
+Stet is the CMS that refuses the marketing-vs-engineering trade-off:
+marketing owns the content model, engineering gets a typed client generated
+from it, and changes cross the gap as information, never as breakage.
 
-## How the repository is organized
-
-The monorepo is driven by Vite+ (`vp`) and pnpm workspaces:
-
-- `apps/*` are deployable applications. `apps/web` is the primary Worker.
-- `private/*` are focused internal packages, each owning one concern (auth,
-  database, storage, mail, and so on).
-- `published/*` are versioned packages released to npm: the typed API client,
-  the `onyx` CLI, and the Vite plugin.
-
-## Where to go next
+Stet is being built in the open and these docs grow with it. What exists
+today:
 
 <Cards>
-  <Card
-    title="Make it your own"
-    href="/make-it-your-own"
-    description="The checklist for turning the template into your product."
-  />
-  <Card
-    title="Apps"
-    href="/apps"
-    description="The deployable applications: the product and this docs site."
-  />
-  <Card
-    title="Private packages"
-    href="/private"
-    description="The APIs you build on: jobs, notifications, workflows, auth, and more."
-  />
-  <Card
-    title="Public packages"
-    href="/public"
-    description="The typed client and CLI your users install from npm."
-  />
   <Card
     title="API reference"
     href="/openapi"
@@ -49,11 +19,11 @@ The monorepo is driven by Vite+ (`vp`) and pnpm workspaces:
   />
 </Cards>
 
+The published packages are documented in their own READMEs for now:
+[`@stet/client`](https://github.com/jamiedavenport/stet/tree/main/published/client),
+[`@stet/cli`](https://github.com/jamiedavenport/stet/tree/main/published/cli), and
+[`@stet/vite`](https://github.com/jamiedavenport/stet/tree/main/published/vite).
+
 ## Built by jxd.dev
 
-Onyx is part of the [jxd.dev](https://jxd.dev) offering. We are a TypeScript
-consultancy: we build products on stacks like this one every day, and Onyx is
-the foundation we reach for first.
-
-If you want help shipping your product on Onyx, from a design review to a
-full build, [work with us](https://jxd.dev).
+Stet is built by [jxd.dev](https://jxd.dev).

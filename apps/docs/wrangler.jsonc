@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "onyx-docs",
+  "name": "stet-docs",
   "compatibility_date": "2026-07-19",
   "compatibility_flags": ["nodejs_compat"],
   "observability": {
@@ -13,7 +13,7 @@
   "main": "src/server.ts",
   "routes": [
     {
-      "pattern": "onyx-docs.jxd.dev",
+      "pattern": "stet-docs.jxd.dev",
       "custom_domain": true,
     },
   ],

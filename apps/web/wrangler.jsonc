@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "onyx-web",
+  "name": "stet-web",
   "compatibility_date": "2026-07-19",
   "compatibility_flags": ["nodejs_compat"],
   "observability": {
@@ -17,15 +17,15 @@
   "main": "src/server.ts",
   "routes": [
     {
-      "pattern": "onyx.jxd.dev",
+      "pattern": "stet.jxd.dev",
       "custom_domain": true,
     },
   ],
   "vars": {
-    "BETTER_AUTH_URL": "https://onyx.jxd.dev",
+    "BETTER_AUTH_URL": "https://stet.jxd.dev",
     // Swap for a Resend-verified domain before inviting real users;
     // onboarding@resend.dev only delivers to the Resend account owner.
-    "MAIL_FROM": "Onyx <onboarding@resend.dev>",
+    "MAIL_FROM": "Stet <onboarding@resend.dev>",
     // How long notification emails wait in a user's outbox so a burst
     // collapses into one digest. Override in .dev.vars to test quickly.
     "NOTIFICATIONS_FLUSH_SECONDS": "300",
@@ -39,7 +39,7 @@
     "OPENPANEL_CLIENT_ID": "fb8ebc94-919a-4d2b-872f-184779f72db7",
     // Sentry error tracking. The DSN is public (it ships in the worker and
     // only accepts event submissions). Blank disables reporting entirely, so
-    // the template runs with no Sentry account.
+    // the app runs with no Sentry account.
     "SENTRY_DSN": "https://89a61a5144b9a8be6cc482b6ae04d2fa@o4504352086884352.ingest.us.sentry.io/4511808956989440",
     // Turnstile bot protection on the auth forms. Blank disables it; local
     // dev overrides in .dev.vars with the always-pass test pair, production
@@ -89,29 +89,29 @@
     "producers": [
       {
         "binding": "JOBS",
-        "queue": "onyx-jobs",
+        "queue": "stet-jobs",
       },
     ],
     "consumers": [
       {
-        "queue": "onyx-jobs",
+        "queue": "stet-jobs",
         "max_retries": 5,
-        "dead_letter_queue": "onyx-jobs-dlq",
+        "dead_letter_queue": "stet-jobs-dlq",
       },
     ],
   },
   "d1_databases": [
     {
       "binding": "DB",
-      "database_name": "onyx-db",
-      "database_id": "38255c5a-48ac-4f56-9f90-28e203f8ce10",
+      "database_name": "stet-db",
+      "database_id": "769a63d7-c262-4812-a477-adb661d2c05f",
       "migrations_dir": "../../private/db/migrations",
     },
   ],
   "r2_buckets": [
     {
       "binding": "STORAGE",
-      "bucket_name": "onyx-storage",
+      "bucket_name": "stet-storage",
     },
   ],
   // Resizes and re-encodes uploaded images on the way out of /api/files.

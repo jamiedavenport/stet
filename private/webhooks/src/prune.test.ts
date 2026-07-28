@@ -1,5 +1,5 @@
 import { schema, setDatabase } from '@repo/db';
-import type { Database as OnyxDatabase } from '@repo/db';
+import type { Database as StetDatabase } from '@repo/db';
 import Sqlite from 'better-sqlite3';
 import { drizzle } from 'drizzle-orm/better-sqlite3';
 import { generateSQLiteDrizzleJson, generateSQLiteMigration } from 'drizzle-kit/api';
@@ -8,7 +8,7 @@ import { beforeEach, describe, expect, it } from 'vite-plus/test';
 import { deliveryRetentionDays, pruneWebhookDeliveries } from './prune';
 import { generateWebhookSecret } from './secret';
 
-let db: OnyxDatabase;
+let db: StetDatabase;
 const orgId = 'org-1';
 const now = new Date('2026-07-25T12:00:00.000Z');
 const dayMs = 24 * 60 * 60 * 1000;
@@ -37,7 +37,7 @@ beforeEach(async () => {
   for (const statement of statements) {
     sqlite.exec(statement);
   }
-  db = drizzle(sqlite, { schema }) as unknown as OnyxDatabase;
+  db = drizzle(sqlite, { schema }) as unknown as StetDatabase;
   setDatabase(db);
   await db.insert(schema.organization).values({
     id: orgId,

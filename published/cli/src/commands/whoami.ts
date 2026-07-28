@@ -10,7 +10,7 @@ export const whoamiCommand = new Command('whoami')
   .action(async (options: { json?: boolean }) => {
     const stored = loadAuth();
     if (stored === null) {
-      console.error('Not logged in. Run `onyx login` first.');
+      console.error('Not logged in. Run `stet login` first.');
       process.exit(1);
     }
 
@@ -23,7 +23,7 @@ export const whoamiCommand = new Command('whoami')
       process.exit(1);
     }
     if (session === null) {
-      console.error('Your session has expired. Run `onyx login` again.');
+      console.error('Your session has expired. Run `stet login` again.');
       process.exit(1);
     }
 

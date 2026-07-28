@@ -3,9 +3,9 @@
 Structured logging on [evlog](https://www.evlog.dev). The package is the repo's field vocabulary plus one-time configuration around evlog's Workers entry: background work accumulates context into a single wide event and emits it once, so one row in Workers Logs tells the whole story of a job, cron run, or webhook delivery.
 
 - `initLogging({ service, production })`: configures the isolate. Called once at module scope in `apps/web/src/server.ts`.
-- `createLogger(context?)`: starts a wide event, typed against `OnyxEvent`.
+- `createLogger(context?)`: starts a wide event, typed against `StetEvent`.
 - `ExpectedFailure`: a failure that is normal operation, logged but kept out of Sentry.
-- `OnyxEvent`, `OnyxEventContext`, `Logger`: the field vocabulary, what the logger accepts, and the logger type.
+- `StetEvent`, `StetEventContext`, `Logger`: the field vocabulary, what the logger accepts, and the logger type.
 
 ## Wide events
 
@@ -54,9 +54,9 @@ So narrate freely; it costs no extra lines. Reaching for a second event usually 
 
 ## The vocabulary
 
-`OnyxEvent` in `src/index.ts` is the shared vocabulary (`user`, `organization`, `job`, `cron`, `workflow`, `webhook`). Add a field by extending the type.
+`StetEvent` in `src/index.ts` is the shared vocabulary (`user`, `organization`, `job`, `cron`, `workflow`, `webhook`). Add a field by extending the type.
 
-Every field is optional at the call site: the type declares the shape, and evlog makes it deeply partial, so each log sets only the subset it knows about. What it does not permit is drift. The initial context, `set()`, and `emit()` are all checked against the same vocabulary, so `job.nmae` and `attempt: 'first'` fail to compile and `job.name` means the same thing in every query. evlog itself types the initial context as `Record<string, unknown>`; narrowing it to `OnyxEventContext` is the main reason this wrapper exists, since the identifiers most call sites open with are passed there.
+Every field is optional at the call site: the type declares the shape, and evlog makes it deeply partial, so each log sets only the subset it knows about. What it does not permit is drift. The initial context, `set()`, and `emit()` are all checked against the same vocabulary, so `job.nmae` and `attempt: 'first'` fail to compile and `job.name` means the same thing in every query. evlog itself types the initial context as `Record<string, unknown>`; narrowing it to `StetEventContext` is the main reason this wrapper exists, since the identifiers most call sites open with are passed there.
 
 ## Why objects, not strings
 

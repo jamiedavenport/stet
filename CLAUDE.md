@@ -4,13 +4,13 @@
 
 Each app and package has its own README with the details for that area.
 
-# Onyx is a template
+# Stet is pre-launch
 
-Buyers fork this repository and build their own product on it. There is no installed base running an older version, and the only deployment is the demo and marketing site at onyx.jxd.dev.
+Stet grew out of the Onyx starter kit: the platform plumbing (auth, organizations, billing, jobs, realtime, webhooks) is inherited and solid; the product in the README is being prototyped on top of it. There are no users and no installed base yet.
 
-So there is no backwards compatibility to keep. Don't add redirects for moved routes, deprecation shims, migration paths, or aliases kept "just in case" — pick the shape the code should have and change it everywhere. Note the breaking change in the commit or PR body and move on.
+So there is no backwards compatibility to keep. Don't add redirects for moved routes, deprecation shims, migration paths, or aliases kept "just in case" — pick the shape the code should have and change it everywhere. Note the breaking change in the commit or PR body and move on. (Deprecation-over-breakage is Stet's promise to its future customers, not a constraint on this repo today.)
 
-The same applies to content: the marketing copy, blog posts, and changelog entries are placeholders a buyer replaces. Don't write tests that assert on them.
+Marketing copy and docs describe the product Stet is becoming; keep them aligned with README.md and don't write tests that assert on their wording.
 
 # Git
 
@@ -29,7 +29,7 @@ The same applies to content: the marketing copy, blog posts, and changelog entri
 
 - Background work produces one wide event per entry point: one per queue message, cron run, or webhook event. Create it there with `createLogger` from `@repo/logging` and `emit()` it once in a `finally`, so failures are recorded too.
 - Pass that logger down to the work. Deeper functions add to the event they are given with `set()`, and record steps with `info()` and `warn()`, which fold into it rather than printing. Starting a second event splits one story across several lines, which is what wide events exist to avoid.
-- Set fields from the `OnyxEvent` vocabulary. Needing a new one means extending that type, not inventing a key at the call site.
+- Set fields from the `StetEvent` vocabulary. Needing a new one means extending that type, not inventing a key at the call site.
 - Never `console.log`. For something genuinely unattached to a unit of work, evlog's `log` writes a standalone tagged line.
 - Don't log HTTP requests. Cloudflare's invocation logs already cover them.
 

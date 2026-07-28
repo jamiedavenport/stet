@@ -8,8 +8,7 @@ import type { ReactNode } from 'react';
 import { Badge } from '../components/badge';
 import { cn } from '../lib/utils';
 
-// Plain marketing primitives on the app's design tokens. A fork restyles these
-// (and the components in this folder) to make the site its own.
+// Plain marketing primitives on the app's design tokens.
 
 export function Wordmark() @{
   <span className="flex items-center gap-2 text-lg font-semibold">

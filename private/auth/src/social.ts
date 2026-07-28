@@ -7,7 +7,7 @@ type SocialCredentials = {
 
 /**
  * The configured social sign-in providers. A provider is only offered when
- * both its id and secret are present; a fork with neither pair set simply has
+ * both its id and secret are present; a deployment with neither pair set simply has
  * no social buttons.
  */
 export function socialProviders({

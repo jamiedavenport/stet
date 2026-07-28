@@ -8,7 +8,7 @@ import { whoamiCommand } from '#/commands/whoami';
 
 const program = new Command();
 
-program.name('onyx').description('Onyx from the command line').version(pkg.version);
+program.name('stet').description('Stet from the command line').version(pkg.version);
 
 program.addCommand(loginCommand);
 program.addCommand(orgCommand);

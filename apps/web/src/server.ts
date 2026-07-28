@@ -111,7 +111,7 @@ export default Sentry.withSentry(sentryOptions, {
   fetch: (request: Request) => entry.fetch(request),
   // Cron Triggers (wrangler.jsonc `triggers.crons`) land here.
   scheduled: handleScheduled,
-  // The onyx-jobs queue consumer (wrangler.jsonc `queues.consumers`).
+  // The stet-jobs queue consumer (wrangler.jsonc `queues.consumers`).
   queue: handleQueue,
 });
 

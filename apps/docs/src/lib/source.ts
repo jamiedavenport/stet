@@ -1,13 +1,13 @@
 import { loader } from 'fumadocs-core/source';
 import { docs } from 'collections/server';
-import { Gem } from 'lucide-react';
+import { BookOpen } from 'lucide-react';
 import { createElement } from 'react';
 import { docsRoute } from './shared';
 import { openapi } from './openapi';
 
 // An explicit map instead of `lucideIconsPlugin()`, which barrel-imports the
 // whole icon set (1.19 MiB) to resolve the handful of names actually used.
-const icons = { Gem };
+const icons = { BookOpen };
 
 export const source = loader(
   {

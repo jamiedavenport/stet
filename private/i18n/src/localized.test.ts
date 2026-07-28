@@ -10,8 +10,8 @@ describe('localized', () => {
 
   it('keeps typed inputs and locale-correct plurals', () => {
     const t = localized('fr');
-    expect(t.reset_password_subject({ brandName: 'Onyx' })).toBe(
-      'Réinitialisez votre mot de passe Onyx',
+    expect(t.reset_password_subject({ brandName: 'Stet' })).toBe(
+      'Réinitialisez votre mot de passe Stet',
     );
     expect(t.up_to_members({ memberLimit: 5 })).toBe("Jusqu'à 5 membres");
   });

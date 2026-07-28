@@ -1,20 +1,22 @@
-# @jxdltd/onyx-client
+# @stet/client
 
-Typed client for the [Onyx](https://github.com/jamiedavenport/onyx) API. The types come straight from the oRPC contract the server implements, so calls and responses are fully typed end to end.
+Typed client for the [Stet](https://github.com/jamiedavenport/stet) API. The types come straight from the oRPC contract the server implements, so calls and responses are fully typed end to end.
+
+This is the transport layer Stet's generated content client will build on: today it exposes the platform endpoints (health, organization, billing); the model-aware client generated from your project's content model arrives with the content API.
 
 ## Install
 
 ```bash
-npm install @jxdltd/onyx-client
+npm install @stet/client
 ```
 
 ## Usage
 
 ```ts
-import { createOnyxClient, safe } from '@jxdltd/onyx-client';
+import { createStetClient, safe } from '@stet/client';
 
-const client = createOnyxClient({
-  apiKey: process.env.ONYX_API_KEY, // organization API key (onyx_...)
+const client = createStetClient({
+  apiKey: process.env.STET_API_KEY, // organization API key (stet_...)
 });
 
 const health = await client.health();
@@ -43,4 +45,4 @@ The API itself is plain REST under `/api/v1`, described by the OpenAPI document 
 
 ## License
 
-MIT
+Apache-2.0

@@ -18,17 +18,17 @@ afterEach(() => {
 
 describe('initLogging', () => {
   it('logs objects rather than JSON strings so Workers Logs indexes the fields', () => {
-    initLogging({ service: 'onyx-web', production: true });
+    initLogging({ service: 'stet-web', production: true });
     const info = captureInfo();
 
     createLogger({ cron: { name: 'cleanup-auth' } }).emit();
 
     const [event] = info.mock.calls[0] as [unknown];
-    expect(event).toMatchObject({ service: 'onyx-web', cron: { name: 'cleanup-auth' } });
+    expect(event).toMatchObject({ service: 'stet-web', cron: { name: 'cleanup-auth' } });
   });
 
   it('redacts PII in production', () => {
-    initLogging({ service: 'onyx-web', production: true });
+    initLogging({ service: 'stet-web', production: true });
     const error = captureError();
 
     const log = createLogger({ job: { name: 'send-welcome-email' } });
@@ -59,7 +59,7 @@ describe('the field vocabulary', () => {
 
 describe('createLogger', () => {
   it('accumulates context across a unit of work into one event', () => {
-    initLogging({ service: 'onyx-web', production: false });
+    initLogging({ service: 'stet-web', production: false });
     const info = captureInfo();
 
     const log = createLogger({ job: { name: 'send-welcome-email' } });
@@ -76,7 +76,7 @@ describe('createLogger', () => {
   });
 
   it('records a failure on the same event the work started', () => {
-    initLogging({ service: 'onyx-web', production: false });
+    initLogging({ service: 'stet-web', production: false });
     const error = captureError();
 
     const log = createLogger({ job: { name: 'deliver-webhook' } });

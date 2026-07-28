@@ -37,7 +37,7 @@ export type CreateAuthOptions = {
   stripeWebhookSecret?: string;
   stripePricePaid?: string;
   // Social sign-in. Each provider is enabled only when both halves are set,
-  // so a fork can ship with none, one, or both configured.
+  // so a deployment can ship with none, one, or both configured.
   googleClientId?: string;
   googleClientSecret?: string;
   githubClientId?: string;

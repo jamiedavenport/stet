@@ -28,7 +28,7 @@ Recording an interaction event is one typed call:
 ```ts
 import { track } from '@repo/analytics/client';
 
-track('task_created');
+track('organization_created');
 ```
 
 ## Worker events

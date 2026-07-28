@@ -1,4 +1,4 @@
-import { createOnyxClient, safe } from '@jxdltd/onyx-client';
+import { createStetClient, safe } from '@stet/client';
 import { Command } from 'commander';
 
 import { resolveOrigin } from '#/client';
@@ -6,18 +6,18 @@ import * as ui from '#/ui';
 
 export const orgCommand = new Command('org')
   .description('Show the organization your API key is scoped to')
-  .option('--api-key <key>', 'Organization API key (defaults to ONYX_API_KEY)')
-  .option('--url <url>', 'Origin of the Onyx deployment')
+  .option('--api-key <key>', 'Organization API key (defaults to STET_API_KEY)')
+  .option('--url <url>', 'Origin of the Stet deployment')
   .option('--json', 'Print the organization as JSON')
   .action(async (options: { apiKey?: string; url?: string; json?: boolean }) => {
-    const apiKey = options.apiKey ?? process.env.ONYX_API_KEY;
+    const apiKey = options.apiKey ?? process.env.STET_API_KEY;
     if (apiKey === undefined || apiKey === '') {
-      console.error('No API key. Pass --api-key or set ONYX_API_KEY.');
+      console.error('No API key. Pass --api-key or set STET_API_KEY.');
       process.exit(1);
     }
 
     const origin = resolveOrigin(options.url);
-    const client = createOnyxClient({ origin, apiKey });
+    const client = createStetClient({ origin, apiKey });
     const { data, error, isDefined } = await safe(client.org.current());
 
     if (isDefined && error.code === 'UNAUTHORIZED') {

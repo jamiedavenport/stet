@@ -1,20 +1,20 @@
 {
-  "name": "@jxdltd/onyx-client",
-  "version": "0.4.0",
-  "description": "Typed client for the Onyx API, generated from the oRPC contract.",
+  "name": "@stet/client",
+  "version": "0.1.0",
+  "description": "Typed client for the Stet API, generated from the oRPC contract.",
   "keywords": [
     "api",
     "client",
-    "onyx",
-    "orpc"
+    "orpc",
+    "stet"
   ],
-  "homepage": "https://github.com/jamiedavenport/onyx/tree/main/published/client#readme",
-  "bugs": "https://github.com/jamiedavenport/onyx/issues",
+  "homepage": "https://github.com/jamiedavenport/stet/tree/main/published/client#readme",
+  "bugs": "https://github.com/jamiedavenport/stet/issues",
   "license": "Apache-2.0",
   "author": "Jamie Davenport (https://jxd.dev)",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jamiedavenport/onyx.git",
+    "url": "git+https://github.com/jamiedavenport/stet.git",
     "directory": "published/client"
   },
   "files": [

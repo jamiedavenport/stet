@@ -6,7 +6,7 @@ import type { RecipientSelector } from './selector';
 
 export type { RecipientSelector };
 
-// Notifications ride the onyx-jobs queue as the deliver-notification job.
+// Notifications ride the stet-jobs queue as the deliver-notification job.
 // The envelope is written here instead of calling @repo/jobs enqueue() so
 // the dependency stays one-way: @repo/jobs imports this package for the job
 // handler, so importing it back would be a workspace cycle. The shape must
