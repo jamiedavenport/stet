@@ -82,8 +82,14 @@ jobs:
           node-version: '24'
           cache: true
       - run: vp install --frozen-lockfile
-      # No-op while private/db/migrations is empty; applies committed
-      # migrations once a fork switches off push (private/db/README.md).
-      - run: vp run web#migrate:remote
+      # Applies committed migrations once the repo switches off push-based
+      # schema changes (private/db/README.md). Guarded because wrangler
+      # errors on a missing migrations directory rather than no-opping.
+      - run: |
+          if [ -d private/db/migrations ]; then
+            vp run web#migrate:remote
+          else
+            echo "No migrations directory; skipping"
+          fi
       - run: vp run web#deploy
       - run: vp run docs#deploy

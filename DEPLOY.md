@@ -27,8 +27,9 @@ wrangler secret put RESEND_API_KEY
 wrangler secret put ANTHROPIC_API_KEY
 wrangler secret put STRIPE_SECRET_KEY
 wrangler secret put STRIPE_WEBHOOK_SECRET
-wrangler secret put OPENPANEL_CLIENT_SECRET
 ```
+
+Analytics is optional: without `OPENPANEL_CLIENT_SECRET` (and the `OPENPANEL_CLIENT_ID` var) events are logged to the console instead of sent.
 
 Social sign-in is optional. To enable it, create OAuth apps and set the matching secrets (leave a pair unset to hide that button):
 
@@ -106,7 +107,7 @@ Pushes to `main` deploy automatically: once every CI check passes, the `deploy` 
 - `CLOUDFLARE_API_TOKEN`: an API token created from the "Edit Cloudflare Workers" template.
 - `CLOUDFLARE_ACCOUNT_ID`: the target account id (shown by `wrangler whoami`).
 
-CI never pushes the schema: `drizzle-kit push` prompts before destructive statements, so it cannot run unattended. Push the schema (above) before merging changes that depend on it. The deploy job does run `wrangler d1 migrations apply` first, which is a no-op until you switch to committed migrations (see "Switching to migrations" in [private/db](private/db)); after the switch, add Account > D1 > Edit to the API token, which the Workers template does not include.
+CI never pushes the schema: `drizzle-kit push` prompts before destructive statements, so it cannot run unattended. Push the schema (above) before merging changes that depend on it. The deploy job runs `wrangler d1 migrations apply` first, skipped while no migrations directory exists; once you switch to committed migrations (see "Switching to migrations" in [private/db](private/db)), add Account > D1 > Edit to the API token, which the Workers template does not include.
 
 To deploy by hand:
 
