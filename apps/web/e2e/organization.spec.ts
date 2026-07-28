@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-import { freshStorageState, gotoHydrated, signOutButton, signUpWithOrg } from './helpers';
+import { freshStorageState, gotoHydrated, signOut, signUpWithOrg } from './helpers';
 
 const origin = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
 
@@ -60,7 +60,7 @@ test('an invited member can leave the organization', async ({ page }) => {
   });
 
   await test.step('invitee signs up through the invite link and accepts', async () => {
-    await signOutButton(page).click();
+    await signOut(page);
     await expect(page.getByText('Welcome back')).toBeVisible();
 
     await gotoHydrated(page, `/invite/${inviteId}`);

@@ -1,13 +1,21 @@
 import { seedAdmin, seedOrganization, seedUser } from '@repo/db/seed-data';
 import { expect, test } from '@playwright/test';
 
-import { freshStorageState, gotoHydrated, signIn } from './helpers';
+import {
+  closeAccountMenu,
+  freshStorageState,
+  gotoHydrated,
+  openAccountMenu,
+  signIn,
+} from './helpers';
 
 // The saved storage state belongs to the regular seed user, which is exactly
 // what the first test needs; the admin block signs in for itself.
 test('a regular member has no route to the admin panel', async ({ page }) => {
   await gotoHydrated(page, '/app');
-  await expect(page.getByRole('link', { name: 'Admin' })).toHaveCount(0);
+  await openAccountMenu(page);
+  await expect(page.getByRole('menuitem', { name: 'Settings' })).toBeVisible();
+  await expect(page.getByRole('menuitem', { name: 'Admin' })).toHaveCount(0);
 
   await gotoHydrated(page, '/app/admin');
   await expect(page.getByRole('heading', { name: /doesn't exist/ })).toBeVisible();
@@ -22,7 +30,8 @@ test.describe('platform admin', () => {
   });
 
   test('platform stats and organization search', async ({ page }) => {
-    await page.getByRole('link', { name: 'Admin' }).click();
+    await openAccountMenu(page);
+    await page.getByRole('menuitem', { name: 'Admin' }).click();
 
     for (const label of ['Total users', 'New users', 'Active organizations']) {
       await expect(page.getByText(label, { exact: true })).toBeVisible();
@@ -32,11 +41,11 @@ test.describe('platform admin', () => {
 
     await page.getByRole('link', { name: 'Organizations' }).click();
     await page.getByLabel('Search by name').fill(seedOrganization.name);
-    await page.getByRole('button', { name: 'Search' }).click();
+    await page.getByRole('main').getByRole('button', { name: 'Search' }).click();
     await expect(page.getByText(seedOrganization.slug, { exact: true })).toBeVisible();
 
     await page.getByLabel('Search by name').fill('no-such-organization');
-    await page.getByRole('button', { name: 'Search' }).click();
+    await page.getByRole('main').getByRole('button', { name: 'Search' }).click();
     await expect(page.getByText('No organizations found.')).toBeVisible();
   });
 
@@ -60,7 +69,7 @@ test.describe('platform admin', () => {
 
     await gotoHydrated(page, '/app/admin/users');
     await page.getByLabel('Search by email').fill(email);
-    await page.getByRole('button', { name: 'Search' }).click();
+    await page.getByRole('main').getByRole('button', { name: 'Search' }).click();
     const row = page.getByRole('listitem').filter({ hasText: email });
     await expect(row).toBeVisible();
 
@@ -105,7 +114,7 @@ test.describe('platform admin', () => {
     await gotoHydrated(page, '/app/admin/users');
     await expect(page.getByText('Every account on the platform.')).toBeVisible();
     await page.getByLabel('Search by email').fill(seedUser.email);
-    await page.getByRole('button', { name: 'Search' }).click();
+    await page.getByRole('main').getByRole('button', { name: 'Search' }).click();
     await expect(page.getByRole('listitem').filter({ hasText: seedUser.email })).toBeVisible();
 
     const url = serverFnUrls.at(-1);
@@ -123,7 +132,7 @@ test.describe('platform admin', () => {
 
     await gotoHydrated(page, '/app/admin/users');
     await page.getByLabel('Search by email').fill(seedUser.email);
-    await page.getByRole('button', { name: 'Search' }).click();
+    await page.getByRole('main').getByRole('button', { name: 'Search' }).click();
 
     const row = page.getByRole('listitem').filter({ hasText: seedUser.email });
     await row.getByRole('button', { name: 'Impersonate' }).click();
@@ -137,7 +146,11 @@ test.describe('platform admin', () => {
     await expect(page.getByText(`Signed in as ${seedUser.email}`)).toBeVisible();
     await expect(page.getByText(`Viewing as ${seedUser.name}`)).toBeVisible();
     // Impersonation is not a promotion: the target is not platform staff.
-    await expect(page.getByRole('link', { name: 'Admin' })).toHaveCount(0);
+    // Settings first, so the absence of Admin is read off an open menu.
+    await openAccountMenu(page);
+    await expect(page.getByRole('menuitem', { name: 'Settings' })).toBeVisible();
+    await expect(page.getByRole('menuitem', { name: 'Admin' })).toHaveCount(0);
+    await closeAccountMenu(page);
 
     await page.getByRole('button', { name: 'Stop impersonating' }).click();
     await expect(page.getByText('Viewing as')).toHaveCount(0);

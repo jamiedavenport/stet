@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-import { freshStorageState, gotoHydrated, signIn, signOutButton, signUpWithOrg } from './helpers';
+import { freshStorageState, gotoHydrated, signIn, signOut, signUpWithOrg } from './helpers';
 
 const origin = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
 
@@ -38,7 +38,7 @@ test('member role gates the webhooks surface until promoted', async ({ page }) =
   });
 
   await test.step('invitee joins as a member', async () => {
-    await signOutButton(page).click();
+    await signOut(page);
     await expect(page.getByText('Welcome back')).toBeVisible();
 
     await gotoHydrated(page, `/invite/${inviteId}`);
@@ -56,13 +56,13 @@ test('member role gates the webhooks surface until promoted', async ({ page }) =
     await expect(page.getByRole('link', { name: 'Home' })).toBeVisible();
     await expect(page.getByRole('link', { name: 'Webhooks' })).toHaveCount(0);
 
-    await gotoHydrated(page, '/app/webhooks');
+    await gotoHydrated(page, '/app/developers/webhooks');
     await expect(page.getByText("This page doesn't exist.")).toBeVisible();
   });
 
   await test.step('owner promotes the member to admin', async () => {
     await gotoHydrated(page, '/app');
-    await signOutButton(page).click();
+    await signOut(page);
     await expect(page.getByText('Welcome back')).toBeVisible();
 
     await signIn(page, ownerEmail, password);
@@ -75,14 +75,14 @@ test('member role gates the webhooks surface until promoted', async ({ page }) =
   });
 
   await test.step('the promoted admin sees webhooks', async () => {
-    await signOutButton(page).click();
+    await signOut(page);
     await expect(page.getByText('Welcome back')).toBeVisible();
 
     await signIn(page, inviteeEmail, password);
     await expect(page.getByText(`Signed in as ${inviteeEmail}`)).toBeVisible();
 
     await expect(page.getByRole('link', { name: 'Webhooks' })).toBeVisible();
-    await gotoHydrated(page, '/app/webhooks');
+    await gotoHydrated(page, '/app/developers/webhooks');
     await expect(page.getByText('Recent deliveries')).toBeVisible();
   });
 });

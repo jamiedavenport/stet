@@ -32,7 +32,7 @@ test('an endpoint receives a signed, verifiable test delivery', async ({ page })
   const url = `http://127.0.0.1:${port}/hooks`;
 
   try {
-    await gotoHydrated(page, '/app/webhooks');
+    await gotoHydrated(page, '/app/developers/webhooks');
     await page.getByLabel('Endpoint URL').fill(url);
     await page.getByRole('button', { name: 'ping', exact: true }).click();
     await page.getByRole('button', { name: 'Create endpoint' }).click();
@@ -59,7 +59,7 @@ test('an endpoint receives a signed, verifiable test delivery', async ({ page })
     await expect
       .poll(
         async () => {
-          await gotoHydrated(page, '/app/webhooks');
+          await gotoHydrated(page, '/app/developers/webhooks');
           return page.getByText('Delivered').first().isVisible();
         },
         { timeout: 15_000 },
@@ -92,7 +92,7 @@ test('a failed delivery can be redelivered once the receiver recovers', async ({
   });
   const url = `http://127.0.0.1:${port}/hooks`;
 
-  await gotoHydrated(page, '/app/webhooks');
+  await gotoHydrated(page, '/app/developers/webhooks');
   await page.getByLabel('Endpoint URL').fill(url);
   await page.getByRole('button', { name: 'ping', exact: true }).click();
   await page.getByRole('button', { name: 'Create endpoint' }).click();
@@ -103,7 +103,7 @@ test('a failed delivery can be redelivered once the receiver recovers', async ({
   await expect
     .poll(
       async () => {
-        await gotoHydrated(page, '/app/webhooks');
+        await gotoHydrated(page, '/app/developers/webhooks');
         return page.getByText('Failed').first().isVisible();
       },
       { timeout: 20_000 },
@@ -125,7 +125,7 @@ test('a failed delivery can be redelivered once the receiver recovers', async ({
     await expect
       .poll(
         async () => {
-          await gotoHydrated(page, '/app/webhooks');
+          await gotoHydrated(page, '/app/developers/webhooks');
           return page.getByText('Delivered').first().isVisible();
         },
         { timeout: 15_000 },

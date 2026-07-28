@@ -20,8 +20,8 @@ test('presence survives client-side navigation', async ({ page }) => {
   const presence = page.getByLabel('People active on this page');
   await expect(presence.getByText('SU')).toBeVisible();
 
-  await page.getByRole('link', { name: 'Settings' }).click();
-  await expect(page.getByText('Your profile')).toBeVisible();
+  await page.getByRole('link', { name: 'Analytics' }).click();
+  await expect(page.getByText('How every entry performs')).toBeVisible();
   await expect(presence.getByText('SU')).toBeVisible();
 });
 

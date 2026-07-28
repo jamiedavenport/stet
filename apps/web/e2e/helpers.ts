@@ -30,11 +30,30 @@ async function settled(page: Page, timeout = 10_000) {
   await Promise.race([idle, widget]);
 }
 
-// The sidebar control, matched exactly: the security settings page also
-// carries "Sign out all other sessions", which a substring match would hit
-// whenever the account has a second live session.
-export function signOutButton(page: Page) {
-  return page.getByRole('button', { name: 'Sign out', exact: true });
+/** The sidebar footer's user menu, which holds account settings and sign out. */
+export function accountMenuButton(page: Page) {
+  return page.getByRole('button', { name: 'Account menu' });
+}
+
+// Matched exactly: the security settings page also carries "Sign out all other
+// sessions", which a substring match would hit whenever the account has a
+// second live session.
+/** Opens the sidebar footer's user menu, which holds the account pages. */
+export async function openAccountMenu(page: Page) {
+  await accountMenuButton(page).click();
+  await expect(page.getByRole('menu')).toBeVisible();
+}
+
+// Escape has to reach the popup itself: sent to the page it lands on the body,
+// and the menu's own backdrop then intercepts every later click.
+export async function closeAccountMenu(page: Page) {
+  await page.getByRole('menu').press('Escape');
+  await expect(page.getByRole('menu')).toBeHidden();
+}
+
+export async function signOut(page: Page) {
+  await openAccountMenu(page);
+  await page.getByRole('menuitem', { name: 'Sign out', exact: true }).click();
 }
 
 export async function signIn(page: Page, email: string, password: string) {

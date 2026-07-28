@@ -2,7 +2,7 @@ import path from 'node:path';
 
 import { expect, test } from '@playwright/test';
 
-import { freshStorageState, gotoHydrated, signIn, signOutButton } from './helpers';
+import { accountMenuButton, freshStorageState, gotoHydrated, signIn, signOut } from './helpers';
 
 const fixture = path.join(import.meta.dirname, 'fixtures/avatar.png');
 
@@ -33,7 +33,7 @@ test('uploading a profile photo shows it across the app', async ({ page }) => {
   expect(response.headers()['content-type']).toMatch(/^image\//);
 
   // The sidebar footer avatar picks up the new photo too.
-  await expect(signOutButton(page).locator('img[src*="/api/files/"]')).toBeVisible();
+  await expect(accountMenuButton(page).locator('img[src*="/api/files/"]')).toBeVisible();
 });
 
 test('removing the profile photo falls back to initials', async ({ page }) => {
@@ -104,7 +104,7 @@ test.describe('password', () => {
     });
 
     await test.step('sign in with the new password', async () => {
-      await signOutButton(page).click();
+      await signOut(page);
       await expect(page.getByText('Welcome back')).toBeVisible();
       await signIn(page, email, 'updated-password');
       await expect(page.getByText(`Signed in as ${email}`)).toBeVisible();

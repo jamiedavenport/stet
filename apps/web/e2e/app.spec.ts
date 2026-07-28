@@ -1,7 +1,7 @@
 import { seedOrganization, seedUser } from '@repo/db/seed-data';
 import { expect, test } from '@playwright/test';
 
-import { gotoHydrated, signOutButton } from './helpers';
+import { accountMenuButton, gotoHydrated } from './helpers';
 
 // Runs in the "app" project, which loads the storage state saved by
 // auth.setup.ts — no sign-in steps needed here.
@@ -9,7 +9,7 @@ test('persisted auth state keeps the user signed in', async ({ page }) => {
   await page.goto('/app');
 
   await expect(page.getByText(`Signed in as ${seedUser.email}`)).toBeVisible();
-  await expect(signOutButton(page)).toBeVisible();
+  await expect(accountMenuButton(page)).toBeVisible();
 });
 
 test('org switcher shows the active organization', async ({ page }) => {

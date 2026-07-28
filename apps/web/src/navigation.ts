@@ -2,57 +2,155 @@ import { canManageOrganization } from '@repo/auth/access';
 import type { OrganizationRole } from '@repo/auth/access';
 import type { LinkProps } from '@tanstack/react-router';
 import {
+  BarChart3Icon,
   Building2Icon,
   HomeIcon,
-  NotebookPenIcon,
+  ImageIcon,
+  KeyRoundIcon,
   SettingsIcon,
+  ShapesIcon,
   ShieldIcon,
-  SparklesIcon,
   WebhookIcon,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
+
+import { contentIcon, contentModel } from '#/content/model';
 
 export type NavItem = {
   readonly label: string;
   /** Typed against the route tree: renaming a route stops this compiling. */
   readonly to: LinkProps['to'];
+  readonly params?: LinkProps['params'];
   readonly icon: LucideIcon;
-  /** Second key of this page's `G` sequence, e.g. `G` then `N` for notes. */
-  readonly key: string;
+  /** Second key of this page's `G` sequence, e.g. `G` then `H` for home. */
+  readonly key?: string;
 };
 
-const navItems = [
-  { label: 'Home', to: '/app', icon: HomeIcon, key: 'h' },
-  { label: 'Notes', to: '/app/notes', icon: NotebookPenIcon, key: 'n' },
-  { label: 'Chat', to: '/app/chat', icon: SparklesIcon, key: 'c' },
-  { label: 'Webhooks', to: '/app/webhooks', icon: WebhookIcon, key: 'w' },
-  { label: 'Settings', to: '/app/settings', icon: SettingsIcon, key: 's' },
-  { label: 'Organization', to: '/app/organization', icon: Building2Icon, key: 'o' },
+export type NavGroup = {
+  readonly id: string;
+  /** Heading above the group. Unlabelled groups read as a plain divide. */
+  readonly label?: string;
+  readonly items: readonly NavItem[];
+};
+
+/** The leader key every destination shortcut starts with. */
+export const navLeaderKey = 'g';
+
+const home = {
+  label: 'Home',
+  to: '/app',
+  icon: HomeIcon,
+  key: 'h',
+} as const satisfies NavItem;
+
+const workspaceItems = [
+  { label: 'Media', to: '/app/media', icon: ImageIcon, key: 'm' },
+  { label: 'Analytics', to: '/app/analytics', icon: BarChart3Icon, key: 'a' },
+  { label: 'Model', to: '/app/model', icon: ShapesIcon, key: 'd' },
 ] as const satisfies readonly NavItem[];
+
+const developerItems = [
+  { label: 'API keys', to: '/app/developers/keys', icon: KeyRoundIcon, key: 'k' },
+  { label: 'Webhooks', to: '/app/developers/webhooks', icon: WebhookIcon, key: 'w' },
+] as const satisfies readonly NavItem[];
+
+const settingsItem = {
+  label: 'Settings',
+  to: '/app/settings',
+  icon: SettingsIcon,
+  key: 's',
+} as const satisfies NavItem;
 
 const adminItem = {
   label: 'Admin',
   to: '/app/admin',
   icon: ShieldIcon,
-  key: 'a',
+  key: 'x',
 } as const satisfies NavItem;
 
-/** The leader key every destination shortcut starts with. */
-export const navLeaderKey = 'g';
+/**
+ * Organization settings, offered by the switcher in the sidebar header: it is
+ * the organization's own page, so it belongs with the organization it names.
+ */
+export const organizationItem = {
+  label: 'Organization',
+  to: '/app/organization',
+  icon: Building2Icon,
+  key: 'o',
+} as const satisfies NavItem;
+
+/** Every collection and map in the model, in the order the model declares them. */
+function contentItems(): readonly NavItem[] {
+  return contentModel.map((type) => ({
+    label: type.name,
+    to: '/app/c/$collection',
+    params: { collection: type.slug },
+    icon: contentIcon(type.kind),
+  }));
+}
 
 /**
- * The pages this member may open, in sidebar order. Shared by the sidebar and
- * the command menu so the two can never offer different destinations.
+ * The groups the sidebar lists, in order. Account and organization pages are
+ * deliberately absent: they hang off the header and footer menus instead, so
+ * the nav itself stays about the content.
  *
- * Webhooks are organization configuration, so they follow the same rule as
- * the route guard and the server functions.
+ * The developer group is organization configuration, so it follows the same
+ * rule as the webhook route guard and the server functions.
  */
-export function navigationFor(options: {
+export function sidebarNavigation(options: { memberRole: OrganizationRole }): readonly NavGroup[] {
+  return [
+    { id: 'home', items: [home] },
+    { id: 'content', label: 'Content', items: contentItems() },
+    { id: 'workspace', items: workspaceItems },
+    ...(canManageOrganization(options.memberRole)
+      ? [{ id: 'developers', label: 'Developers', items: developerItems }]
+      : []),
+  ];
+}
+
+/** The pages the footer's user menu offers, about this person rather than the work. */
+export function accountNavigation(options: { isPlatformAdmin: boolean }): readonly NavItem[] {
+  return options.isPlatformAdmin ? [settingsItem, adminItem] : [settingsItem];
+}
+
+/**
+ * Every page this member may open, wherever it is reached from. The command
+ * menu and the `G` shortcuts run off this, so a destination tucked into a menu
+ * is still one keystroke away.
+ */
+export function allDestinations(options: {
   memberRole: OrganizationRole;
   isPlatformAdmin: boolean;
 }): readonly NavItem[] {
-  const items = canManageOrganization(options.memberRole)
-    ? navItems
-    : navItems.filter((item) => item.to !== '/app/webhooks');
-  return options.isPlatformAdmin ? [...items, adminItem] : items;
+  return [
+    ...sidebarNavigation(options).flatMap((group) => group.items),
+    organizationItem,
+    ...accountNavigation(options),
+  ];
+}
+
+/** The item's path with its route params filled in, e.g. `/app/c/posts`. */
+export function navPath(item: NavItem): string {
+  const path = String(item.to);
+  const params: unknown = item.params;
+  if (params === null || typeof params !== 'object') {
+    return path;
+  }
+  return path.replace(/\$(\w+)/g, (segment, name: string) => {
+    const value = (params as Record<string, unknown>)[name];
+    return typeof value === 'string' ? value : segment;
+  });
+}
+
+/**
+ * Whether a destination owns the current URL. Descendants count, so an open
+ * entry keeps its collection highlighted; `/app` alone would own every page,
+ * so it has to match exactly.
+ */
+export function isCurrent(pathname: string, item: NavItem): boolean {
+  const path = navPath(item);
+  if (path === '/app') {
+    return pathname === path;
+  }
+  return pathname === path || pathname.startsWith(`${path}/`);
 }

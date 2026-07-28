@@ -1,7 +1,7 @@
 import { seedInvitation, seedOrganization, seedUser } from '@repo/db/seed-data';
 import { expect, test } from '@playwright/test';
 
-import { freshStorageState, gotoHydrated, signIn, signOutButton } from './helpers';
+import { freshStorageState, gotoHydrated, signIn, signOut } from './helpers';
 
 // Signed out, with consent pre-accepted so the banner never overlays the
 // auth flows under test.
@@ -61,6 +61,6 @@ test('sign out redirects to the sign-in page', async ({ page }) => {
   await signIn(page, seedUser.email, seedUser.password);
   await expect(page.getByText(`Signed in as ${seedUser.email}`)).toBeVisible();
 
-  await signOutButton(page).click();
+  await signOut(page);
   await expect(page).toHaveURL(/\/sign\/in/);
 });

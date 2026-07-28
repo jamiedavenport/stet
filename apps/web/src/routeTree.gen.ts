@@ -24,11 +24,11 @@ import { Route as MarketingCookiesRouteImport } from './routes/_marketing/cookie
 import { Route as MarketingPrivacyRouteImport } from './routes/_marketing/privacy'
 import { Route as AppIndexRouteImport } from './routes/app/index'
 import { Route as AppAdminRouteRouteImport } from './routes/app/admin/route'
-import { Route as AppChatRouteImport } from './routes/app/chat'
-import { Route as AppNotesRouteImport } from './routes/app/notes'
+import { Route as AppAnalyticsRouteImport } from './routes/app/analytics'
+import { Route as AppMediaRouteImport } from './routes/app/media'
+import { Route as AppModelRouteImport } from './routes/app/model'
 import { Route as AppOrganizationRouteImport } from './routes/app/organization'
 import { Route as AppSettingsRouteImport } from './routes/app/settings'
-import { Route as AppWebhooksRouteImport } from './routes/app/webhooks'
 import { Route as InviteIdRouteImport } from './routes/invite/$id'
 import { Route as MailUnsubscribeRouteImport } from './routes/mail/unsubscribe'
 import { Route as OrgsNewRouteImport } from './routes/orgs/new'
@@ -46,6 +46,10 @@ import { Route as ApiV1SplatRouteImport } from './routes/api/v1/$'
 import { Route as AppAdminIndexRouteImport } from './routes/app/admin/index'
 import { Route as AppAdminOrganizationsRouteImport } from './routes/app/admin/organizations'
 import { Route as AppAdminUsersRouteImport } from './routes/app/admin/users'
+import { Route as AppDevelopersKeysRouteImport } from './routes/app/developers.keys'
+import { Route as AppDevelopersWebhooksRouteImport } from './routes/app/developers.webhooks'
+import { Route as AppCCollectionIndexRouteImport } from './routes/app/c.$collection.index'
+import { Route as AppCCollectionEntryRouteImport } from './routes/app/c.$collection.$entry'
 
 const MarketingRoute = MarketingRouteImport.update({
   id: '/_marketing',
@@ -121,14 +125,19 @@ const AppAdminRouteRoute = AppAdminRouteRouteImport.update({
   path: '/admin',
   getParentRoute: () => AppRouteRoute,
 } as any)
-const AppChatRoute = AppChatRouteImport.update({
-  id: '/chat',
-  path: '/chat',
+const AppAnalyticsRoute = AppAnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
   getParentRoute: () => AppRouteRoute,
 } as any)
-const AppNotesRoute = AppNotesRouteImport.update({
-  id: '/notes',
-  path: '/notes',
+const AppMediaRoute = AppMediaRouteImport.update({
+  id: '/media',
+  path: '/media',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppModelRoute = AppModelRouteImport.update({
+  id: '/model',
+  path: '/model',
   getParentRoute: () => AppRouteRoute,
 } as any)
 const AppOrganizationRoute = AppOrganizationRouteImport.update({
@@ -139,11 +148,6 @@ const AppOrganizationRoute = AppOrganizationRouteImport.update({
 const AppSettingsRoute = AppSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
-  getParentRoute: () => AppRouteRoute,
-} as any)
-const AppWebhooksRoute = AppWebhooksRouteImport.update({
-  id: '/webhooks',
-  path: '/webhooks',
   getParentRoute: () => AppRouteRoute,
 } as any)
 const InviteIdRoute = InviteIdRouteImport.update({
@@ -231,6 +235,26 @@ const AppAdminUsersRoute = AppAdminUsersRouteImport.update({
   path: '/users',
   getParentRoute: () => AppAdminRouteRoute,
 } as any)
+const AppDevelopersKeysRoute = AppDevelopersKeysRouteImport.update({
+  id: '/developers/keys',
+  path: '/developers/keys',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppDevelopersWebhooksRoute = AppDevelopersWebhooksRouteImport.update({
+  id: '/developers/webhooks',
+  path: '/developers/webhooks',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppCCollectionIndexRoute = AppCCollectionIndexRouteImport.update({
+  id: '/c/$collection/',
+  path: '/c/$collection/',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppCCollectionEntryRoute = AppCCollectionEntryRouteImport.update({
+  id: '/c/$collection/$entry',
+  path: '/c/$collection/$entry',
+  getParentRoute: () => AppRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/app': typeof AppRouteRouteWithChildren
@@ -246,11 +270,11 @@ export interface FileRoutesByFullPath {
   '/contact': typeof MarketingContactRoute
   '/cookies': typeof MarketingCookiesRoute
   '/privacy': typeof MarketingPrivacyRoute
-  '/app/chat': typeof AppChatRoute
-  '/app/notes': typeof AppNotesRoute
+  '/app/analytics': typeof AppAnalyticsRoute
+  '/app/media': typeof AppMediaRoute
+  '/app/model': typeof AppModelRoute
   '/app/organization': typeof AppOrganizationRoute
   '/app/settings': typeof AppSettingsRoute
-  '/app/webhooks': typeof AppWebhooksRoute
   '/invite/$id': typeof InviteIdRoute
   '/mail/unsubscribe': typeof MailUnsubscribeRoute
   '/orgs/new': typeof OrgsNewRoute
@@ -267,8 +291,12 @@ export interface FileRoutesByFullPath {
   '/api/v1/$': typeof ApiV1SplatRoute
   '/app/admin/organizations': typeof AppAdminOrganizationsRoute
   '/app/admin/users': typeof AppAdminUsersRoute
+  '/app/developers/keys': typeof AppDevelopersKeysRoute
+  '/app/developers/webhooks': typeof AppDevelopersWebhooksRoute
   '/blog/': typeof MarketingBlogIndexRoute
   '/app/admin/': typeof AppAdminIndexRoute
+  '/app/c/$collection/$entry': typeof AppCCollectionEntryRoute
+  '/app/c/$collection/': typeof AppCCollectionIndexRoute
 }
 export interface FileRoutesByTo {
   '/sign': typeof SignRouteRouteWithChildren
@@ -281,11 +309,11 @@ export interface FileRoutesByTo {
   '/contact': typeof MarketingContactRoute
   '/cookies': typeof MarketingCookiesRoute
   '/privacy': typeof MarketingPrivacyRoute
-  '/app/chat': typeof AppChatRoute
-  '/app/notes': typeof AppNotesRoute
+  '/app/analytics': typeof AppAnalyticsRoute
+  '/app/media': typeof AppMediaRoute
+  '/app/model': typeof AppModelRoute
   '/app/organization': typeof AppOrganizationRoute
   '/app/settings': typeof AppSettingsRoute
-  '/app/webhooks': typeof AppWebhooksRoute
   '/invite/$id': typeof InviteIdRoute
   '/mail/unsubscribe': typeof MailUnsubscribeRoute
   '/orgs/new': typeof OrgsNewRoute
@@ -303,8 +331,12 @@ export interface FileRoutesByTo {
   '/api/v1/$': typeof ApiV1SplatRoute
   '/app/admin/organizations': typeof AppAdminOrganizationsRoute
   '/app/admin/users': typeof AppAdminUsersRoute
+  '/app/developers/keys': typeof AppDevelopersKeysRoute
+  '/app/developers/webhooks': typeof AppDevelopersWebhooksRoute
   '/blog': typeof MarketingBlogIndexRoute
   '/app/admin': typeof AppAdminIndexRoute
+  '/app/c/$collection/$entry': typeof AppCCollectionEntryRoute
+  '/app/c/$collection': typeof AppCCollectionIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -321,11 +353,11 @@ export interface FileRoutesById {
   '/_marketing/contact': typeof MarketingContactRoute
   '/_marketing/cookies': typeof MarketingCookiesRoute
   '/_marketing/privacy': typeof MarketingPrivacyRoute
-  '/app/chat': typeof AppChatRoute
-  '/app/notes': typeof AppNotesRoute
+  '/app/analytics': typeof AppAnalyticsRoute
+  '/app/media': typeof AppMediaRoute
+  '/app/model': typeof AppModelRoute
   '/app/organization': typeof AppOrganizationRoute
   '/app/settings': typeof AppSettingsRoute
-  '/app/webhooks': typeof AppWebhooksRoute
   '/invite/$id': typeof InviteIdRoute
   '/mail/unsubscribe': typeof MailUnsubscribeRoute
   '/orgs/new': typeof OrgsNewRoute
@@ -343,8 +375,12 @@ export interface FileRoutesById {
   '/api/v1/$': typeof ApiV1SplatRoute
   '/app/admin/organizations': typeof AppAdminOrganizationsRoute
   '/app/admin/users': typeof AppAdminUsersRoute
+  '/app/developers/keys': typeof AppDevelopersKeysRoute
+  '/app/developers/webhooks': typeof AppDevelopersWebhooksRoute
   '/_marketing/blog/': typeof MarketingBlogIndexRoute
   '/app/admin/': typeof AppAdminIndexRoute
+  '/app/c/$collection/$entry': typeof AppCCollectionEntryRoute
+  '/app/c/$collection/': typeof AppCCollectionIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -362,11 +398,11 @@ export interface FileRouteTypes {
     | '/contact'
     | '/cookies'
     | '/privacy'
-    | '/app/chat'
-    | '/app/notes'
+    | '/app/analytics'
+    | '/app/media'
+    | '/app/model'
     | '/app/organization'
     | '/app/settings'
-    | '/app/webhooks'
     | '/invite/$id'
     | '/mail/unsubscribe'
     | '/orgs/new'
@@ -383,8 +419,12 @@ export interface FileRouteTypes {
     | '/api/v1/$'
     | '/app/admin/organizations'
     | '/app/admin/users'
+    | '/app/developers/keys'
+    | '/app/developers/webhooks'
     | '/blog/'
     | '/app/admin/'
+    | '/app/c/$collection/$entry'
+    | '/app/c/$collection/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/sign'
@@ -397,11 +437,11 @@ export interface FileRouteTypes {
     | '/contact'
     | '/cookies'
     | '/privacy'
-    | '/app/chat'
-    | '/app/notes'
+    | '/app/analytics'
+    | '/app/media'
+    | '/app/model'
     | '/app/organization'
     | '/app/settings'
-    | '/app/webhooks'
     | '/invite/$id'
     | '/mail/unsubscribe'
     | '/orgs/new'
@@ -419,8 +459,12 @@ export interface FileRouteTypes {
     | '/api/v1/$'
     | '/app/admin/organizations'
     | '/app/admin/users'
+    | '/app/developers/keys'
+    | '/app/developers/webhooks'
     | '/blog'
     | '/app/admin'
+    | '/app/c/$collection/$entry'
+    | '/app/c/$collection'
   id:
     | '__root__'
     | '/app'
@@ -436,11 +480,11 @@ export interface FileRouteTypes {
     | '/_marketing/contact'
     | '/_marketing/cookies'
     | '/_marketing/privacy'
-    | '/app/chat'
-    | '/app/notes'
+    | '/app/analytics'
+    | '/app/media'
+    | '/app/model'
     | '/app/organization'
     | '/app/settings'
-    | '/app/webhooks'
     | '/invite/$id'
     | '/mail/unsubscribe'
     | '/orgs/new'
@@ -458,8 +502,12 @@ export interface FileRouteTypes {
     | '/api/v1/$'
     | '/app/admin/organizations'
     | '/app/admin/users'
+    | '/app/developers/keys'
+    | '/app/developers/webhooks'
     | '/_marketing/blog/'
     | '/app/admin/'
+    | '/app/c/$collection/$entry'
+    | '/app/c/$collection/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -586,18 +634,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdminRouteRouteImport
       parentRoute: typeof AppRouteRoute
     }
-    '/app/chat': {
-      id: '/app/chat'
-      path: '/chat'
-      fullPath: '/app/chat'
-      preLoaderRoute: typeof AppChatRouteImport
+    '/app/analytics': {
+      id: '/app/analytics'
+      path: '/analytics'
+      fullPath: '/app/analytics'
+      preLoaderRoute: typeof AppAnalyticsRouteImport
       parentRoute: typeof AppRouteRoute
     }
-    '/app/notes': {
-      id: '/app/notes'
-      path: '/notes'
-      fullPath: '/app/notes'
-      preLoaderRoute: typeof AppNotesRouteImport
+    '/app/media': {
+      id: '/app/media'
+      path: '/media'
+      fullPath: '/app/media'
+      preLoaderRoute: typeof AppMediaRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/app/model': {
+      id: '/app/model'
+      path: '/model'
+      fullPath: '/app/model'
+      preLoaderRoute: typeof AppModelRouteImport
       parentRoute: typeof AppRouteRoute
     }
     '/app/organization': {
@@ -612,13 +667,6 @@ declare module '@tanstack/react-router' {
       path: '/settings'
       fullPath: '/app/settings'
       preLoaderRoute: typeof AppSettingsRouteImport
-      parentRoute: typeof AppRouteRoute
-    }
-    '/app/webhooks': {
-      id: '/app/webhooks'
-      path: '/webhooks'
-      fullPath: '/app/webhooks'
-      preLoaderRoute: typeof AppWebhooksRouteImport
       parentRoute: typeof AppRouteRoute
     }
     '/invite/$id': {
@@ -740,6 +788,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdminUsersRouteImport
       parentRoute: typeof AppAdminRouteRoute
     }
+    '/app/developers/keys': {
+      id: '/app/developers/keys'
+      path: '/developers/keys'
+      fullPath: '/app/developers/keys'
+      preLoaderRoute: typeof AppDevelopersKeysRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/app/developers/webhooks': {
+      id: '/app/developers/webhooks'
+      path: '/developers/webhooks'
+      fullPath: '/app/developers/webhooks'
+      preLoaderRoute: typeof AppDevelopersWebhooksRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/app/c/$collection/': {
+      id: '/app/c/$collection/'
+      path: '/c/$collection'
+      fullPath: '/app/c/$collection/'
+      preLoaderRoute: typeof AppCCollectionIndexRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/app/c/$collection/$entry': {
+      id: '/app/c/$collection/$entry'
+      path: '/c/$collection/$entry'
+      fullPath: '/app/c/$collection/$entry'
+      preLoaderRoute: typeof AppCCollectionEntryRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
   }
 }
 
@@ -761,22 +837,30 @@ const AppAdminRouteRouteWithChildren = AppAdminRouteRoute._addFileChildren(
 
 interface AppRouteRouteChildren {
   AppAdminRouteRoute: typeof AppAdminRouteRouteWithChildren
-  AppChatRoute: typeof AppChatRoute
-  AppNotesRoute: typeof AppNotesRoute
+  AppAnalyticsRoute: typeof AppAnalyticsRoute
+  AppMediaRoute: typeof AppMediaRoute
+  AppModelRoute: typeof AppModelRoute
   AppOrganizationRoute: typeof AppOrganizationRoute
   AppSettingsRoute: typeof AppSettingsRoute
-  AppWebhooksRoute: typeof AppWebhooksRoute
   AppIndexRoute: typeof AppIndexRoute
+  AppDevelopersKeysRoute: typeof AppDevelopersKeysRoute
+  AppDevelopersWebhooksRoute: typeof AppDevelopersWebhooksRoute
+  AppCCollectionEntryRoute: typeof AppCCollectionEntryRoute
+  AppCCollectionIndexRoute: typeof AppCCollectionIndexRoute
 }
 
 const AppRouteRouteChildren: AppRouteRouteChildren = {
   AppAdminRouteRoute: AppAdminRouteRouteWithChildren,
-  AppChatRoute: AppChatRoute,
-  AppNotesRoute: AppNotesRoute,
+  AppAnalyticsRoute: AppAnalyticsRoute,
+  AppMediaRoute: AppMediaRoute,
+  AppModelRoute: AppModelRoute,
   AppOrganizationRoute: AppOrganizationRoute,
   AppSettingsRoute: AppSettingsRoute,
-  AppWebhooksRoute: AppWebhooksRoute,
   AppIndexRoute: AppIndexRoute,
+  AppDevelopersKeysRoute: AppDevelopersKeysRoute,
+  AppDevelopersWebhooksRoute: AppDevelopersWebhooksRoute,
+  AppCCollectionEntryRoute: AppCCollectionEntryRoute,
+  AppCCollectionIndexRoute: AppCCollectionIndexRoute,
 }
 
 const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(

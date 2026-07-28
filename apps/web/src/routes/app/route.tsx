@@ -7,6 +7,7 @@ import { Outlet, createFileRoute, redirect, useRouterState } from '@tanstack/rea
 
 import { AppSidebar } from '#/components/app-sidebar.tsrx';
 import { CommandMenu } from '#/search/command-menu';
+import { CommandMenuProvider } from '#/search/command-menu-context.tsrx';
 import { ImpersonationBanner } from '#/admin/impersonation-banner.tsrx';
 import { NotificationBell } from '#/notifications/notification-bell.tsrx';
 import { PagePresence } from '#/components/page-presence.tsrx';
@@ -52,32 +53,34 @@ function AppLayout() {
 
   return (
     <TooltipProvider>
-      <SidebarProvider>
-        <AppSidebar />
-        <SidebarInset>
-          {/* One room (and one WebSocket) per page; presence and page
+      <CommandMenuProvider>
+        <SidebarProvider>
+          <AppSidebar />
+          <CommandMenu />
+          <SidebarInset>
+            {/* One room (and one WebSocket) per page; presence and page
               features all consume it through context. */}
-          <PageRoomProvider
-            page={pathname}
-            user={{ id: user.id, image: user.image ?? null, name: user.name }}
-          >
-            <ImpersonationBanner />
-            <header className="flex h-14 shrink-0 items-center gap-2 border-b px-4">
-              <SidebarTrigger className="-ml-1" />
-              <Separator orientation="vertical" className="mr-2 max-h-4" />
-              <p className="text-sm font-medium">{brand.name}</p>
-              <div className="ml-auto flex items-center gap-2">
-                <PagePresence />
-                <CommandMenu />
-                <NotificationBell />
+            <PageRoomProvider
+              page={pathname}
+              user={{ id: user.id, image: user.image ?? null, name: user.name }}
+            >
+              <ImpersonationBanner />
+              <header className="flex h-14 shrink-0 items-center gap-2 border-b px-4">
+                <SidebarTrigger className="-ml-1" />
+                <Separator orientation="vertical" className="mr-2 max-h-4" />
+                <p className="text-sm font-medium">{brand.name}</p>
+                <div className="ml-auto flex items-center gap-2">
+                  <PagePresence />
+                  <NotificationBell />
+                </div>
+              </header>
+              <div className="flex flex-1 flex-col p-4">
+                <Outlet />
               </div>
-            </header>
-            <div className="flex flex-1 flex-col p-4">
-              <Outlet />
-            </div>
-          </PageRoomProvider>
-        </SidebarInset>
-      </SidebarProvider>
+            </PageRoomProvider>
+          </SidebarInset>
+        </SidebarProvider>
+      </CommandMenuProvider>
     </TooltipProvider>
   );
 }

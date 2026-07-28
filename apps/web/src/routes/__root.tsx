@@ -3,7 +3,7 @@ import { brand } from '@repo/brand';
 import type { QueryClient } from '@tanstack/react-query';
 import { HeadContent, Outlet, Scripts, createRootRouteWithContext } from '@tanstack/react-router';
 
-import { ensureAnalyticsClientId } from '#/analytics';
+import { ensureAnalyticsClientId } from '#/analytics/client-id';
 import { ConsentRuntime } from '#/legal/consent-runtime';
 import { NotFound } from '#/components/not-found.tsrx';
 import { ensureSession } from '#/session';

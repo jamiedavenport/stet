@@ -18,7 +18,7 @@ function input(page: Page) {
 
 async function openMenu(page: Page) {
   await gotoHydrated(page, '/app');
-  await page.getByRole('button', { name: 'Open command menu' }).click();
+  await page.getByRole('button', { name: 'Search' }).click();
   await expect(menu(page)).toBeVisible();
   // Base UI moves focus once the open transition settles, and every keystroke
   // in these specs depends on it having landed.
@@ -39,14 +39,14 @@ test('Cmd+K opens the menu and Escape closes it', async ({ page }) => {
 test('destinations are listed with their shortcut and navigate on Enter', async ({ page }) => {
   await openMenu(page);
 
-  const notes = menu(page).getByRole('option', { name: /Notes/ });
-  await expect(notes).toContainText('G N');
+  const analytics = menu(page).getByRole('option', { name: /Analytics/ });
+  await expect(analytics).toContainText('G A');
 
-  await input(page).fill('notes');
-  await expect(notes).toBeVisible();
+  await input(page).fill('analytics');
+  await expect(analytics).toBeVisible();
   await page.keyboard.press('Enter');
 
-  await expect(page).toHaveURL(/\/app\/notes$/);
+  await expect(page).toHaveURL(/\/app\/analytics$/);
   await expect(menu(page)).toBeHidden();
 });
 
@@ -124,11 +124,11 @@ test('search does not reach outside the active organization', async ({ page }) =
   await expect(menu(page).getByRole('option', { name: /Seed Admin/ })).toHaveCount(0);
 });
 
-test('G then N jumps to a page without the menu', async ({ page }) => {
+test('G then A jumps to a page without the menu', async ({ page }) => {
   await gotoHydrated(page, '/app');
 
   await page.keyboard.press('g');
-  await page.keyboard.press('n');
+  await page.keyboard.press('a');
 
-  await expect(page).toHaveURL(/\/app\/notes$/);
+  await expect(page).toHaveURL(/\/app\/analytics$/);
 });

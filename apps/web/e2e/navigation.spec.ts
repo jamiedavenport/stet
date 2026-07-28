@@ -10,7 +10,7 @@ test('client-side navigations do not refetch the session context', async ({ page
   // Hydration must finish before clicking; SSR anchors are inert until then
   // and clicks would fall through to native full-page navigation.
   await page.waitForFunction(() => {
-    const anchor = document.querySelector('a[href="/app/settings"]');
+    const anchor = document.querySelector('a[href="/app/analytics"]');
     if (anchor === null) {
       return false;
     }
@@ -35,10 +35,10 @@ test('client-side navigations do not refetch the session context', async ({ page
 
   // First visits compile these routes on demand in the dev server, which can
   // outlast the default expect timeout on a cold run.
-  await page.getByRole('link', { name: 'Settings' }).click();
-  await expect(page.getByText('Your profile')).toBeVisible({ timeout: 15_000 });
-  await page.getByRole('link', { name: 'Organization' }).click();
-  await expect(page.getByText('People with access to')).toBeVisible({ timeout: 15_000 });
+  await page.getByRole('link', { name: 'Analytics' }).click();
+  await expect(page.getByText('How every entry performs')).toBeVisible({ timeout: 15_000 });
+  await page.getByRole('link', { name: 'Posts' }).click();
+  await expect(page.getByText('unpublished changes')).toBeVisible({ timeout: 15_000 });
   await page.getByRole('link', { name: 'Webhooks' }).click();
   await expect(page.getByText('Recent deliveries')).toBeVisible();
   await page.getByRole('link', { name: 'Home' }).click();

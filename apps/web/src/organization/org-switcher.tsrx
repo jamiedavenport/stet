@@ -18,6 +18,7 @@ import {
 import { Link, useRouter } from '@tanstack/react-router';
 import { CheckIcon, ChevronsUpDownIcon, PlusIcon } from 'lucide-react';
 import { useAppRoute } from '#/use-app-route';
+import { organizationItem } from '#/navigation';
 import { clearSessionContext } from '#/session';
 
 export function OrgSwitcher() @{
@@ -64,6 +65,10 @@ export function OrgSwitcher() @{
             }
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
+          <DropdownMenuItem render={<Link to={organizationItem.to} />}>
+            <organizationItem.icon />
+            {"Organization settings"}
+          </DropdownMenuItem>
           <DropdownMenuItem render={<Link to="/orgs/new" />}>
             <PlusIcon />
             {"New organization"}

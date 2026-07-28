@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-import { freshStorageState, gotoHydrated, signOutButton } from './helpers';
+import { accountMenuButton, freshStorageState, gotoHydrated, signOut } from './helpers';
 
 // Passkey flows start signed out and drive WebAuthn through Chromium's
 // virtual authenticator (CDP), so no real platform authenticator is needed.
@@ -46,11 +46,11 @@ test('a passkey registers in settings and signs the user back in', async ({ page
   });
 
   await test.step('sign back in with the passkey', async () => {
-    await signOutButton(page).click();
+    await signOut(page);
     await expect(page.getByText('Welcome back')).toBeVisible();
 
     await page.getByRole('button', { name: 'Sign in with a passkey' }).click();
-    await expect(signOutButton(page)).toBeVisible();
+    await expect(accountMenuButton(page)).toBeVisible();
   });
 
   await test.step('remove the passkey', async () => {

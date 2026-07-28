@@ -79,10 +79,12 @@ export function useNavigationShortcuts(items: readonly NavItem[], paused: boolea
       }
 
       disarm();
+      // Destinations without a key, such as the collections, are unreachable
+      // here by design: `key` is never the undefined a keystroke cannot be.
       const item = state.current.items.find((candidate) => candidate.key === key);
       if (item !== undefined) {
         event.preventDefault();
-        void router.navigate({ to: item.to });
+        void router.navigate({ to: item.to, params: item.params });
       }
     };
 

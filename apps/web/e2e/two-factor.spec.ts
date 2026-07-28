@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-import { freshStorageState, gotoHydrated, signOutButton } from './helpers';
+import { accountMenuButton, freshStorageState, gotoHydrated, signOut } from './helpers';
 import { totpCode } from './totp';
 
 const origin = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
@@ -54,7 +54,7 @@ test('two-factor enrolment gates sign-in behind a TOTP or backup code', async ({
   });
 
   await test.step('sign-in stops at the second factor and keeps the redirect', async () => {
-    await signOutButton(page).click();
+    await signOut(page);
     await expect(page.getByText('Welcome back')).toBeVisible();
 
     await gotoHydrated(page, '/sign/in?redirect=/app/organization');
@@ -71,7 +71,7 @@ test('two-factor enrolment gates sign-in behind a TOTP or backup code', async ({
   });
 
   await test.step('a backup code also completes sign-in', async () => {
-    await signOutButton(page).click();
+    await signOut(page);
     await expect(page.getByText('Welcome back')).toBeVisible();
 
     await page.getByLabel('Email').fill(email);
@@ -85,7 +85,7 @@ test('two-factor enrolment gates sign-in behind a TOTP or backup code', async ({
 
     // Signing out of /app/organization put its path in the redirect param, so
     // this sign-in lands back there; assert the signed-in shell, not a page.
-    await expect(signOutButton(page)).toBeVisible();
+    await expect(accountMenuButton(page)).toBeVisible();
     await expect(page).toHaveURL(/\/app/);
   });
 });

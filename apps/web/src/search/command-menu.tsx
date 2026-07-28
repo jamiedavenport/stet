@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { useMemo, useState } from 'react';
 import { authClient } from '@repo/auth/client';
-import { Button } from '@repo/ui/components/button';
 import {
   Command,
   CommandCollection,
@@ -17,19 +16,12 @@ import {
 } from '@repo/ui/components/command';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from '@tanstack/react-router';
-import {
-  BuildingIcon,
-  FileIcon,
-  LogOutIcon,
-  PlusIcon,
-  Repeat2Icon,
-  SearchIcon,
-  UserIcon,
-} from 'lucide-react';
+import { BuildingIcon, FileIcon, LogOutIcon, PlusIcon, Repeat2Icon, UserIcon } from 'lucide-react';
 
 import { assetUrl } from '#/files/urls';
-import { navLeaderKey, navigationFor } from '#/navigation';
+import { allDestinations, navLeaderKey, navPath } from '#/navigation';
 import type { NavItem } from '#/navigation';
+import { useCommandMenu } from '#/search/command-menu-context.tsrx';
 import { searchQuery } from '#/search/functions';
 import { useCommandMenuShortcut, useNavigationShortcuts } from '#/search/shortcuts';
 import { useDebounced } from '#/search/use-debounced';
@@ -60,13 +52,13 @@ export function CommandMenu() {
   const queryClient = useQueryClient();
   const { contains } = useCommandFilter(filterOptions);
 
-  const [open, setOpen] = useState(false);
+  const { open, setOpen, toggle } = useCommandMenu();
   const [page, setPage] = useState<Page>('root');
   const [query, setQuery] = useState('');
 
-  useCommandMenuShortcut(() => setOpen((value) => !value));
+  useCommandMenuShortcut(toggle);
 
-  const destinations = navigationFor({ memberRole, isPlatformAdmin: isPlatformAdmin(user) });
+  const destinations = allDestinations({ memberRole, isPlatformAdmin: isPlatformAdmin(user) });
   useNavigationShortcuts(destinations, open);
 
   // Only text the user has stopped typing reaches the server, and only from
@@ -86,9 +78,9 @@ export function CommandMenu() {
     setQuery('');
   };
 
-  const go = (to: NavItem['to']) => {
+  const go = (to: NavItem['to'], params?: NavItem['params']) => {
     dismiss();
-    void router.navigate({ to });
+    void router.navigate({ to, params });
   };
 
   const switchOrganization = async (organizationId: string) => {
@@ -184,11 +176,14 @@ export function CommandMenu() {
         items: destinations
           .map(
             (destination): Entry => ({
-              id: `nav:${destination.to}`,
+              id: `nav:${navPath(destination)}`,
               label: destination.label,
               icon: destination.icon,
-              shortcut: `${navLeaderKey.toUpperCase()} ${destination.key.toUpperCase()}`,
-              run: () => go(destination.to),
+              shortcut:
+                destination.key === undefined
+                  ? undefined
+                  : `${navLeaderKey.toUpperCase()} ${destination.key.toUpperCase()}`,
+              run: () => go(destination.to, destination.params),
             }),
           )
           .filter(matches),
@@ -229,50 +224,37 @@ export function CommandMenu() {
   }, [page, query, results, organizations, activeOrganization.id, memberRole, user.role, contains]);
 
   return (
-    <>
-      <Button
-        variant="outline"
-        size="sm"
-        aria-label={'Open command menu'}
-        aria-keyshortcuts="Meta+K Control+K"
-        onClick={() => setOpen(true)}
-      >
-        <SearchIcon />
-        <span className="hidden text-muted-foreground sm:inline">{'Search'}</span>
-        <CommandShortcut className="hidden sm:flex">⌘K</CommandShortcut>
-      </Button>
-      <CommandDialog open={open} onOpenChange={onOpenChange} title={'Command menu'}>
-        <Command items={groups} value={query} onValueChange={setQuery}>
-          <CommandInput
-            placeholder={
-              page === 'organizations' ? 'Switch organization…' : 'Search or jump to a page…'
-            }
-            onKeyDown={onInputKeyDown}
-          />
-          <CommandList>
-            {(group: Group) => (
-              <CommandGroup key={group.value} items={group.items}>
-                <CommandGroupLabel>{group.value}</CommandGroupLabel>
-                <CommandCollection>
-                  {(entry: Entry) => (
-                    <CommandItem key={entry.id} value={entry} onClick={entry.run}>
-                      <entry.icon />
-                      <span className="truncate">{entry.label}</span>
-                      {entry.hint === undefined ? null : (
-                        <span className="truncate text-xs text-muted-foreground">{entry.hint}</span>
-                      )}
-                      {entry.shortcut === undefined ? null : (
-                        <CommandShortcut>{entry.shortcut}</CommandShortcut>
-                      )}
-                    </CommandItem>
-                  )}
-                </CommandCollection>
-              </CommandGroup>
-            )}
-          </CommandList>
-          <CommandEmpty>{'No results found'}</CommandEmpty>
-        </Command>
-      </CommandDialog>
-    </>
+    <CommandDialog open={open} onOpenChange={onOpenChange} title={'Command menu'}>
+      <Command items={groups} value={query} onValueChange={setQuery}>
+        <CommandInput
+          placeholder={
+            page === 'organizations' ? 'Switch organization…' : 'Search or jump to a page…'
+          }
+          onKeyDown={onInputKeyDown}
+        />
+        <CommandList>
+          {(group: Group) => (
+            <CommandGroup key={group.value} items={group.items}>
+              <CommandGroupLabel>{group.value}</CommandGroupLabel>
+              <CommandCollection>
+                {(entry: Entry) => (
+                  <CommandItem key={entry.id} value={entry} onClick={entry.run}>
+                    <entry.icon />
+                    <span className="truncate">{entry.label}</span>
+                    {entry.hint === undefined ? null : (
+                      <span className="truncate text-xs text-muted-foreground">{entry.hint}</span>
+                    )}
+                    {entry.shortcut === undefined ? null : (
+                      <CommandShortcut>{entry.shortcut}</CommandShortcut>
+                    )}
+                  </CommandItem>
+                )}
+              </CommandCollection>
+            </CommandGroup>
+          )}
+        </CommandList>
+        <CommandEmpty>{'No results found'}</CommandEmpty>
+      </Command>
+    </CommandDialog>
   );
 }
