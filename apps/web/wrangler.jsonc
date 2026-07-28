@@ -23,17 +23,15 @@
   ],
   "vars": {
     "BETTER_AUTH_URL": "https://stetcms.com",
-    // Swap for a Resend-verified domain before inviting real users;
-    // onboarding@resend.dev only delivers to the Resend account owner.
-    "MAIL_FROM": "Stet <onboarding@resend.dev>",
+    // Must be a sender on a Resend-verified domain.
+    "MAIL_FROM": "Stet <noreply@stetcms.com>",
     // How long notification emails wait in a user's outbox so a burst
     // collapses into one digest. Override in .dev.vars to test quickly.
     "NOTIFICATIONS_FLUSH_SECONDS": "300",
     // Stripe price id (per-seat, monthly) for the paid plan. Empty locally:
     // without STRIPE_SECRET_KEY billing runs against the built-in fake
-    // Stripe, which supplies its own price id. This one is the Onyx-era
-    // price; replace it when pricing is decided (see README open questions).
-    "STRIPE_PRICE_PAID": "price_1TwMQgIdr8Yx5Wu4pQcDdvtU",
+    // Stripe, which supplies its own price id.
+    "STRIPE_PRICE_PAID": "price_1TyHfDIdr8Yx5Wu4S72eWS2I",
     // OpenPanel client id (public, ships to the browser). Blank (and no
     // secret) means analytics logs to the console instead; set it once a
     // Stet OpenPanel project exists, and keep "" in .dev.vars so local
