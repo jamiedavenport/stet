@@ -105,6 +105,12 @@ export const analytics = createAnalytics<(typeof config)['analytics']>({
 Then mount one of these **at the root**, so every page is counted rather than
 only the routes that happen to import the client.
 
+**Pass the router's URL, never let `pageview()` read `window.location`.** By
+the time your effect or callback runs, the router has advanced and
+`window.location` may not have, so a bare `analytics.pageview()` labels the
+view with the _previous_ page — and the same-URL guard then quietly drops
+every other one. Every snippet below passes it explicitly for that reason.
+
 ### TanStack Router
 
 ```tsx
@@ -114,7 +120,7 @@ import { useEffect } from 'react';
 export function usePageviews() {
   const location = useLocation();
   useEffect(() => {
-    analytics.pageview();
+    analytics.pageview(`${window.location.origin}${location.href}`);
   }, [location.href]);
 }
 ```
@@ -131,7 +137,8 @@ export function Pageviews() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   useEffect(() => {
-    analytics.pageview();
+    const query = searchParams.toString();
+    analytics.pageview(`${window.location.origin}${pathname}${query === '' ? '' : `?${query}`}`);
   }, [pathname, searchParams]);
   return null;
 }
@@ -149,7 +156,7 @@ import { useLocation } from 'react-router';
 export function Pageviews() {
   const location = useLocation();
   useEffect(() => {
-    analytics.pageview();
+    analytics.pageview(`${window.location.origin}${location.pathname}${location.search}`);
   }, [location.pathname, location.search]);
   return null;
 }
@@ -162,7 +169,7 @@ In `+layout.svelte`:
 ```svelte
 <script>
   import { afterNavigate } from '$app/navigation';
-  afterNavigate(() => analytics.pageview());
+  afterNavigate(({ to }) => analytics.pageview(to?.url.href));
 </script>
 ```
 
@@ -171,15 +178,19 @@ In `+layout.svelte`:
 In a client-only plugin, `plugins/analytics.client.ts`:
 
 ```ts
-export default defineNuxtPlugin((nuxtApp) => {
-  useRouter().afterEach(() => analytics.pageview());
+export default defineNuxtPlugin(() => {
+  useRouter().afterEach((to) => {
+    analytics.pageview(`${window.location.origin}${to.fullPath}`);
+  });
 });
 ```
 
 ### Astro
 
-Astro navigations are full page loads, so the default is already correct. With
-view transitions enabled they are not, and the client script only runs once:
+Astro navigations are full page loads, so the default is already correct and
+there is nothing to add. With view transitions enabled the client script runs
+only once, so listen instead — and here a bare call _is_ right, because the
+event fires after the swap, when `window.location` is already the new page:
 
 ```ts
 document.addEventListener('astro:page-load', () => analytics.pageview());

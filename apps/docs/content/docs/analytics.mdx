@@ -65,7 +65,11 @@ export const analytics = createAnalytics<(typeof config)['analytics']>({
 analytics.track('checkout.completed', { total: 42 });
 ```
 
-Pageviews are recorded for you, on load and on history navigation.
+On a site where every navigation is a real page load, pageviews are recorded
+for you and there is nothing else to do. In a single-page app, set
+`autoPageviews: false` and record them from your router instead — it is the
+only thing that knows what a navigation is. `@stetcms/analytics` documents a
+snippet for TanStack Router, Next.js, React Router, SvelteKit, Nuxt and Astro.
 
 ## Type safety
 

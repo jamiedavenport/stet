@@ -26,6 +26,9 @@ export function usePageviews(): void {
   const location = useLocation();
 
   useEffect(() => {
-    analytics.pageview();
+    // The router's href, not window.location: at the time this effect runs the
+    // router has already advanced and window.location has not, so letting the
+    // client read it labels every pageview with the previous page.
+    analytics.pageview(`${window.location.origin}${location.href}`);
   }, [location.href]);
 }
