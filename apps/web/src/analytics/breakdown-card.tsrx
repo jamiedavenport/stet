@@ -28,7 +28,7 @@ export function BreakdownCard(props: BreakdownCardProps) @{
             <li className="relative flex items-center justify-between gap-4 rounded-sm px-2 py-1.5 text-sm">
               <span
                 aria-hidden="true"
-                className="absolute inset-y-0 left-0 rounded-sm bg-foreground/6"
+                className="absolute inset-y-0 left-0 rounded-sm bg-chart-1/12"
                 style={{ width: `${largest === 0 ? 0 : (row.count / largest) * 100}%` }}
               />
               <span className="relative truncate" title={row.key}>{row.key}</span>

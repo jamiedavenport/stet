@@ -67,7 +67,7 @@ export function TrafficChart({
           strokeWidth={2}
           strokeLinecap="round"
           fill="var(--color-views)"
-          fillOpacity={0.08}
+          fillOpacity={0.12}
           isAnimationActive={false}
           activeDot={{ r: 4, stroke: 'var(--card)', strokeWidth: 2 }}
         />

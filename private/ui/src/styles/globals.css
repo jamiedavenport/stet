@@ -77,10 +77,11 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.145 0 0 / 8%);
   --sidebar-ring: oklch(0.708 0 0);
-  /* Charts here plot one series at a time and name it in the title, so
-     identity never rides on hue and the palette stays as monochrome as the
-     rest of the UI. Ink against the card, well past 3:1. */
-  --chart-1: oklch(0.205 0 0);
+  /* The one place the UI is allowed a hue. Everything else here is neutral so
+     the interface recedes; data is the exception, because a chart drawn in the
+     same ink as its own axis labels reads as furniture. Validated for the
+     lightness band, chroma floor and 3:1 against the card. */
+  --chart-1: oklch(0.56 0.165 262);
   --chart-grid: oklch(0.145 0 0 / 8%);
 }
 
@@ -111,8 +112,9 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
-  /* Chosen against the dark card rather than flipped from the light value. */
-  --chart-1: oklch(0.922 0 0);
+  /* Stepped up for the dark card rather than flipped from the light value:
+     the light step fails the band against this surface. */
+  --chart-1: oklch(0.656 0.125 262);
   --chart-grid: oklch(1 0 0 / 10%);
 }
 
