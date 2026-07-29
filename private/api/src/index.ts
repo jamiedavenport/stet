@@ -5,6 +5,10 @@ import { contract } from './contract';
 export { contract };
 export {
   authErrors,
+  contentEntrySchema,
+  contentFieldSchema,
+  contentFieldTypeSchema,
+  contentTypeSchema,
   noteSchema,
   orgBillingSchema,
   rateLimitError,
@@ -15,6 +19,9 @@ export {
   webhookEventTypeSchema,
 } from './contract';
 export type {
+  ContentEntry,
+  ContentFieldType,
+  ContentType,
   Note,
   Organization,
   OrgBilling,

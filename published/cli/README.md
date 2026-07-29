@@ -12,6 +12,23 @@ npx @stetcms/cli login
 
 ## Usage
 
+### `stet generate`
+
+Generate the typed content client from your organization's content model, exactly as [`@stetcms/vite`](https://github.com/jamiedavenport/stet/tree/main/published/vite) does at build time. Use it where there is no Vite: Next.js apps, other bundlers, or CI.
+
+```bash
+STET_API_KEY=stet_... stet generate
+stet generate --key stet_... --url https://stet.example.com --output lib/stet.gen.ts
+```
+
+| Flag              | Description                                                          |
+| ----------------- | -------------------------------------------------------------------- |
+| `--url <origin>`  | Stet server origin. Defaults to `$STET_ORIGIN`, then the hosted app. |
+| `--key <api-key>` | Organization API key. Defaults to `$STET_API_KEY`.                   |
+| `--output <path>` | Where the generated module goes. Defaults to `src/stet.gen.ts`.      |
+
+The generated file imports [`@stetcms/client`](https://github.com/jamiedavenport/stet/tree/main/published/client), so add that to your app's dependencies. It never contains the key: at runtime the client reads `STET_API_KEY` from the environment again, so the file is safe to commit.
+
 ### `stet login`
 
 Log in through your browser using the OAuth device flow. The CLI shows a short code, opens the verification page, and waits for you to approve the request. No password ever touches the terminal.

@@ -6,6 +6,7 @@ import { TooltipProvider } from '@repo/ui/components/tooltip';
 import { Outlet, createFileRoute, redirect, useRouterState } from '@tanstack/react-router';
 
 import { AppSidebar } from '#/components/app-sidebar.tsrx';
+import { ensureContentModel } from '#/content/model/functions';
 import { CommandMenu } from '#/search/command-menu';
 import { CommandMenuProvider } from '#/search/command-menu-context.tsrx';
 import { ImpersonationBanner } from '#/admin/impersonation-banner.tsrx';
@@ -40,6 +41,8 @@ export const Route = createFileRoute('/app')({
     }
 
     const member = await ensureActiveMember(context.queryClient, activeOrganization.id);
+    // The sidebar and command menu render the content model on every page.
+    await ensureContentModel(context.queryClient, activeOrganization.id);
 
     return { session, organizations, activeOrganization, memberRole: member.role };
   },
@@ -74,7 +77,7 @@ function AppLayout() {
                   <NotificationBell />
                 </div>
               </header>
-              <div className="flex flex-1 flex-col p-4">
+              <div className="flex min-h-0 min-w-0 flex-1 flex-col p-4">
                 <Outlet />
               </div>
             </PageRoomProvider>

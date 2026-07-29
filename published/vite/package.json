@@ -38,6 +38,9 @@
     "tc": "tsc --noEmit",
     "test": "vp test run"
   },
+  "dependencies": {
+    "@stetcms/client": "workspace:*"
+  },
   "devDependencies": {
     "@types/node": "catalog:",
     "publint": "catalog:",

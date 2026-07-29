@@ -7,7 +7,8 @@
     ".": "./src/index.ts",
     "./author-mark": "./src/author-mark.tsx",
     "./mark": "./src/mark.tsx",
-    "./logo.svg": "./src/assets/logo.svg"
+    "./logo.svg": "./src/assets/logo.svg",
+    "./favicon.svg": "./src/assets/favicon.svg"
   },
   "scripts": {
     "build": "tsc --noEmit",

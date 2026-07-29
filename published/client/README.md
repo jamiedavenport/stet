@@ -2,7 +2,21 @@
 
 Typed client for the [Stet](https://github.com/jamiedavenport/stet) API. The types come straight from the oRPC contract the server implements, so calls and responses are fully typed end to end.
 
-This is the transport layer Stet's generated content client will build on: today it exposes the platform endpoints (health, organization, billing); the model-aware client generated from your project's content model arrives with the content API.
+It also carries the content client runtime that [`@stetcms/vite`](https://github.com/jamiedavenport/stet/tree/main/published/vite)'s generated `stet.gen.ts` instantiates:
+
+```ts
+import { createContentClient } from '@stetcms/client';
+
+// Generated code passes a model type here, so `stet.posts` autocompletes and
+// each entry's `fields` match the model marketing built.
+const stet = createContentClient<Model>({ apiKey: process.env.STET_API_KEY });
+
+const posts = await stet.posts.list();
+const post = await stet.posts.get('hello-world');
+const landing = await stet.landing.get(); // a map: one entry, no slug
+```
+
+Rich text fields arrive as markdown, selects as option names, and person fields as `{ id, name }`. Keep the API key server-side: fetch content from loaders, server functions, or your own backend rather than the browser.
 
 ## Install
 

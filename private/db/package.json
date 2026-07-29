@@ -22,6 +22,7 @@
     "drizzle-orm": "catalog:"
   },
   "devDependencies": {
+    "@better-auth/api-key": "catalog:",
     "@cloudflare/workers-types": "catalog:",
     "@nerdfolio/drizzle-d1-helpers": "catalog:",
     "@types/better-sqlite3": "catalog:",

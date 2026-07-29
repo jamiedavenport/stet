@@ -334,34 +334,22 @@ catalogs:
     '@tanstack/react-start':
       specifier: ^1.168.30
       version: 1.168.30
+    '@tanstack/react-table':
+      specifier: ^8.21.3
+      version: 8.21.3
     '@tiptap/core':
       specifier: ^3.28.0
       version: 3.28.0
-    '@tiptap/extension-code-block-lowlight':
-      specifier: ^3.28.0
-      version: 3.29.0
     '@tiptap/extension-collaboration':
       specifier: ^3.28.0
       version: 3.28.0
     '@tiptap/extension-collaboration-caret':
       specifier: ^3.28.0
       version: 3.28.0
-    '@tiptap/extension-drag-handle':
-      specifier: ^3.28.0
-      version: 3.29.0
-    '@tiptap/extension-drag-handle-react':
-      specifier: ^3.28.0
-      version: 3.29.0
     '@tiptap/extension-file-handler':
       specifier: ^3.28.0
       version: 3.29.0
     '@tiptap/extension-image':
-      specifier: ^3.28.0
-      version: 3.29.0
-    '@tiptap/extension-list':
-      specifier: ^3.28.0
-      version: 3.28.0
-    '@tiptap/extension-mention':
       specifier: ^3.28.0
       version: 3.29.0
     '@tiptap/extension-table':
@@ -382,6 +370,9 @@ catalogs:
     '@tiptap/starter-kit':
       specifier: ^3.28.0
       version: 3.28.0
+    '@tiptap/static-renderer':
+      specifier: ^3.28.0
+      version: 3.29.1
     '@tiptap/suggestion':
       specifier: ^3.28.0
       version: 3.29.0
@@ -457,15 +448,9 @@ catalogs:
     fumadocs-openapi:
       specifier: ^11.2.2
       version: 11.2.2
-    highlight.js:
-      specifier: ^11.11.1
-      version: 11.11.1
     knip:
       specifier: 6.29.0
       version: 6.29.0
-    lowlight:
-      specifier: ^3.3.0
-      version: 3.3.0
     lucide-react:
       specifier: ^0.552.0
       version: 0.552.0
@@ -751,36 +736,24 @@ importers:
       '@tanstack/react-start':
         specifier: 'catalog:'
         version: 1.168.30(@voidzero-dev/vite-plus-core@0.2.2(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(publint@0.3.21)(tsx@4.23.1)(typescript@5.9.3)(yaml@2.9.0))(esbuild@0.28.1)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(rolldown@1.1.5)(supports-color@10.2.2)
+      '@tanstack/react-table':
+        specifier: 'catalog:'
+        version: 8.21.3(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@tiptap/core':
         specifier: 'catalog:'
         version: 3.28.0(@tiptap/pm@3.28.0)
-      '@tiptap/extension-code-block-lowlight':
-        specifier: 'catalog:'
-        version: 3.29.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/extension-code-block@3.29.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)(highlight.js@11.11.1)(lowlight@3.3.0)
       '@tiptap/extension-collaboration':
         specifier: 'catalog:'
         version: 3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)(@tiptap/y-tiptap@3.0.7(prosemirror-model@1.25.11)(prosemirror-state@1.4.4)(prosemirror-view@1.42.1)(y-protocols@1.0.7(yjs@13.6.31))(yjs@13.6.31))(yjs@13.6.31)
       '@tiptap/extension-collaboration-caret':
         specifier: 'catalog:'
         version: 3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)(@tiptap/y-tiptap@3.0.7(prosemirror-model@1.25.11)(prosemirror-state@1.4.4)(prosemirror-view@1.42.1)(y-protocols@1.0.7(yjs@13.6.31))(yjs@13.6.31))
-      '@tiptap/extension-drag-handle':
-        specifier: 'catalog:'
-        version: 3.29.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/extension-collaboration@3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)(@tiptap/y-tiptap@3.0.7(prosemirror-model@1.25.11)(prosemirror-state@1.4.4)(prosemirror-view@1.42.1)(y-protocols@1.0.7(yjs@13.6.31))(yjs@13.6.31))(yjs@13.6.31))(@tiptap/extension-node-range@3.29.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)(@tiptap/y-tiptap@3.0.7(prosemirror-model@1.25.11)(prosemirror-state@1.4.4)(prosemirror-view@1.42.1)(y-protocols@1.0.7(yjs@13.6.31))(yjs@13.6.31))
-      '@tiptap/extension-drag-handle-react':
-        specifier: 'catalog:'
-        version: 3.29.0(@tiptap/extension-drag-handle@3.29.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/extension-collaboration@3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)(@tiptap/y-tiptap@3.0.7(prosemirror-model@1.25.11)(prosemirror-state@1.4.4)(prosemirror-view@1.42.1)(y-protocols@1.0.7(yjs@13.6.31))(yjs@13.6.31))(yjs@13.6.31))(@tiptap/extension-node-range@3.29.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)(@tiptap/y-tiptap@3.0.7(prosemirror-model@1.25.11)(prosemirror-state@1.4.4)(prosemirror-view@1.42.1)(y-protocols@1.0.7(yjs@13.6.31))(yjs@13.6.31)))(@tiptap/pm@3.28.0)(@tiptap/react@3.28.0(@floating-ui/dom@1.8.0)(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@tiptap/extension-file-handler':
         specifier: 'catalog:'
         version: 3.29.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/extension-text-style@3.29.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0)))(@tiptap/pm@3.28.0)
       '@tiptap/extension-image':
         specifier: 'catalog:'
         version: 3.29.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))
-      '@tiptap/extension-list':
-        specifier: 'catalog:'
-        version: 3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)
-      '@tiptap/extension-mention':
-        specifier: 'catalog:'
-        version: 3.29.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)(@tiptap/suggestion@3.29.0(@floating-ui/dom@1.8.0)(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0))
       '@tiptap/extension-table':
         specifier: 'catalog:'
         version: 3.29.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)
@@ -799,6 +772,9 @@ importers:
       '@tiptap/starter-kit':
         specifier: 'catalog:'
         version: 3.28.0
+      '@tiptap/static-renderer':
+        specifier: 'catalog:'
+        version: 3.29.1(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@tiptap/suggestion':
         specifier: 'catalog:'
         version: 3.29.0(@floating-ui/dom@1.8.0)(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)
@@ -811,12 +787,6 @@ importers:
       agents:
         specifier: 'catalog:'
         version: 0.17.4(@ai-sdk/react@3.0.235(react@19.2.7)(zod@4.4.3))(@babel/core@8.0.1)(@babel/runtime@7.29.7)(@cloudflare/workers-types@5.20260723.1)(@voidzero-dev/vite-plus-core@0.2.2(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(publint@0.3.21)(tsx@4.23.1)(typescript@5.9.3)(yaml@2.9.0))(ai@6.0.233(zod@4.4.3))(react@19.2.7)(rolldown@1.1.5)(supports-color@10.2.2)(zod@4.4.3)
-      highlight.js:
-        specifier: 'catalog:'
-        version: 11.11.1
-      lowlight:
-        specifier: 'catalog:'
-        version: 3.3.0
       lucide-react:
         specifier: 'catalog:'
         version: 0.552.0(react@19.2.7)
@@ -926,6 +896,46 @@ importers:
       wrangler:
         specifier: 'catalog:'
         version: 4.113.0(@cloudflare/workers-types@5.20260723.1)
+
+  examples/tanstack:
+    dependencies:
+      '@stetcms/client':
+        specifier: workspace:*
+        version: link:../../published/client
+      '@tanstack/react-router':
+        specifier: 'catalog:'
+        version: 1.170.18(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+      '@tanstack/react-start':
+        specifier: 'catalog:'
+        version: 1.168.30(@voidzero-dev/vite-plus-core@0.2.2(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(publint@0.3.21)(tsx@4.23.1)(typescript@5.9.3)(yaml@2.9.0))(esbuild@0.28.1)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(rolldown@1.1.5)(supports-color@10.2.2)
+      react:
+        specifier: 'catalog:'
+        version: 19.2.7
+      react-dom:
+        specifier: 'catalog:'
+        version: 19.2.7(react@19.2.7)
+      react-markdown:
+        specifier: ^10.1.0
+        version: 10.1.0(@types/react@19.2.17)(react@19.2.7)(supports-color@10.2.2)
+    devDependencies:
+      '@stetcms/vite':
+        specifier: workspace:*
+        version: link:../../published/vite
+      '@types/react':
+        specifier: 'catalog:'
+        version: 19.2.17
+      '@types/react-dom':
+        specifier: 'catalog:'
+        version: 19.2.3(@types/react@19.2.17)
+      '@vitejs/plugin-react':
+        specifier: 'catalog:'
+        version: 6.0.3(@rolldown/plugin-babel@0.2.3(@babel/core@8.0.1)(@babel/runtime@7.29.7)(@voidzero-dev/vite-plus-core@0.2.2(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(publint@0.3.21)(tsx@4.23.1)(typescript@5.9.3)(yaml@2.9.0))(rolldown@1.1.5))(@voidzero-dev/vite-plus-core@0.2.2(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(publint@0.3.21)(tsx@4.23.1)(typescript@5.9.3)(yaml@2.9.0))
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+      vite:
+        specifier: npm:@voidzero-dev/vite-plus-core@0.2.2
+        version: '@voidzero-dev/vite-plus-core@0.2.2(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(publint@0.3.21)(tsx@4.23.1)(typescript@5.9.3)(yaml@2.9.0)'
 
   private/ai:
     dependencies:
@@ -1162,6 +1172,9 @@ importers:
         specifier: 'catalog:'
         version: 0.45.2(@cloudflare/workers-types@5.20260723.1)(@opentelemetry/api@1.9.1)(@types/better-sqlite3@7.6.13)(better-sqlite3@12.11.1)(kysely@0.29.4)
     devDependencies:
+      '@better-auth/api-key':
+        specifier: 'catalog:'
+        version: 1.6.25(@better-auth/core@1.6.25(@better-auth/utils@0.4.2)(@better-fetch/fetch@1.3.1)(@cloudflare/workers-types@5.20260723.1)(@opentelemetry/api@1.9.1)(better-call@1.3.7(zod@4.4.3))(jose@6.2.3)(kysely@0.29.4)(nanostores@1.4.0))(@better-auth/utils@0.4.2)(better-auth@1.6.25(@cloudflare/workers-types@5.20260723.1)(@opentelemetry/api@1.9.1)(@tanstack/react-start@1.168.30(@voidzero-dev/vite-plus-core@0.2.2(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(publint@0.3.21)(tsx@4.23.1)(typescript@5.9.3)(yaml@2.9.0))(esbuild@0.28.1)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(rolldown@1.1.5))(better-sqlite3@12.11.1)(drizzle-kit@0.31.10)(drizzle-orm@0.45.2(@cloudflare/workers-types@5.20260723.1)(@opentelemetry/api@1.9.1)(@types/better-sqlite3@7.6.13)(better-sqlite3@12.11.1)(kysely@0.29.4))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(vitest@4.1.9))(better-call@1.3.7(zod@4.4.3))
       '@cloudflare/workers-types':
         specifier: 'catalog:'
         version: 5.20260723.1
@@ -1503,6 +1516,9 @@ importers:
       '@clack/prompts':
         specifier: 'catalog:'
         version: 1.7.0
+      '@stetcms/client':
+        specifier: workspace:*
+        version: link:../client
       better-auth:
         specifier: 'catalog:'
         version: 1.6.25(@cloudflare/workers-types@5.20260723.1)(@opentelemetry/api@1.9.1)(@tanstack/react-start@1.168.30(@voidzero-dev/vite-plus-core@0.2.2(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(publint@0.3.21)(tsx@4.23.1)(typescript@5.9.3)(yaml@2.9.0))(esbuild@0.28.1)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(rolldown@1.1.5))(better-sqlite3@12.11.1)(drizzle-kit@0.31.10)(drizzle-orm@0.45.2(@cloudflare/workers-types@5.20260723.1)(@opentelemetry/api@1.9.1)(@types/better-sqlite3@7.6.13)(better-sqlite3@12.11.1)(kysely@0.29.4))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(vitest@4.1.9)
@@ -1519,9 +1535,6 @@ importers:
         specifier: 'catalog:'
         version: 1.1.1
     devDependencies:
-      '@stetcms/client':
-        specifier: workspace:*
-        version: link:../client
       '@types/node':
         specifier: 'catalog:'
         version: 26.1.1
@@ -1565,6 +1578,9 @@ importers:
 
   published/vite:
     dependencies:
+      '@stetcms/client':
+        specifier: workspace:*
+        version: link:../client
       vite:
         specifier: npm:@voidzero-dev/vite-plus-core@0.2.2
         version: '@voidzero-dev/vite-plus-core@0.2.2(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(publint@0.3.21)(tsx@4.23.1)(typescript@5.9.3)(yaml@2.9.0)'
@@ -4685,6 +4701,13 @@ packages:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
       react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
+  '@tanstack/react-table@8.21.3':
+    resolution: {integrity: sha512-5nNMTSETP4ykGegmVkhjcS8tTLW6Vl4axfEGQN3v0zdHYbK4UfoqfPChclTrJ4EoK9QynqAu9oUf8VEmrpZ5Ww==}
+    engines: {node: '>=12'}
+    peerDependencies:
+      react: '>=16.8'
+      react-dom: '>=16.8'
+
   '@tanstack/router-core@1.171.15':
     resolution: {integrity: sha512-IILCDcLaItMZQ2jEmCABHY1Nhjjn5XUvwpQp3e4Nmu+vfg0BgYFuu/QASz2SwE2ZNbVMrvt8X/wxa+Gg5aErxA==}
     engines: {node: '>=20.19'}
@@ -4759,6 +4782,10 @@ packages:
   '@tanstack/store@0.9.3':
     resolution: {integrity: sha512-8reSzl/qGWGGVKhBoxXPMWzATSbZLZFWhwBAFO9NAyp0TxzfBP0mIrGb8CP8KrQTmvzXlR/vFPPUrHTLBGyFyw==}
 
+  '@tanstack/table-core@8.21.3':
+    resolution: {integrity: sha512-ldZXEhOBb8Is7xLs01fR3YEc3DERiz5silj8tnGkFZytt1abEvl/GhUmCE0PMLaMPTa3Jk4HbKmRlHmu+gCftg==}
+    engines: {node: '>=12'}
+
   '@tanstack/virtual-file-routes@1.162.0':
     resolution: {integrity: sha512-uhOeFyxLcU41HzvrxsGpiWdcMbScY1EDgbZ5K7DVRMYInbLYWAC0EA/kx9wXAoSM8q82bUG2hRl8+EAjE6XAbA==}
     engines: {node: '>=20.19'}
@@ -4800,15 +4827,6 @@ packages:
     peerDependencies:
       '@tiptap/extension-list': 3.28.0
 
-  '@tiptap/extension-code-block-lowlight@3.29.0':
-    resolution: {integrity: sha512-6nsf1YAq/U/6bjId2PKdd709t5BhcKqIoqm3FInl6zoYWqbN1DcKJjdqfPp2XmSTOx6YT96vLSbBlOPQlFicXA==}
-    peerDependencies:
-      '@tiptap/core': 3.29.0
-      '@tiptap/extension-code-block': 3.29.0
-      '@tiptap/pm': 3.29.0
-      highlight.js: ^11
-      lowlight: ^2 || ^3
-
   '@tiptap/extension-code-block@3.29.0':
     resolution: {integrity: sha512-nKm1YSEiPVosjm4qeg6m+6SAKq82rKukAzE/g3M5eVs2OgEb4QIKQvQOmJ+zgGAnpb9Q/JIvcKsGGU1rn9Vnyw==}
     peerDependencies:
@@ -4839,24 +4857,6 @@ packages:
     resolution: {integrity: sha512-5SAKtlB1Tr/eZFhISL86HqmUup6rItvPtuPyRjmZo/VgbMwXEwiyAh1sMgFp5VNaeSMM14vJSyQpjhSaOmaBqg==}
     peerDependencies:
       '@tiptap/core': 3.28.0
-
-  '@tiptap/extension-drag-handle-react@3.29.0':
-    resolution: {integrity: sha512-GgI6kqhnM/xaY9DkoUKZ9cHJeYPAZVPq1r7NFT9Q6IzOCgntV+ioA0h6oIdO9yEAigMzt53NjPZ/tVQ2HMlTog==}
-    peerDependencies:
-      '@tiptap/extension-drag-handle': 3.29.0
-      '@tiptap/pm': 3.29.0
-      '@tiptap/react': 3.29.0
-      react: ^16.8 || ^17 || ^18 || ^19
-      react-dom: ^16.8 || ^17 || ^18 || ^19
-
-  '@tiptap/extension-drag-handle@3.29.0':
-    resolution: {integrity: sha512-NllwoiwPnOtARf2DCMP2pAQ8Af7hcKQSRF7Okor2Nm3oKOYajf0QtpYgqNiuxSocMBg9kRNZPbt/wO8weYI35Q==}
-    peerDependencies:
-      '@tiptap/core': 3.29.0
-      '@tiptap/extension-collaboration': 3.29.0
-      '@tiptap/extension-node-range': 3.29.0
-      '@tiptap/pm': 3.29.0
-      '@tiptap/y-tiptap': ^3.0.7
 
   '@tiptap/extension-dropcursor@3.28.0':
     resolution: {integrity: sha512-JA+dXQjjfJBpD0nVsZeddGVXRsmanESM9+8CtM35hI9wJnYMXay/B+5GUhswO20zhT3zhB2ZOTGe9knu6A8nIQ==}
@@ -4930,19 +4930,6 @@ packages:
       '@tiptap/core': 3.28.0
       '@tiptap/pm': 3.28.0
 
-  '@tiptap/extension-mention@3.29.0':
-    resolution: {integrity: sha512-mlWKKOOD70gbvQaS3B4V7AhBnBjJ8gzJDOU8yVo9+DH6xgGkXbGomqercoDC0IfTkCqA5tQT5GiIHXiV5EoDMw==}
-    peerDependencies:
-      '@tiptap/core': 3.29.0
-      '@tiptap/pm': 3.29.0
-      '@tiptap/suggestion': 3.29.0
-
-  '@tiptap/extension-node-range@3.29.0':
-    resolution: {integrity: sha512-WALScqny5fDEf7Q5+gjz7o2wYs6fvVKk8ljSQ8OUP5xR1iOhM1TYtW2Wpevkutd6fPdqyx2CttaDLGHlF3N2tg==}
-    peerDependencies:
-      '@tiptap/core': 3.29.0
-      '@tiptap/pm': 3.29.0
-
   '@tiptap/extension-ordered-list@3.28.0':
     resolution: {integrity: sha512-OZNYrKKL9D01ySOujlNbKlLS9/3wGgKNYeoHZUg0e+Ta8WPVvL3W1zH6TgiU5sF2ZSGUBoq3w7mdaO/iROlUkw==}
     peerDependencies:
@@ -5005,6 +4992,14 @@ packages:
 
   '@tiptap/starter-kit@3.28.0':
     resolution: {integrity: sha512-pqvFpValV+ONtlu3l4s73ROm/tEjoGMmt6uHmSJaLbqTcMHkdWuR3flJ/5brr4IDHe1foxmNicMbRxlje7yBYw==}
+
+  '@tiptap/static-renderer@3.29.1':
+    resolution: {integrity: sha512-uMOrnxFDmbyOqEFu5A55X2uaf6GpqT1ltnmo78BhPqALCtsanId28lLwl/P8M3RQ2Wd7j8PI2l//p3y5VaztKQ==}
+    peerDependencies:
+      '@tiptap/core': 3.29.1
+      '@tiptap/pm': 3.29.1
+      react: ^17.0.0 || ^18.0.0 || ^19.0.0
+      react-dom: ^17.0.0 || ^18.0.0 || ^19.0.0
 
   '@tiptap/suggestion@3.29.0':
     resolution: {integrity: sha512-M/84rGfmyNc9meGqbbWnfpZpRttW34Hltk3XxeXKUGNx+87CQazR49sXxDtvcP5JHeAgCZ2gtYkhstpOKPQ6qQ==}
@@ -7061,10 +7056,6 @@ packages:
     resolution: {integrity: sha512-Ox1pJVrDCyGHMG9CFg1tmrRUMRPRsAWYc/PinY0XzJU4K7y7vjNoLKIQ7BR5UJMCxNN8EM1MNDmHWA/B3aZUuw==}
     engines: {node: '>=6'}
 
-  highlight.js@11.11.1:
-    resolution: {integrity: sha512-Xwwo44whKBVCYoliBQwaPvtd/2tYFkRQtXDWj1nackaV2JPXx3L0+Jvd8/qCJ2p+ML0/XVkJ2q+Mr+UVdpJK5w==}
-    engines: {node: '>=12.0.0'}
-
   hono@4.12.31:
     resolution: {integrity: sha512-zJIHFrl6bq3RDd2YusFNCDlM8qUprxKswyi/OPzPyzKDdyBXDqWx8bZlZ7R+saTdSTatUmb3O7K4SspGPaEOQg==}
     engines: {node: '>=16.9.0'}
@@ -7491,9 +7482,6 @@ packages:
 
   longest-streak@3.1.0:
     resolution: {integrity: sha512-9Ri+o0JYgehTaVBBDoMqIl8GXtbWg711O3srftcHhZ0dqnETqLaoIK0x17fUw9rFSlK/0NlsKe0Ahhyl5pXE2g==}
-
-  lowlight@3.3.0:
-    resolution: {integrity: sha512-0JNhgFoPvP6U6lE/UdVsSq99tn6DhjjpAj5MxG49ewd2mOBVtwWYIT8ClyABhq198aXXODMU6Ox8DrGy/CpTZQ==}
 
   lru-cache@11.5.2:
     resolution: {integrity: sha512-4pfM1Ff0x50o0tQwb5ucw/RzNyD0/YJME6IVcStalZuMWxdt3sR3huStTtxz4PUmvZfRguvDejasvQ2kifR11g==}
@@ -8309,6 +8297,12 @@ packages:
 
   react-is@17.0.2:
     resolution: {integrity: sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==}
+
+  react-markdown@10.1.0:
+    resolution: {integrity: sha512-qKxVopLT/TyA6BX3Ue5NwabOsAzm0Q7kAPwq6L+wWDwisYs7R8vZ0nRXqq6rkueboxpkjvLGU9fWifiX/ZZFxQ==}
+    peerDependencies:
+      '@types/react': '>=18'
+      react: '>=18'
 
   react-remove-scroll-bar@2.3.8:
     resolution: {integrity: sha512-9r+yi9+mgU33AKcj6IbT9oRCO78WriSj6t/cF8DWBZJ9aOGPOTEDvdUDz1FwKim7QXWwmHqtdHnRJfhAxEG46Q==}
@@ -12241,6 +12235,12 @@ snapshots:
       react-dom: 19.2.7(react@19.2.7)
       use-sync-external-store: 1.6.0(react@19.2.7)
 
+  '@tanstack/react-table@8.21.3(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
+    dependencies:
+      '@tanstack/table-core': 8.21.3
+      react: 19.2.7
+      react-dom: 19.2.7(react@19.2.7)
+
   '@tanstack/router-core@1.171.15':
     dependencies:
       '@tanstack/history': 1.162.0
@@ -12462,6 +12462,8 @@ snapshots:
 
   '@tanstack/store@0.9.3': {}
 
+  '@tanstack/table-core@8.21.3': {}
+
   '@tanstack/virtual-file-routes@1.162.0': {}
 
   '@testing-library/dom@10.4.1':
@@ -12503,14 +12505,6 @@ snapshots:
     dependencies:
       '@tiptap/extension-list': 3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)
 
-  '@tiptap/extension-code-block-lowlight@3.29.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/extension-code-block@3.29.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)(highlight.js@11.11.1)(lowlight@3.3.0)':
-    dependencies:
-      '@tiptap/core': 3.28.0(@tiptap/pm@3.28.0)
-      '@tiptap/extension-code-block': 3.29.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)
-      '@tiptap/pm': 3.28.0
-      highlight.js: 11.11.1
-      lowlight: 3.3.0
-
   '@tiptap/extension-code-block@3.29.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)':
     dependencies:
       '@tiptap/core': 3.28.0(@tiptap/pm@3.28.0)
@@ -12536,23 +12530,6 @@ snapshots:
   '@tiptap/extension-document@3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))':
     dependencies:
       '@tiptap/core': 3.28.0(@tiptap/pm@3.28.0)
-
-  '@tiptap/extension-drag-handle-react@3.29.0(@tiptap/extension-drag-handle@3.29.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/extension-collaboration@3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)(@tiptap/y-tiptap@3.0.7(prosemirror-model@1.25.11)(prosemirror-state@1.4.4)(prosemirror-view@1.42.1)(y-protocols@1.0.7(yjs@13.6.31))(yjs@13.6.31))(yjs@13.6.31))(@tiptap/extension-node-range@3.29.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)(@tiptap/y-tiptap@3.0.7(prosemirror-model@1.25.11)(prosemirror-state@1.4.4)(prosemirror-view@1.42.1)(y-protocols@1.0.7(yjs@13.6.31))(yjs@13.6.31)))(@tiptap/pm@3.28.0)(@tiptap/react@3.28.0(@floating-ui/dom@1.8.0)(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
-    dependencies:
-      '@tiptap/extension-drag-handle': 3.29.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/extension-collaboration@3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)(@tiptap/y-tiptap@3.0.7(prosemirror-model@1.25.11)(prosemirror-state@1.4.4)(prosemirror-view@1.42.1)(y-protocols@1.0.7(yjs@13.6.31))(yjs@13.6.31))(yjs@13.6.31))(@tiptap/extension-node-range@3.29.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)(@tiptap/y-tiptap@3.0.7(prosemirror-model@1.25.11)(prosemirror-state@1.4.4)(prosemirror-view@1.42.1)(y-protocols@1.0.7(yjs@13.6.31))(yjs@13.6.31))
-      '@tiptap/pm': 3.28.0
-      '@tiptap/react': 3.28.0(@floating-ui/dom@1.8.0)(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
-      react: 19.2.7
-      react-dom: 19.2.7(react@19.2.7)
-
-  '@tiptap/extension-drag-handle@3.29.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/extension-collaboration@3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)(@tiptap/y-tiptap@3.0.7(prosemirror-model@1.25.11)(prosemirror-state@1.4.4)(prosemirror-view@1.42.1)(y-protocols@1.0.7(yjs@13.6.31))(yjs@13.6.31))(yjs@13.6.31))(@tiptap/extension-node-range@3.29.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)(@tiptap/y-tiptap@3.0.7(prosemirror-model@1.25.11)(prosemirror-state@1.4.4)(prosemirror-view@1.42.1)(y-protocols@1.0.7(yjs@13.6.31))(yjs@13.6.31))':
-    dependencies:
-      '@floating-ui/dom': 1.8.0
-      '@tiptap/core': 3.28.0(@tiptap/pm@3.28.0)
-      '@tiptap/extension-collaboration': 3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)(@tiptap/y-tiptap@3.0.7(prosemirror-model@1.25.11)(prosemirror-state@1.4.4)(prosemirror-view@1.42.1)(y-protocols@1.0.7(yjs@13.6.31))(yjs@13.6.31))(yjs@13.6.31)
-      '@tiptap/extension-node-range': 3.29.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)
-      '@tiptap/pm': 3.28.0
-      '@tiptap/y-tiptap': 3.0.7(prosemirror-model@1.25.11)(prosemirror-state@1.4.4)(prosemirror-view@1.42.1)(y-protocols@1.0.7(yjs@13.6.31))(yjs@13.6.31)
 
   '@tiptap/extension-dropcursor@3.28.0(@tiptap/extensions@3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0))':
     dependencies:
@@ -12611,17 +12588,6 @@ snapshots:
       '@tiptap/extension-list': 3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)
 
   '@tiptap/extension-list@3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)':
-    dependencies:
-      '@tiptap/core': 3.28.0(@tiptap/pm@3.28.0)
-      '@tiptap/pm': 3.28.0
-
-  '@tiptap/extension-mention@3.29.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)(@tiptap/suggestion@3.29.0(@floating-ui/dom@1.8.0)(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0))':
-    dependencies:
-      '@tiptap/core': 3.28.0(@tiptap/pm@3.28.0)
-      '@tiptap/pm': 3.28.0
-      '@tiptap/suggestion': 3.29.0(@floating-ui/dom@1.8.0)(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)
-
-  '@tiptap/extension-node-range@3.29.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)':
     dependencies:
       '@tiptap/core': 3.28.0(@tiptap/pm@3.28.0)
       '@tiptap/pm': 3.28.0
@@ -12723,6 +12689,13 @@ snapshots:
       '@tiptap/extension-underline': 3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))
       '@tiptap/extensions': 3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)
       '@tiptap/pm': 3.28.0
+
+  '@tiptap/static-renderer@3.29.1(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
+    dependencies:
+      '@tiptap/core': 3.28.0(@tiptap/pm@3.28.0)
+      '@tiptap/pm': 3.28.0
+      react: 19.2.7
+      react-dom: 19.2.7(react@19.2.7)
 
   '@tiptap/suggestion@3.29.0(@floating-ui/dom@1.8.0)(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)':
     dependencies:
@@ -14710,8 +14683,6 @@ snapshots:
 
   hex-rgb@4.3.0: {}
 
-  highlight.js@11.11.1: {}
-
   hono@4.12.31: {}
 
   html-to-text@9.0.5:
@@ -15042,12 +15013,6 @@ snapshots:
       is-unicode-supported: 1.3.0
 
   longest-streak@3.1.0: {}
-
-  lowlight@3.3.0:
-    dependencies:
-      '@types/hast': 3.0.5
-      devlop: 1.1.0
-      highlight.js: 11.11.1
 
   lru-cache@11.5.2: {}
 
@@ -16211,6 +16176,24 @@ snapshots:
       scheduler: 0.27.0
 
   react-is@17.0.2: {}
+
+  react-markdown@10.1.0(@types/react@19.2.17)(react@19.2.7)(supports-color@10.2.2):
+    dependencies:
+      '@types/hast': 3.0.5
+      '@types/mdast': 4.0.4
+      '@types/react': 19.2.17
+      devlop: 1.1.0
+      hast-util-to-jsx-runtime: 2.3.6(supports-color@10.2.2)
+      html-url-attributes: 3.0.1
+      mdast-util-to-hast: 13.2.1
+      react: 19.2.7
+      remark-parse: 11.0.0(supports-color@10.2.2)
+      remark-rehype: 11.1.2
+      unified: 11.0.5
+      unist-util-visit: 5.1.0
+      vfile: 6.0.3
+    transitivePeerDependencies:
+      - supports-color
 
   react-remove-scroll-bar@2.3.8(@types/react@19.2.17)(react@19.2.7):
     dependencies:

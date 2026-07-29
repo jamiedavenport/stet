@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
+import { defaultKeyHasher } from '@better-auth/api-key';
 import { D1Helper } from '@nerdfolio/drizzle-d1-helpers';
 import { hashPassword } from 'better-auth/crypto';
 import Database from 'better-sqlite3';
@@ -10,7 +11,9 @@ import * as schema from './schema/index.ts';
 import {
   seedAdmin,
   seedAdminOrganization,
+  seedApiKey,
   seedAsset,
+  seedContent,
   seedInvitation,
   seedOrganization,
   seedSubscription,
@@ -44,6 +47,11 @@ const now = new Date();
 db.delete(schema.notification).run();
 db.delete(schema.notificationPreference).run();
 db.delete(schema.notificationSettings).run();
+db.delete(schema.contentEntry).run();
+db.delete(schema.contentField).run();
+db.delete(schema.contentType).run();
+db.delete(schema.document).run();
+db.delete(schema.apikey).run();
 db.delete(schema.asset).run();
 db.delete(schema.usage).run();
 db.delete(schema.subscription).run();
@@ -184,7 +192,128 @@ db.insert(schema.asset)
   })
   .run();
 
+db.insert(schema.apikey)
+  .values({
+    id: seedApiKey.id,
+    configId: 'default',
+    name: seedApiKey.name,
+    start: seedApiKey.key.slice(0, 6),
+    prefix: 'stet_',
+    referenceId: seedOrganization.id,
+    key: await defaultKeyHasher(seedApiKey.key),
+    enabled: true,
+    rateLimitEnabled: false,
+    requestCount: 0,
+    createdAt: now,
+    updatedAt: now,
+  })
+  .run();
+
+db.insert(schema.contentType)
+  .values([
+    {
+      id: seedContent.posts.id,
+      organizationId: seedOrganization.id,
+      slug: seedContent.posts.slug,
+      name: seedContent.posts.name,
+      kind: 'collection',
+      createdAt: now,
+    },
+    {
+      id: seedContent.landing.id,
+      organizationId: seedOrganization.id,
+      slug: seedContent.landing.slug,
+      name: seedContent.landing.name,
+      kind: 'map',
+      // After posts, so the model (and the client generated from it) keeps a
+      // stable order across reseeds.
+      createdAt: new Date(now.getTime() + 1000),
+    },
+  ])
+  .run();
+
+db.insert(schema.contentField)
+  .values([
+    {
+      id: 'seed-field-summary',
+      typeId: seedContent.posts.id,
+      key: 'summary',
+      name: 'Summary',
+      type: 'text',
+      config: '{}',
+      position: 0,
+      createdAt: now,
+    },
+    {
+      id: 'seed-field-body',
+      typeId: seedContent.posts.id,
+      key: 'body',
+      name: 'Body',
+      type: 'rich_text',
+      config: '{}',
+      position: 1,
+      createdAt: now,
+    },
+    {
+      id: 'seed-field-headline',
+      typeId: seedContent.landing.id,
+      key: 'headline',
+      name: 'Headline',
+      type: 'text',
+      config: '{}',
+      position: 0,
+      createdAt: now,
+    },
+    {
+      id: 'seed-field-pitch',
+      typeId: seedContent.landing.id,
+      key: 'pitch',
+      name: 'Pitch',
+      type: 'rich_text',
+      config: '{}',
+      position: 1,
+      createdAt: now,
+    },
+  ])
+  .run();
+
+db.insert(schema.contentEntry)
+  .values([
+    {
+      id: seedContent.post.id,
+      typeId: seedContent.posts.id,
+      organizationId: seedOrganization.id,
+      slug: seedContent.post.slug,
+      title: seedContent.post.title,
+      values: JSON.stringify({ summary: 'The first post in the seeded Posts collection.' }),
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      id: 'seed-entry-together',
+      typeId: seedContent.posts.id,
+      organizationId: seedOrganization.id,
+      slug: 'writing-together',
+      title: 'Writing together',
+      values: JSON.stringify({ summary: 'Open this one in two windows and watch the carets.' }),
+      createdAt: new Date(now.getTime() + 1000),
+      updatedAt: new Date(now.getTime() + 1000),
+    },
+    {
+      id: 'seed-entry-landing',
+      typeId: seedContent.landing.id,
+      organizationId: seedOrganization.id,
+      slug: 'default',
+      title: seedContent.landing.name,
+      values: JSON.stringify({ headline: 'Both teams at full speed' }),
+      createdAt: now,
+      updatedAt: now,
+    },
+  ])
+  .run();
+
 sqlite.close();
 console.log(
-  `Seeded ${path.basename(sqliteFile)} with users ${seedUser.email} and ${seedAdmin.email} (admin)`,
+  `Seeded ${path.basename(sqliteFile)} with users ${seedUser.email} and ${seedAdmin.email} (admin), ` +
+    `the ${seedContent.posts.slug}/${seedContent.landing.slug} content model, and API key ${seedApiKey.key}`,
 );

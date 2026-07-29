@@ -14,10 +14,11 @@ import {
   CommandShortcut,
   useCommandFilter,
 } from '@repo/ui/components/command';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
 import { useRouter } from '@tanstack/react-router';
 import { BuildingIcon, FileIcon, LogOutIcon, PlusIcon, Repeat2Icon, UserIcon } from 'lucide-react';
 
+import { contentModelQuery } from '#/content/model/functions';
 import { assetUrl } from '#/files/urls';
 import { allDestinations, navLeaderKey, navPath } from '#/navigation';
 import type { NavItem } from '#/navigation';
@@ -58,7 +59,12 @@ export function CommandMenu() {
 
   useCommandMenuShortcut(toggle);
 
-  const destinations = allDestinations({ memberRole, isPlatformAdmin: isPlatformAdmin(user) });
+  const model = useSuspenseQuery(contentModelQuery(activeOrganization.id)).data;
+  const destinations = allDestinations({
+    memberRole,
+    isPlatformAdmin: isPlatformAdmin(user),
+    content: model.types,
+  });
   useNavigationShortcuts(destinations, open);
 
   // Only text the user has stopped typing reaches the server, and only from

@@ -236,8 +236,109 @@ const listWebhookDeliveries = oc
   .input(z.object({ id: z.string() }))
   .output(z.array(webhookDeliverySchema));
 
+// Field types are inlined (not imported from the web app) to keep this file
+// self-contained. The editor pins its list to this enum with a satisfies
+// check, so drift in either direction fails the type check there.
+export const contentFieldTypeSchema = z.enum([
+  'text',
+  'rich_text',
+  'number',
+  'checkbox',
+  'date',
+  'select',
+  'multi_select',
+  'link',
+  'person',
+]);
+
+export type ContentFieldType = z.infer<typeof contentFieldTypeSchema>;
+
+export const contentFieldSchema = z.object({
+  key: z.string(),
+  name: z.string(),
+  type: contentFieldTypeSchema,
+  /** Choices of a select or multi-select field; empty for other types. */
+  options: z.array(z.object({ name: z.string(), color: z.string() })),
+});
+
+export const contentTypeSchema = z.object({
+  slug: z.string(),
+  name: z.string(),
+  /** A collection holds many entries; a map holds exactly one. */
+  kind: z.enum(['collection', 'map']),
+  fields: z.array(contentFieldSchema),
+});
+
+export type ContentType = z.infer<typeof contentTypeSchema>;
+
+// Values follow the field's type: text/date/link are strings, rich text is
+// markdown, number/checkbox their primitives, selects are option names (an
+// array for multi-select), person is { id, name }. Absent means the field
+// was never set.
+export const contentEntrySchema = z.object({
+  id: z.string(),
+  slug: z.string(),
+  title: z.string(),
+  fields: z.record(z.string(), z.unknown()),
+  createdAt: z.iso.datetime(),
+  updatedAt: z.iso.datetime(),
+});
+
+export type ContentEntry = z.infer<typeof contentEntrySchema>;
+
+const contentNotFound = {
+  NOT_FOUND: { message: 'No content type with that slug in this organization.' },
+} as const;
+
+const getContentModel = oc
+  .errors(authErrors)
+  .route({
+    method: 'GET',
+    path: '/model',
+    summary: 'Content model',
+    description:
+      'Every collection and map in the organization with its fields. The generated client is ' +
+      'typed from this.',
+    tags: ['Content'],
+  })
+  .output(z.object({ types: z.array(contentTypeSchema) }));
+
+const listContent = oc
+  .errors({ ...authErrors, ...contentNotFound })
+  .route({
+    method: 'GET',
+    path: '/content/{type}',
+    summary: 'List entries',
+    description:
+      "A content type's entries with resolved field values; rich text bodies are markdown as " +
+      'last saved by the realtime room. A map returns its single entry as a one-element list.',
+    tags: ['Content'],
+  })
+  .input(z.object({ type: z.string() }))
+  .output(z.object({ type: contentTypeSchema, entries: z.array(contentEntrySchema) }));
+
+const getContent = oc
+  .errors({
+    ...authErrors,
+    NOT_FOUND: { message: 'No such content type or entry in this organization.' },
+  })
+  .route({
+    method: 'GET',
+    path: '/content/{type}/{slug}',
+    summary: 'Get one entry',
+    description: 'One entry of a collection, addressed by its slug.',
+    tags: ['Content'],
+  })
+  .input(z.object({ type: z.string(), slug: z.string() }))
+  .output(contentEntrySchema);
+
 export const contract = {
   health,
+  content: {
+    model: getContentModel,
+    list: listContent,
+    get: getContent,
+  },
   org: {
     current: getOrg,
     billing: getOrgBilling,

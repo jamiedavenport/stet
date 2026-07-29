@@ -8,13 +8,13 @@ import {
   ImageIcon,
   KeyRoundIcon,
   SettingsIcon,
-  ShapesIcon,
   ShieldIcon,
   WebhookIcon,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
-import { contentIcon, contentModel } from '#/content/model';
+import { contentIcon } from '#/content/model/kind';
+import type { NavContentType } from '#/content/model/kind';
 
 export type NavItem = {
   readonly label: string;
@@ -46,7 +46,6 @@ const home = {
 const workspaceItems = [
   { label: 'Media', to: '/app/media', icon: ImageIcon, key: 'm' },
   { label: 'Analytics', to: '/app/analytics', icon: BarChart3Icon, key: 'a' },
-  { label: 'Model', to: '/app/model', icon: ShapesIcon, key: 'd' },
 ] as const satisfies readonly NavItem[];
 
 const developerItems = [
@@ -80,13 +79,22 @@ export const organizationItem = {
 } as const satisfies NavItem;
 
 /** Every collection and map in the model, in the order the model declares them. */
-function contentItems(): readonly NavItem[] {
-  return contentModel.map((type) => ({
-    label: type.name,
-    to: '/app/c/$collection',
-    params: { collection: type.slug },
-    icon: contentIcon(type.kind),
-  }));
+function contentItems(content: readonly NavContentType[]): readonly NavItem[] {
+  return content.map((type) =>
+    type.kind === 'map'
+      ? {
+          label: type.name,
+          to: '/app/m/$map' as const,
+          params: { map: type.slug },
+          icon: contentIcon(type.kind),
+        }
+      : {
+          label: type.name,
+          to: '/app/c/$collection' as const,
+          params: { collection: type.slug },
+          icon: contentIcon(type.kind),
+        },
+  );
 }
 
 /**
@@ -97,10 +105,13 @@ function contentItems(): readonly NavItem[] {
  * The developer group is organization configuration, so it follows the same
  * rule as the webhook route guard and the server functions.
  */
-export function sidebarNavigation(options: { memberRole: OrganizationRole }): readonly NavGroup[] {
+export function sidebarNavigation(options: {
+  memberRole: OrganizationRole;
+  content: readonly NavContentType[];
+}): readonly NavGroup[] {
   return [
     { id: 'home', items: [home] },
-    { id: 'content', label: 'Content', items: contentItems() },
+    { id: 'content', label: 'Content', items: contentItems(options.content) },
     { id: 'workspace', items: workspaceItems },
     ...(canManageOrganization(options.memberRole)
       ? [{ id: 'developers', label: 'Developers', items: developerItems }]
@@ -121,6 +132,7 @@ export function accountNavigation(options: { isPlatformAdmin: boolean }): readon
 export function allDestinations(options: {
   memberRole: OrganizationRole;
   isPlatformAdmin: boolean;
+  content: readonly NavContentType[];
 }): readonly NavItem[] {
   return [
     ...sidebarNavigation(options).flatMap((group) => group.items),

@@ -22,13 +22,18 @@
   ],
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./codegen": "./src/codegen.ts"
   },
   "publishConfig": {
     "exports": {
       ".": {
         "types": "./dist/index.d.ts",
         "default": "./dist/index.js"
+      },
+      "./codegen": {
+        "types": "./dist/codegen.d.ts",
+        "default": "./dist/codegen.js"
       }
     },
     "access": "public"

@@ -26,7 +26,6 @@ import { Route as AppIndexRouteImport } from './routes/app/index'
 import { Route as AppAdminRouteRouteImport } from './routes/app/admin/route'
 import { Route as AppAnalyticsRouteImport } from './routes/app/analytics'
 import { Route as AppMediaRouteImport } from './routes/app/media'
-import { Route as AppModelRouteImport } from './routes/app/model'
 import { Route as AppOrganizationRouteImport } from './routes/app/organization'
 import { Route as AppSettingsRouteImport } from './routes/app/settings'
 import { Route as InviteIdRouteImport } from './routes/invite/$id'
@@ -50,6 +49,8 @@ import { Route as AppDevelopersKeysRouteImport } from './routes/app/developers.k
 import { Route as AppDevelopersWebhooksRouteImport } from './routes/app/developers.webhooks'
 import { Route as AppCCollectionIndexRouteImport } from './routes/app/c.$collection.index'
 import { Route as AppCCollectionEntryRouteImport } from './routes/app/c.$collection.$entry'
+import { Route as AppMMapIndexRouteImport } from './routes/app/m.$map.index'
+import { Route as AppMMapFieldRouteImport } from './routes/app/m.$map.$field'
 
 const MarketingRoute = MarketingRouteImport.update({
   id: '/_marketing',
@@ -133,11 +134,6 @@ const AppAnalyticsRoute = AppAnalyticsRouteImport.update({
 const AppMediaRoute = AppMediaRouteImport.update({
   id: '/media',
   path: '/media',
-  getParentRoute: () => AppRouteRoute,
-} as any)
-const AppModelRoute = AppModelRouteImport.update({
-  id: '/model',
-  path: '/model',
   getParentRoute: () => AppRouteRoute,
 } as any)
 const AppOrganizationRoute = AppOrganizationRouteImport.update({
@@ -255,6 +251,16 @@ const AppCCollectionEntryRoute = AppCCollectionEntryRouteImport.update({
   path: '/c/$collection/$entry',
   getParentRoute: () => AppRouteRoute,
 } as any)
+const AppMMapIndexRoute = AppMMapIndexRouteImport.update({
+  id: '/m/$map/',
+  path: '/m/$map/',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppMMapFieldRoute = AppMMapFieldRouteImport.update({
+  id: '/m/$map/$field',
+  path: '/m/$map/$field',
+  getParentRoute: () => AppRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/app': typeof AppRouteRouteWithChildren
@@ -272,7 +278,6 @@ export interface FileRoutesByFullPath {
   '/privacy': typeof MarketingPrivacyRoute
   '/app/analytics': typeof AppAnalyticsRoute
   '/app/media': typeof AppMediaRoute
-  '/app/model': typeof AppModelRoute
   '/app/organization': typeof AppOrganizationRoute
   '/app/settings': typeof AppSettingsRoute
   '/invite/$id': typeof InviteIdRoute
@@ -296,7 +301,9 @@ export interface FileRoutesByFullPath {
   '/blog/': typeof MarketingBlogIndexRoute
   '/app/admin/': typeof AppAdminIndexRoute
   '/app/c/$collection/$entry': typeof AppCCollectionEntryRoute
+  '/app/m/$map/$field': typeof AppMMapFieldRoute
   '/app/c/$collection/': typeof AppCCollectionIndexRoute
+  '/app/m/$map/': typeof AppMMapIndexRoute
 }
 export interface FileRoutesByTo {
   '/sign': typeof SignRouteRouteWithChildren
@@ -311,7 +318,6 @@ export interface FileRoutesByTo {
   '/privacy': typeof MarketingPrivacyRoute
   '/app/analytics': typeof AppAnalyticsRoute
   '/app/media': typeof AppMediaRoute
-  '/app/model': typeof AppModelRoute
   '/app/organization': typeof AppOrganizationRoute
   '/app/settings': typeof AppSettingsRoute
   '/invite/$id': typeof InviteIdRoute
@@ -336,7 +342,9 @@ export interface FileRoutesByTo {
   '/blog': typeof MarketingBlogIndexRoute
   '/app/admin': typeof AppAdminIndexRoute
   '/app/c/$collection/$entry': typeof AppCCollectionEntryRoute
+  '/app/m/$map/$field': typeof AppMMapFieldRoute
   '/app/c/$collection': typeof AppCCollectionIndexRoute
+  '/app/m/$map': typeof AppMMapIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -355,7 +363,6 @@ export interface FileRoutesById {
   '/_marketing/privacy': typeof MarketingPrivacyRoute
   '/app/analytics': typeof AppAnalyticsRoute
   '/app/media': typeof AppMediaRoute
-  '/app/model': typeof AppModelRoute
   '/app/organization': typeof AppOrganizationRoute
   '/app/settings': typeof AppSettingsRoute
   '/invite/$id': typeof InviteIdRoute
@@ -380,7 +387,9 @@ export interface FileRoutesById {
   '/_marketing/blog/': typeof MarketingBlogIndexRoute
   '/app/admin/': typeof AppAdminIndexRoute
   '/app/c/$collection/$entry': typeof AppCCollectionEntryRoute
+  '/app/m/$map/$field': typeof AppMMapFieldRoute
   '/app/c/$collection/': typeof AppCCollectionIndexRoute
+  '/app/m/$map/': typeof AppMMapIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -400,7 +409,6 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/app/analytics'
     | '/app/media'
-    | '/app/model'
     | '/app/organization'
     | '/app/settings'
     | '/invite/$id'
@@ -424,7 +432,9 @@ export interface FileRouteTypes {
     | '/blog/'
     | '/app/admin/'
     | '/app/c/$collection/$entry'
+    | '/app/m/$map/$field'
     | '/app/c/$collection/'
+    | '/app/m/$map/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/sign'
@@ -439,7 +449,6 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/app/analytics'
     | '/app/media'
-    | '/app/model'
     | '/app/organization'
     | '/app/settings'
     | '/invite/$id'
@@ -464,7 +473,9 @@ export interface FileRouteTypes {
     | '/blog'
     | '/app/admin'
     | '/app/c/$collection/$entry'
+    | '/app/m/$map/$field'
     | '/app/c/$collection'
+    | '/app/m/$map'
   id:
     | '__root__'
     | '/app'
@@ -482,7 +493,6 @@ export interface FileRouteTypes {
     | '/_marketing/privacy'
     | '/app/analytics'
     | '/app/media'
-    | '/app/model'
     | '/app/organization'
     | '/app/settings'
     | '/invite/$id'
@@ -507,7 +517,9 @@ export interface FileRouteTypes {
     | '/_marketing/blog/'
     | '/app/admin/'
     | '/app/c/$collection/$entry'
+    | '/app/m/$map/$field'
     | '/app/c/$collection/'
+    | '/app/m/$map/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -646,13 +658,6 @@ declare module '@tanstack/react-router' {
       path: '/media'
       fullPath: '/app/media'
       preLoaderRoute: typeof AppMediaRouteImport
-      parentRoute: typeof AppRouteRoute
-    }
-    '/app/model': {
-      id: '/app/model'
-      path: '/model'
-      fullPath: '/app/model'
-      preLoaderRoute: typeof AppModelRouteImport
       parentRoute: typeof AppRouteRoute
     }
     '/app/organization': {
@@ -816,6 +821,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppCCollectionEntryRouteImport
       parentRoute: typeof AppRouteRoute
     }
+    '/app/m/$map/': {
+      id: '/app/m/$map/'
+      path: '/m/$map'
+      fullPath: '/app/m/$map/'
+      preLoaderRoute: typeof AppMMapIndexRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/app/m/$map/$field': {
+      id: '/app/m/$map/$field'
+      path: '/m/$map/$field'
+      fullPath: '/app/m/$map/$field'
+      preLoaderRoute: typeof AppMMapFieldRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
   }
 }
 
@@ -839,28 +858,30 @@ interface AppRouteRouteChildren {
   AppAdminRouteRoute: typeof AppAdminRouteRouteWithChildren
   AppAnalyticsRoute: typeof AppAnalyticsRoute
   AppMediaRoute: typeof AppMediaRoute
-  AppModelRoute: typeof AppModelRoute
   AppOrganizationRoute: typeof AppOrganizationRoute
   AppSettingsRoute: typeof AppSettingsRoute
   AppIndexRoute: typeof AppIndexRoute
   AppDevelopersKeysRoute: typeof AppDevelopersKeysRoute
   AppDevelopersWebhooksRoute: typeof AppDevelopersWebhooksRoute
   AppCCollectionEntryRoute: typeof AppCCollectionEntryRoute
+  AppMMapFieldRoute: typeof AppMMapFieldRoute
   AppCCollectionIndexRoute: typeof AppCCollectionIndexRoute
+  AppMMapIndexRoute: typeof AppMMapIndexRoute
 }
 
 const AppRouteRouteChildren: AppRouteRouteChildren = {
   AppAdminRouteRoute: AppAdminRouteRouteWithChildren,
   AppAnalyticsRoute: AppAnalyticsRoute,
   AppMediaRoute: AppMediaRoute,
-  AppModelRoute: AppModelRoute,
   AppOrganizationRoute: AppOrganizationRoute,
   AppSettingsRoute: AppSettingsRoute,
   AppIndexRoute: AppIndexRoute,
   AppDevelopersKeysRoute: AppDevelopersKeysRoute,
   AppDevelopersWebhooksRoute: AppDevelopersWebhooksRoute,
   AppCCollectionEntryRoute: AppCCollectionEntryRoute,
+  AppMMapFieldRoute: AppMMapFieldRoute,
   AppCCollectionIndexRoute: AppCCollectionIndexRoute,
+  AppMMapIndexRoute: AppMMapIndexRoute,
 }
 
 const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(

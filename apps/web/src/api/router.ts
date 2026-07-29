@@ -4,6 +4,7 @@ import { database, eq, schema } from '@repo/db';
 import { loadDocument } from '@repo/realtime/document';
 import { ORPCError } from '@orpc/server';
 
+import { content } from '#/api/content';
 import { authenticated, os } from '#/api/implementer';
 import { webhooks } from '#/api/webhooks';
 import { countWords, getNotesFragment, notesPage, notesText } from '#/notes/doc';
@@ -63,6 +64,7 @@ const getNote = os.org.note.use(authenticated).handler(async ({ context }) => {
 
 export const router = os.router({
   health,
+  content,
   org: {
     current: getOrg,
     billing: getOrgBilling,

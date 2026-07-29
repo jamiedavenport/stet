@@ -97,7 +97,7 @@ async function addAsset(megabytes: number, status = 'uploaded'): Promise<void> {
     key: `orgs/${orgId}/${id}`,
     organizationId: orgId,
     uploadedBy: await addUser(),
-    kind: 'note-image',
+    kind: 'body-image',
     name: `${id}.png`,
     size: megabytes * megabyte,
     contentType: 'image/png',

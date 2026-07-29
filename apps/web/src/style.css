@@ -1,48 +1,50 @@
 @import '@repo/ui/globals.css';
 
-/* Collaborative notes editor (TipTap). */
-.tiptap-notes {
-  min-height: 16rem;
+/* Collaborative rich text bodies (TipTap). */
+.tiptap-body {
+  /* Fills the scroll area its surface gives it, so clicking anywhere in the
+     empty space below the text still puts the caret in the document. */
+  min-height: 100%;
   font-size: 0.875rem;
   line-height: 1.6;
   outline: none;
 }
 
-.tiptap-notes > * + * {
+.tiptap-body > * + * {
   margin-top: 0.5rem;
 }
 
-.tiptap-notes :is(h1, h2, h3) {
+.tiptap-body :is(h1, h2, h3) {
   font-weight: 600;
 }
 
-.tiptap-notes h1 {
+.tiptap-body h1 {
   font-size: 1.25rem;
 }
 
-.tiptap-notes h2 {
+.tiptap-body h2 {
   font-size: 1.1rem;
 }
 
-.tiptap-notes :is(ul, ol) {
+.tiptap-body :is(ul, ol) {
   padding-left: 1.25rem;
 }
 
-.tiptap-notes ul {
+.tiptap-body ul {
   list-style: disc;
 }
 
-.tiptap-notes ol {
+.tiptap-body ol {
   list-style: decimal;
 }
 
-.tiptap-notes blockquote {
+.tiptap-body blockquote {
   border-left: 2px solid var(--border);
   padding-left: 0.75rem;
   color: var(--muted-foreground);
 }
 
-.tiptap-notes code {
+.tiptap-body code {
   border-radius: 0.25rem;
   background: var(--muted);
   padding: 0.1rem 0.3rem;
@@ -85,7 +87,7 @@
 }
 
 /* Shown by @tiptap/extensions Placeholder on the first empty block only. */
-.tiptap-notes p.is-editor-empty:first-child::before {
+.tiptap-body p.is-editor-empty:first-child::before {
   content: attr(data-placeholder);
   float: left;
   height: 0;
@@ -93,49 +95,18 @@
   pointer-events: none;
 }
 
-.tiptap-notes .note-link {
+.tiptap-body .body-link {
   color: var(--primary);
   text-decoration: underline;
   text-underline-offset: 2px;
 }
 
-.tiptap-notes .mention {
-  border-radius: 0.25rem;
-  background: var(--muted);
-  padding: 0.05rem 0.25rem;
-  color: var(--primary);
-  font-weight: 500;
-}
-
-.tiptap-notes .note-image {
+.tiptap-body .body-image {
   max-width: 100%;
   border-radius: 0.5rem;
 }
 
-.tiptap-notes ul[data-type='taskList'] {
-  padding-left: 0;
-  list-style: none;
-}
-
-.tiptap-notes ul[data-type='taskList'] li {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.5rem;
-}
-
-/* The checkbox sits in its own label, so the paragraph beside it must not
-   inherit the sibling top margin that separates blocks. */
-.tiptap-notes ul[data-type='taskList'] li > div {
-  flex: 1;
-  margin-top: 0;
-}
-
-.tiptap-notes ul[data-type='taskList'] input[type='checkbox'] {
-  margin-top: 0.3rem;
-  accent-color: var(--primary);
-}
-
-.tiptap-notes pre {
+.tiptap-body pre {
   overflow-x: auto;
   border-radius: 0.5rem;
   background: var(--muted);
@@ -144,33 +115,33 @@
   line-height: 1.5;
 }
 
-.tiptap-notes pre code {
+.tiptap-body pre code {
   background: none;
   padding: 0;
   font-size: inherit;
 }
 
-.tiptap-notes table {
+.tiptap-body table {
   width: 100%;
   table-layout: fixed;
   border-collapse: collapse;
   overflow: hidden;
 }
 
-.tiptap-notes :is(th, td) {
+.tiptap-body :is(th, td) {
   position: relative;
   border: 1px solid var(--border);
   padding: 0.35rem 0.5rem;
   vertical-align: top;
 }
 
-.tiptap-notes th {
+.tiptap-body th {
   background: var(--muted);
   text-align: left;
   font-weight: 600;
 }
 
-.tiptap-notes .selectedCell::after {
+.tiptap-body .selectedCell::after {
   position: absolute;
   z-index: 2;
   background: var(--primary);
@@ -180,7 +151,7 @@
   pointer-events: none;
 }
 
-.tiptap-notes .column-resize-handle {
+.tiptap-body .column-resize-handle {
   position: absolute;
   top: 0;
   right: -2px;
@@ -188,31 +159,4 @@
   width: 4px;
   background: var(--primary);
   cursor: col-resize;
-}
-
-/* Syntax highlighting for CodeBlockLowlight. Highlight.js emits many token
-   classes; these cover the ones the registered grammars actually produce. */
-.tiptap-notes :is(.hljs-comment, .hljs-quote) {
-  color: var(--muted-foreground);
-  font-style: italic;
-}
-
-.tiptap-notes :is(.hljs-keyword, .hljs-selector-tag, .hljs-literal, .hljs-type) {
-  color: light-dark(#8250df, #d2a8ff);
-}
-
-.tiptap-notes :is(.hljs-string, .hljs-attr, .hljs-addition, .hljs-regexp) {
-  color: light-dark(#0a3069, #a5d6ff);
-}
-
-.tiptap-notes :is(.hljs-number, .hljs-variable, .hljs-template-variable, .hljs-deletion) {
-  color: light-dark(#953800, #ffa657);
-}
-
-.tiptap-notes :is(.hljs-title, .hljs-name, .hljs-section, .hljs-selector-id) {
-  color: light-dark(#0550ae, #79c0ff);
-}
-
-.tiptap-notes :is(.hljs-built_in, .hljs-symbol, .hljs-meta) {
-  color: light-dark(#116329, #7ee787);
 }

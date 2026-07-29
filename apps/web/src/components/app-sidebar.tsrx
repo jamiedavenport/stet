@@ -11,21 +11,25 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from '@repo/ui/components/sidebar';
+import { useSuspenseQuery } from '@tanstack/react-query';
 import { Link, useRouterState } from '@tanstack/react-router';
-import { PlusIcon, SearchIcon } from 'lucide-react';
+import { SearchIcon } from 'lucide-react';
 
 import { OrgSwitcher } from '#/organization/org-switcher.tsrx';
 import { UserMenu } from '#/account/user-menu.tsrx';
-import { isCurrent, sidebarNavigation } from '#/navigation';
+import { contentModelQuery } from '#/content/model/functions';
+import { NewContentMenu } from '#/content/model/new-menu.tsrx';
+import { isCurrent, navPath, sidebarNavigation } from '#/navigation';
 import { useCommandMenu } from '#/search/command-menu-context.tsrx';
 import { useAppRoute } from '#/use-app-route';
 
 export function AppSidebar() @{
-  const { memberRole } = useAppRoute();
+  const { activeOrganization, memberRole } = useAppRoute();
   const commandMenu = useCommandMenu();
   const pathname = useRouterState({ select: (state) => state.location.pathname });
+  const { data: model } = useSuspenseQuery(contentModelQuery(activeOrganization.id));
 
-  const groups = sidebarNavigation({ memberRole });
+  const groups = sidebarNavigation({ memberRole, content: model.types });
 
   <Sidebar collapsible="icon">
     <SidebarHeader>
@@ -39,7 +43,7 @@ export function AppSidebar() @{
           }
           <SidebarGroupContent>
             <SidebarMenu>
-              @for (const item of group.items; key item.label) {
+              @for (const item of group.items; key navPath(item)) {
                 <SidebarMenuItem>
                   <SidebarMenuButton
                     tooltip={item.label}
@@ -64,16 +68,7 @@ export function AppSidebar() @{
                 </SidebarMenuItem>
               }
               @if (group.id === 'content') {
-                <SidebarMenuItem>
-                  <SidebarMenuButton
-                    tooltip={"New collection"}
-                    className="text-muted-foreground"
-                    render={<Link to="/app/model" />}
-                  >
-                    <PlusIcon />
-                    <span>{"New"}</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
+                <NewContentMenu />
               }
             </SidebarMenu>
           </SidebarGroupContent>

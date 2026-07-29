@@ -7,7 +7,7 @@ import { ensureAnalyticsClientId } from '#/analytics/client-id';
 import { ConsentRuntime } from '#/legal/consent-runtime';
 import { NotFound } from '#/components/not-found.tsrx';
 import { ensureSession } from '#/session';
-import faviconUrl from '@repo/brand/logo.svg?url';
+import faviconUrl from '@repo/brand/favicon.svg?url';
 import appCss from '#/style.css?url';
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({

@@ -1,7 +1,7 @@
 import * as Y from 'yjs';
 
 /** The Yjs root the Tiptap Collaboration extension is configured with. */
-export const notesField = 'notes';
+const notesField = 'notes';
 
 // The room the shared note lives in. Rooms are per page, so this is the route
 // the editor is mounted on, named here because the server reads the same room

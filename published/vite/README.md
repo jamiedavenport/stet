@@ -1,11 +1,14 @@
 # @stetcms/vite
 
-Vite plugin for products built on [Stet](https://github.com/jamiedavenport/stet). It is the scaffold the typed-client codegen grows on: typed options, a `virtual:stet` module exposing config to application code, and a codegen hook that runs before every build. Generating the content client from your project's model will plug into that hook.
+Vite plugin for products built on [Stet](https://github.com/jamiedavenport/stet). It generates a typed content client from your organization's content model before every build and dev-server start: the collections and maps your content team shapes in the Stet UI become `stet.<slug>.list()` / `.get()` calls your editor autocompletes. While the dev server runs it keeps watching, so a field added in the Stet UI reaches your types moments later without a restart.
+
+Building without Vite? [`stet generate`](https://github.com/jamiedavenport/stet/tree/main/published/cli#stet-generate) runs the same codegen from the command line, for Next.js apps and CI.
 
 ## Install
 
 ```bash
 npm install -D @stetcms/vite
+npm install @stetcms/client
 ```
 
 ## Usage
@@ -16,42 +19,35 @@ import { stet } from '@stetcms/vite';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-  plugins: [
-    stet({
-      config: { origin: 'https://stetcms.com' },
-      generate: async ({ root, command, mode }) => {
-        // Write generated files under `root` here.
-      },
-    }),
-  ],
+  plugins: [stet()],
 });
 ```
 
-Application code reads the config through the virtual module:
+With `STET_API_KEY` set, the plugin fetches `/api/v1/model` and writes `src/stet.gen.ts`:
 
 ```ts
-import config from 'virtual:stet';
+import { stet } from './stet.gen';
 
-console.log(config.origin);
+const posts = await stet.posts.list(); // a collection
+const post = await stet.posts.get('hello-world'); // one entry
+const landing = await stet.landing.get(); // a map
+// all fully typed from the model marketing built
 ```
 
-Declare the module with your config's shape (for example in `src/stet.d.ts`):
+The generated file never contains the key: at runtime the client reads `STET_API_KEY` from the environment again, so the file is safe to commit — and committing it keeps type checks working without a running Stet.
 
-```ts
-declare module 'virtual:stet' {
-  const config: { origin: string };
-  export default config;
-}
-```
+Codegen never fails your build. Without a key, or with the API unreachable, the plugin warns and leaves the previous generated file in place, writing an empty model only when no file exists yet. A deleted field disappears from the generated types on the next regeneration, so stale usage surfaces as a type error in your editor, never as a broken page.
 
 ## Options
 
-| Option     | Description                                                                                     |
-| ---------- | ----------------------------------------------------------------------------------------------- |
-| `config`   | Values exposed as the default export of `virtual:stet`. Serialized with `JSON.stringify`.       |
-| `generate` | Awaited once when a build starts (and when the dev server starts), before any module is loaded. |
+| Option   | Default                           | Description                                                                   |
+| -------- | --------------------------------- | ----------------------------------------------------------------------------- |
+| `origin` | `STET_ORIGIN` or the hosted cloud | The Stet deployment to generate from and call.                                |
+| `apiKey` | `STET_API_KEY`                    | Organization API key used to fetch the model.                                 |
+| `output` | `src/stet.gen.ts`                 | Where the generated module goes, relative to root.                            |
+| `watch`  | `true`                            | Regenerate every few seconds while the dev server runs. Never affects builds. |
 
-`generate` receives `{ root, command, mode }` from the resolved Vite config: `command` is `build` for production builds and `serve` for the dev server.
+See [`examples/tanstack`](https://github.com/jamiedavenport/stet/tree/main/examples/tanstack) for a complete TanStack Start app built on the generated client.
 
 ## License
 

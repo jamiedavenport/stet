@@ -6,6 +6,9 @@
       "ignoreDependencies": ["vite"]
     },
     "apps/*": {},
+    "examples/*": {
+      "ignore": ["src/stet.gen.ts"]
+    },
     "private/*": {},
     "published/*": {},
     "apps/web": {

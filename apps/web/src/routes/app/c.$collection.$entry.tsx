@@ -1,15 +1,14 @@
-import { createFileRoute, notFound } from '@tanstack/react-router';
+import { createFileRoute } from '@tanstack/react-router';
 
-import { EntryEditor } from '#/content/entry-editor.tsrx';
-import { findContentType } from '#/content/model';
+import { EntryEditor } from '#/content/entry/editor.tsrx';
+import { entryQuery, membersQuery } from '#/content/entry/functions';
 
 export const Route = createFileRoute('/app/c/$collection/$entry')({
-  loader: ({ params }) => {
-    const type = findContentType(params.collection);
-    if (type === undefined) {
-      throw notFound();
-    }
-    return { type, entry: params.entry };
+  loader: async ({ params, context }) => {
+    await Promise.all([
+      context.queryClient.ensureQueryData(entryQuery(context.activeOrganization.id, params.entry)),
+      context.queryClient.ensureQueryData(membersQuery(context.activeOrganization.id)),
+    ]);
   },
   component: EntryEditor,
 });

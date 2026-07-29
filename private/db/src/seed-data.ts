@@ -51,3 +51,22 @@ export const seedSubscription = {
   stripeCustomerId: 'cus_seed',
   stripeSubscriptionId: 'sub_seed',
 };
+
+// A deterministic organization API key (the seed stores its hash, exactly as
+// verifyApiKey expects) so the example app and curl work straight after a
+// reseed with no minting step. Local development only.
+export const seedApiKey = {
+  id: 'seed-api-key',
+  name: 'Seed key',
+  key: 'stet_seed_key_for_local_development_only',
+};
+
+// The content model examples/tanstack's committed stet.gen.ts is generated
+// from, so a reseed leaves the example serving real entries. Rich text
+// bodies live in realtime documents the seed does not fabricate: body fields
+// serve null until someone writes in the app.
+export const seedContent = {
+  posts: { id: 'seed-type-posts', slug: 'posts', name: 'Posts' },
+  landing: { id: 'seed-type-landing', slug: 'landing', name: 'Landing' },
+  post: { id: 'seed-entry-hello', slug: 'hello-world', title: 'Hello World' },
+};

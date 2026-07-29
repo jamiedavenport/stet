@@ -7,15 +7,26 @@ import type {
 } from '@orpc/contract';
 import { OpenAPILink } from '@orpc/openapi-client/fetch';
 
+import { DEFAULT_ORIGIN } from './content';
+
 export { isDefinedError, safe } from '@orpc/client';
-export type { Organization } from '@repo/api';
+export type { ContentEntry, ContentType, Organization } from '@repo/api';
+
+export { entryTypeName, fetchContentModel, renderContentModule } from './codegen';
+export type { ContentModel } from './codegen';
+
+export { createContentClient, DEFAULT_ORIGIN } from './content';
+export type {
+  CollectionClient,
+  ContentClient,
+  ContentClientOptions,
+  ContentEntryBase,
+  ContentModelShape,
+  MapClient,
+} from './content';
 
 export type ApiInputs = InferContractRouterInputs<typeof contract>;
 export type ApiOutputs = InferContractRouterOutputs<typeof contract>;
-
-// The hosted Stet deployment. Pass `origin` to target a local dev server or
-// a self-hosted instance instead.
-export const DEFAULT_ORIGIN = 'https://stetcms.com';
 
 export type StetClient = ContractRouterClient<typeof contract>;
 

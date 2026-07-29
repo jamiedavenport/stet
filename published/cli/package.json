@@ -33,6 +33,7 @@
   },
   "dependencies": {
     "@clack/prompts": "catalog:",
+    "@stetcms/client": "workspace:*",
     "better-auth": "catalog:",
     "commander": "catalog:",
     "conf": "catalog:",
@@ -40,7 +41,6 @@
     "picocolors": "catalog:"
   },
   "devDependencies": {
-    "@stetcms/client": "workspace:*",
     "@types/node": "catalog:",
     "publint": "catalog:",
     "typescript": "catalog:",

@@ -18,7 +18,7 @@ export const assetKinds = {
     contentTypes: imageTypes,
     maxBytes: 2 * 1024 * 1024,
   },
-  'note-image': {
+  'body-image': {
     scope: 'organization',
     // GIF only here: avatars are rendered at a size where animation is noise.
     contentTypes: [...imageTypes, 'image/gif'],

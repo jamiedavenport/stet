@@ -179,6 +179,10 @@ export function createAuth({
         // verifyApiKey writes lastRequest/requestCount on every call; defer
         // it off the request path so API reads pay one D1 query, not two.
         deferUpdates: true,
+        // The plugin's own per-key limit defaults to 10 requests a day, which
+        // would break any real content client. The worker already throttles
+        // /api/v1 per key (API_RATE_LIMIT) and billing caps monthly usage.
+        rateLimit: { enabled: false },
       }),
       // Platform staff: user.role ('user' or 'admin'), bans, and
       // impersonation, behind /app/admin. The role column is not
