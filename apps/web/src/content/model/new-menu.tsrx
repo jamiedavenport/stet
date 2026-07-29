@@ -14,6 +14,28 @@ import { useAppRoute } from '#/use-app-route';
 const CollectionIcon = contentIcon('collection');
 const MapIcon = contentIcon('map');
 
+// Which of the two to reach for is the one thing a new editor has to be told,
+// so the menu says it rather than leaving them to find out by creating one.
+const options = [
+  {
+    kind: 'collection',
+    icon: CollectionIcon,
+    label: 'New collection',
+    description: 'Many entries that share a shape, like blog posts or case studies.',
+  },
+  {
+    kind: 'map',
+    icon: MapIcon,
+    label: 'New map',
+    description: 'A single entry on its own, like a landing page or your site settings.',
+  },
+] as const satisfies readonly {
+  kind: ContentKind;
+  icon: typeof CollectionIcon;
+  label: string;
+  description: string;
+}[];
+
 /**
  * The sidebar's "New" entry: a two-option menu that creates the collection or
  * map immediately as "Untitled" and lands on its page, where the name and
@@ -60,26 +82,26 @@ export function NewContentMenu() @{
         <PlusIcon />
         <span>{"New"}</span>
       </PopoverTrigger>
-      <PopoverContent side="right" align="start" className="w-64 p-2">
+      <PopoverContent side="right" align="start" className="w-76 p-2">
           <div className="flex flex-col gap-1">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="justify-start"
-              onClick={() => create('collection')}
-            >
-              <CollectionIcon className="size-4 text-muted-foreground" />
-              {"New collection"}
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="justify-start"
-              onClick={() => create('map')}
-            >
-              <MapIcon className="size-4 text-muted-foreground" />
-              {"New map"}
-            </Button>
+            @for (const option of options; key option.kind) {
+              <Button
+                variant="ghost"
+                size="sm"
+                // The size variants are one line tall and nowrap, so a
+                // description needs the height and the wrapping back.
+                className="h-auto w-full items-start justify-start gap-2.5 px-2 py-2 text-left whitespace-normal"
+                onClick={() => create(option.kind)}
+              >
+                <option.icon className="mt-0.5 size-4 text-muted-foreground" />
+                <span className="flex flex-col gap-0.5">
+                  <span className="font-medium">{option.label}</span>
+                  <span className="text-xs font-normal text-muted-foreground">
+                    {option.description}
+                  </span>
+                </span>
+              </Button>
+            }
           </div>
       </PopoverContent>
     </Popover>
