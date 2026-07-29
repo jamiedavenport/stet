@@ -12,10 +12,15 @@ import {
   bearer,
   deviceAuthorization,
   magicLink,
+  mcp,
   organization,
   twoFactor,
 } from 'better-auth/plugins';
 import { tanstackStartCookies } from 'better-auth/tanstack-start';
+
+// Root-level OAuth discovery for MCP clients; the worker mounts these at
+// /.well-known (see apps/web/src/server.ts).
+export { oAuthDiscoveryMetadata, oAuthProtectedResourceMetadata } from 'better-auth/plugins';
 
 import { purgeAssets } from './assets.ts';
 import { turnstilePlugin } from './captcha.ts';
@@ -170,6 +175,13 @@ export function createAuth({
         expiresIn: '10m',
         interval: '5s',
       }),
+      // OAuth provider for MCP clients (Claude, editors): dynamic client
+      // registration plus the authorize/token endpoints, all under
+      // /api/auth/mcp/*. A signed-out authorize redirects to the sign-in
+      // page and the plugin's own hook resumes the flow after the session
+      // lands. The worker validates the issued tokens at /mcp with
+      // auth.api.getMcpSession.
+      mcp({ loginPage: '/sign/in' }),
       // Organization-owned API keys for the public /api/v1 surface. Keys are
       // created through the Better Auth api-key endpoints by org members (the
       // plugin checks membership) and sent as `x-api-key` on API requests.

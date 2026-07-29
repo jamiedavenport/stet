@@ -11,3 +11,10 @@ export function createChatModel(env: AiEnv): LanguageModel {
   const anthropic = createAnthropic({ apiKey: env.ANTHROPIC_API_KEY });
   return anthropic('claude-sonnet-5');
 }
+
+/** For latency-bound work like inline editor rewrites, where a small model
+ * answers before a big one has finished thinking. */
+export function createFastModel(env: AiEnv): LanguageModel {
+  const anthropic = createAnthropic({ apiKey: env.ANTHROPIC_API_KEY });
+  return anthropic('claude-haiku-4-5');
+}

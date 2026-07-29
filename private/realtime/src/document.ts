@@ -1,5 +1,8 @@
 import { and, database, eq, schema } from '@repo/db';
-import { applyUpdate, Doc, encodeStateAsUpdate } from 'yjs';
+import type { Server } from 'partyserver';
+import { applyUpdate, Doc, encodeStateAsUpdate, encodeStateVector } from 'yjs';
+
+import { documentBodyText, entryIdFromPage } from './entry';
 
 // D1 caps a row at 2 MB. A Yjs update grows with edit history, so a very
 // long-lived document can reach it; failing here names the room, where a bare
@@ -51,6 +54,94 @@ export async function saveDocument(room: DocumentRoom, doc: Doc): Promise<number
     });
 
   return state.byteLength;
+}
+
+/**
+ * Mutates the live document through its room, so connected editors see the
+ * change at once and the room's own flush mirrors it to D1. The doc the
+ * callback receives is a replica of the room's current state; only the
+ * changes made inside the callback travel back as a Yjs update, so
+ * concurrent edits merge instead of being overwritten. Requires the host
+ * worker to carry the `PAGE_PRESENCE` binding.
+ */
+export async function updateDocument(
+  room: DocumentRoom,
+  mutate: (doc: Doc) => void,
+): Promise<void> {
+  const stub = await roomStub(room);
+  const doc = await fetchLiveDocument(stub, room);
+
+  const before = encodeStateVector(doc);
+  doc.transact(() => mutate(doc));
+  // slice() narrows the buffer to ArrayBuffer, which is what BodyInit wants.
+  const diff = encodeStateAsUpdate(doc, before).slice();
+
+  const applied = await stub.fetch('https://room/document', { method: 'PUT', body: diff });
+  if (!applied.ok) {
+    throw new Error(
+      `Writing document ${room.organizationId}:${room.page} failed (${applied.status}).`,
+    );
+  }
+}
+
+/**
+ * The document as the room holds it right now, waking the room if needed.
+ * Unlike `loadDocument` this never trails the live state, so it is what
+ * anything answering about current content (the AI tools) should read;
+ * the D1 copy remains the cheaper read where a flush of staleness is fine.
+ */
+export async function loadLiveDocument(room: DocumentRoom): Promise<Doc> {
+  return fetchLiveDocument(await roomStub(room), room);
+}
+
+async function roomStub(room: DocumentRoom) {
+  // Both lazy: partyserver itself imports `cloudflare:workers`, which only
+  // resolves inside the worker, and this module is also loaded by tests.
+  const [{ env }, { getServerByName }] = await Promise.all([
+    import('cloudflare:workers'),
+    import('partyserver'),
+  ]);
+  const namespace = (env as { PAGE_PRESENCE: DurableObjectNamespace<Server> }).PAGE_PRESENCE;
+  return getServerByName(namespace, `${room.organizationId}:${room.page}`);
+}
+
+async function fetchLiveDocument(
+  stub: Awaited<ReturnType<typeof roomStub>>,
+  room: DocumentRoom,
+): Promise<Doc> {
+  const current = await stub.fetch('https://room/document');
+  if (!current.ok) {
+    throw new Error(
+      `Reading document ${room.organizationId}:${room.page} failed (${current.status}).`,
+    );
+  }
+  const doc = new Doc();
+  applyUpdate(doc, new Uint8Array(await current.arrayBuffer()));
+  return doc;
+}
+
+/**
+ * Mirrors the document's body text onto its entry row, so the search index
+ * (see `@repo/db`'s `search/indexes.ts`) follows the bodies at the same
+ * cadence as the D1 copy. Pages that are not entries, and entries already
+ * deleted, are no-ops. Body edits count as updating the entry, which is why
+ * `updatedAt` moves with the mirror.
+ */
+export async function syncEntryBodyText(room: DocumentRoom, doc: Doc): Promise<void> {
+  const entryId = entryIdFromPage(room.page);
+  if (entryId === null) {
+    return;
+  }
+  const db = await database();
+  await db
+    .update(schema.contentEntry)
+    .set({ bodyText: documentBodyText(doc), updatedAt: new Date() })
+    .where(
+      and(
+        eq(schema.contentEntry.id, entryId),
+        eq(schema.contentEntry.organizationId, room.organizationId),
+      ),
+    );
 }
 
 /**

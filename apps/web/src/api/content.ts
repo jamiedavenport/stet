@@ -1,12 +1,12 @@
 import { and, asc, database, eq, inArray, schema } from '@repo/db';
 import { loadDocument } from '@repo/realtime/document';
+import { entryPage } from '@repo/realtime/entry';
 import { ORPCError } from '@orpc/server';
 
 import { authenticated, os } from '#/api/implementer';
-import { entryPage } from '#/content/body/doc';
-import { fieldTypeSchema, parseConfig, parseValues } from '#/content/field/schema';
-import type { FieldValue } from '#/content/field/schema';
-import { bodyMarkdown } from '#/content/body/markdown';
+import { fieldTypeSchema, parseConfig, parseValues } from '@repo/content/schema';
+import type { FieldValue } from '@repo/content/schema';
+import { bodyMarkdown } from '@repo/content/body';
 
 type Field = {
   key: string;

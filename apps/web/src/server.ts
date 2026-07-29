@@ -1,5 +1,7 @@
 import type { AiEnv } from '@repo/ai/model';
+import { createContentMcpServer } from '@repo/ai/mcp';
 import { ChatAgent as ChatAgentBase } from '@repo/ai/server';
+import { oAuthDiscoveryMetadata, oAuthProtectedResourceMetadata } from '@repo/auth/server';
 import { ai, BillingError } from '@repo/billing/server';
 import { handleScheduled } from '@repo/crons/server';
 import { and, database, eq, schema } from '@repo/db';
@@ -13,6 +15,7 @@ import {
 import * as Sentry from '@sentry/cloudflare';
 import handler, { createServerEntry } from '@tanstack/react-start/server-entry';
 import { routeAgentRequest } from 'agents';
+import { createMcpHandler } from 'agents/mcp';
 import { env } from 'cloudflare:workers';
 import { getServerByName } from 'partyserver';
 
@@ -66,10 +69,23 @@ const entry = createServerEntry({
 // withSentry instruments all three handlers, so an uncaught error is reported
 // with the trigger that produced it (request, cron, or queue batch).
 export default Sentry.withSentry(sentryOptions, {
-  // Called with only the request: TanStack Start's second parameter is its own
-  // options object, not the worker env, and the entry reads bindings from the
-  // `cloudflare:workers` import instead.
-  fetch: (request: Request) => entry.fetch(request),
+  // MCP is handled here rather than in the entry above because its handler
+  // wants the real ExecutionContext, which TanStack Start's entry does not
+  // pass through (the entry reads bindings from `cloudflare:workers` instead).
+  fetch: (request: Request, _env: unknown, ctx: ExecutionContext) => {
+    const url = new URL(request.url);
+    // OAuth discovery for MCP clients, which expect these at the root.
+    if (url.pathname === '/.well-known/oauth-authorization-server') {
+      return oAuthDiscoveryMetadata(auth)(request);
+    }
+    if (url.pathname === '/.well-known/oauth-protected-resource') {
+      return oAuthProtectedResourceMetadata(auth)(request);
+    }
+    if (url.pathname === '/mcp') {
+      return handleMcpRequest(request, url, ctx);
+    }
+    return entry.fetch(request);
+  },
   // Cron Triggers (wrangler.jsonc `triggers.crons`) land here.
   scheduled: handleScheduled,
   // The stet-jobs queue consumer (wrangler.jsonc `queues.consumers`).
@@ -125,6 +141,80 @@ async function handleAgentRequest(request: Request, url: URL): Promise<Response>
     return new Response('Not found.', { status: 404 });
   }
   return response;
+}
+
+// The same tools the chat agent runs, served over MCP to OAuth-authenticated
+// clients (Claude, editors). The Better Auth mcp plugin issues the tokens;
+// this handler validates one, resolves the organization the tools act on,
+// and enforces the same plan gate as the chat agent.
+async function handleMcpRequest(request: Request, url: URL, ctx: ExecutionContext) {
+  const session = await auth.api.getMcpSession({ headers: request.headers });
+  const userId = session?.userId;
+  if (session === null || userId === null || userId === undefined) {
+    // Points token-less clients at the discovery flow, per the MCP auth spec.
+    return new Response('Unauthorized.', {
+      status: 401,
+      headers: {
+        'WWW-Authenticate': `Bearer resource_metadata="${url.origin}/.well-known/oauth-protected-resource"`,
+      },
+    });
+  }
+
+  const resolved = await resolveMcpOrganization(userId, url.searchParams.get('organization'));
+  if (resolved instanceof Response) {
+    return resolved;
+  }
+
+  try {
+    await ai.require(resolved);
+  } catch (error) {
+    if (error instanceof BillingError) {
+      return new Response(error.message, { status: 403 });
+    }
+    throw error;
+  }
+
+  return createMcpHandler(createContentMcpServer(resolved), { route: '/mcp' })(request, env, ctx);
+}
+
+/**
+ * The organization MCP tools act on. Tokens are user-scoped, so a member of
+ * several organizations pins one with `?organization=<slug>` on the MCP URL;
+ * with a single membership the choice is made for them.
+ */
+async function resolveMcpOrganization(
+  userId: string,
+  slug: string | null,
+): Promise<string | Response> {
+  const db = await database();
+  const memberships = await db
+    .select({ id: schema.organization.id, slug: schema.organization.slug })
+    .from(schema.member)
+    .innerJoin(schema.organization, eq(schema.organization.id, schema.member.organizationId))
+    .where(eq(schema.member.userId, userId));
+
+  if (memberships.length === 0) {
+    return new Response('This account belongs to no organization.', { status: 403 });
+  }
+  if (slug !== null) {
+    const match = memberships.find((membership) => membership.slug === slug);
+    if (match === undefined) {
+      return new Response(
+        `No organization with slug "${slug}". Yours: ${memberships.map((m) => m.slug).join(', ')}.`,
+        {
+          status: 403,
+        },
+      );
+    }
+    return match.id;
+  }
+  if (memberships.length === 1) {
+    return memberships[0].id;
+  }
+  return new Response(
+    `This account belongs to several organizations; add ?organization=<slug> to the MCP URL. Yours: ${memberships.map((m) => m.slug).join(', ')}.`,
+    { status: 400 },
+  );
 }
 
 // Auth happens here in the worker, before the Durable Object ever sees the

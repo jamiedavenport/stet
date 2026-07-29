@@ -8,7 +8,7 @@ import { ArrowUpRightIcon, Trash2Icon } from 'lucide-react';
 import { EntryCell } from '#/content/cells/entry-cell.tsrx';
 import type { EntryRow, EntryType, Member } from '#/content/entry/functions';
 import { AddField, FieldHeader } from '#/content/field/header.tsrx';
-import type { FieldValue } from '#/content/field/schema';
+import type { FieldValue } from '@repo/content/schema';
 import { MetaCell } from '#/content/cells/meta-cell.tsrx';
 import type { ModelField } from '#/content/model/functions';
 import { useRowWatchers } from '#/content/presence';

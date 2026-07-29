@@ -11,7 +11,7 @@ import { FileTextIcon } from 'lucide-react';
 import { CellDisplay } from '#/content/cells/display.tsrx';
 import { PersonEditor, SelectEditor } from '#/content/cells/choice.tsrx';
 import type { Member } from '#/content/entry/functions';
-import type { FieldValue } from '#/content/field/schema';
+import type { FieldValue } from '@repo/content/schema';
 import type { ModelField } from '#/content/model/functions';
 import { useCellWatchers } from '#/content/presence';
 import { imageSrc } from '#/files/urls';

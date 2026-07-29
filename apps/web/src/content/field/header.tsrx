@@ -11,8 +11,8 @@ import {
   XIcon,
 } from 'lucide-react';
 
-import { fieldTypeLabels, fieldTypes, nextOptionColor, optionColors } from '#/content/field/schema';
-import type { FieldType, SelectOption } from '#/content/field/schema';
+import { fieldTypeLabels, fieldTypes, nextOptionColor, optionColors } from '@repo/content/schema';
+import type { FieldType, SelectOption } from '@repo/content/schema';
 import { createField, deleteField, moveField, updateField } from '#/content/field/functions';
 import type { ModelField } from '#/content/model/functions';
 import { optionDotClasses } from '#/content/field/option-colors';

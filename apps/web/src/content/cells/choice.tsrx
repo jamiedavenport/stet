@@ -5,7 +5,7 @@ import { Input } from '@repo/ui/components/input';
 import { CheckIcon } from 'lucide-react';
 
 import type { Member } from '#/content/entry/functions';
-import type { SelectOption } from '#/content/field/schema';
+import type { SelectOption } from '@repo/content/schema';
 import { optionDotClasses } from '#/content/field/option-colors';
 import { imageSrc } from '#/files/urls';
 import { initials } from '#/initials';

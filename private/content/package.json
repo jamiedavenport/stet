@@ -1,0 +1,44 @@
+{
+  "name": "@repo/content",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./access": "./src/access.ts",
+    "./body": "./src/body.ts",
+    "./entries": "./src/entries.ts",
+    "./fields": "./src/fields.ts",
+    "./model": "./src/model.ts",
+    "./schema": "./src/schema.ts",
+    "./slug": "./src/slug.ts",
+    "./write-body": "./src/write-body.ts"
+  },
+  "scripts": {
+    "build": "tsc --noEmit",
+    "tc": "tsc --noEmit",
+    "test": "vp test run"
+  },
+  "dependencies": {
+    "@repo/api": "workspace:*",
+    "@repo/db": "workspace:*",
+    "@repo/realtime": "workspace:*",
+    "@tiptap/core": "catalog:",
+    "@tiptap/extension-image": "catalog:",
+    "@tiptap/extension-table": "catalog:",
+    "@tiptap/extension-typography": "catalog:",
+    "@tiptap/pm": "catalog:",
+    "@tiptap/starter-kit": "catalog:",
+    "@tiptap/static-renderer": "catalog:",
+    "@tiptap/y-tiptap": "catalog:",
+    "marked": "catalog:",
+    "yjs": "catalog:",
+    "zeed-dom": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "catalog:",
+    "typescript": "catalog:",
+    "vite-plus": "catalog:",
+    "vitest": "catalog:"
+  }
+}

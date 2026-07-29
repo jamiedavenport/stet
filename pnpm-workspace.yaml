@@ -21,6 +21,7 @@ catalog:
   '@clack/prompts': ^1.7.0
   '@cloudflare/ai-chat': ^0.9.3
   '@cloudflare/vite-plugin': ^1.45.1
+  '@modelcontextprotocol/sdk': ^1.29.0
   '@cloudflare/workers-types': ^5.20260723.1
   '@content-collections/cli': ^0.1.9
   '@content-collections/core': ^0.15.2
@@ -51,15 +52,10 @@ catalog:
   '@tanstack/react-start': ^1.168.30
   '@tanstack/react-table': ^8.21.3
   '@tiptap/core': ^3.28.0
-  '@tiptap/extension-code-block-lowlight': ^3.28.0
   '@tiptap/extension-collaboration': ^3.28.0
   '@tiptap/extension-collaboration-caret': ^3.28.0
-  '@tiptap/extension-drag-handle': ^3.28.0
-  '@tiptap/extension-drag-handle-react': ^3.28.0
   '@tiptap/extension-file-handler': ^3.28.0
   '@tiptap/extension-image': ^3.28.0
-  '@tiptap/extension-list': ^3.28.0
-  '@tiptap/extension-mention': ^3.28.0
   '@tiptap/extension-table': ^3.28.0
   '@tiptap/extension-typography': ^3.28.0
   '@tiptap/extensions': ^3.28.0
@@ -92,9 +88,8 @@ catalog:
   fumadocs-mdx: ^15.2.0
   fumadocs-openapi: ^11.2.2
   drizzle-orm: ^0.45.2
-  highlight.js: ^11.11.1
-  lowlight: ^3.3.0
   lucide-react: ^0.552.0
+  marked: ^17.0.6
   open: ^11.0.0
   partyserver: ^0.5.8
   picocolors: ^1.1.1
@@ -121,6 +116,7 @@ catalog:
   y-partyserver: ^2.2.0
   y-protocols: ^1.0.7
   yjs: ^13.6.31
+  zeed-dom: ^0.18.0
   zod: ^4.4.3
   knip: 6.29.0
   '@marsidev/react-turnstile': ^1.5.3

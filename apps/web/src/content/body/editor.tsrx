@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import type { RefObject } from 'react';
 import type { PageRoom } from '@repo/realtime/client';
+import { bodyField } from '@repo/realtime/entry';
 import type { PresenceUser } from '@repo/realtime/types';
 import { Label } from '@repo/ui/components/label';
 import { EditorContent, useEditor } from '@tiptap/react';
@@ -8,7 +9,6 @@ import type { Editor } from '@tiptap/react';
 import { BubbleMenu } from '@tiptap/react/menus';
 
 import { BubbleToolbar } from '#/content/body/bubble-toolbar.tsrx';
-import { bodyField } from '#/content/body/doc';
 import { bodyEditorExtensions } from '#/content/body/editor-extensions';
 import { useBodyEditorState } from '#/content/body/editor-state';
 import { useBodyImages } from '#/content/body/images';

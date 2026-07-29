@@ -1,11 +1,11 @@
 import { useEffect } from 'react';
 import { usePageRoom } from '@repo/realtime/client';
+import { entryPage } from '@repo/realtime/entry';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { getRouteApi, Link } from '@tanstack/react-router';
 import { ChevronLeftIcon } from 'lucide-react';
 
 import { BodyEditor } from '#/content/body/editor.tsrx';
-import { entryPage } from '#/content/body/doc';
 import { mapEntryQuery } from '#/content/entry/functions';
 import { setCellLocation } from '#/content/presence';
 import { useAppRoute } from '#/use-app-route';

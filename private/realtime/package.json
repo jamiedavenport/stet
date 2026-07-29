@@ -6,6 +6,7 @@
   "exports": {
     "./client": "./src/client.tsx",
     "./document": "./src/document.ts",
+    "./entry": "./src/entry.ts",
     "./server": "./src/server.ts",
     "./types": "./src/types.ts"
   },

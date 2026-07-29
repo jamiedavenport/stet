@@ -1,4 +1,4 @@
-import type { OptionColor } from '#/content/field/schema';
+import type { OptionColor } from '@repo/content/schema';
 
 /** Chip styling for a select option, keyed by its stored color. */
 export const optionColorClasses: Record<OptionColor, string> = {

@@ -93,3 +93,21 @@ export function parseValues(values: string): EntryValues {
 export function nextOptionColor(existing: readonly SelectOption[]): OptionColor {
   return optionColors[existing.length % optionColors.length];
 }
+
+/**
+ * The searchable text of an entry's values: every string the fields hold,
+ * mirrored into `contentEntry.fieldText` on write for the FTS index. Ids in
+ * select and person values come along; they only match searches for the id
+ * itself, which is harmless.
+ */
+export function valuesText(values: EntryValues): string {
+  const parts: string[] = [];
+  for (const value of Object.values(values)) {
+    if (typeof value === 'string') {
+      parts.push(value);
+    } else if (Array.isArray(value)) {
+      parts.push(...value);
+    }
+  }
+  return parts.join(' ');
+}

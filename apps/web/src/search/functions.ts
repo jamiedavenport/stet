@@ -1,5 +1,5 @@
 import { and, database, eq, inArray, schema } from '@repo/db';
-import { assetIndex, byRank, ftsSearch, userIndex } from '@repo/db/search';
+import { assetIndex, byRank, entryIndex, ftsSearch, userIndex } from '@repo/db/search';
 import { queryOptions } from '@tanstack/react-query';
 import { createServerFn } from '@tanstack/react-start';
 
@@ -23,8 +23,17 @@ type MemberResult = {
   image: string | null;
 };
 
+type EntryResult = {
+  kind: 'entry';
+  id: string;
+  title: string;
+  typeSlug: string;
+  typeName: string;
+  typeKind: 'collection' | 'map';
+};
+
 /** One row of the result set, discriminated so the menu can group by kind. */
-type SearchResult = FileResult | MemberResult;
+type SearchResult = FileResult | MemberResult | EntryResult;
 
 /**
  * Everything in the active organization matching `query`.
@@ -43,13 +52,32 @@ const search = createServerFn({ method: 'GET' })
       return [];
     }
 
-    const [fileIds, memberIds] = await Promise.all([
+    const [entryIds, fileIds, memberIds] = await Promise.all([
+      ftsSearch(entryIndex, trimmed, perKind),
       ftsSearch(assetIndex, trimmed, perKind),
       ftsSearch(userIndex, trimmed, perKind),
     ]);
 
     const db = await database();
-    const [files, members] = await Promise.all([
+    const [rows, files, members] = await Promise.all([
+      entryIds.length === 0
+        ? []
+        : db
+            .select({
+              id: schema.contentEntry.id,
+              title: schema.contentEntry.title,
+              typeSlug: schema.contentType.slug,
+              typeName: schema.contentType.name,
+              typeKind: schema.contentType.kind,
+            })
+            .from(schema.contentEntry)
+            .innerJoin(schema.contentType, eq(schema.contentType.id, schema.contentEntry.typeId))
+            .where(
+              and(
+                inArray(schema.contentEntry.id, entryIds),
+                eq(schema.contentEntry.organizationId, context.organizationId),
+              ),
+            ),
       fileIds.length === 0
         ? []
         : db
@@ -88,6 +116,16 @@ const search = createServerFn({ method: 'GET' })
     ]);
 
     return [
+      ...rows.sort(byRank(entryIds)).map(
+        (row): EntryResult => ({
+          kind: 'entry',
+          id: row.id,
+          title: row.title,
+          typeSlug: row.typeSlug,
+          typeName: row.typeName,
+          typeKind: row.typeKind === 'map' ? 'map' : 'collection',
+        }),
+      ),
       ...files.sort(byRank(fileIds)).map((file): FileResult => ({ kind: 'file', ...file })),
       ...members
         .sort(byRank(memberIds))

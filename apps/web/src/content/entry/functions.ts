@@ -4,15 +4,8 @@ import { createServerFn } from '@tanstack/react-start';
 import { notFound } from '@tanstack/react-router';
 import { z } from 'zod';
 
-import { requireContentType, requireEntry } from '#/content/access';
-import { entryPage } from '#/content/body/doc';
-import {
-  fieldTypeSchema,
-  fieldValueSchema,
-  parseConfig,
-  parseValues,
-} from '#/content/field/schema';
-import { slugify, uniqueSlug } from '#/content/slug';
+import * as entries from '@repo/content/entries';
+import { fieldTypeSchema, fieldValueSchema, parseConfig, parseValues } from '@repo/content/schema';
 import { organizationMiddleware } from '#/session';
 
 async function typeWithFields(organizationId: string, where: { slug?: string; id?: string }) {
@@ -138,31 +131,7 @@ export const mapEntryQuery = (organizationId: string, typeSlug: string) =>
 export const createEntry = createServerFn({ method: 'POST' })
   .middleware([organizationMiddleware])
   .validator(z.object({ typeId: z.string(), title: z.string().max(200).optional() }))
-  .handler(async ({ data, context }) => {
-    const db = await database();
-    const type = await requireContentType(context.organizationId, data.typeId);
-    if (type.kind === 'map') {
-      throw new Error('A map has exactly one entry');
-    }
-    const title = data.title === undefined || data.title === '' ? 'Untitled' : data.title;
-    const siblings = await db.query.contentEntry.findMany({
-      where: eq(schema.contentEntry.typeId, type.id),
-      columns: { slug: true },
-    });
-    const slug = uniqueSlug(slugify(title), new Set(siblings.map((entry) => entry.slug)));
-    const id = crypto.randomUUID();
-    await db.insert(schema.contentEntry).values({
-      id,
-      typeId: type.id,
-      organizationId: context.organizationId,
-      slug,
-      title,
-      values: '{}',
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
-    return { id, slug };
-  });
+  .handler(async ({ data, context }) => entries.createEntry(context.organizationId, data));
 
 export const updateEntry = createServerFn({ method: 'POST' })
   .middleware([organizationMiddleware])
@@ -174,45 +143,12 @@ export const updateEntry = createServerFn({ method: 'POST' })
       values: z.record(z.string(), fieldValueSchema).optional(),
     }),
   )
-  .handler(async ({ data, context }) => {
-    const db = await database();
-    const entry = await requireEntry(context.organizationId, data.id);
-    let slug = entry.slug;
-    if (data.slug !== undefined && slugify(data.slug) !== entry.slug) {
-      const siblings = await db.query.contentEntry.findMany({
-        where: eq(schema.contentEntry.typeId, entry.typeId),
-        columns: { slug: true },
-      });
-      slug = uniqueSlug(slugify(data.slug), new Set(siblings.map((row) => row.slug)));
-    }
-    const values =
-      data.values === undefined
-        ? entry.values
-        : JSON.stringify({ ...parseValues(entry.values), ...data.values });
-    await db
-      .update(schema.contentEntry)
-      .set({ title: data.title ?? entry.title, slug, values, updatedAt: new Date() })
-      .where(eq(schema.contentEntry.id, entry.id));
-    return { slug };
-  });
+  .handler(async ({ data, context }) => entries.updateEntry(context.organizationId, data));
 
 export const deleteEntry = createServerFn({ method: 'POST' })
   .middleware([organizationMiddleware])
   .validator(z.object({ id: z.string() }))
-  .handler(async ({ data, context }) => {
-    const db = await database();
-    const entry = await requireEntry(context.organizationId, data.id);
-    // The body document does not cascade with the row.
-    await db
-      .delete(schema.document)
-      .where(
-        and(
-          eq(schema.document.organizationId, context.organizationId),
-          eq(schema.document.page, entryPage(entry.id)),
-        ),
-      );
-    await db.delete(schema.contentEntry).where(eq(schema.contentEntry.id, entry.id));
-  });
+  .handler(async ({ data, context }) => entries.deleteEntry(context.organizationId, data.id));
 
 /** Members of the organization, for person fields and presence labels. */
 const getMembers = createServerFn({ method: 'GET' })

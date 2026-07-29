@@ -6,7 +6,7 @@ import CollaborationCaret from '@tiptap/extension-collaboration-caret';
 import FileHandler from '@tiptap/extension-file-handler';
 import { CharacterCount, Placeholder } from '@tiptap/extensions';
 
-import { bodySchemaExtensions } from '#/content/body/extensions';
+import { bodySchemaExtensions } from '@repo/content/body';
 import { SlashCommand } from '#/content/body/slash-command';
 
 type BodyEditorOptions = {

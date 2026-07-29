@@ -4,8 +4,8 @@
   "private": true,
   "type": "module",
   "exports": {
-    "./agents": "./src/agents.ts",
     "./client": "./src/client.ts",
+    "./mcp": "./src/mcp.ts",
     "./model": "./src/model.ts",
     "./server": "./src/server.ts"
   },
@@ -17,7 +17,11 @@
     "@ai-sdk/anthropic": "catalog:",
     "@ai-sdk/react": "catalog:",
     "@cloudflare/ai-chat": "catalog:",
+    "@modelcontextprotocol/sdk": "catalog:",
     "@repo/brand": "workspace:*",
+    "@repo/content": "workspace:*",
+    "@repo/db": "workspace:*",
+    "@repo/realtime": "workspace:*",
     "agents": "catalog:",
     "ai": "catalog:",
     "zod": "catalog:"

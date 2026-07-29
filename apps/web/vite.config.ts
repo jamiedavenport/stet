@@ -38,6 +38,11 @@ const config = (command: 'build' | 'serve') =>
     },
     resolve: {
       tsconfigPaths: true,
+      // Yjs must be a singleton: its types compare constructors, and in dev
+      // the ssr optimizer can hand @tiptap/y-tiptap its own copy while
+      // @repo/realtime uses the linked one, which breaks every conversion
+      // ("Yjs was already imported" in the server log).
+      dedupe: ['yjs'],
     },
     plugins: [
       contentCollections(),

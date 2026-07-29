@@ -2,7 +2,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@repo/ui/components/avatar'
 import { Badge } from '@repo/ui/components/badge';
 
 import type { Member } from '#/content/entry/functions';
-import type { FieldValue } from '#/content/field/schema';
+import type { FieldValue } from '@repo/content/schema';
 import type { ModelField } from '#/content/model/functions';
 import { optionColorClasses } from '#/content/field/option-colors';
 import { imageSrc } from '#/files/urls';

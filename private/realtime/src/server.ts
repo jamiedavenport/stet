@@ -3,7 +3,7 @@ import * as Sentry from '@sentry/cloudflare';
 import { YServer } from 'y-partyserver';
 import { applyUpdate, encodeStateAsUpdate } from 'yjs';
 
-import { loadDocumentState, parseRoomName, saveDocument } from './document';
+import { loadDocumentState, parseRoomName, saveDocument, syncEntryBodyText } from './document';
 import type { DocumentRoom } from './document';
 
 const storageKey = 'ydoc';
@@ -59,6 +59,26 @@ export class PagePresenceRoom extends YServer {
     }
   }
 
+  // Internal document access for off-session writes (see `updateDocument` in
+  // document.ts). Unreachable from outside: the worker only ever forwards
+  // WebSocket upgrades to this object, so plain HTTP exists solely for
+  // server code holding the binding.
+  async onRequest(request: Request): Promise<Response> {
+    if (new URL(request.url).pathname === '/document') {
+      if (request.method === 'GET') {
+        // slice() narrows the buffer to ArrayBuffer, which BodyInit wants.
+        return new Response(encodeStateAsUpdate(this.document).slice());
+      }
+      if (request.method === 'PUT') {
+        // Applying to the live doc broadcasts to connected editors and arms
+        // the same save/flush path as any client edit.
+        applyUpdate(this.document, new Uint8Array(await request.arrayBuffer()));
+        return new Response(null, { status: 204 });
+      }
+    }
+    return super.onRequest(request);
+  }
+
   async onAlarm(): Promise<void> {
     const room = this.room();
     const log = createLogger({
@@ -68,6 +88,7 @@ export class PagePresenceRoom extends YServer {
 
     try {
       log.set({ document: { bytes: await saveDocument(room, this.document) } });
+      await syncEntryBodyText(room, this.document);
     } catch (error) {
       // Swallowed so the next attempt is the alarm set here rather than the
       // runtime's capped retry; captureException because nothing else would

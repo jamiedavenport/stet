@@ -15,8 +15,8 @@ import {
   updateEntry,
 } from '#/content/entry/functions';
 import { updateField } from '#/content/field/functions';
-import { nextOptionColor } from '#/content/field/schema';
-import type { FieldValue } from '#/content/field/schema';
+import { nextOptionColor } from '@repo/content/schema';
+import type { FieldValue } from '@repo/content/schema';
 import { contentModelQuery } from '#/content/model/functions';
 import type { ModelField } from '#/content/model/functions';
 import { bumpContentVersion, setCellLocation, useContentVersion } from '#/content/presence';

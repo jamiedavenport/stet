@@ -60,6 +60,11 @@ export const contentEntry = sqliteTable(
     title: text('title').notNull(),
     /** JSON object of field key to value; keys absent until first set. */
     values: text('values').notNull(),
+    // Derived plain text for the FTS index (see ../search/indexes.ts): entry
+    // writes maintain fieldText from `values`, the document mirror in
+    // @repo/realtime maintains bodyText from the rich text bodies.
+    fieldText: text('field_text').notNull().default(''),
+    bodyText: text('body_text').notNull().default(''),
     createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
     updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull(),
   },

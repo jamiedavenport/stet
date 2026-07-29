@@ -1,15 +1,15 @@
 import { usePageRoom } from '@repo/realtime/client';
+import { entryPage } from '@repo/realtime/entry';
 import { Input } from '@repo/ui/components/input';
 import { useSuspenseQuery } from '@tanstack/react-query';
 
 import { BodyEditor } from '#/content/body/editor.tsrx';
-import { entryPage } from '#/content/body/doc';
 import { EntryCell } from '#/content/cells/entry-cell.tsrx';
 import { membersQuery, updateEntry } from '#/content/entry/functions';
 import type { EntryData } from '#/content/entry/functions';
 import { updateField } from '#/content/field/functions';
-import { nextOptionColor } from '#/content/field/schema';
-import type { FieldValue } from '#/content/field/schema';
+import { nextOptionColor } from '@repo/content/schema';
+import type { FieldValue } from '@repo/content/schema';
 import type { ModelField } from '#/content/model/functions';
 import { bumpContentVersion, setCellLocation, useContentVersion } from '#/content/presence';
 import { useAppRoute } from '#/use-app-route';

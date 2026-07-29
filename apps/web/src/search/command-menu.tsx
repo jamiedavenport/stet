@@ -16,9 +16,19 @@ import {
 } from '@repo/ui/components/command';
 import { useQuery, useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
 import { useRouter } from '@tanstack/react-router';
-import { BuildingIcon, FileIcon, LogOutIcon, PlusIcon, Repeat2Icon, UserIcon } from 'lucide-react';
+import {
+  BuildingIcon,
+  FileIcon,
+  LogOutIcon,
+  PlusIcon,
+  Repeat2Icon,
+  SparklesIcon,
+  UserIcon,
+} from 'lucide-react';
 
+import { useAssistant } from '#/ai/assistant-context.tsrx';
 import { contentModelQuery } from '#/content/model/functions';
+import { contentIcon } from '#/content/model/kind';
 import { assetUrl } from '#/files/urls';
 import { allDestinations, navLeaderKey, navPath } from '#/navigation';
 import type { NavItem } from '#/navigation';
@@ -54,6 +64,7 @@ export function CommandMenu() {
   const { contains } = useCommandFilter(filterOptions);
 
   const { open, setOpen, toggle } = useCommandMenu();
+  const assistant = useAssistant();
   const [page, setPage] = useState<Page>('root');
   const [query, setQuery] = useState('');
 
@@ -154,6 +165,16 @@ export function CommandMenu() {
 
     const actions: Entry[] = [
       {
+        id: 'action:assistant',
+        label: 'Ask the assistant',
+        shortcut: '⌘ I',
+        icon: SparklesIcon,
+        run: () => {
+          dismiss();
+          assistant.setOpen(true);
+        },
+      },
+      {
         id: 'action:switch-organization',
         label: 'Switch organization…',
         icon: Repeat2Icon,
@@ -195,6 +216,29 @@ export function CommandMenu() {
           .filter(matches),
       },
       { value: 'Actions', items: actions.filter(matches) },
+      {
+        value: 'Content',
+        items: hits
+          .filter((hit) => hit.kind === 'entry')
+          .map(
+            (entry): Entry => ({
+              id: `entry:${entry.id}`,
+              label: entry.title,
+              hint: entry.typeName,
+              icon: contentIcon(entry.typeKind),
+              run: () => {
+                if (entry.typeKind === 'map') {
+                  go('/app/m/$map', { map: entry.typeSlug });
+                } else {
+                  go('/app/c/$collection/$entry', {
+                    collection: entry.typeSlug,
+                    entry: entry.id,
+                  });
+                }
+              },
+            }),
+          ),
+      },
       {
         value: 'Files',
         items: hits
