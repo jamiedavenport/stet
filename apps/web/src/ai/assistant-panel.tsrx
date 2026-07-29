@@ -3,7 +3,7 @@ import { Button } from '@repo/ui/components/button';
 import { Skeleton } from '@repo/ui/components/skeleton';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
-import { SparklesIcon } from 'lucide-react';
+import { SparkleIcon } from '@phosphor-icons/react';
 
 import { useAssistant, useAssistantShortcut } from '#/ai/assistant-context.tsrx';
 import { AssistantChat } from '#/ai/chat';
@@ -26,13 +26,13 @@ export function AssistantPanel() @{
 
   <div className="contents">
     @if (open) {
-      <aside className="hidden min-h-0 w-96 shrink-0 flex-col border-l md:flex">
+      <aside className="my-3 mr-3 hidden min-h-0 w-96 shrink-0 flex-col overflow-hidden rounded-2xl bg-background shadow-sm ring-1 ring-foreground/5 md:flex">
         @if (billing.data === undefined) {
           <PanelSkeleton />
         }
         @if (billing.data !== undefined && !billing.data.features.ai) {
           <div className="flex flex-1 flex-col items-center justify-center gap-3 p-6 text-center">
-            <SparklesIcon className="size-8 text-muted-foreground" />
+            <SparkleIcon weight="duotone" className="size-8 text-muted-foreground" />
             <p className="text-sm font-medium">{"The assistant is part of the paid plan"}</p>
             <p className="text-sm text-muted-foreground">
               {"Upgrade to build your model, draft content, and search with AI."}
@@ -77,6 +77,6 @@ export function AssistantTrigger() @{
     aria-keyshortcuts="Meta+I Control+I"
     onClick={assistant.toggle}
   >
-    <SparklesIcon />
+    <SparkleIcon />
   </Button>
 }

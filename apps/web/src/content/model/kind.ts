@@ -1,5 +1,5 @@
-import { FileTextIcon, LayersIcon } from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
+import { FileTextIcon, StackIcon } from '@phosphor-icons/react';
+import type { Icon } from '@phosphor-icons/react';
 
 /**
  * A collection holds many entries addressed by slug; a map is a single entry
@@ -16,6 +16,6 @@ export type NavContentType = {
 };
 
 /** The icon a content type carries everywhere it is listed. */
-export function contentIcon(kind: ContentKind): LucideIcon {
-  return kind === 'collection' ? LayersIcon : FileTextIcon;
+export function contentIcon(kind: ContentKind): Icon {
+  return kind === 'collection' ? StackIcon : FileTextIcon;
 }

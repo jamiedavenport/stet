@@ -3,7 +3,7 @@
 import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupTextarea } from '../input-group';
 import { cn } from '../../lib/utils';
 import type { ChatStatus } from 'ai';
-import { CornerDownLeftIcon, Loader2Icon, SquareIcon, XIcon } from 'lucide-react';
+import { ArrowElbowDownLeftIcon, CircleNotchIcon, SquareIcon, XIcon } from '@phosphor-icons/react';
 import {
   type ComponentProps,
   type FormEvent,
@@ -36,7 +36,7 @@ export const PromptInput = ({ className, onSubmit, children, ...props }: PromptI
 
   return (
     <form className={cn('w-full', className)} onSubmit={handleSubmit} {...props}>
-      <InputGroup className="overflow-hidden">{children}</InputGroup>
+      <InputGroup className="overflow-hidden rounded-xl">{children}</InputGroup>
     </form>
   );
 };
@@ -104,10 +104,10 @@ export const PromptInputSubmit = ({
   children,
   ...props
 }: PromptInputSubmitProps) => {
-  let Icon = <CornerDownLeftIcon className="size-4" />;
+  let Icon = <ArrowElbowDownLeftIcon className="size-4" />;
 
   if (status === 'submitted') {
-    Icon = <Loader2Icon className="size-4 animate-spin" />;
+    Icon = <CircleNotchIcon className="size-4 animate-spin" />;
   } else if (status === 'streaming') {
     Icon = <SquareIcon className="size-4" />;
   } else if (status === 'error') {

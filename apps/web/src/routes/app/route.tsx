@@ -1,4 +1,3 @@
-import { brand } from '@repo/brand';
 import { PageRoomProvider } from '@repo/realtime/client';
 import { Separator } from '@repo/ui/components/separator';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@repo/ui/components/sidebar';
@@ -8,11 +7,11 @@ import { Outlet, createFileRoute, redirect, useRouterState } from '@tanstack/rea
 import { AssistantProvider } from '#/ai/assistant-context.tsrx';
 import { AssistantPanel, AssistantTrigger } from '#/ai/assistant-panel.tsrx';
 import { AppSidebar } from '#/components/app-sidebar.tsrx';
+import { Breadcrumbs, BreadcrumbsProvider } from '#/components/breadcrumbs';
 import { ensureContentModel } from '#/content/model/functions';
 import { CommandMenu } from '#/search/command-menu';
 import { CommandMenuProvider } from '#/search/command-menu-context.tsrx';
 import { ImpersonationBanner } from '#/admin/impersonation-banner.tsrx';
-import { NotificationBell } from '#/notifications/notification-bell.tsrx';
 import { PagePresence } from '#/components/page-presence.tsrx';
 import {
   ensureActiveMember,
@@ -60,38 +59,37 @@ function AppLayout() {
     <TooltipProvider>
       <CommandMenuProvider>
         <AssistantProvider>
-          <SidebarProvider>
-            <AppSidebar />
-            <CommandMenu />
+          <BreadcrumbsProvider>
             {/* Viewport-locked: the page column and the assistant's messages
-              scroll inside their own boxes, never the window. */}
-            <SidebarInset className="h-svh overflow-hidden">
+            scroll inside their own boxes, never the window. */}
+            <SidebarProvider className="h-svh overflow-hidden">
+              <AppSidebar />
+              <CommandMenu />
               {/* One room (and one WebSocket) per page; presence and page
-                features all consume it through context. */}
+              features all consume it through context. */}
               <PageRoomProvider
                 page={pathname}
                 user={{ id: user.id, image: user.image ?? null, name: user.name }}
               >
-                <ImpersonationBanner />
-                <header className="flex h-14 shrink-0 items-center gap-2 border-b px-4">
-                  <SidebarTrigger className="-ml-1" />
-                  <Separator orientation="vertical" className="mr-2 max-h-4" />
-                  <p className="text-sm font-medium">{brand.name}</p>
-                  <div className="ml-auto flex items-center gap-2">
-                    <PagePresence />
-                    <AssistantTrigger />
-                    <NotificationBell />
-                  </div>
-                </header>
-                <div className="flex min-h-0 min-w-0 flex-1">
-                  <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto p-4">
+                <SidebarInset className="overflow-hidden">
+                  <ImpersonationBanner />
+                  <header className="flex h-14 shrink-0 items-center gap-2 border-b px-5">
+                    <SidebarTrigger className="-ml-1" />
+                    <Separator orientation="vertical" className="mr-2 max-h-4" />
+                    <Breadcrumbs />
+                    <div className="ml-auto flex items-center gap-2">
+                      <PagePresence />
+                      <AssistantTrigger />
+                    </div>
+                  </header>
+                  <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto p-6">
                     <Outlet />
                   </div>
-                  <AssistantPanel />
-                </div>
+                </SidebarInset>
+                <AssistantPanel />
               </PageRoomProvider>
-            </SidebarInset>
-          </SidebarProvider>
+            </SidebarProvider>
+          </BreadcrumbsProvider>
         </AssistantProvider>
       </CommandMenuProvider>
     </TooltipProvider>

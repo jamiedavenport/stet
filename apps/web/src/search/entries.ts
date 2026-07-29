@@ -1,4 +1,4 @@
-import type { LucideIcon } from 'lucide-react';
+import type { Icon } from '@phosphor-icons/react';
 
 /** Which set of groups the menu is showing. */
 export type Page = 'root' | 'organizations';
@@ -15,7 +15,7 @@ export type Entry = {
   hint?: string;
   /** Key hint shown on the right, e.g. `G N`. */
   shortcut?: string;
-  icon: LucideIcon;
+  icon: Icon;
   run: () => void;
 };
 

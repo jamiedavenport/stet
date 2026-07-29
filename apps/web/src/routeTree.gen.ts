@@ -48,9 +48,10 @@ import { Route as AppAdminUsersRouteImport } from './routes/app/admin/users'
 import { Route as AppDevelopersKeysRouteImport } from './routes/app/developers.keys'
 import { Route as AppDevelopersWebhooksRouteImport } from './routes/app/developers.webhooks'
 import { Route as AppCCollectionIndexRouteImport } from './routes/app/c.$collection.index'
-import { Route as AppCCollectionEntryRouteImport } from './routes/app/c.$collection.$entry'
 import { Route as AppMMapIndexRouteImport } from './routes/app/m.$map.index'
 import { Route as AppMMapFieldRouteImport } from './routes/app/m.$map.$field'
+import { Route as AppCCollectionEntryIndexRouteImport } from './routes/app/c.$collection.$entry.index'
+import { Route as AppCCollectionEntryFieldRouteImport } from './routes/app/c.$collection.$entry.$field'
 
 const MarketingRoute = MarketingRouteImport.update({
   id: '/_marketing',
@@ -246,11 +247,6 @@ const AppCCollectionIndexRoute = AppCCollectionIndexRouteImport.update({
   path: '/c/$collection/',
   getParentRoute: () => AppRouteRoute,
 } as any)
-const AppCCollectionEntryRoute = AppCCollectionEntryRouteImport.update({
-  id: '/c/$collection/$entry',
-  path: '/c/$collection/$entry',
-  getParentRoute: () => AppRouteRoute,
-} as any)
 const AppMMapIndexRoute = AppMMapIndexRouteImport.update({
   id: '/m/$map/',
   path: '/m/$map/',
@@ -261,6 +257,18 @@ const AppMMapFieldRoute = AppMMapFieldRouteImport.update({
   path: '/m/$map/$field',
   getParentRoute: () => AppRouteRoute,
 } as any)
+const AppCCollectionEntryIndexRoute =
+  AppCCollectionEntryIndexRouteImport.update({
+    id: '/c/$collection/$entry/',
+    path: '/c/$collection/$entry/',
+    getParentRoute: () => AppRouteRoute,
+  } as any)
+const AppCCollectionEntryFieldRoute =
+  AppCCollectionEntryFieldRouteImport.update({
+    id: '/c/$collection/$entry/$field',
+    path: '/c/$collection/$entry/$field',
+    getParentRoute: () => AppRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/app': typeof AppRouteRouteWithChildren
@@ -300,10 +308,11 @@ export interface FileRoutesByFullPath {
   '/app/developers/webhooks': typeof AppDevelopersWebhooksRoute
   '/blog/': typeof MarketingBlogIndexRoute
   '/app/admin/': typeof AppAdminIndexRoute
-  '/app/c/$collection/$entry': typeof AppCCollectionEntryRoute
   '/app/m/$map/$field': typeof AppMMapFieldRoute
   '/app/c/$collection/': typeof AppCCollectionIndexRoute
   '/app/m/$map/': typeof AppMMapIndexRoute
+  '/app/c/$collection/$entry/$field': typeof AppCCollectionEntryFieldRoute
+  '/app/c/$collection/$entry/': typeof AppCCollectionEntryIndexRoute
 }
 export interface FileRoutesByTo {
   '/sign': typeof SignRouteRouteWithChildren
@@ -341,10 +350,11 @@ export interface FileRoutesByTo {
   '/app/developers/webhooks': typeof AppDevelopersWebhooksRoute
   '/blog': typeof MarketingBlogIndexRoute
   '/app/admin': typeof AppAdminIndexRoute
-  '/app/c/$collection/$entry': typeof AppCCollectionEntryRoute
   '/app/m/$map/$field': typeof AppMMapFieldRoute
   '/app/c/$collection': typeof AppCCollectionIndexRoute
   '/app/m/$map': typeof AppMMapIndexRoute
+  '/app/c/$collection/$entry/$field': typeof AppCCollectionEntryFieldRoute
+  '/app/c/$collection/$entry': typeof AppCCollectionEntryIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -386,10 +396,11 @@ export interface FileRoutesById {
   '/app/developers/webhooks': typeof AppDevelopersWebhooksRoute
   '/_marketing/blog/': typeof MarketingBlogIndexRoute
   '/app/admin/': typeof AppAdminIndexRoute
-  '/app/c/$collection/$entry': typeof AppCCollectionEntryRoute
   '/app/m/$map/$field': typeof AppMMapFieldRoute
   '/app/c/$collection/': typeof AppCCollectionIndexRoute
   '/app/m/$map/': typeof AppMMapIndexRoute
+  '/app/c/$collection/$entry/$field': typeof AppCCollectionEntryFieldRoute
+  '/app/c/$collection/$entry/': typeof AppCCollectionEntryIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -431,10 +442,11 @@ export interface FileRouteTypes {
     | '/app/developers/webhooks'
     | '/blog/'
     | '/app/admin/'
-    | '/app/c/$collection/$entry'
     | '/app/m/$map/$field'
     | '/app/c/$collection/'
     | '/app/m/$map/'
+    | '/app/c/$collection/$entry/$field'
+    | '/app/c/$collection/$entry/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/sign'
@@ -472,10 +484,11 @@ export interface FileRouteTypes {
     | '/app/developers/webhooks'
     | '/blog'
     | '/app/admin'
-    | '/app/c/$collection/$entry'
     | '/app/m/$map/$field'
     | '/app/c/$collection'
     | '/app/m/$map'
+    | '/app/c/$collection/$entry/$field'
+    | '/app/c/$collection/$entry'
   id:
     | '__root__'
     | '/app'
@@ -516,10 +529,11 @@ export interface FileRouteTypes {
     | '/app/developers/webhooks'
     | '/_marketing/blog/'
     | '/app/admin/'
-    | '/app/c/$collection/$entry'
     | '/app/m/$map/$field'
     | '/app/c/$collection/'
     | '/app/m/$map/'
+    | '/app/c/$collection/$entry/$field'
+    | '/app/c/$collection/$entry/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -814,13 +828,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppCCollectionIndexRouteImport
       parentRoute: typeof AppRouteRoute
     }
-    '/app/c/$collection/$entry': {
-      id: '/app/c/$collection/$entry'
-      path: '/c/$collection/$entry'
-      fullPath: '/app/c/$collection/$entry'
-      preLoaderRoute: typeof AppCCollectionEntryRouteImport
-      parentRoute: typeof AppRouteRoute
-    }
     '/app/m/$map/': {
       id: '/app/m/$map/'
       path: '/m/$map'
@@ -833,6 +840,20 @@ declare module '@tanstack/react-router' {
       path: '/m/$map/$field'
       fullPath: '/app/m/$map/$field'
       preLoaderRoute: typeof AppMMapFieldRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/app/c/$collection/$entry/': {
+      id: '/app/c/$collection/$entry/'
+      path: '/c/$collection/$entry'
+      fullPath: '/app/c/$collection/$entry/'
+      preLoaderRoute: typeof AppCCollectionEntryIndexRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/app/c/$collection/$entry/$field': {
+      id: '/app/c/$collection/$entry/$field'
+      path: '/c/$collection/$entry/$field'
+      fullPath: '/app/c/$collection/$entry/$field'
+      preLoaderRoute: typeof AppCCollectionEntryFieldRouteImport
       parentRoute: typeof AppRouteRoute
     }
   }
@@ -863,10 +884,11 @@ interface AppRouteRouteChildren {
   AppIndexRoute: typeof AppIndexRoute
   AppDevelopersKeysRoute: typeof AppDevelopersKeysRoute
   AppDevelopersWebhooksRoute: typeof AppDevelopersWebhooksRoute
-  AppCCollectionEntryRoute: typeof AppCCollectionEntryRoute
   AppMMapFieldRoute: typeof AppMMapFieldRoute
   AppCCollectionIndexRoute: typeof AppCCollectionIndexRoute
   AppMMapIndexRoute: typeof AppMMapIndexRoute
+  AppCCollectionEntryFieldRoute: typeof AppCCollectionEntryFieldRoute
+  AppCCollectionEntryIndexRoute: typeof AppCCollectionEntryIndexRoute
 }
 
 const AppRouteRouteChildren: AppRouteRouteChildren = {
@@ -878,10 +900,11 @@ const AppRouteRouteChildren: AppRouteRouteChildren = {
   AppIndexRoute: AppIndexRoute,
   AppDevelopersKeysRoute: AppDevelopersKeysRoute,
   AppDevelopersWebhooksRoute: AppDevelopersWebhooksRoute,
-  AppCCollectionEntryRoute: AppCCollectionEntryRoute,
   AppMMapFieldRoute: AppMMapFieldRoute,
   AppCCollectionIndexRoute: AppCCollectionIndexRoute,
   AppMMapIndexRoute: AppMMapIndexRoute,
+  AppCCollectionEntryFieldRoute: AppCCollectionEntryFieldRoute,
+  AppCCollectionEntryIndexRoute: AppCCollectionEntryIndexRoute,
 }
 
 const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(

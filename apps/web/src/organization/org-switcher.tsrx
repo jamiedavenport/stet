@@ -16,7 +16,7 @@ import {
   useSidebar,
 } from '@repo/ui/components/sidebar';
 import { Link, useRouter } from '@tanstack/react-router';
-import { CheckIcon, ChevronsUpDownIcon, PlusIcon } from 'lucide-react';
+import { CheckIcon, CaretUpDownIcon, PlusIcon } from '@phosphor-icons/react';
 import { useAppRoute } from '#/use-app-route';
 import { organizationItem } from '#/navigation';
 import { clearSessionContext } from '#/session';
@@ -47,7 +47,7 @@ export function OrgSwitcher() @{
               {activeOrganization.slug}
             </span>
           </div>
-          <ChevronsUpDownIcon className="ml-auto size-4" />
+          <CaretUpDownIcon className="ml-auto size-4" />
         </DropdownMenuTrigger>
         <DropdownMenuContent
           className="min-w-56"

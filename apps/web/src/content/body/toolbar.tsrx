@@ -1,23 +1,23 @@
 import { Separator } from '@repo/ui/components/separator';
 import type { Editor } from '@tiptap/react';
 import {
-  BoldIcon,
+  TextBIcon,
   CodeIcon,
-  Heading1Icon,
-  Heading2Icon,
-  Heading3Icon,
+  TextHOneIcon,
+  TextHTwoIcon,
+  TextHThreeIcon,
   ImageIcon,
-  ItalicIcon,
-  ListIcon,
-  ListOrderedIcon,
+  TextItalicIcon,
+  ListBulletsIcon,
+  ListNumbersIcon,
   MinusIcon,
-  QuoteIcon,
-  Redo2Icon,
-  SquareCodeIcon,
-  StrikethroughIcon,
+  QuotesIcon,
+  ArrowUUpRightIcon,
+  CodeBlockIcon,
+  TextStrikethroughIcon,
   TableIcon,
-  Undo2Icon,
-} from 'lucide-react';
+  ArrowUUpLeftIcon,
+} from '@phosphor-icons/react';
 
 import { ToolbarButton } from '#/content/body/toolbar-button.tsrx';
 import type { BodyEditorState } from '#/content/body/editor-state';
@@ -41,17 +41,17 @@ export function BodyToolbar({ editor, state, onInsertImage }: BodyToolbarProps) 
   <div
     role="toolbar"
     aria-label={"Formatting"}
-    className="flex flex-wrap items-center gap-0.5 border-b bg-muted/40 p-1"
+    className="flex flex-wrap items-center gap-0.5 border-b bg-muted/40 p-1.5"
   >
     <ToolbarButton
       label={"Undo"}
-      icon={<Undo2Icon />}
+      icon={<ArrowUUpLeftIcon />}
       disabled={!state.canUndo}
       onClick={() => editor.chain().focus().undo().run()}
     />
     <ToolbarButton
       label={"Redo"}
-      icon={<Redo2Icon />}
+      icon={<ArrowUUpRightIcon />}
       disabled={!state.canRedo}
       onClick={() => editor.chain().focus().redo().run()}
     />
@@ -60,19 +60,19 @@ export function BodyToolbar({ editor, state, onInsertImage }: BodyToolbarProps) 
 
     <ToolbarButton
       label={"Bold"}
-      icon={<BoldIcon />}
+      icon={<TextBIcon />}
       active={state.bold}
       onClick={() => editor.chain().focus().toggleBold().run()}
     />
     <ToolbarButton
       label={"Italic"}
-      icon={<ItalicIcon />}
+      icon={<TextItalicIcon />}
       active={state.italic}
       onClick={() => editor.chain().focus().toggleItalic().run()}
     />
     <ToolbarButton
       label={"Strikethrough"}
-      icon={<StrikethroughIcon />}
+      icon={<TextStrikethroughIcon />}
       active={state.strike}
       onClick={() => editor.chain().focus().toggleStrike().run()}
     />
@@ -87,19 +87,19 @@ export function BodyToolbar({ editor, state, onInsertImage }: BodyToolbarProps) 
 
     <ToolbarButton
       label={"Heading 1"}
-      icon={<Heading1Icon />}
+      icon={<TextHOneIcon />}
       active={state.heading1}
       onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
     />
     <ToolbarButton
       label={"Heading 2"}
-      icon={<Heading2Icon />}
+      icon={<TextHTwoIcon />}
       active={state.heading2}
       onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
     />
     <ToolbarButton
       label={"Heading 3"}
-      icon={<Heading3Icon />}
+      icon={<TextHThreeIcon />}
       active={state.heading3}
       onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
     />
@@ -108,25 +108,25 @@ export function BodyToolbar({ editor, state, onInsertImage }: BodyToolbarProps) 
 
     <ToolbarButton
       label={"Bullet list"}
-      icon={<ListIcon />}
+      icon={<ListBulletsIcon />}
       active={state.bulletList}
       onClick={() => editor.chain().focus().toggleBulletList().run()}
     />
     <ToolbarButton
       label={"Numbered list"}
-      icon={<ListOrderedIcon />}
+      icon={<ListNumbersIcon />}
       active={state.orderedList}
       onClick={() => editor.chain().focus().toggleOrderedList().run()}
     />
     <ToolbarButton
       label={"Quote"}
-      icon={<QuoteIcon />}
+      icon={<QuotesIcon />}
       active={state.blockquote}
       onClick={() => editor.chain().focus().toggleBlockquote().run()}
     />
     <ToolbarButton
       label={"Code block"}
-      icon={<SquareCodeIcon />}
+      icon={<CodeBlockIcon />}
       active={state.codeBlock}
       onClick={() => editor.chain().focus().toggleCodeBlock().run()}
     />

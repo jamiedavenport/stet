@@ -3,13 +3,13 @@ import { Button } from '@repo/ui/components/button';
 import { Input } from '@repo/ui/components/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@repo/ui/components/popover';
 import {
-  ChevronDownIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  ChevronUpIcon,
+  CaretDownIcon,
+  CaretLeftIcon,
+  CaretRightIcon,
+  CaretUpIcon,
   PlusIcon,
   XIcon,
-} from 'lucide-react';
+} from '@phosphor-icons/react';
 
 import { fieldTypeLabels, fieldTypes, nextOptionColor, optionColors } from '@repo/content/schema';
 import type { FieldType, SelectOption } from '@repo/content/schema';
@@ -87,10 +87,10 @@ export function FieldHeader({ field, orientation = 'column', onChanged }: FieldH
           onClick={() => void move('left')}
         >
           @if (orientation === 'row') {
-            <ChevronUpIcon className="size-4" />
+            <CaretUpIcon className="size-4" />
           }
           @if (orientation === 'column') {
-            <ChevronLeftIcon className="size-4" />
+            <CaretLeftIcon className="size-4" />
           }
         </Button>
         <Button
@@ -100,10 +100,10 @@ export function FieldHeader({ field, orientation = 'column', onChanged }: FieldH
           onClick={() => void move('right')}
         >
           @if (orientation === 'row') {
-            <ChevronDownIcon className="size-4" />
+            <CaretDownIcon className="size-4" />
           }
           @if (orientation === 'column') {
-            <ChevronRightIcon className="size-4" />
+            <CaretRightIcon className="size-4" />
           }
         </Button>
         <Button variant="destructive" size="sm" className="ml-auto" onClick={() => void remove()}>

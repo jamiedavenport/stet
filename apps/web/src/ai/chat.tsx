@@ -26,7 +26,7 @@ import {
   ToolInput,
   ToolOutput,
 } from '@repo/ui/components/ai-elements/tool';
-import { SparklesIcon, SquarePenIcon, XIcon } from 'lucide-react';
+import { SparkleIcon, NotePencilIcon, XIcon } from '@phosphor-icons/react';
 
 import { useAssistant } from '#/ai/assistant-context.tsrx';
 import type { AssistantLocation } from '#/ai/location';
@@ -109,8 +109,8 @@ export function AssistantChat({ name, location }: { name: string; location: Assi
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <div className="flex h-12 shrink-0 items-center gap-2 border-b px-3">
-        <SparklesIcon className="size-4" />
+      <div className="flex h-14 shrink-0 items-center gap-2 border-b px-4">
+        <SparkleIcon weight="duotone" className="size-4" />
         <span className="text-sm font-medium">Assistant</span>
         <div className="ml-auto flex items-center gap-1">
           <Button
@@ -120,7 +120,7 @@ export function AssistantChat({ name, location }: { name: string; location: Assi
             aria-label="New conversation"
             onClick={() => clearHistory()}
           >
-            <SquarePenIcon />
+            <NotePencilIcon />
           </Button>
           <Button
             variant="ghost"
@@ -136,8 +136,8 @@ export function AssistantChat({ name, location }: { name: string; location: Assi
       <Conversation>
         <ConversationContent>
           {messages.length === 0 ? (
-            <ConversationEmptyState icon={<SparklesIcon className="size-8" />} title="Ask anything">
-              <SparklesIcon className="size-8 text-muted-foreground" />
+            <ConversationEmptyState icon={<SparkleIcon className="size-8" />} title="Ask anything">
+              <SparkleIcon weight="duotone" className="size-8 text-muted-foreground" />
               <div className="space-y-1">
                 <h3 className="text-sm font-medium">Ask anything</h3>
                 <p className="text-sm text-muted-foreground">
@@ -167,7 +167,7 @@ export function AssistantChat({ name, location }: { name: string; location: Assi
         </ConversationContent>
         <ConversationScrollButton />
       </Conversation>
-      <div className="shrink-0 border-t p-3">
+      <div className="shrink-0 border-t p-4">
         <PromptInput onSubmit={({ text }) => send(text)}>
           <PromptInputTextarea placeholder="Ask the assistant…" className="min-h-12" />
           <PromptInputFooter>
@@ -225,16 +225,16 @@ function ApprovalCard({ part, respond }: { part: ToolUIPart; respond: RespondFn 
     return null;
   }
   return (
-    <div className="not-prose mb-4 w-full rounded-md border">
+    <div className="not-prose mb-4 w-full rounded-xl border">
       <div className="flex items-center gap-2 p-3">
-        <SparklesIcon className="size-4 text-muted-foreground" />
+        <SparkleIcon weight="duotone" className="size-4 text-muted-foreground" />
         <span className="text-sm font-medium">{toolLabel(part)}</span>
         <Badge className="rounded-full text-xs" variant="secondary">
           Needs approval
         </Badge>
       </div>
       <div className="overflow-hidden px-3 pb-3">
-        <div className="rounded-md bg-muted/50">
+        <div className="rounded-lg bg-muted/50">
           <CodeBlock code={JSON.stringify(part.input, null, 2)} language="json" />
         </div>
       </div>

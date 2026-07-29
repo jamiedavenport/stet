@@ -1,8 +1,11 @@
+import { useBreadcrumbs } from '#/components/breadcrumbs';
+import { PageHeader } from '#/components/page-header.tsrx';
+
 export function MediaLibrary() @{
-  <div className="flex w-full flex-col gap-1">
-    <h1 className="text-lg font-semibold tracking-tight">{"Media"}</h1>
-    <p className="text-sm text-muted-foreground">
-      {"Images and files, shared across every collection."}
-    </p>
-  </div>
+  useBreadcrumbs([{ label: 'Media' }]);
+
+  <PageHeader
+    title={"Media"}
+    description={"Images and files, shared across every collection."}
+  />
 }

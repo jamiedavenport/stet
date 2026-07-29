@@ -1,5 +1,5 @@
 import { cn } from '../lib/utils';
-import type { LucideIcon } from 'lucide-react';
+import type { Icon } from '@phosphor-icons/react';
 import type { ReactNode } from 'react';
 
 // Divider padding follows a first/middle/last pattern so rows sit flush with
@@ -34,7 +34,7 @@ export function FeatureGrid({
   items,
   className,
 }: {
-  items: { icon: LucideIcon; name: string; description: string }[];
+  items: { icon: Icon; name: string; description: string }[];
   className?: string;
 }) @{
   <dl

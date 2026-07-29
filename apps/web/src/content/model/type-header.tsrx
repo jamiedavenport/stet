@@ -1,9 +1,7 @@
 import type { ReactNode } from 'react';
 import { Button } from '@repo/ui/components/button';
 import { Input } from '@repo/ui/components/input';
-import { Label } from '@repo/ui/components/label';
-import { Popover, PopoverContent, PopoverTrigger } from '@repo/ui/components/popover';
-import { SettingsIcon } from 'lucide-react';
+import { TrashIcon } from '@phosphor-icons/react';
 
 import { deleteContentType, updateContentType } from '#/content/model/functions';
 
@@ -18,10 +16,16 @@ type TypeHeaderProps = {
   children?: ReactNode;
 };
 
-/** A collection or map page's header: rename in place, settings for the rest. */
+const commitOnEnter = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  if (event.key === 'Enter') {
+    event.preventDefault();
+    event.currentTarget.blur();
+  }
+};
+
+/** A collection or map page's header: name and slug edited in place. */
 export function TypeHeader(props: TypeHeaderProps) @{
   const { type, entryCount } = props;
-  const noun = type.kind === 'map' ? 'map' : 'collection';
 
   const rename = async (name: string) => {
     if (name.trim().length === 0 || name.trim() === type.name) {
@@ -48,61 +52,46 @@ export function TypeHeader(props: TypeHeaderProps) @{
     await props.onChanged();
   };
 
-  <div className="flex w-full items-start gap-3">
-    <div className="flex flex-1 flex-col gap-1">
+  <div className="-mx-6 flex items-start gap-3 border-b px-6 pb-5">
+    <div className="flex min-w-0 flex-1 flex-col gap-1">
       <Input
         key={`name-${type.name}`}
         defaultValue={type.name}
         aria-label={type.kind === 'map' ? 'Map name' : 'Collection name'}
-        className="h-auto border-none px-0 text-lg font-semibold tracking-tight shadow-none focus-visible:ring-0 dark:bg-transparent"
+        className="h-auto border-none px-0 text-2xl font-semibold tracking-tight shadow-none focus-visible:ring-0 dark:bg-transparent"
         onBlur={(event) => void rename(event.target.value)}
-        onKeyDown={(event) => {
-          if (event.key === 'Enter') {
-            event.preventDefault();
-            event.currentTarget.blur();
-          }
-        }}
+        onKeyDown={commitOnEnter}
       />
-      <p className="text-sm text-muted-foreground">
-        {entryCount === null
-          ? 'Map · '
-          : `${entryCount} ${entryCount === 1 ? 'entry' : 'entries'} · `}
-        <code>{type.slug}</code>
-      </p>
+      <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+        @if (entryCount !== null) {
+          <span className="tabular-nums">
+            {`${entryCount} ${entryCount === 1 ? 'entry' : 'entries'}`}
+          </span>
+        } @else {
+          <span>{"Map"}</span>
+        }
+        <span aria-hidden="true">{"·"}</span>
+        <Input
+          key={`slug-${type.slug}`}
+          defaultValue={type.slug}
+          aria-label={type.kind === 'map' ? 'Map slug' : 'Collection slug'}
+          className="h-6 w-auto field-sizing-content min-w-16 rounded-md border-none bg-transparent px-1 font-mono text-xs shadow-none hover:bg-muted focus-visible:bg-background focus-visible:ring-1 dark:bg-transparent"
+          onBlur={(event) => void reslug(event.target.value)}
+          onKeyDown={commitOnEnter}
+        />
+      </div>
     </div>
     <div className="flex items-center gap-2">
       {props.children}
-      <Popover>
-        <PopoverTrigger
-          render={<Button variant="ghost" size="icon-sm" aria-label={`${type.name} settings`} />}
-        >
-          <SettingsIcon className="size-4" />
-        </PopoverTrigger>
-        <PopoverContent align="end" className="flex w-64 flex-col gap-3 p-3">
-          <div className="flex flex-col gap-2">
-            <Label htmlFor={`slug-${type.id}`}>{"Slug"}</Label>
-            <Input
-              id={`slug-${type.id}`}
-              key={`slug-${type.slug}`}
-              defaultValue={type.slug}
-              className="h-7 font-mono text-xs"
-              onBlur={(event) => void reslug(event.target.value)}
-              onKeyDown={(event) => {
-                if (event.key === 'Enter') {
-                  event.preventDefault();
-                  event.currentTarget.blur();
-                }
-              }}
-            />
-            <p className="text-xs text-muted-foreground">
-              {"The API path and generated client are named after it."}
-            </p>
-          </div>
-          <Button variant="destructive" size="sm" onClick={() => void remove()}>
-            {type.kind === 'map' ? "Delete map" : "Delete collection and entries"}
-          </Button>
-        </PopoverContent>
-      </Popover>
+      <Button
+        variant="ghost"
+        size="icon-sm"
+        aria-label={type.kind === 'map' ? `Delete ${type.name}` : `Delete ${type.name} and entries`}
+        className="text-muted-foreground hover:text-destructive"
+        onClick={() => void remove()}
+      >
+        <TrashIcon className="size-4" />
+      </Button>
     </div>
   </div>
 }

@@ -4,17 +4,17 @@ import Suggestion from '@tiptap/suggestion';
 import { createElement } from 'react';
 import {
   CodeIcon,
-  Heading1Icon,
-  Heading2Icon,
-  Heading3Icon,
+  TextHOneIcon,
+  TextHTwoIcon,
+  TextHThreeIcon,
   ImageIcon,
-  ListIcon,
-  ListOrderedIcon,
+  ListBulletsIcon,
+  ListNumbersIcon,
   MinusIcon,
-  QuoteIcon,
+  QuotesIcon,
   TableIcon,
-} from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
+} from '@phosphor-icons/react';
+import type { Icon } from '@phosphor-icons/react';
 
 import { suggestionPopup } from '#/content/body/suggestion-popup';
 import type { SuggestionItem } from '#/content/body/suggestion';
@@ -34,7 +34,7 @@ function item(
   id: string,
   label: string,
   keywords: string,
-  icon: LucideIcon,
+  icon: Icon,
   run: SlashItem['run'],
 ): SlashItem {
   return { id, label, keywords, icon: createElement(icon, { className: 'size-4' }), run };
@@ -42,22 +42,22 @@ function item(
 
 function slashItems(options: SlashCommandOptions): SlashItem[] {
   return [
-    item('h1', 'Heading 1', 'title h1', Heading1Icon, (editor, range) =>
+    item('h1', 'Heading 1', 'title h1', TextHOneIcon, (editor, range) =>
       editor.chain().focus().deleteRange(range).setNode('heading', { level: 1 }).run(),
     ),
-    item('h2', 'Heading 2', 'subtitle h2', Heading2Icon, (editor, range) =>
+    item('h2', 'Heading 2', 'subtitle h2', TextHTwoIcon, (editor, range) =>
       editor.chain().focus().deleteRange(range).setNode('heading', { level: 2 }).run(),
     ),
-    item('h3', 'Heading 3', 'h3', Heading3Icon, (editor, range) =>
+    item('h3', 'Heading 3', 'h3', TextHThreeIcon, (editor, range) =>
       editor.chain().focus().deleteRange(range).setNode('heading', { level: 3 }).run(),
     ),
-    item('bullet-list', 'Bullet list', 'unordered ul', ListIcon, (editor, range) =>
+    item('bullet-list', 'Bullet list', 'unordered ul', ListBulletsIcon, (editor, range) =>
       editor.chain().focus().deleteRange(range).toggleBulletList().run(),
     ),
-    item('ordered-list', 'Numbered list', 'ordered ol', ListOrderedIcon, (editor, range) =>
+    item('ordered-list', 'Numbered list', 'ordered ol', ListNumbersIcon, (editor, range) =>
       editor.chain().focus().deleteRange(range).toggleOrderedList().run(),
     ),
-    item('blockquote', 'Quote', 'blockquote citation', QuoteIcon, (editor, range) =>
+    item('blockquote', 'Quote', 'blockquote citation', QuotesIcon, (editor, range) =>
       editor.chain().focus().deleteRange(range).toggleBlockquote().run(),
     ),
     item('code-block', 'Code block', 'snippet pre', CodeIcon, (editor, range) =>

@@ -1,32 +1,27 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@repo/ui/components/card';
 import { createFileRoute } from '@tanstack/react-router';
+
+import { useBreadcrumbs } from '#/components/breadcrumbs';
+import { PageHeader } from '#/components/page-header.tsrx';
 
 export const Route = createFileRoute('/app/')({
   component: Home,
 });
 
 function Home() {
+  useBreadcrumbs([{ label: 'Home' }]);
   const { session, activeOrganization } = Route.useRouteContext();
   const email = session.user.email;
   const organizationName = activeOrganization.name;
 
   return (
-    <Card className="w-full max-w-sm">
-      <CardHeader>
-        <CardTitle>{'Welcome back'}</CardTitle>
-        <CardDescription>{`Signed in as ${email} in ${organizationName}.`}</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <p className="text-sm text-muted-foreground">
-          {'Use the sidebar to switch or create organizations.'}
-        </p>
-      </CardContent>
-    </Card>
+    <div className="flex w-full flex-col gap-6">
+      <PageHeader
+        title={'Welcome back'}
+        description={`Signed in as ${email} in ${organizationName}.`}
+      />
+      <p className="max-w-md text-sm text-pretty text-muted-foreground">
+        {'Open a collection from the sidebar, or press ⌘K to jump to anything.'}
+      </p>
+    </div>
   );
 }

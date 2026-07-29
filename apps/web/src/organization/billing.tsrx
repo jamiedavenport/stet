@@ -13,7 +13,7 @@ import {
 import { FieldError } from '@repo/ui/components/field';
 import { useMutation, useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
 import { useRouter } from '@tanstack/react-router';
-import { CheckIcon, MinusIcon } from 'lucide-react';
+import { CheckIcon, MinusIcon } from '@phosphor-icons/react';
 
 import { useAppRoute } from '#/use-app-route';
 import { orgBillingQuery } from '#/organization/functions';

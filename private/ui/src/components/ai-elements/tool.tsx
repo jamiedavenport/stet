@@ -6,12 +6,12 @@ import { cn } from '../../lib/utils';
 import type { ToolUIPart } from 'ai';
 import {
   CheckCircleIcon,
-  ChevronDownIcon,
+  CaretDownIcon,
   CircleIcon,
   ClockIcon,
   WrenchIcon,
   XCircleIcon,
-} from 'lucide-react';
+} from '@phosphor-icons/react';
 import type { ComponentProps, ReactNode } from 'react';
 import { isValidElement } from 'react';
 import { CodeBlock } from './code-block';
@@ -19,7 +19,7 @@ import { CodeBlock } from './code-block';
 export type ToolProps = ComponentProps<typeof Collapsible>;
 
 export const Tool = ({ className, ...props }: ToolProps) => (
-  <Collapsible className={cn('not-prose mb-4 w-full rounded-md border', className)} {...props} />
+  <Collapsible className={cn('not-prose mb-4 w-full rounded-xl border', className)} {...props} />
 );
 
 export type ToolHeaderProps = {
@@ -68,7 +68,7 @@ export const ToolHeader = ({ className, title, type, state, ...props }: ToolHead
       <span className="font-medium text-sm">{title ?? type.split('-').slice(1).join('-')}</span>
       {getStatusBadge(state)}
     </div>
-    <ChevronDownIcon className="size-4 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
+    <CaretDownIcon className="size-4 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
   </CollapsibleTrigger>
 );
 
@@ -93,7 +93,7 @@ export const ToolInput = ({ className, input, ...props }: ToolInputProps) => (
     <h4 className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
       Parameters
     </h4>
-    <div className="rounded-md bg-muted/50">
+    <div className="rounded-lg bg-muted/50">
       <CodeBlock code={JSON.stringify(input, null, 2)} language="json" />
     </div>
   </div>

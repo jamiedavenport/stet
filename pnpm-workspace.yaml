@@ -89,6 +89,7 @@ catalog:
   fumadocs-openapi: ^11.2.2
   drizzle-orm: ^0.45.2
   lucide-react: ^0.552.0
+  '@phosphor-icons/react': ^2.1.10
   marked: ^17.0.6
   open: ^11.0.0
   partyserver: ^0.5.8

@@ -6,34 +6,39 @@ import { getRouteApi } from '@tanstack/react-router';
 
 import { useBreadcrumbs } from '#/components/breadcrumbs';
 import { BodyEditor } from '#/content/body/editor.tsrx';
-import { mapEntryQuery } from '#/content/entry/functions';
+import { entryQuery } from '#/content/entry/functions';
 import { setCellLocation } from '#/content/presence';
 import { useAppRoute } from '#/use-app-route';
 
-const route = getRouteApi('/app/m/$map/$field');
+const route = getRouteApi('/app/c/$collection/$entry/$field');
 
-/** The collaborative editor for one rich text key of a map. */
-export function MapFieldEditor() @{
+/** The collaborative editor for one rich text field, as a page of its own. */
+export function EntryFieldEditor() @{
   const { activeOrganization, user } = useAppRoute();
   const params = route.useParams();
-  const { data } = useSuspenseQuery(mapEntryQuery(activeOrganization.id, params.map));
+  const { data } = useSuspenseQuery(entryQuery(activeOrganization.id, params.entry));
   const presenceUser = { id: user.id, image: user.image ?? null, name: user.name };
 
   const field = data.type.fields.find(
     (candidate) => candidate.key === params.field && candidate.type === 'rich_text',
   );
   useBreadcrumbs([
-    { label: data.type.name, to: '/app/m/$map', params: { map: data.type.slug } },
+    { label: data.type.name, to: '/app/c/$collection', params: { collection: data.type.slug } },
+    {
+      label: data.entry.title,
+      to: '/app/c/$collection/$entry',
+      params: { collection: data.type.slug, entry: data.entry.id },
+    },
     { label: field?.name ?? 'Field' },
   ]);
 
   const { room: presenceRoom } = usePageRoom({
-    page: `/app/m/${data.type.slug}`,
+    page: `/app/c/${data.type.slug}`,
     user: presenceUser,
   });
   const { room: bodyRoom } = usePageRoom({ page: entryPage(data.entry.id), user: presenceUser });
 
-  // Editing here is editing that row: show it on the map's key/value table.
+  // Editing here is editing that cell: show it on the collection's table.
   const entryId = data.entry.id;
   const fieldKey = field?.key;
   useEffect(() => {
@@ -50,7 +55,7 @@ export function MapFieldEditor() @{
   <div className="-m-6 flex min-h-0 min-w-0 flex-1 flex-col">
     @if (field === undefined) {
       <p className="p-6 text-sm text-muted-foreground">
-        {"This key does not exist or is not rich text."}
+        {"This field does not exist or is not rich text."}
       </p>
     }
     @if (field !== undefined && bodyRoom !== null) {

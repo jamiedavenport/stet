@@ -16,11 +16,19 @@ import { NotificationSettings } from '#/notifications/notification-settings.tsrx
 import { PasskeySettings } from '#/account/passkey-settings.tsrx';
 import { ProfilePhoto } from '#/account/profile-photo.tsrx';
 import { TwoFactorSettings } from '#/account/two-factor-settings.tsrx';
+import { useBreadcrumbs } from '#/components/breadcrumbs';
+import { PageHeader } from '#/components/page-header.tsrx';
 
 // The personal settings page: everything scoped to the signed-in user, as one
 // scrolling stack of cards. Organization-scoped settings live on /app/organization.
 export function AccountSettings() @{
-  <div className="flex w-full max-w-lg flex-col gap-4">
+  useBreadcrumbs([{ label: 'Settings' }]);
+
+  <div className="flex w-full max-w-xl flex-col gap-6">
+    <PageHeader
+      title={"Settings"}
+      description={"Your profile, security, and notifications."}
+    />
     <Card>
       <CardHeader>
         <CardTitle>{"Profile"}</CardTitle>

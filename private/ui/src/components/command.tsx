@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Autocomplete } from '@base-ui/react/autocomplete';
 import { Dialog } from '@base-ui/react/dialog';
-import { SearchIcon } from 'lucide-react';
+import { MagnifyingGlassIcon } from '@phosphor-icons/react';
 
 import { cn } from '../lib/utils';
 
@@ -41,7 +41,7 @@ function CommandDialog({
             // the first keystroke with nowhere to go.
             initialFocus={inputRef}
             className={cn(
-              'flex w-full max-w-lg flex-col overflow-hidden rounded-xl bg-popover text-popover-foreground shadow-lg ring-1 ring-foreground/10 transition duration-150 data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0',
+              'flex w-full max-w-lg flex-col overflow-hidden rounded-2xl bg-popover text-popover-foreground shadow-lg ring-1 ring-foreground/10 transition duration-150 data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0',
               className,
             )}
           >
@@ -67,7 +67,7 @@ function CommandInput({ className, ...props }: Autocomplete.Input.Props) {
 
   return (
     <div className="flex items-center gap-2 border-b px-3" data-slot="command-input-wrapper">
-      <SearchIcon className="size-4 shrink-0 text-muted-foreground" />
+      <MagnifyingGlassIcon className="size-4 shrink-0 text-muted-foreground" />
       <Autocomplete.Input
         ref={inputRef}
         data-slot="command-input"
@@ -123,7 +123,7 @@ function CommandItem({ className, ...props }: Autocomplete.Item.Props) {
     <Autocomplete.Item
       data-slot="command-item"
       className={cn(
-        'flex cursor-default items-center gap-2 rounded-md px-2 py-2 text-sm outline-none select-none data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:bg-accent data-highlighted:text-accent-foreground [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:text-muted-foreground data-highlighted:[&_svg]:text-accent-foreground',
+        'flex cursor-default items-center gap-2 rounded-lg px-2 py-2 text-sm outline-none select-none data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:bg-accent data-highlighted:text-accent-foreground [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:text-muted-foreground data-highlighted:[&_svg]:text-accent-foreground',
         className,
       )}
       {...props}

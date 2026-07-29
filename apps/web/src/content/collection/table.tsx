@@ -8,6 +8,7 @@ import {
 } from '@repo/ui/components/table';
 import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import type { ColumnDef } from '@tanstack/react-table';
+import { PlusIcon } from '@phosphor-icons/react';
 
 import type { EntryRow } from '#/content/entry/functions';
 
@@ -17,9 +18,11 @@ import type { EntryRow } from '#/content/entry/functions';
 export function EntriesTable({
   columns,
   entries,
+  onAddEntry,
 }: {
   columns: ColumnDef<EntryRow>[];
   entries: EntryRow[];
+  onAddEntry: () => void;
 }) {
   const table = useReactTable({
     data: entries,
@@ -29,7 +32,9 @@ export function EntriesTable({
   });
 
   return (
-    <div className="rounded-lg border">
+    // Bleeds to the inset panel's edges: the negative margins cancel the page
+    // padding, and the first/last cells put it back so content stays aligned.
+    <div className="-mx-6 [&_td:first-child]:pl-6 [&_td:last-child]:pr-6 [&_th:first-child]:pl-6 [&_th:last-child]:pr-6">
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -46,9 +51,9 @@ export function EntriesTable({
         </TableHeader>
         <TableBody>
           {table.getRowModel().rows.map((row) => (
-            <TableRow key={row.id} className="group/row">
+            <TableRow key={row.id} className="group/row h-12">
               {row.getVisibleCells().map((cell) => (
-                <TableCell key={cell.id} className="p-1">
+                <TableCell key={cell.id} className="px-2 py-0">
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </TableCell>
               ))}
@@ -56,6 +61,14 @@ export function EntriesTable({
           ))}
         </TableBody>
       </Table>
+      <button
+        type="button"
+        onClick={onAddEntry}
+        className="flex h-11 w-full items-center gap-2 border-b px-6 text-left text-sm text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+      >
+        <PlusIcon className="size-4 shrink-0" />
+        {'New entry'}
+      </button>
     </div>
   );
 }

@@ -10,6 +10,7 @@ import {
 import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
 import { getRouteApi, useRouter } from '@tanstack/react-router';
 
+import { useBreadcrumbs } from '#/components/breadcrumbs';
 import { EntryCell } from '#/content/cells/entry-cell.tsrx';
 import { mapEntryQuery, membersQuery, updateEntry } from '#/content/entry/functions';
 import { AddField, FieldHeader } from '#/content/field/header.tsrx';
@@ -33,6 +34,7 @@ export function MapEditor() @{
   const { activeOrganization } = useAppRoute();
   const params = route.useParams();
   const { data } = useSuspenseQuery(mapEntryQuery(activeOrganization.id, params.map));
+  useBreadcrumbs([{ label: data.type.name }]);
   const members = useSuspenseQuery(membersQuery(activeOrganization.id)).data;
   const queryClient = useQueryClient();
   const router = useRouter();
@@ -71,7 +73,7 @@ export function MapEditor() @{
     return option.id;
   };
 
-  <div className="flex min-h-0 w-full min-w-0 flex-1 flex-col gap-4">
+  <div className="flex min-h-0 w-full min-w-0 flex-1 flex-col gap-6">
     <TypeHeader
       type={data.type}
       entryCount={null}
@@ -79,7 +81,7 @@ export function MapEditor() @{
       onSlugChanged={(slug) => router.navigate({ to: '/app/m/$map', params: { map: slug } })}
       onDeleted={() => router.navigate({ to: '/app' })}
     />
-    <div className="rounded-lg border">
+    <div className="-mx-6 [&_td:first-child]:pl-6 [&_td:last-child]:pr-6 [&_th:first-child]:pl-6 [&_th:last-child]:pr-6">
       <Table>
         <TableHeader>
           <TableRow>
@@ -89,11 +91,11 @@ export function MapEditor() @{
         </TableHeader>
         <TableBody>
           @for (const field of data.type.fields; key field.id) {
-            <TableRow className="group/row">
-              <TableCell className="p-1">
+            <TableRow className="group/row h-12">
+              <TableCell className="px-2 py-0">
                 <FieldHeader field={field} orientation="row" onChanged={changed} />
               </TableCell>
-              <TableCell className="p-1">
+              <TableCell className="px-2 py-0">
                 <EntryCell
                   field={field}
                   value={data.entry.values[field.key]}
@@ -115,8 +117,8 @@ export function MapEditor() @{
               </TableCell>
             </TableRow>
           }
-          <TableRow>
-            <TableCell colSpan={2} className="p-1">
+          <TableRow className="h-12">
+            <TableCell colSpan={2} className="px-2 py-0">
               <AddField typeId={data.type.id} label="New key" onCreated={changed} />
             </TableCell>
           </TableRow>

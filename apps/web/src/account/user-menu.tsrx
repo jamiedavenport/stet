@@ -17,7 +17,7 @@ import {
   useSidebar,
 } from '@repo/ui/components/sidebar';
 import { Link, useRouter } from '@tanstack/react-router';
-import { ChevronsUpDownIcon, LogOutIcon } from 'lucide-react';
+import { CaretUpDownIcon, SignOutIcon } from '@phosphor-icons/react';
 
 import { accountNavigation } from '#/navigation';
 import { imageSrc } from '#/files/urls';
@@ -51,7 +51,7 @@ export function UserMenu() @{
             <span className="truncate font-medium">{user.name}</span>
             <span className="truncate text-xs text-muted-foreground">{user.email}</span>
           </div>
-          <ChevronsUpDownIcon className="ml-auto size-4" />
+          <CaretUpDownIcon className="ml-auto size-4" />
         </DropdownMenuTrigger>
         <DropdownMenuContent
           className="min-w-56"
@@ -80,7 +80,7 @@ export function UserMenu() @{
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => void signOut()}>
-            <LogOutIcon />
+            <SignOutIcon />
             {"Sign out"}
           </DropdownMenuItem>
         </DropdownMenuContent>

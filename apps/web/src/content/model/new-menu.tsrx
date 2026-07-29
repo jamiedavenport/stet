@@ -4,7 +4,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@repo/ui/components/pop
 import { SidebarMenuButton, SidebarMenuItem } from '@repo/ui/components/sidebar';
 import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from '@tanstack/react-router';
-import { PlusIcon } from 'lucide-react';
+import { PlusIcon } from '@phosphor-icons/react';
 
 import { contentIcon } from '#/content/model/kind';
 import type { ContentKind } from '#/content/model/kind';

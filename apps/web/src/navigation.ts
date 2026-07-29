@@ -2,16 +2,16 @@ import { canManageOrganization } from '@repo/auth/access';
 import type { OrganizationRole } from '@repo/auth/access';
 import type { LinkProps } from '@tanstack/react-router';
 import {
-  BarChart3Icon,
-  Building2Icon,
-  HomeIcon,
+  ChartBarIcon,
+  BuildingsIcon,
+  HouseIcon,
   ImageIcon,
-  KeyRoundIcon,
-  SettingsIcon,
+  KeyIcon,
+  GearIcon,
   ShieldIcon,
-  WebhookIcon,
-} from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
+  WebhooksLogoIcon,
+} from '@phosphor-icons/react';
+import type { Icon } from '@phosphor-icons/react';
 
 import { contentIcon } from '#/content/model/kind';
 import type { NavContentType } from '#/content/model/kind';
@@ -21,7 +21,7 @@ export type NavItem = {
   /** Typed against the route tree: renaming a route stops this compiling. */
   readonly to: LinkProps['to'];
   readonly params?: LinkProps['params'];
-  readonly icon: LucideIcon;
+  readonly icon: Icon;
   /** Second key of this page's `G` sequence, e.g. `G` then `H` for home. */
   readonly key?: string;
 };
@@ -39,24 +39,24 @@ export const navLeaderKey = 'g';
 const home = {
   label: 'Home',
   to: '/app',
-  icon: HomeIcon,
+  icon: HouseIcon,
   key: 'h',
 } as const satisfies NavItem;
 
-const workspaceItems = [
+const marketingItems = [
   { label: 'Media', to: '/app/media', icon: ImageIcon, key: 'm' },
-  { label: 'Analytics', to: '/app/analytics', icon: BarChart3Icon, key: 'a' },
+  { label: 'Analytics', to: '/app/analytics', icon: ChartBarIcon, key: 'a' },
 ] as const satisfies readonly NavItem[];
 
 const developerItems = [
-  { label: 'API keys', to: '/app/developers/keys', icon: KeyRoundIcon, key: 'k' },
-  { label: 'Webhooks', to: '/app/developers/webhooks', icon: WebhookIcon, key: 'w' },
+  { label: 'API keys', to: '/app/developers/keys', icon: KeyIcon, key: 'k' },
+  { label: 'Webhooks', to: '/app/developers/webhooks', icon: WebhooksLogoIcon, key: 'w' },
 ] as const satisfies readonly NavItem[];
 
 const settingsItem = {
   label: 'Settings',
   to: '/app/settings',
-  icon: SettingsIcon,
+  icon: GearIcon,
   key: 's',
 } as const satisfies NavItem;
 
@@ -74,7 +74,7 @@ const adminItem = {
 export const organizationItem = {
   label: 'Organization',
   to: '/app/organization',
-  icon: Building2Icon,
+  icon: BuildingsIcon,
   key: 'o',
 } as const satisfies NavItem;
 
@@ -112,7 +112,7 @@ export function sidebarNavigation(options: {
   return [
     { id: 'home', items: [home] },
     { id: 'content', label: 'Content', items: contentItems(options.content) },
-    { id: 'workspace', items: workspaceItems },
+    { id: 'marketing', label: 'Marketing', items: marketingItems },
     ...(canManageOrganization(options.memberRole)
       ? [{ id: 'developers', label: 'Developers', items: developerItems }]
       : []),

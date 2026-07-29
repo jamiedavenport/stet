@@ -8,12 +8,14 @@ import {
 } from '@repo/ui/components/card';
 import { Separator } from '@repo/ui/components/separator';
 
+import { useBreadcrumbs } from '#/components/breadcrumbs';
 import { CreateEndpointForm } from '#/webhooks/webhook-create-form.tsrx';
 import { RecentDeliveries, WebhookEndpoints } from '#/webhooks/webhook-endpoints.tsrx';
 import { useAppRoute } from '#/use-app-route';
 import { webhooksQuery } from '#/webhooks/functions';
 
 export function WebhooksPage() @{
+  useBreadcrumbs([{ label: 'Webhooks' }]);
   const { activeOrganization } = useAppRoute();
   const { data } = useSuspenseQuery(webhooksQuery(activeOrganization.id));
   const queryClient = useQueryClient();

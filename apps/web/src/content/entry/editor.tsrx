@@ -1,18 +1,22 @@
 import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
-import { getRouteApi, Link } from '@tanstack/react-router';
-import { ChevronLeftIcon } from 'lucide-react';
+import { getRouteApi } from '@tanstack/react-router';
 
+import { useBreadcrumbs } from '#/components/breadcrumbs';
 import { entriesQuery, entryQuery } from '#/content/entry/functions';
 import { EntryWorkspace } from '#/content/entry/workspace.tsrx';
 import { contentModelQuery } from '#/content/model/functions';
 import { useAppRoute } from '#/use-app-route';
 
-const route = getRouteApi('/app/c/$collection/$entry');
+const route = getRouteApi('/app/c/$collection/$entry/');
 
 export function EntryEditor() @{
   const { activeOrganization } = useAppRoute();
   const params = route.useParams();
   const { data } = useSuspenseQuery(entryQuery(activeOrganization.id, params.entry));
+  useBreadcrumbs([
+    { label: data.type.name, to: '/app/c/$collection', params: { collection: data.type.slug } },
+    { label: data.entry.title },
+  ]);
   const queryClient = useQueryClient();
 
   const onChanged = async () => {
@@ -29,15 +33,7 @@ export function EntryEditor() @{
     ]);
   };
 
-  <div className="flex min-h-0 w-full min-w-0 flex-1 flex-col gap-3">
-    <Link
-      to="/app/c/$collection"
-      params={{ collection: data.type.slug }}
-      className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
-    >
-      <ChevronLeftIcon className="size-4" />
-      {data.type.name}
-    </Link>
+  <div className="flex min-h-0 w-full min-w-0 flex-1 flex-col gap-4">
     <EntryWorkspace
       type={data.type}
       entry={data.entry}

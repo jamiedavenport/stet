@@ -3,7 +3,6 @@ import type { RefObject } from 'react';
 import type { PageRoom } from '@repo/realtime/client';
 import { bodyField } from '@repo/realtime/entry';
 import type { PresenceUser } from '@repo/realtime/types';
-import { Label } from '@repo/ui/components/label';
 import { EditorContent, useEditor } from '@tiptap/react';
 import type { Editor } from '@tiptap/react';
 import { BubbleMenu } from '@tiptap/react/menus';
@@ -60,10 +59,9 @@ export function BodyEditor({ room, user, field }: BodyEditorProps) @{
     [room, field.key],
   );
 
-  <div className="flex min-h-0 flex-1 flex-col gap-2">
-    <Label>{field.name}</Label>
+  <div className="flex min-h-0 flex-1 flex-col">
     @if (editor === null) {
-      <div className="min-h-64 flex-1 rounded-lg border" />
+      <div className="flex-1" />
     } @else {
       <BodySurface editor={editor} handlers={handlers} />
     }
@@ -84,15 +82,15 @@ function BodySurface({ editor, handlers }: BodySurfaceProps) @{
     handlers.current = { insertImage: images.openPicker, dropFiles: images.uploadFiles };
   }, [handlers, images.openPicker, images.uploadFiles]);
 
-  <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-lg border">
+  <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
     <BubbleMenu editor={editor} options={{ placement: 'top' }}>
       <BubbleToolbar editor={editor} state={state} />
     </BubbleMenu>
     <BodyToolbar editor={editor} state={state} onInsertImage={images.openPicker} />
-    <div className="min-h-64 flex-1 overflow-y-auto px-4 py-3">
+    <div className="min-h-64 flex-1 overflow-y-auto px-6 py-5">
       <EditorContent editor={editor} className="min-h-full" />
     </div>
-    <div className="flex items-center gap-3 border-t px-3 py-1.5 text-xs text-muted-foreground">
+    <div className="flex items-center gap-3 border-t px-4 py-2 text-xs text-muted-foreground">
       <span>{`${state.words} words`}</span>
       @if (images.uploading) {
         <span>{"Uploading image…"}</span>

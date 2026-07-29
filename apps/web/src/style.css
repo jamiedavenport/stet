@@ -5,8 +5,8 @@
   /* Fills the scroll area its surface gives it, so clicking anywhere in the
      empty space below the text still puts the caret in the document. */
   min-height: 100%;
-  font-size: 0.875rem;
-  line-height: 1.6;
+  font-size: 1rem;
+  line-height: 1.7;
   outline: none;
 }
 
@@ -19,11 +19,11 @@
 }
 
 .tiptap-body h1 {
-  font-size: 1.25rem;
+  font-size: 1.5rem;
 }
 
 .tiptap-body h2 {
-  font-size: 1.1rem;
+  font-size: 1.25rem;
 }
 
 .tiptap-body :is(ul, ol) {

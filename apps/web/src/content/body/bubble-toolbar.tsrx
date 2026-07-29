@@ -5,15 +5,15 @@ import { Separator } from '@repo/ui/components/separator';
 import { useQuery } from '@tanstack/react-query';
 import type { Editor } from '@tiptap/react';
 import {
-  BoldIcon,
+  TextBIcon,
   CodeIcon,
-  ItalicIcon,
+  TextItalicIcon,
   LinkIcon,
-  Loader2Icon,
-  SparklesIcon,
-  StrikethroughIcon,
-  UnlinkIcon,
-} from 'lucide-react';
+  CircleNotchIcon,
+  SparkleIcon,
+  TextStrikethroughIcon,
+  LinkBreakIcon,
+} from '@phosphor-icons/react';
 import { useState } from 'react';
 
 import { transformText } from '#/ai/functions';
@@ -132,7 +132,7 @@ export function BubbleToolbar({ editor, state }: BubbleToolbarProps) @{
               </Button>
             }
             @if (transforming) {
-              <Loader2Icon className="mx-1 size-4 animate-spin text-muted-foreground" />
+              <CircleNotchIcon className="mx-1 size-4 animate-spin text-muted-foreground" />
             }
           </>
         }
@@ -142,7 +142,7 @@ export function BubbleToolbar({ editor, state }: BubbleToolbarProps) @{
               <>
                 <ToolbarButton
                   label={"Rewrite with AI"}
-                  icon={<SparklesIcon />}
+                  icon={<SparkleIcon />}
                   onClick={() => setAiOpen(true)}
                 />
                 <Separator orientation="vertical" className="mx-1 max-h-5" />
@@ -150,19 +150,19 @@ export function BubbleToolbar({ editor, state }: BubbleToolbarProps) @{
             }
             <ToolbarButton
               label={"Bold"}
-              icon={<BoldIcon />}
+              icon={<TextBIcon />}
               active={state.bold}
               onClick={() => editor.chain().focus().toggleBold().run()}
             />
             <ToolbarButton
               label={"Italic"}
-              icon={<ItalicIcon />}
+              icon={<TextItalicIcon />}
               active={state.italic}
               onClick={() => editor.chain().focus().toggleItalic().run()}
             />
             <ToolbarButton
               label={"Strikethrough"}
-              icon={<StrikethroughIcon />}
+              icon={<TextStrikethroughIcon />}
               active={state.strike}
               onClick={() => editor.chain().focus().toggleStrike().run()}
             />
@@ -182,7 +182,7 @@ export function BubbleToolbar({ editor, state }: BubbleToolbarProps) @{
             @if (state.link) {
               <ToolbarButton
                 label={"Remove link"}
-                icon={<UnlinkIcon />}
+                icon={<LinkBreakIcon />}
                 onClick={() => editor.chain().focus().unsetLink().run()}
               />
             }

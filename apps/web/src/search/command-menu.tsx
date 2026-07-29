@@ -19,12 +19,12 @@ import { useRouter } from '@tanstack/react-router';
 import {
   BuildingIcon,
   FileIcon,
-  LogOutIcon,
+  SignOutIcon,
   PlusIcon,
-  Repeat2Icon,
-  SparklesIcon,
+  ArrowsClockwiseIcon,
+  SparkleIcon,
   UserIcon,
-} from 'lucide-react';
+} from '@phosphor-icons/react';
 
 import { useAssistant } from '#/ai/assistant-context.tsrx';
 import { contentModelQuery } from '#/content/model/functions';
@@ -168,7 +168,7 @@ export function CommandMenu() {
         id: 'action:assistant',
         label: 'Ask the assistant',
         shortcut: '⌘ I',
-        icon: SparklesIcon,
+        icon: SparkleIcon,
         run: () => {
           dismiss();
           assistant.setOpen(true);
@@ -177,7 +177,7 @@ export function CommandMenu() {
       {
         id: 'action:switch-organization',
         label: 'Switch organization…',
-        icon: Repeat2Icon,
+        icon: ArrowsClockwiseIcon,
         run: () => openPage('organizations'),
       },
       {
@@ -189,7 +189,7 @@ export function CommandMenu() {
           void router.navigate({ to: '/orgs/new' });
         },
       },
-      { id: 'action:sign-out', label: 'Sign out', icon: LogOutIcon, run: () => void signOut() },
+      { id: 'action:sign-out', label: 'Sign out', icon: SignOutIcon, run: () => void signOut() },
     ];
 
     // Static entries are matched here because the server results arrive

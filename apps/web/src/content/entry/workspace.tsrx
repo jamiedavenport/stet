@@ -1,9 +1,7 @@
 import { usePageRoom } from '@repo/realtime/client';
-import { entryPage } from '@repo/realtime/entry';
 import { Input } from '@repo/ui/components/input';
 import { useSuspenseQuery } from '@tanstack/react-query';
 
-import { BodyEditor } from '#/content/body/editor.tsrx';
 import { EntryCell } from '#/content/cells/entry-cell.tsrx';
 import { membersQuery, updateEntry } from '#/content/entry/functions';
 import type { EntryData } from '#/content/entry/functions';
@@ -33,7 +31,6 @@ export function EntryWorkspace(props: EntryWorkspaceProps) @{
   const members = useSuspenseQuery(membersQuery(useAppRoute().activeOrganization.id)).data;
 
   const { room: presenceRoom } = usePageRoom({ page: props.presencePage, user: presenceUser });
-  const { room: bodyRoom } = usePageRoom({ page: entryPage(entry.id), user: presenceUser });
 
   useContentVersion(presenceRoom, () => void props.onChanged());
   const changed = async () => {
@@ -61,12 +58,12 @@ export function EntryWorkspace(props: EntryWorkspaceProps) @{
     return option.id;
   };
 
-  <div className="flex min-h-0 w-full min-w-0 flex-1 flex-col gap-4">
+  <div className="flex min-h-0 w-full min-w-0 flex-1 flex-col gap-5">
     <Input
       key={`title-${entry.title}`}
       defaultValue={entry.title}
       aria-label={"Entry title"}
-      className="h-auto border-none px-0 text-xl font-semibold tracking-tight shadow-none focus-visible:ring-0 dark:bg-transparent"
+      className="h-auto border-none px-0 text-2xl font-semibold tracking-tight shadow-none focus-visible:ring-0 dark:bg-transparent"
       onBlur={(event) => {
         const title = event.target.value.trim();
         if (title !== '' && title !== entry.title) {
@@ -89,9 +86,9 @@ export function EntryWorkspace(props: EntryWorkspaceProps) @{
         }}
       />
     </div>
-    @if (type.fields.some((field) => field.type !== 'rich_text')) {
-      <div className="flex flex-col gap-1 rounded-lg border p-3">
-        @for (const field of type.fields.filter((f) => f.type !== 'rich_text'); key field.id) {
+    @if (type.fields.length > 0) {
+      <div className="flex flex-col gap-1.5 rounded-xl border p-4">
+        @for (const field of type.fields; key field.id) {
           <div className="grid grid-cols-[10rem_1fr] items-center gap-2">
             <span className="text-sm text-muted-foreground">{field.name}</span>
             <EntryCell
@@ -110,16 +107,9 @@ export function EntryWorkspace(props: EntryWorkspaceProps) @{
                 }
               }}
               onAddOption={(name) => addOption(field, name)}
-              editorLink={null}
+              editorLink={{ collection: type.slug, entryId: entry.id }}
             />
           </div>
-        }
-      </div>
-    }
-    @if (bodyRoom !== null) {
-      <div className="flex min-h-0 flex-1 flex-col gap-4">
-        @for (const field of type.fields.filter((f) => f.type === 'rich_text'); key field.id) {
-          <BodyEditor room={bodyRoom} user={presenceUser} field={field} />
         }
       </div>
     }

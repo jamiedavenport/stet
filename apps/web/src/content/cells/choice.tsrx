@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@repo/ui/components/avatar';
 import { Button } from '@repo/ui/components/button';
 import { Input } from '@repo/ui/components/input';
-import { CheckIcon } from 'lucide-react';
+import { CheckIcon } from '@phosphor-icons/react';
 
 import type { Member } from '#/content/entry/functions';
 import type { SelectOption } from '@repo/content/schema';

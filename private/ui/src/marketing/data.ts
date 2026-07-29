@@ -1,19 +1,19 @@
 import {
-  CalendarClockIcon,
-  ChartNoAxesColumnIcon,
-  LanguagesIcon,
-  PenLineIcon,
+  CalendarDotsIcon,
+  ChartBarIcon,
+  TranslateIcon,
+  PenNibIcon,
   ShapesIcon,
   ShieldCheckIcon,
-  SparklesIcon,
+  SparkleIcon,
   UsersIcon,
-} from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
+} from '@phosphor-icons/react';
+import type { Icon } from '@phosphor-icons/react';
 
 // Marketing copy and data: edit here (and @repo/brand) to re-pitch without
 // touching layout.
 
-export type Feature = { icon: LucideIcon; name: string; description: string };
+export type Feature = { icon: Icon; name: string; description: string };
 
 /** What the editor side of the product does, for the landing page grid. */
 export const contentFeatures: Feature[] = [
@@ -30,13 +30,13 @@ export const contentFeatures: Feature[] = [
       'Realtime collaboration with live cursors, and comments that live on the content itself.',
   },
   {
-    icon: CalendarClockIcon,
+    icon: CalendarDotsIcon,
     name: 'Publish with confidence',
     description:
       'Drafts, scheduled publishing, version history, and rollback. Publish when it is ready, undo it when it is not.',
   },
   {
-    icon: LanguagesIcon,
+    icon: TranslateIcon,
     name: 'Every locale you serve',
     description:
       'Localized content built in: per-locale entries, translation status, and AI translation.',
@@ -48,19 +48,19 @@ export const contentFeatures: Feature[] = [
       'Roles and publish permissions per collection, so the right people sign off before anything ships.',
   },
   {
-    icon: SparklesIcon,
+    icon: SparkleIcon,
     name: 'AI that does the work',
     description:
       'Draft and rewrite copy, take editorial suggestions, or delegate a whole task to an agent in the session.',
   },
   {
-    icon: ChartNoAxesColumnIcon,
+    icon: ChartBarIcon,
     name: 'Analytics next to the content',
     description:
       'See how every page performs, annotated with the context that explains why. Cookieless, with no consent banner.',
   },
   {
-    icon: PenLineIcon,
+    icon: PenNibIcon,
     name: 'An editor you want to write in',
     description: 'Fast, calm, and beautiful, in a workspace shared by the whole team.',
   },

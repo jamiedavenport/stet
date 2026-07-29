@@ -3,7 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@repo/ui/components/avatar'
 import { Button } from '@repo/ui/components/button';
 import { Link } from '@tanstack/react-router';
 import type { ColumnDef } from '@tanstack/react-table';
-import { ArrowUpRightIcon, Trash2Icon } from 'lucide-react';
+import { ArrowUpRightIcon, TrashIcon } from '@phosphor-icons/react';
 
 import { EntryCell } from '#/content/cells/entry-cell.tsrx';
 import type { EntryRow, EntryType, Member } from '#/content/entry/functions';
@@ -131,7 +131,7 @@ export function buildEntryColumns(context: TableContext): ColumnDef<EntryRow>[] 
         className="opacity-0 transition-opacity group-hover/row:opacity-100 hover:text-destructive focus-visible:opacity-100"
         onClick={() => void context.removeEntry(row.original.id)}
       >
-        <Trash2Icon className="size-4" />
+        <TrashIcon className="size-4" />
       </Button>
     ),
   };

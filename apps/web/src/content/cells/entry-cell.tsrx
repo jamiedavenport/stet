@@ -6,7 +6,7 @@ import { Checkbox } from '@repo/ui/components/checkbox';
 import { Input } from '@repo/ui/components/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@repo/ui/components/popover';
 import { Link } from '@tanstack/react-router';
-import { FileTextIcon } from 'lucide-react';
+import { FileTextIcon } from '@phosphor-icons/react';
 
 import { CellDisplay } from '#/content/cells/display.tsrx';
 import { PersonEditor, SelectEditor } from '#/content/cells/choice.tsrx';
@@ -28,7 +28,7 @@ export type EntryCellProps = {
   onEditingChange: (editing: boolean) => void;
   /** Creates the named option on the field and resolves to its id. */
   onAddOption: (name: string) => Promise<string>;
-  /** Where the rich text cell opens; null when already on an editor page. */
+  /** Where the rich text cell opens its dedicated editor page. */
   editorLink: { collection: string; entryId: string } | { map: string; fieldKey: string } | null;
 };
 
@@ -65,8 +65,12 @@ export function EntryCell(props: EntryCellProps) @{
       <span className="flex items-center gap-1 px-1">
         @if (props.editorLink !== null && 'collection' in props.editorLink) {
           <Link
-            to="/app/c/$collection/$entry"
-            params={{ collection: props.editorLink.collection, entry: props.editorLink.entryId }}
+            to="/app/c/$collection/$entry/$field"
+            params={{
+              collection: props.editorLink.collection,
+              entry: props.editorLink.entryId,
+              field: field.key,
+            }}
             className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
           >
             <FileTextIcon className="size-3.5" />
