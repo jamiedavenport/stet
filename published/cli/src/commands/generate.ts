@@ -1,23 +1,22 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
-import { DEFAULT_ORIGIN, fetchContentModel, renderContentModule } from '@stetcms/client/codegen';
+import { fetchContentModel, renderContentModule } from '@stetcms/client/codegen';
 import { Command } from 'commander';
 
+import { settleOptions } from '#/config';
 import * as ui from '#/ui';
 
 export const generateCommand = new Command('generate')
   .description('Generate the typed content client from your content model')
   .option('--url <origin>', 'Stet server origin (defaults to $STET_ORIGIN or the hosted app)')
   .option('--key <api-key>', 'Organization API key (defaults to $STET_API_KEY)')
-  .option('--output <path>', 'Where the generated module goes', 'src/stet.gen.ts')
-  .action(async (options: { url?: string; key?: string; output: string }) => {
-    // The same resolution as @stetcms/vite, so the two tools configure alike.
-    const origin = options.url ?? process.env.STET_ORIGIN ?? DEFAULT_ORIGIN;
-    const apiKey = options.key ?? process.env.STET_API_KEY;
-
+  .option('--output <path>', 'Where the generated module goes')
+  .option('--config <path>', 'Path to stet.config.ts (auto-detected by default)')
+  .action(async (options: { url?: string; key?: string; output?: string; config?: string }) => {
     ui.begin('stet generate');
 
-    if (apiKey === undefined || apiKey === '') {
+    const { origin, apiKey, output } = await settleOptions(options);
+    if (apiKey === undefined) {
       ui.fail('No API key. Pass --key or set STET_API_KEY.');
     }
 
@@ -34,9 +33,9 @@ export const generateCommand = new Command('generate')
       ui.fail(String(error));
     }
 
-    const output = resolve(process.cwd(), options.output);
-    await mkdir(dirname(output), { recursive: true });
-    await writeFile(output, code, 'utf8');
+    const target = resolve(process.cwd(), output);
+    await mkdir(dirname(target), { recursive: true });
+    await writeFile(target, code, 'utf8');
 
-    ui.done(`Generated ${options.output}`);
+    ui.done(`Generated ${output}`);
   });

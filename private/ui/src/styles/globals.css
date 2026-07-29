@@ -38,6 +38,8 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-grid: var(--chart-grid);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -75,6 +77,11 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.145 0 0 / 8%);
   --sidebar-ring: oklch(0.708 0 0);
+  /* Charts here plot one series at a time and name it in the title, so
+     identity never rides on hue and the palette stays as monochrome as the
+     rest of the UI. Ink against the card, well past 3:1. */
+  --chart-1: oklch(0.205 0 0);
+  --chart-grid: oklch(0.145 0 0 / 8%);
 }
 
 .dark {
@@ -104,6 +111,9 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+  /* Chosen against the dark card rather than flipped from the light value. */
+  --chart-1: oklch(0.922 0 0);
+  --chart-grid: oklch(1 0 0 / 10%);
 }
 
 @layer base {

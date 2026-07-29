@@ -46,6 +46,7 @@
     "@orpc/client": "catalog:",
     "@orpc/contract": "catalog:",
     "@orpc/openapi-client": "catalog:",
+    "@stetcms/config": "workspace:*",
     "zod": "catalog:"
   },
   "devDependencies": {

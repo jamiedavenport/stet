@@ -1,5 +1,6 @@
 import type { AiEnv } from '@repo/ai/model';
 import { createContentMcpServer } from '@repo/ai/mcp';
+import { type AnalyticsEnv, AnalyticsStore as AnalyticsStoreBase } from '@repo/analytics/store';
 import { ChatAgent as ChatAgentBase } from '@repo/ai/server';
 import { oAuthDiscoveryMetadata, oAuthProtectedResourceMetadata } from '@repo/auth/server';
 import { ai, BillingError } from '@repo/billing/server';
@@ -27,6 +28,10 @@ import { enforceAuthRateLimit, withSecurityHeaders } from '#/security';
 // its own Sentry initialization to report the errors thrown inside it. Sentry
 // takes the environment type from the options callback rather than the class,
 // so each wrapper names the env its class declares.
+export const AnalyticsStore = Sentry.instrumentDurableObjectWithSentry(
+  sentryOptions<AnalyticsEnv>,
+  AnalyticsStoreBase,
+);
 export const ChatAgent = Sentry.instrumentDurableObjectWithSentry(
   sentryOptions<Cloudflare.Env & AiEnv>,
   ChatAgentBase,

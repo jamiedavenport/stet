@@ -1,0 +1,71 @@
+{
+  "name": "@stetcms/analytics",
+  "version": "0.1.0",
+  "description": "Type-safe, cookieless product analytics for Stet, routed through your own backend.",
+  "keywords": [
+    "analytics",
+    "cookieless",
+    "pageviews",
+    "stet",
+    "tracking"
+  ],
+  "homepage": "https://github.com/jamiedavenport/stet/tree/main/published/analytics#readme",
+  "bugs": "https://github.com/jamiedavenport/stet/issues",
+  "license": "Apache-2.0",
+  "author": "Jamie Davenport (https://jxd.dev)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jamiedavenport/stet.git",
+    "directory": "published/analytics"
+  },
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./client": "./src/client.ts",
+    "./server": "./src/server.ts",
+    "./sync": "./src/sync.ts"
+  },
+  "publishConfig": {
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "./client": {
+        "types": "./dist/client.d.ts",
+        "default": "./dist/client.js"
+      },
+      "./server": {
+        "types": "./dist/server.d.ts",
+        "default": "./dist/server.js"
+      },
+      "./sync": {
+        "types": "./dist/sync.d.ts",
+        "default": "./dist/sync.js"
+      }
+    },
+    "access": "public"
+  },
+  "scripts": {
+    "build": "vp pack",
+    "tc": "tsc --noEmit",
+    "test": "vp test run"
+  },
+  "dependencies": {
+    "@standard-schema/spec": "catalog:",
+    "@stetcms/config": "workspace:*"
+  },
+  "devDependencies": {
+    "publint": "catalog:",
+    "typescript": "catalog:",
+    "vite-plus": "catalog:",
+    "vitest": "catalog:",
+    "zod": "catalog:"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

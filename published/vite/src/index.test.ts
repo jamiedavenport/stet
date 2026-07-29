@@ -62,8 +62,11 @@ describe('renderContentModule', () => {
     expect(code).toContain('"landing": { kind: "map"; entry: LandingEntry };');
   });
 
-  it('embeds the origin but reads the key from the environment', () => {
-    expect(code).toContain('origin: "http://localhost:3000"');
+  it('reads the origin and the key from the environment, never embedding a key', () => {
+    // The generated origin is a fallback, not a target: one build artefact has
+    // to work in every environment, and a stale file must not pin a deployment
+    // to whatever origin it was last generated against.
+    expect(code).toContain('process.env.STET_ORIGIN ?? "http://localhost:3000"');
     expect(code).toContain('process.env.STET_API_KEY');
     expect(code).not.toContain('stet_');
   });

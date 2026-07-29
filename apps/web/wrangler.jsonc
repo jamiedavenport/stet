@@ -83,6 +83,18 @@
         "period": 60,
       },
     },
+    // Analytics ingest is a different shape of traffic: one request per
+    // browser batch, so a busy site sends orders of magnitude more of them
+    // than it makes content reads. This is a backstop against a runaway
+    // client, not a product limit.
+    {
+      "name": "INGEST_RATE_LIMIT",
+      "namespace_id": "1003",
+      "simple": {
+        "limit": 1000,
+        "period": 10,
+      },
+    },
   ],
   "queues": {
     "producers": [
@@ -120,6 +132,11 @@
   "durable_objects": {
     "bindings": [
       {
+        // One per organization, holding its product analytics.
+        "name": "ANALYTICS",
+        "class_name": "AnalyticsStore",
+      },
+      {
         "name": "PAGE_PRESENCE",
         "class_name": "PagePresenceRoom",
       },
@@ -134,6 +151,10 @@
     ],
   },
   "exports": {
+    "AnalyticsStore": {
+      "type": "durable-object",
+      "storage": "sqlite",
+    },
     "PagePresenceRoom": {
       "type": "durable-object",
       "storage": "sqlite",

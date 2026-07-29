@@ -1,6 +1,8 @@
+import { useEffect } from 'react';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import Markdown from 'react-markdown';
 
+import { analytics } from '../analytics';
 import { fetchPost } from '../content';
 
 export const Route = createFileRoute('/blog/$slug')({
@@ -10,6 +12,13 @@ export const Route = createFileRoute('/blog/$slug')({
 
 function Post() {
   const post = Route.useLoaderData();
+
+  // The pageview is automatic; this is the custom event on top of it. `slug`
+  // is checked against the plan, so renaming the prop fails the build here
+  // rather than quietly producing a column of nulls in the dashboard.
+  useEffect(() => {
+    analytics.track('post.read', { slug: post.slug });
+  }, [post.slug]);
 
   return (
     <main>

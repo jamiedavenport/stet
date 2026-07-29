@@ -332,8 +332,86 @@ const getContent = oc
   .input(z.object({ type: z.string(), slug: z.string() }))
   .output(contentEntrySchema);
 
+// Analytics. Events reach Stet from the route the developer mounts in their
+// own app with @stetcms/analytics, never from a browser directly: the key
+// stays server-side, and the reader's address and user agent are reduced to
+// `metadata` there so they never travel here.
+export const analyticsMetadataSchema = z.object({
+  /** Day-scoped visitor digest computed by the caller. Never an address. */
+  visitor: z.string().optional(),
+  country: z.string().optional(),
+  region: z.string().optional(),
+  city: z.string().optional(),
+  browser: z.string().optional(),
+  os: z.string().optional(),
+  device: z.enum(['desktop', 'mobile', 'tablet']).optional(),
+});
+
+export type AnalyticsMetadata = z.infer<typeof analyticsMetadataSchema>;
+
+// Analytics is metered on events rather than on API requests, so these two
+// never spend the organization's request quota and can never answer
+// QUOTA_EXCEEDED. Their volume is bounded by a rate limit of its own.
+const analyticsErrors = {
+  UNAUTHORIZED: authErrors.UNAUTHORIZED,
+  ...rateLimitError,
+} as const;
+
+export const analyticsEventSchema = z.object({
+  /** `$pageview`, or an event from the organization's tracking plan. */
+  name: z.string().min(1).max(120),
+  props: z.record(z.string(), z.unknown()).default({}),
+  /** Epoch milliseconds, stamped in the browser when the event happened. */
+  timestamp: z.number().int().nonnegative(),
+  url: z.string().optional(),
+  referrer: z.string().optional(),
+});
+
+const ingestEvents = oc
+  .errors(analyticsErrors)
+  .route({
+    method: 'POST',
+    path: '/events',
+    summary: 'Record events',
+    description:
+      'Stores a batch of analytics events. Sent by the handler you mounted in your own app, ' +
+      'which validates them against your tracking plan first. Query strings are reduced to ' +
+      'their campaign parameters on the way in.',
+    tags: ['Analytics'],
+  })
+  .input(
+    z.object({
+      context: z.record(z.string(), z.unknown()).default({}),
+      metadata: analyticsMetadataSchema.default({}),
+      events: z.array(analyticsEventSchema).min(1).max(100),
+    }),
+  )
+  .output(z.object({ accepted: z.number().int() }));
+
+const syncEventSchema = oc
+  .errors(analyticsErrors)
+  .route({
+    method: 'PUT',
+    path: '/events/schema',
+    summary: 'Publish the tracking plan',
+    description:
+      "Replaces the organization's known events with the ones your code declares, so the " +
+      'dashboard can offer them. Sent by @stetcms/vite and `stet sync`.',
+    tags: ['Analytics'],
+  })
+  .input(
+    z.object({
+      events: z.array(z.object({ name: z.string().min(1), props: z.array(z.string()) })),
+    }),
+  )
+  .output(z.object({ synced: z.number().int() }));
+
 export const contract = {
   health,
+  analytics: {
+    ingest: ingestEvents,
+    sync: syncEventSchema,
+  },
   content: {
     model: getContentModel,
     list: listContent,

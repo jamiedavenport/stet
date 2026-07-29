@@ -76,15 +76,28 @@ export async function enforceAuthRateLimit(request: Request, url: URL): Promise<
   return tooManyRequests();
 }
 
+/** Analytics, which is metered on events rather than on requests. */
+function isAnalyticsPath(pathname: string): boolean {
+  return pathname === '/api/v1/events' || pathname.startsWith('/api/v1/events/');
+}
+
 /**
  * Throttles the public API per key (falling back to IP for unauthenticated
- * probes) with the API_RATE_LIMIT binding. This bounds abuse per colo; the
- * billing quota in @repo/billing remains the durable monthly cap.
+ * probes). This bounds abuse per colo; the billing quota in @repo/billing
+ * remains the durable monthly cap.
+ *
+ * Analytics ingest gets its own, far larger budget: one request per browser
+ * batch means a busy site makes orders of magnitude more of them than it makes
+ * content reads, and `track()` never throws, so throttling it would show up as
+ * silently missing data rather than as an error anyone could act on.
  */
 export async function enforceApiRateLimit(request: Request): Promise<Response | null> {
   const key =
     request.headers.get('x-api-key') ?? request.headers.get('cf-connecting-ip') ?? 'local';
-  const { success } = await env.API_RATE_LIMIT.limit({ key });
+  const limiter = isAnalyticsPath(new URL(request.url).pathname)
+    ? env.INGEST_RATE_LIMIT
+    : env.API_RATE_LIMIT;
+  const { success } = await limiter.limit({ key });
   if (success) {
     return null;
   }

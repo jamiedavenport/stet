@@ -18,7 +18,7 @@ Create `apps/web/.dev.vars` for local secrets:
 cp apps/web/.dev.vars.example apps/web/.dev.vars
 ```
 
-The defaults in that file run the whole app locally with no external accounts, and CI copies it verbatim. It documents each value inline: notably the blank `OPENPANEL_CLIENT_ID` that keeps local traffic out of the real analytics project (see [private/analytics](private/analytics)), Cloudflare's always-pass Turnstile test pair, and the commented-out optional keys for Resend, Anthropic, Stripe (see [private/billing](private/billing) for the Stripe CLI sandbox setup), and social sign-in.
+The defaults in that file run the whole app locally with no external accounts, and CI copies it verbatim. It documents each value inline: notably the blank `OPENPANEL_CLIENT_ID` that keeps local traffic out of the real analytics project (see [private/openpanel](private/openpanel)), Cloudflare's always-pass Turnstile test pair, and the commented-out optional keys for Resend, Anthropic, Stripe (see [private/billing](private/billing) for the Stripe CLI sandbox setup), and social sign-in.
 
 Add a new local secret by adding it to `.dev.vars.example` (commented out if optional) so contributors and CI stay in sync.
 

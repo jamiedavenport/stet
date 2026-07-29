@@ -26,8 +26,27 @@ stet generate --key stet_... --url https://stet.example.com --output lib/stet.ge
 | `--url <origin>`  | Stet server origin. Defaults to `$STET_ORIGIN`, then the hosted app. |
 | `--key <api-key>` | Organization API key. Defaults to `$STET_API_KEY`.                   |
 | `--output <path>` | Where the generated module goes. Defaults to `src/stet.gen.ts`.      |
+| `--config <path>` | Path to `stet.config.ts`. Auto-detected by default.                  |
 
-The generated file imports [`@stetcms/client`](https://github.com/jamiedavenport/stet/tree/main/published/client), so add that to your app's dependencies. It never contains the key: at runtime the client reads `STET_API_KEY` from the environment again, so the file is safe to commit.
+Every flag overrides the same key in `stet.config.ts`, which both this CLI and the Vite plugin read (see [`@stetcms/config`](https://github.com/jamiedavenport/stet/tree/main/published/config)).
+
+The generated file imports [`@stetcms/client`](https://github.com/jamiedavenport/stet/tree/main/published/client), so add that to your app's dependencies. It never contains the key: at runtime the client reads `STET_API_KEY` from the environment again, so the file is safe to commit. It reads `STET_ORIGIN` at runtime too, falling back to the origin it was generated against.
+
+### `stet sync`
+
+Publish your analytics tracking plan, so Stet can chart events your code declares before anyone has fired one. The same job [`@stetcms/vite`](https://github.com/jamiedavenport/stet/tree/main/published/vite) does on dev-server and build start; use this where there is no Vite, or in CI.
+
+```bash
+STET_API_KEY=stet_... stet sync
+```
+
+| Flag              | Description                                                          |
+| ----------------- | -------------------------------------------------------------------- |
+| `--url <origin>`  | Stet server origin. Defaults to `$STET_ORIGIN`, then the hosted app. |
+| `--key <api-key>` | Organization API key. Defaults to `$STET_API_KEY`.                   |
+| `--config <path>` | Path to `stet.config.ts`. Auto-detected by default.                  |
+
+Replacement, not merge: an event deleted from your code disappears from the dashboard's list on the next sync, while anything already recorded under that name keeps its history.
 
 ### `stet login`
 

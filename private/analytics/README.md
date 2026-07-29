@@ -1,62 +1,76 @@
 # @repo/analytics
 
-Type-safe product analytics on [OpenPanel](https://openpanel.dev). The package is an in-repo tracking plan plus thin wrappers around the official OpenPanel SDKs: a Zod event registry types every capture call on both the browser and the Worker, and identity (user, organization) flows automatically from the session.
+The store behind Stet's product analytics: one Durable Object per
+organization, holding its events in embedded SQLite.
 
-- `./events`: the tracking plan (`registry`, `EventName`, `EventProperties`). Client-safe, no secrets.
-- `./client`: the browser side (`initAnalytics`, `track`, `identifyUser`, `setActiveOrganization`, `clearAnalyticsIdentity`) on `@openpanel/web`.
-- `./server`: the Worker side (`capture`, `identifyUser`, `upsertOrganizationGroup`) on `@openpanel/sdk`.
+Events arrive from `@stetcms/analytics` running in the customer's own backend
+(see `published/analytics`), through `POST /api/v1/events`. This package owns
+what happens after that: storage, rollups, retention, and every query the
+dashboard draws.
 
-## The tracking plan
+- `.`: the schema, ingest and query functions, working against any SQLite
+  drizzle database, so they are unit-testable without a Worker.
+- `./store`: the `AnalyticsStore` Durable Object, bound as `ANALYTICS`.
 
-`src/events.ts` is the single source of truth. Each event pairs a snake_case past-tense name with a Zod schema for its properties:
+## Why not D1
 
-```ts
-export const subscriptionStarted = defineEvent({
-  name: 'subscription_started',
-  schema: z.object({ plan: z.string() }),
-});
-```
+Event traffic is append-heavy and unbounded, and D1 holds the content every
+request in Stet already reads. One organization's launch day should not slow
+down anyone else's editor. A Durable Object per organization also puts each
+one's data on its own storage, which is the isolation the data deserves
+anyway.
 
-Adding an event means defining it and listing it in the registry; `track()` and `capture()` pick it up with full property typing, so a typo'd name or a missing property fails to compile. Identity is deliberately not part of the schemas: the client stamps it via identify/group state and the server takes it in `capture()`'s options, so schemas only describe what happened.
+## Storage
 
-## Browser events
+| Table          | Holds                                          |
+| -------------- | ---------------------------------------------- |
+| `events`       | One row per event, kept for 90 days            |
+| `rollups`      | Hourly counts per dimension, kept indefinitely |
+| `rollup_state` | The watermark dividing the two                 |
 
-The `Analytics` component in `apps/web` (mounted once in the root route) initializes the client and keeps identity in sync with the session context: `identifyUser` on sign-in, `setActiveOrganization` when the active organization changes (an OpenPanel group plus an `organizationId` global property), and `clearAnalyticsIdentity` on sign-out. Screen views and outgoing links are tracked automatically.
+An alarm folds every closed hour into `rollups` and advances the watermark,
+then prunes raw events past retention. Queries read rollups before the
+watermark and raws after it, so a range spanning the boundary reads the same
+either side of a rollup.
 
-Recording an interaction event is one typed call:
+Counts are written with overwrite semantics, so an alarm that dies mid-run
+recomputes its window rather than doubling it. Ingest clamps timestamps into
+`[watermark, now + 5m]`: behind the watermark a row would be invisible and
+pruned unseen.
 
-```ts
-import { track } from '@repo/analytics/client';
+Distinct visitors are the exception. A count of distinct things cannot be
+summed from per-hour totals, so uniques read raws only and are exact within
+the retention window.
 
-track('organization_created');
-```
+## Dimensions
 
-## Worker events
+`DIMENSIONS` in `dimensions.ts` maps each breakdown to the column it counts:
+`event`, `path`, `referrer`, `country`, `device`, `browser`, `os`, `source`,
+`campaign`. One mapping drives ingest, rollup and query, so adding a
+breakdown is a line there plus a column on `events`.
 
-Domain truths are captured where they happen, server-side, so ad blockers and closed tabs cannot lose them. `@repo/auth` captures `user_signed_up` (user-create hook), `organization_created` (organization hook), and `subscription_started` / `subscription_canceled` (Stripe webhook callbacks):
+`event` counts every event; the rest count page views only, because mixing
+custom events into "top pages" makes the number mean nothing in particular.
 
-```ts
-import { capture } from '@repo/analytics/server';
+## What is not stored
 
-capture('subscription_started', {
-  organizationId: subscription.referenceId,
-  properties: { plan: plan.name },
-});
-```
+URLs are reduced to a pathname plus `utm_source`, `utm_medium` and
+`utm_campaign` at ingest, so a query string carrying a token or an email
+address never reaches storage. Addresses and user agents never arrive at all:
+the customer's handler hashes them into a day-scoped visitor digest and keeps
+the inputs.
 
-`capture()` validates properties against the registry, hands delivery to `waitUntil` so the response is never blocked, and never throws. `organizationId` becomes both an OpenPanel group and an event property; `userId` becomes the profile id.
+## Schema changes
 
-## Credentials
-
-Two values from OpenPanel (Settings → Clients): the public client id and the secret.
-
-| Where      | Client id                                              | Secret                                        |
-| ---------- | ------------------------------------------------------ | --------------------------------------------- |
-| Production | `OPENPANEL_CLIENT_ID` var in `apps/web/wrangler.jsonc` | `wrangler secret put OPENPANEL_CLIENT_SECRET` |
-| Local      | `apps/web/.dev.vars`                                   | `apps/web/.dev.vars`                          |
-
-With either value missing, both sides fall back to logging events as `[analytics]` console lines, which is the recommended local default (set `OPENPANEL_CLIENT_ID=""` in `.dev.vars`); e2e assertions can read them from the dev-server log. To send real events from local dev instead, put real credentials in `.dev.vars` and add your localhost origin to the client's allowed domains in the OpenPanel dashboard; browser events from unlisted origins are rejected with a 401 (Worker events carry the secret and are always accepted).
+`schemaStatements` is applied by the Durable Object on wake and by the tests
+to an in-memory database, so both run the same DDL. Pre-release, changing a
+table means editing it there and accepting that existing stores keep the old
+shape until reset. Once other people deploy their own instances this needs
+committed migrations, the same switch [private/db](../db) documents.
 
 ## Tests
 
-`pnpm test` (Vitest) covers the registry contract, the property typing (including compile-time failures via `@ts-expect-error`), and the console fallback.
+```bash
+pnpm test   # Vitest, against better-sqlite3 in memory
+pnpm tc
+```

@@ -2,15 +2,14 @@
  * The codegen behind `@stetcms/vite` and the CLI's `stet generate`: fetch an
  * organization's content model and render the typed `stet.gen.ts` module.
  *
- * Import-free on purpose: build tools load this entry under plain Node, where
- * the rest of the package's import chain is not resolvable from source.
+ * Free of relative imports on purpose: build tools load this entry under
+ * plain Node, which resolves package names but not this package's own
+ * extensionless paths.
  */
 
-/**
- * The hosted Stet deployment. Pass `origin` to target a local dev server or
- * a self-hosted instance instead.
- */
-export const DEFAULT_ORIGIN = 'https://stetcms.com';
+import { DEFAULT_ORIGIN } from '@stetcms/config';
+
+export { DEFAULT_ORIGIN };
 
 /** The `/api/v1/model` payload the module is generated from. */
 export type ContentModel = {
@@ -68,8 +67,9 @@ function fieldTsType(field: ContentModel['types'][number]['fields'][number]): st
 
 /**
  * Renders the generated `stet.gen.ts`: one entry type per collection or map
- * and a `stet` client typed by them. The API key is read from the
- * environment at runtime, never embedded, so the file is safe to commit.
+ * and a `stet` client typed by them. The API key and the origin are both read
+ * from the environment at runtime, so the key is never embedded and the file
+ * is safe to commit.
  */
 export function renderContentModule(model: ContentModel, origin: string): string {
   const lines: string[] = [
@@ -96,9 +96,16 @@ export function renderContentModule(model: ContentModel, origin: string): string
   }
   lines.push('};', '');
 
+  // Both are read from the environment at runtime, so one generated file
+  // works in every environment: the origin it was generated against is only
+  // the fallback, and a build that could not refresh this file cannot pin a
+  // deployment to whatever origin the last developer generated from.
   lines.push(
+    'const origin =',
+    `  typeof process === 'undefined' ? ${JSON.stringify(origin)} : (process.env.STET_ORIGIN ?? ${JSON.stringify(origin)});`,
+    '',
     'export const stet = createContentClient<StetContentModel>({',
-    `  origin: ${JSON.stringify(origin)},`,
+    '  origin,',
     "  apiKey: typeof process === 'undefined' ? undefined : process.env.STET_API_KEY,",
     '});',
     '',

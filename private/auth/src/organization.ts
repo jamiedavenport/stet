@@ -1,4 +1,4 @@
-import { capture, upsertOrganizationGroup } from '@repo/analytics/server';
+import { capture, upsertOrganizationGroup } from '@repo/openpanel/server';
 import { BillingError, members } from '@repo/billing/server';
 import type { Mailer } from '@repo/mail';
 import { notify } from '@repo/notifications/client';

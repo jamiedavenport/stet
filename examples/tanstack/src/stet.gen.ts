@@ -7,7 +7,6 @@ export type PostsEntry = ContentEntryBase & {
   fields: {
     "summary"?: string | null;
     "body"?: string | null;
-    "author"?: { id: string; name: string } | null;
   };
 };
 
@@ -18,18 +17,15 @@ export type LandingEntry = ContentEntryBase & {
   };
 };
 
-export type ChangelogEntry = ContentEntryBase & {
-  fields: {
-  };
-};
-
 export type StetContentModel = {
   "posts": { kind: "collection"; entry: PostsEntry };
   "landing": { kind: "map"; entry: LandingEntry };
-  "changelog": { kind: "collection"; entry: ChangelogEntry };
 };
 
+const origin =
+  typeof process === 'undefined' ? "http://localhost:3000" : (process.env.STET_ORIGIN ?? "http://localhost:3000");
+
 export const stet = createContentClient<StetContentModel>({
-  origin: "http://localhost:3000",
+  origin,
   apiKey: typeof process === 'undefined' ? undefined : process.env.STET_API_KEY,
 });

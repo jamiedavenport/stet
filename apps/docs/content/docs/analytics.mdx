@@ -1,0 +1,120 @@
+---
+title: Analytics
+description: Cookieless, type-safe product analytics routed through your own backend.
+icon: ChartBar
+---
+
+Every page your content team publishes reports how it performs, in the same
+place they wrote it. No consent banner, no blocked pixel, and no separate
+analytics account to reconcile against the CMS.
+
+## How it fits together
+
+Events never travel from a browser to Stet. They go to a route in **your** app,
+which is what makes the rest of the guarantees possible:
+
+1. The browser client sends batched events to a route you mounted.
+2. That route validates them against your tracking plan, adds what only a
+   backend can see, and forwards them to Stet with your organization API key.
+3. Stet stores them per organization and draws them at **Analytics**.
+
+Because the endpoint is your own origin, there is no third-party host for a
+blocker to recognise, and the reader's address never leaves infrastructure you
+control.
+
+## Three steps
+
+Install [`@stetcms/analytics`](https://github.com/jamiedavenport/stet/tree/main/published/analytics),
+then:
+
+```ts
+// stet.config.ts — the tracking plan
+import { defineAnalytics, event } from '@stetcms/analytics';
+import { defineStet } from '@stetcms/config';
+import { z } from 'zod';
+
+export default defineStet({
+  analytics: defineAnalytics({
+    events: {
+      signup: event({ plan: z.enum(['free', 'paid']) }),
+      checkout: { completed: event({ total: z.number() }) },
+    },
+  }),
+});
+```
+
+```ts
+// the route — one per app
+import { createAnalyticsHandler } from '@stetcms/analytics/server';
+import config from '../stet.config';
+
+export const POST = createAnalyticsHandler(config.analytics, {
+  context: async (request) => ({ userId: (await session(request))?.userId }),
+});
+```
+
+```ts
+// the browser — typed from the plan, no key
+import { createAnalytics } from '@stetcms/analytics/client';
+import type config from '../stet.config';
+
+export const analytics = createAnalytics<(typeof config)['analytics']>({
+  endpoint: '/api/analytics',
+});
+
+analytics.track('checkout.completed', { total: 42 });
+```
+
+Pageviews are recorded for you, on load and on history navigation.
+
+## Type safety
+
+`track` is typed from the plan, so a misspelled event, a missing prop, or a
+prop of the wrong type fails your build rather than producing a column of
+nulls someone notices a month later. The plan is published to Stet on every
+dev-server and build start, so an event appears in the dashboard before it has
+ever been fired — your content team can build on it while you are still
+writing the code that sends it.
+
+`track` never throws and never rejects. A tracking mistake cannot break a page.
+
+## What Stet learns about a reader
+
+Derived in your handler from the request the browser made to you, and forwarded
+as a small fixed set. The raw address and user agent are used there and
+discarded.
+
+| Field                       | Source                                                 |
+| --------------------------- | ------------------------------------------------------ |
+| `country`, `region`, `city` | Whatever your edge already knows                       |
+| `browser`, `os`, `device`   | Client hints, falling back to the agent string         |
+| `visitor`                   | A digest of the date, your host, the address and agent |
+
+The visitor digest covers the date, so the same reader is a different id
+tomorrow. Uniques are countable within a day and nothing can be joined across
+days, by anyone, including us. That is what removes the consent banner: there
+is no cookie and no persistent identifier to disclose.
+
+URLs are reduced to a pathname plus `utm_source`, `utm_medium` and
+`utm_campaign` before storage, so a query string carrying a session token or an
+email address is never kept. Traffic that announces itself as automation is
+accepted and discarded, because a `4xx` only teaches a crawler to retry.
+
+## Limits
+
+Recording events does not spend your API request quota. That quota counts
+content reads, and analytics traffic is one request per browser batch, which
+says nothing about how much API you use. Ingest is bounded by a rate limit of
+its own, sized so that only a runaway client reaches it.
+
+## Reading it
+
+**Analytics** in the sidebar shows visitors, views and events over 24 hours, 7,
+30 or 90 days, with breakdowns by page, referrer, event, country, browser and
+device.
+
+Data is kept per organization. Raw events live for 90 days; hourly rollups are
+kept indefinitely, so the shape of last year's traffic outlives the rows it was
+computed from. Distinct visitors are the exception, and are exact within the
+90-day window only: a count of distinct things cannot be summed from per-hour
+totals.

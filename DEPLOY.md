@@ -13,6 +13,12 @@ wrangler queues create stet-jobs
 wrangler queues create stet-jobs-dlq
 ```
 
+Durable Objects need nothing created either: `ANALYTICS` (one store per
+organization, holding its product analytics), `PAGE_PRESENCE`, `CHAT_AGENT`,
+and `NOTIFICATION_HUB` are all declared in `wrangler.jsonc` and provisioned by
+the deploy. The analytics store applies its own schema on wake, so there is no
+migration step for it; see [private/analytics](private/analytics).
+
 The `IMAGES` binding, which `/api/files/$id` uses to resize and re-encode
 uploads, needs nothing created. Transformations are billed per unique
 transformation above a monthly free allowance, so check the Images pricing
@@ -49,7 +55,7 @@ wrangler secret put TURNSTILE_SITE_KEY
 wrangler secret put TURNSTILE_SECRET_KEY
 ```
 
-Rate limits for the credential endpoints and the public API are configured in `wrangler.jsonc` (`ratelimits`); adjust the budgets there.
+Rate limits for the credential endpoints, the public API, and analytics ingest are configured in `wrangler.jsonc` (`ratelimits`); adjust the budgets there. Ingest has its own, far larger budget and does not spend the organization's API request quota: it is one request per browser batch, so a busy site makes orders of magnitude more of them than it makes content reads.
 
 Update the vars in `wrangler.jsonc`:
 

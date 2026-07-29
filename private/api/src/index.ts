@@ -4,6 +4,8 @@ import { contract } from './contract';
 
 export { contract };
 export {
+  analyticsEventSchema,
+  analyticsMetadataSchema,
   authErrors,
   contentEntrySchema,
   contentFieldSchema,
@@ -19,6 +21,7 @@ export {
   webhookEventTypeSchema,
 } from './contract';
 export type {
+  AnalyticsMetadata,
   ContentEntry,
   ContentFieldType,
   ContentType,

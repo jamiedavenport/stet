@@ -1,5 +1,5 @@
 import type { StripeOptions } from '@better-auth/stripe';
-import { capture } from '@repo/analytics/server';
+import { capture } from '@repo/openpanel/server';
 import { and, eq, schema } from '@repo/db';
 import type { Database } from '@repo/db';
 import Stripe from 'stripe';

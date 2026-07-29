@@ -1,4 +1,4 @@
-import { capture, identifyUser } from '@repo/analytics/server';
+import { capture, identifyUser } from '@repo/openpanel/server';
 import { eq, schema } from '@repo/db';
 import type { Database } from '@repo/db';
 import { enqueue } from '@repo/jobs/client';

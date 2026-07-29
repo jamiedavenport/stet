@@ -1,21 +1,29 @@
 import { access, mkdir, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
-import { DEFAULT_ORIGIN, fetchContentModel, renderContentModule } from '@stetcms/client/codegen';
+import { syncTrackingPlan } from '@stetcms/analytics/sync';
+import { fetchContentModel, renderContentModule } from '@stetcms/client/codegen';
+import { resolveStetConfig } from '@stetcms/config';
+import type { StetConfig } from '@stetcms/config';
 import type { Plugin, ResolvedConfig } from 'vite';
+
+// Self-referenced rather than imported as './config': Vite loads this plugin
+// under plain Node, which resolves a package's own export map but not its
+// extensionless relative paths.
+import { findStetConfig, loadStetConfig, trackingPlanEvents } from '@stetcms/vite/config';
 
 /** How often the dev server checks the model for changes. */
 const watchIntervalMs = 3000;
 
-/** Options for {@link stet}. */
+/** Options for {@link stet}. Each one overrides the same key in `stet.config.ts`. */
 export type StetPluginOptions = {
   /**
-   * The Stet deployment to generate from. Defaults to `STET_ORIGIN`, falling
-   * back to the hosted cloud.
+   * The Stet deployment to generate from. Defaults to the config file, then
+   * `STET_ORIGIN`, then the hosted cloud.
    */
   origin?: string;
   /**
-   * Organization API key used to fetch the model at codegen time. Defaults
-   * to `STET_API_KEY`. Never written into the generated file: at runtime the
+   * Organization API key used to fetch the model at codegen time. Defaults to
+   * `STET_API_KEY`. Never written into the generated file: at runtime the
    * client reads `STET_API_KEY` from the environment again.
    */
   apiKey?: string;
@@ -26,6 +34,11 @@ export type StetPluginOptions = {
    * UI reach the app without a restart. On by default; never affects builds.
    */
   watch?: boolean;
+  /**
+   * Path to `stet.config.ts`, relative to the project root. Auto-detected
+   * when omitted; a project without one runs on this plugin's options alone.
+   */
+  config?: string;
 };
 
 /**
@@ -35,7 +48,11 @@ export type StetPluginOptions = {
  * editor autocompletes. While the dev server runs it keeps watching, so a
  * field added in the Stet UI shows up in your types moments later.
  *
- * Codegen never fails the build. Without a key or with the API unreachable it
+ * It also publishes the analytics tracking plan from `stet.config.ts`, so the
+ * events your code declares can be charted in Stet before anyone has fired
+ * one.
+ *
+ * Neither ever fails the build. Without a key or with the API unreachable it
  * warns and leaves the previous generated file in place, writing an empty
  * model only when no file exists yet.
  */
@@ -43,11 +60,26 @@ export function stet(options: StetPluginOptions = {}): Plugin {
   let resolvedConfig: ResolvedConfig;
   let lastRendered: string | undefined;
 
-  const settings = () => ({
-    origin: options.origin ?? process.env.STET_ORIGIN ?? DEFAULT_ORIGIN,
-    apiKey: options.apiKey ?? process.env.STET_API_KEY,
-    output: resolve(resolvedConfig.root, options.output ?? 'src/stet.gen.ts'),
-  });
+  const configPath = () =>
+    options.config === undefined
+      ? findStetConfig(resolvedConfig.root)
+      : resolve(resolvedConfig.root, options.config);
+
+  /**
+   * Read on every pass rather than cached, so editing the config during a
+   * watch run takes effect without restarting the dev server.
+   */
+  const settle = async () => {
+    const path = configPath();
+    const file: StetConfig | undefined =
+      path === undefined ? undefined : await loadStetConfig(path);
+    const resolved = resolveStetConfig(file, options);
+    return {
+      ...resolved,
+      output: resolve(resolvedConfig.root, resolved.output),
+      events: trackingPlanEvents(file),
+    };
+  };
 
   const write = async (output: string, code: string) => {
     await mkdir(dirname(output), { recursive: true });
@@ -65,9 +97,9 @@ export function stet(options: StetPluginOptions = {}): Plugin {
       resolvedConfig = config;
     },
     async buildStart() {
-      const { origin, apiKey, output } = settings();
+      const { origin, apiKey, output, events } = await settle();
 
-      if (apiKey === undefined || apiKey === '') {
+      if (apiKey === undefined) {
         this.warn('[stet] STET_API_KEY is not set; skipping content client generation.');
         if (!(await exists(output))) {
           await write(output, renderContentModule({ types: [] }, origin));
@@ -87,15 +119,24 @@ export function stet(options: StetPluginOptions = {}): Plugin {
           await write(output, renderContentModule({ types: [] }, origin));
         }
       }
+
+      // Publishing the plan is a side errand, not part of producing the
+      // bundle: an unreachable Stet carries on building either way.
+      if (events !== undefined) {
+        try {
+          await syncTrackingPlan({ events, origin, apiKey });
+        } catch (error) {
+          this.warn(`[stet] Could not publish the tracking plan to ${origin}: ${String(error)}`);
+        }
+      }
     },
     configureServer(server) {
-      const { origin, apiKey, output } = settings();
-      if (options.watch === false || apiKey === undefined || apiKey === '') {
-        return;
-      }
-
       const tick = async () => {
         try {
+          const { origin, apiKey, output, watch } = await settle();
+          if (!watch || apiKey === undefined) {
+            return;
+          }
           const model = await fetchContentModel(origin, apiKey);
           const code = renderContentModule(model, origin);
           if (code !== lastRendered) {

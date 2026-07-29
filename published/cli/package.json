@@ -33,7 +33,10 @@
   },
   "dependencies": {
     "@clack/prompts": "catalog:",
+    "@stetcms/analytics": "workspace:*",
     "@stetcms/client": "workspace:*",
+    "@stetcms/config": "workspace:*",
+    "@stetcms/vite": "workspace:*",
     "better-auth": "catalog:",
     "commander": "catalog:",
     "conf": "catalog:",

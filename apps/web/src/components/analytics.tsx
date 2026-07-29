@@ -6,7 +6,7 @@ import {
   identifyUser,
   initAnalytics,
   setActiveOrganization,
-} from '@repo/analytics/client';
+} from '@repo/openpanel/client';
 import { getRouteApi } from '@tanstack/react-router';
 
 const rootRoute = getRouteApi('__root__');

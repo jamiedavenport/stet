@@ -1,8 +1,11 @@
 # @stetcms/vite
 
-Vite plugin for products built on [Stet](https://github.com/jamiedavenport/stet). It generates a typed content client from your organization's content model before every build and dev-server start: the collections and maps your content team shapes in the Stet UI become `stet.<slug>.list()` / `.get()` calls your editor autocompletes. While the dev server runs it keeps watching, so a field added in the Stet UI reaches your types moments later without a restart.
+Vite plugin for products built on [Stet](https://github.com/jamiedavenport/stet). It does two jobs from one config file:
 
-Building without Vite? [`stet generate`](https://github.com/jamiedavenport/stet/tree/main/published/cli#stet-generate) runs the same codegen from the command line, for Next.js apps and CI.
+- **Generates a typed content client** before every build and dev-server start: the collections and maps your content team shapes in the Stet UI become `stet.<slug>.list()` / `.get()` calls your editor autocompletes. While the dev server runs it keeps watching, so a field added in the Stet UI reaches your types moments later without a restart.
+- **Publishes your analytics tracking plan**, so the events your code declares can be charted in Stet before anyone has fired one.
+
+Building without Vite? [`stet generate`](https://github.com/jamiedavenport/stet/tree/main/published/cli#stet-generate) and [`stet sync`](https://github.com/jamiedavenport/stet/tree/main/published/cli#stet-sync) run the same two jobs from the command line, for Next.js apps and CI.
 
 ## Install
 
@@ -23,6 +26,15 @@ export default defineConfig({
 });
 ```
 
+Everything is configured in `stet.config.ts` (see [`@stetcms/config`](https://github.com/jamiedavenport/stet/tree/main/published/config)), which the CLI reads too:
+
+```ts
+// stet.config.ts
+import { defineStet } from '@stetcms/config';
+
+export default defineStet({ output: 'src/stet.gen.ts' });
+```
+
 With `STET_API_KEY` set, the plugin fetches `/api/v1/model` and writes `src/stet.gen.ts`:
 
 ```ts
@@ -34,11 +46,17 @@ const landing = await stet.landing.get(); // a map
 // all fully typed from the model marketing built
 ```
 
-The generated file never contains the key: at runtime the client reads `STET_API_KEY` from the environment again, so the file is safe to commit — and committing it keeps type checks working without a running Stet.
+The generated file never contains the key: at runtime the client reads `STET_API_KEY` from the environment again, so the file is safe to commit — and committing it keeps type checks working without a running Stet. It reads `STET_ORIGIN` at runtime too, falling back to the origin it was generated against, so one committed file works in every environment rather than pinning your deployment to whatever origin last regenerated it.
 
-Codegen never fails your build. Without a key, or with the API unreachable, the plugin warns and leaves the previous generated file in place, writing an empty model only when no file exists yet. A deleted field disappears from the generated types on the next regeneration, so stale usage surfaces as a type error in your editor, never as a broken page.
+Neither job can fail your build. Without a key, or with the API unreachable, the plugin warns and leaves the previous generated file in place, writing an empty model only when no file exists yet. A deleted field disappears from the generated types on the next regeneration, so stale usage surfaces as a type error in your editor, never as a broken page.
+
+## Analytics
+
+A config that declares `analytics` has its tracking plan published on every dev-server and build start, so the dashboard can offer an event before it has ever been recorded. Dropping an event from your code drops it from that list on the next sync, while anything already recorded under that name keeps its history. See [`@stetcms/analytics`](https://github.com/jamiedavenport/stet/tree/main/published/analytics) for the plan itself and the route it feeds.
 
 ## Options
+
+Each option overrides the same key in `stet.config.ts`; leave them off and the config file decides.
 
 | Option   | Default                           | Description                                                                   |
 | -------- | --------------------------------- | ----------------------------------------------------------------------------- |
@@ -46,6 +64,7 @@ Codegen never fails your build. Without a key, or with the API unreachable, the 
 | `apiKey` | `STET_API_KEY`                    | Organization API key used to fetch the model.                                 |
 | `output` | `src/stet.gen.ts`                 | Where the generated module goes, relative to root.                            |
 | `watch`  | `true`                            | Regenerate every few seconds while the dev server runs. Never affects builds. |
+| `config` | auto-detected                     | Path to `stet.config.ts`, relative to root.                                   |
 
 See [`examples/tanstack`](https://github.com/jamiedavenport/stet/tree/main/examples/tanstack) for a complete TanStack Start app built on the generated client.
 

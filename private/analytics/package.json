@@ -4,9 +4,8 @@
   "private": true,
   "type": "module",
   "exports": {
-    "./events": "./src/events.ts",
-    "./client": "./src/client.ts",
-    "./server": "./src/server.ts"
+    ".": "./src/index.ts",
+    "./store": "./src/store.ts"
   },
   "scripts": {
     "build": "tsc --noEmit",
@@ -14,13 +13,12 @@
     "test": "vp test run"
   },
   "dependencies": {
-    "@openpanel/sdk": "catalog:",
-    "@openpanel/web": "catalog:",
-    "@repo/brand": "workspace:*",
-    "zod": "catalog:"
+    "drizzle-orm": "catalog:"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "catalog:",
+    "@types/better-sqlite3": "catalog:",
+    "better-sqlite3": "catalog:",
     "typescript": "catalog:",
     "vite-plus": "catalog:",
     "vitest": "catalog:"

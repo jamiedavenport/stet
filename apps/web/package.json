@@ -39,6 +39,7 @@
     "@repo/logging": "workspace:*",
     "@repo/mail": "workspace:*",
     "@repo/notifications": "workspace:*",
+    "@repo/openpanel": "workspace:*",
     "@repo/realtime": "workspace:*",
     "@repo/ui": "workspace:*",
     "@repo/webhooks": "workspace:*",
@@ -65,6 +66,7 @@
     "partyserver": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
+    "recharts": "catalog:",
     "uqr": "catalog:",
     "y-protocols": "catalog:",
     "yjs": "catalog:",
@@ -105,7 +107,7 @@
       "name": "client JS (gzip)",
       "path": "dist/client/**/*.js",
       "gzip": true,
-      "limit": "1 MB"
+      "limit": "1.2 MB"
     },
     {
       "name": "server worker JS (gzip)",
