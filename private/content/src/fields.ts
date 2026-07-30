@@ -2,6 +2,7 @@ import { recordAudit } from '@repo/audit';
 import type { Actor } from '@repo/audit';
 import { and, asc, database, eq, inArray, schema } from '@repo/db';
 import { entryPage } from '@repo/realtime/entry';
+import { recordContentChange } from '@repo/webhooks/content';
 
 import { requireContentType, requireField } from './access';
 import { isReferenceType, parseValues, valuesText } from './schema';
@@ -53,6 +54,14 @@ export async function createField(
     subject: { type: 'field', id, label: input.name },
     details: { fieldType: input.type, contentType: type.name },
   });
+  await recordContentChange(organizationId, {
+    subject: 'field',
+    action: 'created',
+    id,
+    type: type.slug,
+    key,
+    name: input.name,
+  });
   return { id, key };
 }
 
@@ -63,6 +72,7 @@ export async function updateField(
 ): Promise<{ key: string }> {
   const db = await database();
   const field = await requireField(organizationId, input.id);
+  const type = await requireContentType(organizationId, field.typeId);
   const name = input.name ?? field.name;
   const renamed = name !== field.name;
   // The key is the name in API form, so a rename carries it along, taking
@@ -83,6 +93,14 @@ export async function updateField(
     subject: { type: 'field', id: field.id, label: name },
     details: renamed ? { from: field.name, to: name } : {},
     coalesceMs: 10 * 60_000,
+  });
+  await recordContentChange(organizationId, {
+    subject: 'field',
+    action: 'updated',
+    id: field.id,
+    type: type.slug,
+    key,
+    name,
   });
   return { key };
 }
@@ -176,6 +194,7 @@ export async function moveField(
 
 export async function deleteField(organizationId: string, id: string, actor: Actor): Promise<void> {
   const field = await requireField(organizationId, id);
+  const type = await requireContentType(organizationId, field.typeId);
   const db = await database();
   // Stale keys left in entry values are dropped on read, so entries are
   // not rewritten here.
@@ -186,5 +205,13 @@ export async function deleteField(organizationId: string, id: string, actor: Act
     action: 'field.delete',
     subject: { type: 'field', id: field.id, label: field.name },
     details: { fieldType: field.type },
+  });
+  await recordContentChange(organizationId, {
+    subject: 'field',
+    action: 'deleted',
+    id: field.id,
+    type: type.slug,
+    key: field.key,
+    name: field.name,
   });
 }

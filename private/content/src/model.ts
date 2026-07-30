@@ -2,6 +2,7 @@ import { recordAudit } from '@repo/audit';
 import type { Actor } from '@repo/audit';
 import { and, asc, count, database, eq, inArray, schema } from '@repo/db';
 import { entryPage } from '@repo/realtime/entry';
+import { recordContentChange } from '@repo/webhooks/content';
 
 import { requireContentType } from './access';
 import { fieldTypeSchema, parseConfig } from './schema';
@@ -121,6 +122,13 @@ export async function createContentType(
     subject: { type: 'type', id, label: input.name },
     details: { kind: input.kind },
   });
+  await recordContentChange(organizationId, {
+    subject: 'type',
+    action: 'created',
+    id,
+    slug,
+    name: input.name,
+  });
   return { id, slug };
 }
 
@@ -152,6 +160,13 @@ export async function updateContentType(
     subject: { type: 'type', id: type.id, label: input.name ?? type.name },
     details: renamed ? { from: type.name, to: input.name ?? type.name } : {},
     coalesceMs: 10 * 60_000,
+  });
+  await recordContentChange(organizationId, {
+    subject: 'type',
+    action: 'updated',
+    id: type.id,
+    slug,
+    name: input.name ?? type.name,
   });
   return { slug };
 }
@@ -187,5 +202,14 @@ export async function deleteContentType(
     action: 'type.delete',
     subject: { type: 'type', id: type.id, label: type.name },
     details: { kind: type.kind, entries: entries.length },
+  });
+  // The entries that cascaded away are not reported one by one: a receiver
+  // told the collection is gone already knows everything under it went too.
+  await recordContentChange(organizationId, {
+    subject: 'type',
+    action: 'deleted',
+    id: type.id,
+    slug: type.slug,
+    name: type.name,
   });
 }

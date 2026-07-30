@@ -5,6 +5,7 @@
   "type": "module",
   "exports": {
     "./client": "./src/client.ts",
+    "./content": "./src/content.ts",
     "./registry": "./src/registry.ts",
     "./server": "./src/server.ts"
   },
@@ -16,6 +17,7 @@
   "dependencies": {
     "@repo/db": "workspace:*",
     "@repo/logging": "workspace:*",
+    "@sentry/cloudflare": "catalog:",
     "standardwebhooks": "catalog:",
     "zod": "catalog:"
   },

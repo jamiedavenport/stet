@@ -5,6 +5,7 @@ The content domain: the operations behind collections, maps, fields, entries, an
 - `./schema`: field types, per-type config, and entry value parsing (client-safe).
 - `./slug`: slug and key derivation (client-safe).
 - `./model`, `./fields`, `./entries`: server-only operations over the content model and entries. Callers authenticate and resolve the organization first; every function takes it as the first argument, and an `Actor` (see `@repo/audit`) last, so every change records who made it and through which surface.
+- Every operation here also calls `recordContentChange` from `@repo/webhooks/content`, which batches the organization's changes into one `content.changed` webhook per window. Emitting from this package rather than the server functions is what makes an edit from chat, the public API, or an import trigger a customer's rebuild exactly as one made in the UI does.
 - `./access`: server-only ownership checks (`requireContentType`, `requireField`, `requireEntry`).
 - `./body`: the rich text body schema and its serialization: TipTap extensions, body-to-markdown, and markdown-to-body. Everything here renders to markdown, so the schema must not grow an extension the renderer does not know.
 - `./write-body`: server-only body writes, routed through the entry's realtime room (see `@repo/realtime`) so open editors update live and the D1 mirror follows.

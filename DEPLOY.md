@@ -24,9 +24,11 @@ wrangler queues create stet-jobs-dlq
 
 Durable Objects need nothing created either: `ANALYTICS` (one store per
 organization, holding its product analytics), `PAGE_PRESENCE`, `CHAT_AGENT`,
-and `NOTIFICATION_HUB` are all declared in `wrangler.jsonc` and provisioned by
-the deploy. The analytics store applies its own schema on wake, so there is no
-migration step for it; see [private/analytics](private/analytics).
+`CONTENT_CHANGES` (one per organization, batching its content changes into a
+single webhook), and `NOTIFICATION_HUB` are all declared in `wrangler.jsonc`
+and provisioned by the deploy. The analytics store applies its own schema on
+wake, so there is no migration step for it; see
+[private/analytics](private/analytics).
 
 The `IMAGES` binding, which `/api/files/$id` uses to resize and re-encode
 uploads, needs nothing created. Transformations are billed per unique

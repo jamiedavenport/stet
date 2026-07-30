@@ -29,6 +29,8 @@ export type StetEvent = {
     responseStatus: number | null;
     delivered: number;
     failed: number;
+    /** Content changes a `content.changed` batch closed with. */
+    changes: number;
   };
 };
 

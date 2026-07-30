@@ -11,6 +11,7 @@ import { handleQueue } from '@repo/jobs/server';
 import { type HubEnv, NotificationHub as NotificationHubBase } from '@repo/notifications/server';
 import { PagePresenceRoom as PagePresenceRoomBase } from '@repo/realtime/server';
 import type { DocumentRoom } from '@repo/realtime/document';
+import { type BatchEnv, ContentChangeBatch as ContentChangeBatchBase } from '@repo/webhooks/server';
 import {
   InvitationReminderWorkflow as InvitationReminderWorkflowBase,
   SiteImportWorkflow as SiteImportWorkflowBase,
@@ -39,6 +40,10 @@ export const AnalyticsStore = Sentry.instrumentDurableObjectWithSentry(
 export const ChatAgent = Sentry.instrumentDurableObjectWithSentry(
   sentryOptions<Cloudflare.Env & AiEnv>,
   ChatAgentBase,
+);
+export const ContentChangeBatch = Sentry.instrumentDurableObjectWithSentry(
+  sentryOptions<BatchEnv>,
+  ContentChangeBatchBase,
 );
 export const NotificationHub = Sentry.instrumentDurableObjectWithSentry(
   sentryOptions<HubEnv>,

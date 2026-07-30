@@ -35,6 +35,11 @@
     // How long notification emails wait in a user's outbox so a burst
     // collapses into one digest. Override in .dev.vars to test quickly.
     "NOTIFICATIONS_FLUSH_SECONDS": "300",
+    // How long content changes collect before the organization's
+    // content.changed webhook fires, so an editing session triggers one
+    // rebuild rather than one per keystroke. Override in .dev.vars to test
+    // quickly.
+    "WEBHOOKS_BATCH_SECONDS": "60",
     // Stripe price id (per-seat, monthly) for the paid plan. Empty locally:
     // without STRIPE_SECRET_KEY billing runs against the built-in fake
     // Stripe, which supplies its own price id.
@@ -152,6 +157,12 @@
         "class_name": "ChatAgent",
       },
       {
+        // One per organization, batching its content changes into a single
+        // webhook per window.
+        "name": "CONTENT_CHANGES",
+        "class_name": "ContentChangeBatch",
+      },
+      {
         "name": "NOTIFICATION_HUB",
         "class_name": "NotificationHub",
       },
@@ -167,6 +178,10 @@
       "storage": "sqlite",
     },
     "ChatAgent": {
+      "type": "durable-object",
+      "storage": "sqlite",
+    },
+    "ContentChangeBatch": {
       "type": "durable-object",
       "storage": "sqlite",
     },

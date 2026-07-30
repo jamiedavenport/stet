@@ -125,6 +125,7 @@ const getNote = oc
 // enum with a satisfies check, so drift in either direction fails the type
 // check there.
 export const webhookEventTypeSchema = z.enum([
+  'content.changed',
   'member.joined',
   'invitation.created',
   'subscription.started',

@@ -9,7 +9,16 @@ Outbound webhooks on the platform's own primitives: per-organization endpoints i
 - Failures throw, so the queue redelivers with backoff up to `max_retries` and then dead-letters. Five consecutive failures (or a `410 Gone`) disable the endpoint; re-enabling resets the counter. Deliveries that outlive the queue's retries can be re-queued from the settings page with their original `webhook-id`.
 - The delivery ledger is swept nightly by a cron in `@repo/crons`: rows untouched for 30 days (`deliveryRetentionDays`) are deleted.
 - Secret rotation keeps the previous secret signing for 24 hours (two space-delimited signatures in `webhook-signature`), so receivers can roll over without dropping deliveries.
-- Ships `member.joined`, `invitation.created`, `subscription.started`, `subscription.canceled` (emitted from `@repo/auth` hooks), and `ping` for test sends.
+- Ships `content.changed` (batched, below), `member.joined`, `invitation.created`, `subscription.started`, `subscription.canceled` (emitted from `@repo/auth` hooks), and `ping` for test sends.
+
+## Batched content changes
+
+`content.changed` is the rebuild trigger, so it is deliberately not one delivery per edit: a receiver like Vercel would redeploy on every keystroke.
+
+- Every content operation in `@repo/content` calls `recordContentChange(organizationId, change)` from `./content`, which lands in that organization's `ContentChangeBatch` Durable Object (binding `CONTENT_CHANGES`). It is best-effort: a batch that cannot be reached is reported to Sentry, never raised at the editor who was saving.
+- The batch holds one record per subject, so an editing session on one entry is one line in the payload. A subject created and then edited inside the window still reports `created`; created and then deleted reports `deleted`.
+- A single alarm closes the window after `WEBHOOKS_BATCH_SECONDS` (wrangler var, 60 by default; override in `.dev.vars` to watch a rebuild fire quickly) and emits one event through `emitWebhookEvent()`. The alarm is armed only when none is pending and never pushed back by a new change, so continuous editing still flushes once per window.
+- Past `maxBatchChanges` records the batch stops growing and sets `truncated`, which is the signal to resync rather than read the list. A site import lands here.
 
 ## Adding an event type
 

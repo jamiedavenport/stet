@@ -2,6 +2,7 @@ import type { WebhookEventType as ContractWebhookEventType } from '@repo/api';
 import type { z } from 'zod';
 
 import type { WebhookEventDefinition } from './define';
+import { contentChanged } from './events/content-changed';
 import { invitationCreated } from './events/invitation-created';
 import { memberJoined } from './events/member-joined';
 import { ping } from './events/ping';
@@ -18,6 +19,7 @@ import { subscriptionCanceled, subscriptionStarted } from './events/subscription
 // error. The import is type-only, so no runtime coupling reaches the
 // browser bundle or the queue consumer.
 export const registry = {
+  [contentChanged.type]: contentChanged,
   [memberJoined.type]: memberJoined,
   [invitationCreated.type]: invitationCreated,
   [subscriptionStarted.type]: subscriptionStarted,
