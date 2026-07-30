@@ -4,9 +4,10 @@ import { and, database, desc, eq, schema } from '@repo/db';
 import { loadDocument } from '@repo/realtime/document';
 import type { DocumentRoom } from '@repo/realtime/document';
 import { entryIdFromPage, entryPage } from '@repo/realtime/entry';
+import { recordContentChange } from '@repo/webhooks/content';
 import type { Doc } from 'yjs';
 
-import { requireEntry } from './access';
+import { requireContentType, requireEntry } from './access';
 import { bodyMarkdown } from './body';
 import { parseValues, valuesText } from './schema';
 import { slugify, uniqueSlug } from './slug';
@@ -48,7 +49,8 @@ async function latestRevision(entryId: string) {
   });
 }
 
-async function writeRevision(entry: EntryRow, bodies: string, actor: Actor): Promise<void> {
+/** Whether the snapshot differed from the latest one, so anything was written. */
+async function writeRevision(entry: EntryRow, bodies: string, actor: Actor): Promise<boolean> {
   const db = await database();
   const latest = await latestRevision(entry.id);
   const identical =
@@ -58,7 +60,7 @@ async function writeRevision(entry: EntryRow, bodies: string, actor: Actor): Pro
     latest.values === entry.values &&
     latest.bodies === bodies;
   if (identical) {
-    return;
+    return false;
   }
   const coalesce =
     latest !== undefined &&
@@ -70,7 +72,7 @@ async function writeRevision(entry: EntryRow, bodies: string, actor: Actor): Pro
       .update(schema.contentRevision)
       .set({ title: entry.title, slug: entry.slug, values: entry.values, bodies })
       .where(eq(schema.contentRevision.id, latest.id));
-    return;
+    return true;
   }
   await db.insert(schema.contentRevision).values({
     id: crypto.randomUUID(),
@@ -84,6 +86,7 @@ async function writeRevision(entry: EntryRow, bodies: string, actor: Actor): Pro
     via: actor.via,
     createdAt: new Date(),
   });
+  return true;
 }
 
 /**
@@ -126,9 +129,23 @@ export async function recordBodyRevision(room: DocumentRoom, doc: Doc): Promise<
   if (entry === undefined) {
     return;
   }
-  await writeRevision(entry, JSON.stringify(documentBodies(doc)), {
+  const written = await writeRevision(entry, JSON.stringify(documentBodies(doc)), {
     userId: null,
     via: 'editor',
+  });
+  // A room flushes on a timer whether or not anyone typed, so the snapshot is
+  // what says a body actually moved.
+  if (!written) {
+    return;
+  }
+  const type = await requireContentType(room.organizationId, entry.typeId);
+  await recordContentChange(room.organizationId, {
+    subject: 'entry',
+    action: 'updated',
+    id: entry.id,
+    type: type.slug,
+    slug: entry.slug,
+    title: entry.title,
   });
 }
 
@@ -243,6 +260,15 @@ export async function restoreEntryRevision(
     action: 'entry.restore',
     subject: { type: 'entry', id: entry.id, label: revision.title },
     details: { revisionId: revision.id, revisionOf: revision.createdAt.toISOString() },
+  });
+  const type = await requireContentType(organizationId, entry.typeId);
+  await recordContentChange(organizationId, {
+    subject: 'entry',
+    action: 'updated',
+    id: entry.id,
+    type: type.slug,
+    slug,
+    title: revision.title,
   });
   return { slug };
 }

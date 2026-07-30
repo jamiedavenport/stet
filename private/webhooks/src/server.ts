@@ -1,3 +1,7 @@
+export { ContentChangeBatch } from './batch';
+export type { BatchEnv } from './batch';
+export { addChange, maxBatchChanges } from './changes';
+export type { ChangeBatch } from './changes';
 export {
   deliverWebhookEvent,
   deliverWebhookSchema,

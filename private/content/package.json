@@ -25,6 +25,7 @@
     "@repo/audit": "workspace:*",
     "@repo/db": "workspace:*",
     "@repo/realtime": "workspace:*",
+    "@repo/webhooks": "workspace:*",
     "@tiptap/core": "catalog:",
     "@tiptap/extension-image": "catalog:",
     "@tiptap/extension-table": "catalog:",

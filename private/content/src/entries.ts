@@ -2,6 +2,7 @@ import { recordAudit } from '@repo/audit';
 import type { Actor } from '@repo/audit';
 import { and, database, eq, schema } from '@repo/db';
 import { entryPage } from '@repo/realtime/entry';
+import { recordContentChange } from '@repo/webhooks/content';
 
 import { requireContentType, requireEntry } from './access';
 import { recordEntryRevision } from './revisions';
@@ -52,6 +53,14 @@ export async function createEntry(
     action: 'entry.create',
     subject: { type: 'entry', id, label: title },
   });
+  await recordContentChange(organizationId, {
+    subject: 'entry',
+    action: 'created',
+    id,
+    type: type.slug,
+    slug,
+    title,
+  });
   return { id, slug };
 }
 
@@ -62,6 +71,7 @@ export async function updateEntry(
 ): Promise<{ slug: string }> {
   const db = await database();
   const entry = await requireEntry(organizationId, input.id);
+  const type = await requireContentType(organizationId, entry.typeId);
   let slug = entry.slug;
   if (input.slug !== undefined && slugify(input.slug) !== entry.slug) {
     const siblings = await db.query.contentEntry.findMany({
@@ -92,12 +102,21 @@ export async function updateEntry(
     subject: { type: 'entry', id: entry.id, label: input.title ?? entry.title },
     coalesceMs: editCoalesceMs,
   });
+  await recordContentChange(organizationId, {
+    subject: 'entry',
+    action: 'updated',
+    id: entry.id,
+    type: type.slug,
+    slug,
+    title: input.title ?? entry.title,
+  });
   return { slug };
 }
 
 export async function deleteEntry(organizationId: string, id: string, actor: Actor): Promise<void> {
   const db = await database();
   const entry = await requireEntry(organizationId, id);
+  const type = await requireContentType(organizationId, entry.typeId);
   // The body document does not cascade with the row.
   await db
     .delete(schema.document)
@@ -113,5 +132,13 @@ export async function deleteEntry(organizationId: string, id: string, actor: Act
     actor,
     action: 'entry.delete',
     subject: { type: 'entry', id: entry.id, label: entry.title },
+  });
+  await recordContentChange(organizationId, {
+    subject: 'entry',
+    action: 'deleted',
+    id: entry.id,
+    type: type.slug,
+    slug: entry.slug,
+    title: entry.title,
   });
 }
