@@ -9,6 +9,7 @@
   },
   "scripts": {
     "build": "tsc --noEmit",
+    "seed": "tsx scripts/seed.ts",
     "tc": "tsc --noEmit",
     "test": "vp test run"
   },
@@ -17,8 +18,10 @@
   },
   "devDependencies": {
     "@cloudflare/workers-types": "catalog:",
+    "@repo/db": "workspace:*",
     "@types/better-sqlite3": "catalog:",
     "better-sqlite3": "catalog:",
+    "tsx": "catalog:",
     "typescript": "catalog:",
     "vite-plus": "catalog:",
     "vitest": "catalog:"

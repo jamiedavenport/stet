@@ -60,6 +60,35 @@ address never reaches storage. Addresses and user agents never arrive at all:
 the customer's handler hashes them into a day-scoped visitor digest and keeps
 the inputs.
 
+## Demo traffic
+
+A new store is empty, so the dashboard demos as a blank chart. With `vp dev`
+running and the database seeded (`pnpm --filter @repo/db seed`), backfill a
+month of synthetic traffic for the seeded organization:
+
+```bash
+pnpm seed
+```
+
+It reads the seeded model through `/api/v1/model` and sends its traffic to
+the pages those entries are served on, so per-entry numbers point at content
+that exists: examples/tanstack serves the `posts` collection at
+`/blog/<slug>` and the `landing` map at `/`. Each visit is one POST to
+`/api/v1/events`, the endpoint a customer's mounted handler posts to, so
+rollups and retention behave the way they will in production.
+
+`src/synthetic.ts` shapes it, deterministically from a seed: a working-week
+rhythm over a gentle upward trend, one day the site is discovered and traffic
+spikes, and the example app's `post.read`, `post.finished` and `subscribe` on
+top of the pageviews. `--origin`, `--key`, `--site`, `--days` and `--seed`
+point it elsewhere; `STET_ORIGIN` and `STET_API_KEY` are read too.
+
+Traffic adds to whatever the store already holds, so a second run leaves two
+months stacked. Worse, once the alarm has folded an hour into rollups, ingest
+clamps anything older to that watermark and a reseed piles the whole month
+into one bucket. For a clean start delete `apps/web/.wrangler/state`, which
+resets the local D1 database as well, and seed both again.
+
 ## Schema changes
 
 `schemaStatements` is applied by the Durable Object on wake and by the tests
