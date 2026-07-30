@@ -1,6 +1,15 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Button } from '@repo/ui/components/button';
 import { Input } from '@repo/ui/components/input';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from '@repo/ui/components/dropdown-menu';
 import { Popover, PopoverContent, PopoverTrigger } from '@repo/ui/components/popover';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import {
@@ -38,36 +47,59 @@ export function FieldHeader({ field, orientation = 'column', onChanged }: FieldH
   const { activeOrganization } = useAppRoute();
   const model = useSuspenseQuery(contentModelQuery(activeOrganization.id)).data;
   const [name, setName] = useState(field.name);
-  const options = field.config.options ?? [];
+  const [options, setOptions] = useState(field.config.options ?? []);
+  // Refetching the model rebuilds the table's columns, which remounts this
+  // header and closes the popover mid-edit. So settings render from local
+  // state and the refetch waits for the popover to close. Closing races the
+  // write that dismissing the popover started, hence the in-flight one.
+  const writing = useRef<Promise<unknown> | null>(null);
   const hasOptions = field.type === 'select' || field.type === 'multi_select';
   // What a reference points at, named rather than shown as its id. Absent if
   // the target collection has since been deleted.
   const target = model.types.find((candidate) => candidate.id === field.config.typeId);
 
+  const write = async (change: { name?: string; config?: { options: SelectOption[] } }) => {
+    const settled = updateField({ data: { id: field.id, ...change } });
+    writing.current = settled;
+    await settled;
+  };
+
+  const refresh = async () => {
+    const settled = writing.current;
+    writing.current = null;
+    await settled;
+    await onChanged();
+  };
+
   const rename = async () => {
     if (name.trim().length === 0 || name.trim() === field.name) {
       return;
     }
-    await updateField({ data: { id: field.id, name: name.trim() } });
-    await onChanged();
+    await write({ name: name.trim() });
   };
 
   const saveOptions = async (next: SelectOption[]) => {
-    await updateField({ data: { id: field.id, config: { options: next } } });
-    await onChanged();
+    setOptions(next);
+    await write({ config: { options: next } });
   };
 
   const move = async (direction: 'left' | 'right') => {
     await moveField({ data: { id: field.id, direction } });
-    await onChanged();
+    await refresh();
   };
 
   const remove = async () => {
     await deleteField({ data: { id: field.id } });
-    await onChanged();
+    await refresh();
   };
 
-  <Popover>
+  <Popover
+    onOpenChange={(open) => {
+      if (!open && writing.current !== null) {
+        void refresh();
+      }
+    }}
+  >
     <PopoverTrigger className="flex items-center gap-1 rounded-md px-1 font-medium hover:bg-muted/60">
       {field.name}
     </PopoverTrigger>
@@ -216,55 +248,29 @@ type AddFieldProps = {
   onCreated: () => Promise<void>;
 };
 
+const simpleTypes = fieldTypes.filter((type) => !isReferenceType(type));
+const referenceFieldTypes = fieldTypes.filter((type) => isReferenceType(type));
+
 /**
- * The "add a field" trigger: name a field and pick its type. A reference type
- * takes a second step, because it cannot exist without knowing the collection
- * it points at.
+ * The "add a field" menu: pick a type and the field exists, named "Untitled"
+ * until its header renames it. A reference type opens a submenu instead,
+ * because it cannot exist without knowing the collection it points at.
  */
 export function AddField({ typeId, label, onCreated }: AddFieldProps) @{
   const { activeOrganization } = useAppRoute();
   const model = useSuspenseQuery(contentModelQuery(activeOrganization.id)).data;
-  const [open, setOpen] = useState(false);
-  const [name, setName] = useState('');
-  const [referenceType, setReferenceType] = useState<FieldType | null>(null);
 
   const collections = model.types.filter(
     (candidate) => candidate.kind === 'collection' && candidate.id !== typeId,
   );
 
-  const close = () => {
-    setName('');
-    setReferenceType(null);
-    setOpen(false);
-  };
-
   const create = async (type: FieldType, config?: { typeId: string }) => {
-    if (name.trim().length === 0) {
-      return;
-    }
-    await createField({ data: { typeId, name: name.trim(), type, config } });
-    close();
+    await createField({ data: { typeId, name: 'Untitled', type, config } });
     await onCreated();
   };
 
-  const pickType = (type: FieldType) => {
-    if (isReferenceType(type)) {
-      setReferenceType(type);
-      return;
-    }
-    void create(type);
-  };
-
-  <Popover
-    open={open}
-    onOpenChange={(next) => {
-      setOpen(next);
-      if (!next) {
-        close();
-      }
-    }}
-  >
-    <PopoverTrigger
+  <DropdownMenu>
+    <DropdownMenuTrigger
       aria-label={"Add a field"}
       className={
         label === undefined
@@ -276,57 +282,29 @@ export function AddField({ typeId, label, onCreated }: AddFieldProps) @{
       @if (label !== undefined) {
         <span>{label}</span>
       }
-    </PopoverTrigger>
-    <PopoverContent align="end" className="flex w-64 flex-col gap-2 p-3">
-      @if (referenceType === null) {
-        <>
-        <Input
-          autoFocus
-          value={name}
-          placeholder={"Field name"}
-          aria-label={"Field name"}
-          onChange={(event) => setName(event.target.value)}
-        />
-        <div className="grid grid-cols-2 gap-1">
-          @for (const type of fieldTypes; key type) {
-            <Button
-              variant="outline"
-              size="sm"
-              className="justify-start"
-              disabled={name.trim().length === 0}
-              onClick={() => pickType(type)}
-            >
-              {fieldTypeLabels[type]}
-            </Button>
-          }
-        </div>
-        </>
-      } @else {
-        <>
-        <p className="text-sm text-muted-foreground">
-          {"Which collection should "}
-          <span className="text-foreground">{name.trim()}</span>
-          {" point at?"}
-        </p>
-        @for (const candidate of collections; key candidate.id) {
-          <Button
-            variant="outline"
-            size="sm"
-            className="justify-start"
-            onClick={() => void create(referenceType, { typeId: candidate.id })}
-          >
-            {candidate.name}
-          </Button>
-        } @empty {
-          <p className="text-sm text-muted-foreground">
-            {"There is no other collection to point at yet. Create one first."}
-          </p>
-        }
-        <Button variant="ghost" size="sm" onClick={() => setReferenceType(null)}>
-          {"Back"}
-        </Button>
-        </>
+    </DropdownMenuTrigger>
+    <DropdownMenuContent align="end" className="w-44">
+      @for (const type of simpleTypes; key type) {
+        <DropdownMenuItem onClick={() => void create(type)}>
+          {fieldTypeLabels[type]}
+        </DropdownMenuItem>
       }
-    </PopoverContent>
-  </Popover>
+      @for (const type of referenceFieldTypes; key type) {
+        <DropdownMenuSub>
+          <DropdownMenuSubTrigger>{fieldTypeLabels[type]}</DropdownMenuSubTrigger>
+          <DropdownMenuSubContent className="w-48">
+            @for (const candidate of collections; key candidate.id) {
+              <DropdownMenuItem onClick={() => void create(type, { typeId: candidate.id })}>
+                {candidate.name}
+              </DropdownMenuItem>
+            } @empty {
+              <p className="px-2 py-1.5 text-sm text-muted-foreground">
+                {"No other collection to point at yet."}
+              </p>
+            }
+          </DropdownMenuSubContent>
+        </DropdownMenuSub>
+      }
+    </DropdownMenuContent>
+  </DropdownMenu>
 }

@@ -21,6 +21,18 @@ async function createType(
   await expect(nameInput).toHaveValue(name);
 }
 
+// Picking a type from the add menu creates the field as "Untitled"; naming it
+// is a separate step in the header it now has.
+async function addField(page: import('@playwright/test').Page, type: string, name: string) {
+  await page.getByRole('button', { name: 'Add a field' }).click();
+  await page.getByRole('menuitem', { name: type, exact: true }).click();
+  await page.getByRole('button', { name: 'Untitled', exact: true }).click();
+  await page.getByLabel('Field name').fill(name);
+  await page.keyboard.press('Enter');
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('button', { name, exact: true })).toBeVisible();
+}
+
 // The whole editor-side happy path: model a collection from the sidebar,
 // shape its fields, fill an entry inline in the table (title and slug
 // included), and write its body in the entry editor.
@@ -33,14 +45,8 @@ test('collections: model, table editing, and the entry editor', async ({ page })
   // Creation lands on the new collection's table, its name editable in place.
   await expect(page.getByLabel('Collection name')).toHaveValue(name);
 
-  await page.getByRole('button', { name: 'Add a field' }).click();
-  await page.getByLabel('Field name').fill('Summary');
-  await page.getByRole('button', { name: 'Text', exact: true }).click();
-  await expect(page.getByRole('button', { name: 'Summary', exact: true })).toBeVisible();
-
-  await page.getByRole('button', { name: 'Add a field' }).click();
-  await page.getByLabel('Field name').fill('Body');
-  await page.getByRole('button', { name: 'Rich text' }).click();
+  await addField(page, 'Text', 'Summary');
+  await addField(page, 'Rich text', 'Body');
 
   await page.getByRole('button', { name: 'New entry' }).click();
   const row = page.getByRole('row').filter({ hasText: 'Untitled' });
@@ -95,14 +101,8 @@ test('the public API serves modelled content with markdown bodies', async ({ pag
   await createType(page, 'collection', name);
   await expect(page.getByLabel('Collection name')).toHaveValue(name);
 
-  await page.getByRole('button', { name: 'Add a field' }).click();
-  await page.getByLabel('Field name').fill('Summary');
-  await page.getByRole('button', { name: 'Text', exact: true }).click();
-  await expect(page.getByRole('button', { name: 'Summary', exact: true })).toBeVisible();
-  await page.getByRole('button', { name: 'Add a field' }).click();
-  await page.getByLabel('Field name').fill('Body');
-  await page.getByRole('button', { name: 'Rich text' }).click();
-  await expect(page.getByRole('button', { name: 'Body', exact: true })).toBeVisible();
+  await addField(page, 'Text', 'Summary');
+  await addField(page, 'Rich text', 'Body');
 
   await page.getByRole('button', { name: 'New entry' }).click();
   const row = page.getByRole('row').filter({ hasText: 'Untitled' });
@@ -167,9 +167,7 @@ test('maps edit as a key/value table', async ({ page }) => {
   await createType(page, 'map', name);
   await expect(page.getByLabel('Map name')).toHaveValue(name);
 
-  await page.getByRole('button', { name: 'Add a field' }).click();
-  await page.getByLabel('Field name').fill('Headline');
-  await page.getByRole('button', { name: 'Text', exact: true }).click();
+  await addField(page, 'Text', 'Headline');
 
   const headline = page.getByRole('row').filter({ hasText: 'Headline' });
   await headline.getByRole('button', { name: 'Headline value' }).click();
@@ -177,9 +175,7 @@ test('maps edit as a key/value table', async ({ page }) => {
   await page.keyboard.press('Enter');
   await expect(headline.getByText('Both teams at full speed')).toBeVisible();
 
-  await page.getByRole('button', { name: 'Add a field' }).click();
-  await page.getByLabel('Field name').fill('Pitch');
-  await page.getByRole('button', { name: 'Rich text' }).click();
+  await addField(page, 'Rich text', 'Pitch');
 
   const pitch = page.getByRole('row').filter({ hasText: 'Pitch' });
   await pitch.getByRole('link', { name: 'Open', exact: true }).click();
