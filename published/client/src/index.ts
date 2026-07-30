@@ -15,7 +15,7 @@ export type { ContentEntry, ContentType, Organization } from '@repo/api';
 export { entryTypeName, fetchContentModel, renderContentModule } from './codegen';
 export type { ContentModel } from './codegen';
 
-export { createContentClient, DEFAULT_ORIGIN } from './content';
+export { assetUrl, createContentClient, DEFAULT_ORIGIN, resolveAssetPaths } from './content';
 export type {
   CollectionClient,
   ContentAsset,

@@ -16,7 +16,7 @@ const post = await stet.posts.get('hello-world');
 const landing = await stet.landing.get(); // a map: one entry, no slug
 ```
 
-Rich text fields arrive as markdown, selects as option names, person fields as `{ id, name }`, assets as `{ id, url, name, contentType, size }` whose `url` needs no key, and references as `{ id, slug, title }` (an array for multi-reference). Keep the API key server-side: fetch content from loaders, server functions, or your own backend rather than the browser.
+Rich text fields arrive as markdown, selects as option names, person fields as `{ id, name }`, assets as `{ id, url, name, contentType, size }` whose `url` is whole and needs no key, and references as `{ id, slug, title }` (an array for multi-reference). Keep the API key server-side: fetch content from loaders, server functions, or your own backend rather than the browser.
 
 ## Install
 
@@ -60,3 +60,9 @@ The API itself is plain REST under `/api/v1`, described by the OpenAPI document 
 ## License
 
 Apache-2.0
+
+## Asset URLs
+
+The API returns asset paths relative to itself; the client joins them to the `origin` it was created with, so what you get is ready for an `img` tag on your own origin. That covers both an asset field's `url` and the images inside a rich text body, so a body renders as it stands.
+
+Calling the REST API directly instead? `assetUrl(url, origin)` joins one value and `resolveAssetPaths(markdown, origin)` joins the ones inside a body.

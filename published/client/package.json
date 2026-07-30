@@ -40,7 +40,8 @@
   },
   "scripts": {
     "build": "vp pack",
-    "tc": "tsc --noEmit"
+    "tc": "tsc --noEmit",
+    "test": "vp test run"
   },
   "dependencies": {
     "@orpc/client": "catalog:",
@@ -53,6 +54,7 @@
     "@repo/api": "workspace:*",
     "publint": "catalog:",
     "typescript": "catalog:",
-    "vite-plus": "catalog:"
+    "vite-plus": "catalog:",
+    "vitest": "catalog:"
   }
 }

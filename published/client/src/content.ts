@@ -25,8 +25,10 @@ export type ContentReference = {
 };
 
 /**
- * What an asset field holds. `url` is absolute-path and public: it serves
- * without a key, so it can go straight into an `img` tag or a download link.
+ * What an asset field holds. `url` is a fully-qualified, public URL: the API
+ * returns it relative to itself and the client resolves it against the origin
+ * it was configured with, so it can go straight into an `img` tag or a
+ * download link on your own site, which is a different origin.
  */
 export type ContentAsset = {
   id: string;
@@ -75,6 +77,60 @@ export type ContentClientOptions = {
   fetch?: typeof globalThis.fetch;
 };
 
+/** The path the API serves public content assets from. */
+const assetPath = '/assets/';
+
+/**
+ * Joins an asset path to the Stet origin. Anything already absolute is left
+ * alone, so a future API that returns whole URLs needs no change here.
+ */
+export function assetUrl(url: string, origin: string): string {
+  return url.startsWith(assetPath) ? `${origin}${url}` : url;
+}
+
+// Asset paths inside a rich text body: markdown link and image destinations
+// (`![alt](/assets/id)`), and the `src` of any raw HTML a body carries.
+const assetPathInText = /(\]\(|src=["'])(\/assets\/)/g;
+
+/**
+ * The same join applied inside a body's markdown, so an image an editor
+ * dropped into a body renders on your site as readily as an asset field does.
+ */
+export function resolveAssetPaths(text: string, origin: string): string {
+  return text.replace(
+    assetPathInText,
+    (_match, prefix: string) => `${prefix}${origin}${assetPath}`,
+  );
+}
+
+/**
+ * Rewrites every asset URL in a response to a whole URL: an asset field's
+ * value, and the images an editor dropped into a rich text body.
+ *
+ * The API returns them relative to itself, because it is the same bytes
+ * whichever origin serves them and baking one in would pin stored content to
+ * a domain. Your site is a different origin, so a relative path would resolve
+ * against yours; the client owns the join because the origin is exactly what
+ * it was configured with.
+ */
+function resolveAssetUrls(payload: unknown, origin: string): unknown {
+  if (Array.isArray(payload)) {
+    return payload.map((item) => resolveAssetUrls(item, origin));
+  }
+  if (typeof payload !== 'object' || payload === null) {
+    return payload;
+  }
+  const entries = Object.entries(payload as Record<string, unknown>).map(([key, value]) => {
+    if (typeof value === 'string') {
+      // An asset field's whole value, or a body's embedded ones. The two
+      // patterns cannot both match a given string, so the order is arbitrary.
+      return [key, key === 'url' ? assetUrl(value, origin) : resolveAssetPaths(value, origin)];
+    }
+    return [key, resolveAssetUrls(value, origin)];
+  });
+  return Object.fromEntries(entries);
+}
+
 /**
  * The model-shaped client `stet.gen.ts` instantiates: `stet.posts.list()`,
  * `stet.posts.get('hello-world')`, `stet.landing.get()`. The type parameter
@@ -94,7 +150,7 @@ export function createContentClient<M extends ContentModelShape>(
     if (!response.ok) {
       throw new Error(`Stet request ${path} failed with status ${response.status}.`);
     }
-    return response.json();
+    return resolveAssetUrls(await response.json(), origin);
   };
 
   const listEntries = async (slug: string): Promise<unknown[]> => {
