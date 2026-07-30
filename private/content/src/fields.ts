@@ -1,10 +1,10 @@
 import { recordAudit } from '@repo/audit';
 import type { Actor } from '@repo/audit';
-import { and, asc, database, eq, inArray, schema } from '@repo/db';
+import { and, database, eq, inArray, schema } from '@repo/db';
 import { entryPage } from '@repo/realtime/entry';
 import { recordContentChange } from '@repo/webhooks/content';
 
-import { requireContentType, requireField } from './access';
+import { liveFields, requireContentType, requireField } from './access';
 import { isReferenceType, parseValues, valuesText } from './schema';
 import type { FieldConfig, FieldType } from './schema';
 import { slugify, uniqueSlug } from './slug';
@@ -31,6 +31,8 @@ export async function createField(
       throw new Error('A reference field must point at a collection');
     }
   }
+  // Tombstones count as siblings: a new field must not take a deleted one's
+  // key and inherit the values entries still hold under it.
   const siblings = await db.query.contentField.findMany({
     where: eq(schema.contentField.typeId, type.id),
     columns: { key: true, position: true },
@@ -114,6 +116,7 @@ type StoredField = Awaited<ReturnType<typeof requireField>>;
  */
 async function rekey(organizationId: string, field: StoredField, name: string): Promise<string> {
   const db = await database();
+  // Tombstones included, for the reason createField includes them.
   const siblings = await db.query.contentField.findMany({
     where: eq(schema.contentField.typeId, field.typeId),
     columns: { id: true, key: true },
@@ -173,10 +176,9 @@ export async function moveField(
 ): Promise<void> {
   const db = await database();
   const field = await requireField(organizationId, input.id);
-  const siblings = await db.query.contentField.findMany({
-    where: eq(schema.contentField.typeId, field.typeId),
-    orderBy: asc(schema.contentField.position),
-  });
+  // Tombstones are excluded here, unlike in the key checks: a move steps past
+  // the neighbour the editor can see, not one they cannot.
+  const siblings = await liveFields(field.typeId);
   const index = siblings.findIndex((sibling) => sibling.id === field.id);
   const neighbor = siblings[input.direction === 'left' ? index - 1 : index + 1];
   if (neighbor === undefined) {
@@ -192,13 +194,22 @@ export async function moveField(
     .where(eq(schema.contentField.id, neighbor.id));
 }
 
+/**
+ * Retires a field. The row is tombstoned rather than removed: `/api/v1/model`
+ * keeps serving it so the generated client can deprecate the key, which is
+ * what lets a developer's build survive a deletion made in the UI and migrate
+ * on its own schedule.
+ */
 export async function deleteField(organizationId: string, id: string, actor: Actor): Promise<void> {
   const field = await requireField(organizationId, id);
   const type = await requireContentType(organizationId, field.typeId);
   const db = await database();
   // Stale keys left in entry values are dropped on read, so entries are
   // not rewritten here.
-  await db.delete(schema.contentField).where(eq(schema.contentField.id, field.id));
+  await db
+    .update(schema.contentField)
+    .set({ deletedAt: new Date() })
+    .where(eq(schema.contentField.id, field.id));
   await recordAudit({
     organizationId,
     actor,

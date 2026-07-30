@@ -5,6 +5,7 @@ import { ORPCError } from '@orpc/server';
 
 import { authenticated, os } from '#/api/implementer';
 import { publicAssetUrl } from '#/files/urls';
+import { liveFields } from '@repo/content/access';
 import { fieldTypeSchema, isReferenceType, parseConfig, parseValues } from '@repo/content/schema';
 import type { FieldValue } from '@repo/content/schema';
 import { bodyMarkdown } from '@repo/content/body';
@@ -16,6 +17,8 @@ type Field = {
   options: { id: string; name: string; color: string }[];
   /** The content type a reference field points at; undefined for other types. */
   targetTypeId?: string;
+  /** Deleted from the model. Only the model route carries these. */
+  deprecated: boolean;
 };
 
 /** What ids in entry values resolve to, gathered once per request. */
@@ -49,22 +52,35 @@ async function loadType(organizationId: string, slug: string) {
   return { ...type, fields: await loadFields(type.id) };
 }
 
+function toField(row: typeof schema.contentField.$inferSelect): Field {
+  const config = parseConfig(row.config);
+  return {
+    key: row.key,
+    name: row.name,
+    type: fieldTypeSchema.parse(row.type),
+    options: config.options ?? [],
+    targetTypeId: config.typeId,
+    deprecated: row.deletedAt !== null,
+  };
+}
+
+/** The fields entries are read through: what an editor can still fill in. */
 async function loadFields(typeId: string): Promise<Field[]> {
+  return (await liveFields(typeId)).map(toField);
+}
+
+/**
+ * The fields the model is published with, tombstones and all. A deleted field
+ * stays here as a deprecation so a regenerated client marks the key rather
+ * than dropping it out from under code that reads it.
+ */
+async function loadModelFields(typeId: string): Promise<Field[]> {
   const db = await database();
   const rows = await db.query.contentField.findMany({
     where: eq(schema.contentField.typeId, typeId),
     orderBy: asc(schema.contentField.position),
   });
-  return rows.map((row) => {
-    const config = parseConfig(row.config);
-    return {
-      key: row.key,
-      name: row.name,
-      type: fieldTypeSchema.parse(row.type),
-      options: config.options ?? [],
-      targetTypeId: config.typeId,
-    };
-  });
+  return rows.map(toField);
 }
 
 /**
@@ -112,6 +128,7 @@ function publicType(
       options: field.options.map((option) => ({ name: option.name, color: option.color })),
       collection:
         field.targetTypeId === undefined ? undefined : referenceSlugs.get(field.targetTypeId),
+      deprecated: field.deprecated ? true : undefined,
     })),
   };
 }
@@ -274,7 +291,7 @@ const getContentModel = os.content.model.use(authenticated).handler(async ({ con
     orderBy: asc(schema.contentType.createdAt),
   });
   const withFields = await Promise.all(
-    types.map(async (type) => ({ ...type, fields: await loadFields(type.id) })),
+    types.map(async (type) => ({ ...type, fields: await loadModelFields(type.id) })),
   );
   const referenceSlugs = await loadReferenceSlugs(
     context.organizationId,

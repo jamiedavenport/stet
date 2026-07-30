@@ -36,6 +36,20 @@ Renaming a field renames its key with it, and the entries and bodies stored
 under the old key move across, so the model never carries a name it has
 outgrown. Your client picks the new key up the next time it is generated.
 
+## Deleting a field
+
+Deleting a field takes it out of the app straight away: editors stop seeing it,
+and entries stop returning a value for it.
+
+Your code is told rather than broken. The key stays in your generated types
+marked [`@deprecated`](/reference/codegen), so your editor strikes it through
+where you read it and your build carries on. A deletion made in the UI reaches
+a running dev server within seconds, so this matters: engineering finds out on
+its own schedule instead of at a red build someone else caused.
+
+A deleted key is never handed back. Creating a field with the same name again
+gives it a new key, so nothing inherits the values entries still hold.
+
 ## Assets
 
 An asset field holds one uploaded file: an image, a PDF, a video. The client

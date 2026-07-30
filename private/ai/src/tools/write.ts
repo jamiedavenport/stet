@@ -1,4 +1,5 @@
 import type { Actor } from '@repo/audit';
+import { liveFields } from '@repo/content/access';
 import * as entries from '@repo/content/entries';
 import * as fields from '@repo/content/fields';
 import * as model from '@repo/content/model';
@@ -10,7 +11,7 @@ import {
 } from '@repo/content/schema';
 import type { SelectOption } from '@repo/content/schema';
 import { writeEntryBody } from '@repo/content/write-body';
-import { and, asc, database, eq, schema } from '@repo/db';
+import { and, database, eq, schema } from '@repo/db';
 import { tool } from 'ai';
 import type { ToolSet } from 'ai';
 import { z } from 'zod';
@@ -80,11 +81,7 @@ async function createFieldWithOptions(
  * live in the entry's collaborative document, not in `values`.
  */
 async function writableKeys(typeId: string): Promise<string[]> {
-  const db = await database();
-  const rows = await db.query.contentField.findMany({
-    where: eq(schema.contentField.typeId, typeId),
-    orderBy: asc(schema.contentField.position),
-  });
+  const rows = await liveFields(typeId);
   return rows.filter((row) => row.type !== 'rich_text').map((row) => row.key);
 }
 
@@ -169,7 +166,9 @@ export function contentWriteTools(organizationId: string, actor: Actor): ToolSet
     }),
 
     deleteField: tool({
-      description: 'Delete a field from a collection or map. Entry values under it are dropped.',
+      description:
+        'Delete a field from a collection or map. Entry values under it are dropped, and ' +
+        'generated clients see the key deprecated rather than removed.',
       inputSchema: z.object({ fieldId: z.string().describe('From getContentModel') }),
       needsApproval: true,
       execute: async ({ fieldId }) => {
@@ -261,16 +260,9 @@ export function contentWriteTools(organizationId: string, actor: Actor): ToolSet
         if (entry === undefined) {
           return { error: 'No entry has that id.' };
         }
-        const field = await db.query.contentField.findFirst({
-          where: and(
-            eq(schema.contentField.typeId, entry.typeId),
-            eq(schema.contentField.key, fieldKey),
-          ),
-        });
+        const rows = await liveFields(entry.typeId);
+        const field = rows.find((row) => row.key === fieldKey);
         if (field === undefined || field.type !== 'rich_text') {
-          const rows = await db.query.contentField.findMany({
-            where: eq(schema.contentField.typeId, entry.typeId),
-          });
           return {
             error: `"${fieldKey}" is not a rich_text field of this entry.`,
             richTextKeys: rows.filter((row) => row.type === 'rich_text').map((row) => row.key),

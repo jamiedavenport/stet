@@ -265,6 +265,14 @@ export const contentFieldSchema = z.object({
   options: z.array(z.object({ name: z.string(), color: z.string() })),
   /** Slug of the collection a reference or multi-reference field points at. */
   collection: z.string().optional(),
+  /**
+   * Present, and true, once the field has been deleted from the model. Only
+   * `/model` carries these: entries no longer hold a value for the key, so
+   * the routes that describe a payload leave them out. A generated client
+   * turns the flag into a deprecation rather than dropping the key, so code
+   * reading it keeps compiling.
+   */
+  deprecated: z.boolean().optional(),
 });
 
 export const contentTypeSchema = z.object({
@@ -306,7 +314,8 @@ const getContentModel = oc
     summary: 'Content model',
     description:
       'Every collection and map in the organization with its fields. The generated client is ' +
-      'typed from this.',
+      'typed from this. Deleted fields are still listed, flagged `deprecated`, so a client ' +
+      'regenerated after a deletion marks the key instead of dropping it.',
     tags: ['Content'],
   })
   .output(z.object({ types: z.array(contentTypeSchema) }));

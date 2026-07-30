@@ -97,6 +97,65 @@ describe('renderContentModule', () => {
     expect(code).toContain('"landing": { kind: "map"; entry: LandingEntry };');
   });
 
+  it('deprecates a deleted field instead of dropping it', () => {
+    // The promise this keeps: a field deleted in the Stet UI reaches a running
+    // dev server within seconds, and must not turn code that reads it into a
+    // type error.
+    const deleted = renderContentModule(
+      {
+        types: [
+          {
+            slug: 'posts',
+            name: 'Posts',
+            kind: 'collection',
+            fields: [
+              { key: 'summary', name: 'Summary', type: 'text', options: [] },
+              { key: 'subtitle', name: 'Subtitle', type: 'text', options: [], deprecated: true },
+            ],
+          },
+        ],
+      },
+      'http://localhost:3000',
+    );
+
+    expect(deleted).toContain('"subtitle"?: string | null;');
+    expect(deleted).toContain(
+      '/** @deprecated Deleted from the content model; entries no longer carry a value. */',
+    );
+    // Only the deleted one is marked.
+    expect(deleted.split('@deprecated')).toHaveLength(2);
+  });
+
+  it('keeps the reference doc when a reference field is deprecated', () => {
+    const deleted = renderContentModule(
+      {
+        types: [
+          {
+            slug: 'posts',
+            name: 'Posts',
+            kind: 'collection',
+            fields: [
+              {
+                key: 'written_by',
+                name: 'Written by',
+                type: 'reference',
+                options: [],
+                collection: 'authors',
+                deprecated: true,
+              },
+            ],
+          },
+        ],
+      },
+      'http://localhost:3000',
+    );
+
+    expect(deleted).toContain(
+      '     * Reference into "authors": fetch with stet["authors"].get(slug).',
+    );
+    expect(deleted).toContain('     * @deprecated Deleted from the content model');
+  });
+
   it('reads the origin and the key from the environment, never embedding a key', () => {
     // The generated origin is a fallback, not a target: one build artefact has
     // to work in every environment, and a stale file must not pin a deployment

@@ -2,6 +2,7 @@ import { and, asc, database, eq, inArray, schema } from '@repo/db';
 import { byRank, entryIndex, ftsSearch } from '@repo/db/search';
 import { loadLiveDocument } from '@repo/realtime/document';
 import { entryPage } from '@repo/realtime/entry';
+import { liveFields } from '@repo/content/access';
 import { bodyMarkdown } from '@repo/content/body';
 import { readContentModel } from '@repo/content/model';
 import { fieldTypeSchema, parseConfig, parseValues } from '@repo/content/schema';
@@ -76,10 +77,7 @@ export function contentReadTools(organizationId: string): ToolSet {
         }
         const [type, fields] = await Promise.all([
           db.query.contentType.findFirst({ where: eq(schema.contentType.id, row.typeId) }),
-          db.query.contentField.findMany({
-            where: eq(schema.contentField.typeId, row.typeId),
-            orderBy: asc(schema.contentField.position),
-          }),
+          liveFields(row.typeId),
         ]);
         const richText = fields.filter(
           (field) => fieldTypeSchema.parse(field.type) === 'rich_text',

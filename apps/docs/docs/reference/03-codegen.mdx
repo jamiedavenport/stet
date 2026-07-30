@@ -134,16 +134,42 @@ export const stet = createContentClient<StetContentModel>({
 });
 ```
 
-Three things are worth knowing about the output:
+Four things are worth knowing about the output:
 
 - **Only used imports are emitted.** A model with no asset field imports no
   `ContentAsset`, so a strict lint has nothing to complain about.
 - **Reference fields carry a doc comment** naming the collection they point at.
   The type is the same shape whatever the target, so the doc comment is where
   your editor tells you what to pass the slug to.
+- **Deleted fields become deprecations**, not removals. See below.
 - **Type names are derived from slugs**: `case-studies` becomes
   `CaseStudiesEntry`. A slug starting with a digit is prefixed (`Stet…Entry`)
   so the identifier stays legal.
+
+### Deleted fields are deprecated, not dropped
+
+When someone deletes a field in the Stet UI, the key stays in your generated
+types, marked `@deprecated`:
+
+```ts src/stet.gen.ts
+export type PostsEntry = ContentEntryBase & {
+  fields: {
+    body?: string | null;
+    /** @deprecated Deleted from the content model; entries no longer carry a value. */
+    subtitle?: string | null;
+  };
+};
+```
+
+Your editor strikes the field through wherever you read it, and your build
+keeps passing. Dropping the key instead would turn every `post.fields.subtitle`
+into a type error moments after someone else made a change — with the watcher
+running, while you were mid-task. The deprecation says the same thing without
+stopping you, so you migrate when it suits you.
+
+Entries stop carrying a value for a deprecated field, so it reads as
+`undefined`. Both halves of `?: T | null` already covered that, which is why
+nothing has to change at the call site to keep compiling.
 
 ### How fields are typed
 

@@ -39,6 +39,13 @@ export const contentField = sqliteTable(
     config: text('config').notNull(),
     position: integer('position').notNull(),
     createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
+    /**
+     * Set when the field is deleted. The row stays behind as a tombstone so
+     * the generated client can deprecate the key instead of dropping it, and
+     * so nothing new can take the key back and inherit the values stored
+     * under it.
+     */
+    deletedAt: integer('deleted_at', { mode: 'timestamp' }),
   },
   (table) => [
     uniqueIndex('content_field_key_idx').on(table.typeId, table.key),
