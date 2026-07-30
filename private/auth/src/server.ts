@@ -195,6 +195,10 @@ export function createAuth({
         // would break any real content client. The worker already throttles
         // /api/v1 per key (API_RATE_LIMIT) and billing caps monthly usage.
         rateLimit: { enabled: false },
+        // `start` is what the keys page shows beside a key it can no longer
+        // read. The default 6 is spent entirely on the prefix, leaving every
+        // key looking alike; 12 leaves enough to tell them apart.
+        startingCharactersConfig: { charactersLength: 12 },
       }),
       // Platform staff: user.role ('user' or 'admin'), bans, and
       // impersonation, behind /app/admin. The role column is not
