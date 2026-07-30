@@ -1,0 +1,152 @@
+---
+title: Quickstart
+description: Install the Vite plugin, point it at your organization, and go from an empty project to a typed content client in four steps.
+icon: rocket
+---
+
+Getting from an empty project to typed content is four steps. Everything after
+that happens on its own: the client regenerates whenever the model changes.
+
+<Steps>
+
+<Step title="Create an API key">
+
+API keys are scoped to an organization. In the Stet app, open **Developers →
+API keys** and create one. You need to be an owner or admin of the
+organization. The [authentication reference](/api/authentication) has the
+detail.
+
+Export it, along with the origin if you self-host:
+
+```bash
+export STET_API_KEY="..."
+
+# Only if you self-host. The default is the hosted cloud.
+export STET_ORIGIN="https://stet.example.com"
+```
+
+:::warning[Keep the key server-side]
+The key reads every entry your organization holds, including unpublished ones.
+Nothing in this guide puts it in a browser bundle, and neither should your app.
+:::
+
+</Step>
+
+<Step title="Install the packages">
+
+```package-install
+@stetcms/vite @stetcms/client
+```
+
+The plugin generates the client; `@stetcms/client` is what the generated file
+imports at runtime, so both belong in your dependencies.
+
+</Step>
+
+<Step title="Add the plugin">
+
+```ts vite.config.ts
+import { stet } from '@stetcms/vite';
+import { defineConfig } from 'vite';
+
+export default defineConfig({
+  plugins: [stet()],
+});
+```
+
+That is the whole setup. The plugin writes `src/stet.gen.ts` before every build
+and dev-server start, and keeps watching while the dev server runs, so a field
+your content team adds in the UI reaches your types a few seconds later.
+
+</Step>
+
+<Step title="Read your content">
+
+```ts
+import { stet } from './stet.gen';
+
+const posts = await stet.posts.list();
+const post = await stet.posts.get('hello-world');
+
+post.title;
+post.fields.body; // markdown
+post.fields.cover?.url; // a whole, public URL
+```
+
+The keys on `stet` are your organization's collections and maps, and the fields
+on an entry are the ones your content team defined. Both autocomplete.
+
+</Step>
+
+</Steps>
+
+## Add a config file
+
+The plugin runs with no configuration. Add `stet.config.ts` at your project
+root when you want to move the generated file, pin an origin, or declare an
+[analytics tracking plan](/analytics):
+
+```ts stet.config.ts
+import { defineStet } from '@stetcms/config';
+
+export default defineStet({
+  output: 'src/lib/stet.gen.ts',
+});
+```
+
+The CLI reads the same file, so `stet generate` in CI writes exactly where your
+dev server does. See the [configuration reference](/reference/configuration)
+for every option and how they resolve.
+
+## Generate without a dev server
+
+CI and one-off scripts do not run Vite. The CLI does the same codegen:
+
+```bash
+npx stet generate
+```
+
+## Where content is read from
+
+The generated client talks to the Stet API from your server, never from a
+browser. In a framework with server-side data loading, that means a loader, a
+server function, or a route handler:
+
+<CodeGroup>
+
+```ts TanStack Start
+import { createServerFn } from '@tanstack/react-start';
+import { stet } from './stet.gen';
+
+export const getPosts = createServerFn().handler(() => stet.posts.list());
+```
+
+```ts Next.js
+import { stet } from './stet.gen';
+
+export default async function Page() {
+  const posts = await stet.posts.list();
+  return <PostList posts={posts} />;
+}
+```
+
+```ts Astro
+---
+import { stet } from '../stet.gen';
+
+const posts = await stet.posts.list();
+---
+```
+
+</CodeGroup>
+
+## Next
+
+<CardGroup cols={2}>
+  <Card title="Content model" href="/content-model" icon="table">
+    Every field type, and what it hands your code.
+  </Card>
+  <Card title="Analytics" href="/analytics" icon="chart-bar">
+    Add cookieless product analytics through your own backend.
+  </Card>
+</CardGroup>

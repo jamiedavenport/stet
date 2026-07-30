@@ -66,7 +66,7 @@ Every field is optional at the call site: the type declares the shape, and evlog
 
 ## Scope
 
-Background work only: the queue consumer, cron runner, and webhook delivery. HTTP requests are already covered by Cloudflare's own invocation logs and traces, so there is no request middleware here and nothing to thread through TanStack Start. Errors additionally go to Sentry from `apps/web`; see [the observability docs](../../apps/docs/content/docs/private/logging.mdx) for how the two fit together.
+Background work only: the queue consumer, cron runner, and webhook delivery. HTTP requests are already covered by Cloudflare's own invocation logs and traces, so there is no request middleware here and nothing to thread through TanStack Start. Errors additionally go to Sentry from `apps/web`; see [Observability](../../DEPLOY.md#observability) for how the two fit together.
 
 To ship events somewhere other than Workers Logs, pass a drain to `initWorkersLogger` in `src/index.ts`: evlog has adapters for Axiom, OTLP (Grafana, Honeycomb, Datadog), and Better Stack. Nothing at the call sites changes.
 

@@ -2,15 +2,15 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "stet-docs",
   "compatibility_date": "2026-07-19",
-  "compatibility_flags": ["nodejs_compat"],
   "observability": {
     "enabled": true,
-    "traces": {
-      "enabled": true,
-    },
   },
-  "upload_source_maps": true,
-  "main": "src/server.ts",
+  // Blume builds to static HTML, so the Worker is the asset server and nothing
+  // else: no `main`, no bindings, no Node compatibility.
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "404-page",
+  },
   "routes": [
     {
       "pattern": "docs.stetcms.com",

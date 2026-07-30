@@ -4,60 +4,34 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "analyze": "ANALYZE=1 vp build",
-    "build": "fumadocs-mdx && tsc --noEmit && vp build",
-    "cf-typegen": "wrangler types",
-    "deploy": "vp build && wrangler deploy",
-    "dev": "vp dev",
-    "postinstall": "fumadocs-mdx",
-    "preview": "vp preview",
+    "build": "blume build --strict",
+    "deploy": "pnpm build && wrangler deploy",
+    "dev": "blume dev --port 3100",
+    "postinstall": "node scripts/brand-assets.ts",
+    "prebuild": "node scripts/brand-assets.ts",
+    "predev": "node scripts/brand-assets.ts",
+    "preview": "blume preview",
+    "validate": "blume validate --strict",
     "size": "size-limit",
-    "tc": "tsc --noEmit"
+    "tc": "blume check"
   },
   "dependencies": {
-    "@fontsource-variable/geist": "catalog:",
     "@repo/api": "workspace:*",
     "@repo/brand": "workspace:*",
-    "@tanstack/react-router": "catalog:",
-    "@tanstack/react-start": "catalog:",
-    "fumadocs-core": "catalog:",
-    "fumadocs-mdx": "catalog:",
-    "fumadocs-openapi": "catalog:",
-    "fumadocs-ui": "npm:@fumadocs/base-ui@^16.12.0",
-    "lucide-react": "catalog:",
-    "react": "catalog:",
-    "react-dom": "catalog:",
-    "shiki": "catalog:"
+    "blume": "^1.2.1"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "catalog:",
     "@size-limit/file": "catalog:",
-    "@tailwindcss/vite": "catalog:",
-    "@types/mdx": "catalog:",
-    "@types/node": "catalog:",
-    "@types/react": "catalog:",
-    "@types/react-dom": "catalog:",
-    "@vitejs/plugin-react": "catalog:",
     "size-limit": "catalog:",
-    "sonda": "catalog:",
-    "tailwindcss": "catalog:",
     "typescript": "catalog:",
-    "vite": "npm:@voidzero-dev/vite-plus-core@0.2.2",
-    "vite-plus": "catalog:",
     "wrangler": "catalog:"
   },
   "size-limit": [
     {
-      "name": "client JS (gzip)",
-      "path": "dist/client/**/*.js",
+      "name": "all client chunks (gzip)",
+      "path": "dist/_astro/**/*.js",
       "gzip": true,
-      "limit": "800 kB"
-    },
-    {
-      "name": "server worker JS (gzip)",
-      "path": "dist/server/**/*.js",
-      "gzip": true,
-      "limit": "1.4 MB"
+      "limit": "1.2 MB"
     }
   ]
 }

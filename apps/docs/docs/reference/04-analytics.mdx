@@ -1,0 +1,361 @@
+---
+title: '@stetcms/analytics'
+description: The tracking plan every other piece reads from, the browser client, the route handler you mount, and the format events travel in.
+icon: chart-bar
+sidebar:
+  label: Analytics
+---
+
+`@stetcms/analytics` is four entry points around one idea: the tracking plan is
+the single source of truth. The browser client types `track()` from it, the
+handler validates against it, and the plugin publishes it to Stet so your
+content team can build dashboards on events nobody has fired yet.
+
+For how the pieces fit together and what Stet learns about a reader, read the
+[analytics guide](/analytics). This page is the API.
+
+| Entry point                 | Runs in     | Holds                                       |
+| --------------------------- | ----------- | ------------------------------------------- |
+| `@stetcms/analytics`        | anywhere    | `defineAnalytics`, `event`, plan validation |
+| `@stetcms/analytics/client` | the browser | `createAnalytics`                           |
+| `@stetcms/analytics/server` | your server | `createAnalyticsHandler`                    |
+| `@stetcms/analytics/sync`   | build tools | `syncTrackingPlan`                          |
+
+## The tracking plan
+
+### defineAnalytics
+
+```ts stet.config.ts
+import { defineAnalytics, event } from '@stetcms/analytics';
+import { defineStet } from '@stetcms/config';
+import { z } from 'zod';
+
+export default defineStet({
+  analytics: defineAnalytics({
+    events: {
+      signup: event({ plan: z.enum(['free', 'paid']) }),
+      checkout: {
+        started: event(),
+        completed: event({ total: z.number(), currency: z.string().optional() }),
+      },
+    },
+  }),
+});
+```
+
+<TypeTable
+  type={{
+    events: {
+      type: 'EventsShape',
+      required: true,
+      description: 'The events your product records, nested into groups.',
+    },
+    origin: {
+      type: 'string',
+      description: 'Stet deployment to send to. Defaults to STET_ORIGIN, then the cloud.',
+    },
+    apiKey: {
+      type: 'string',
+      description:
+        'Organization API key, server-side only. Defaults to STET_API_KEY, so a plan file stays free of secrets and safe to commit.',
+    },
+  }}
+/>
+
+### event
+
+Declares one event and the props it carries. Props are any
+[Standard Schema](https://standardschema.dev) validator, so the schema library
+is yours to pick — Zod, Valibot, ArkType.
+
+```ts
+event(); // no props
+event({ total: z.number() }); // a required prop
+event({ coupon: z.string().optional() }); // an optional prop
+```
+
+A schema that accepts `undefined` makes its prop optional at the call site. An
+event whose props are all optional can be tracked with a bare name.
+
+### Nesting and names
+
+Events group by nesting, and nested events track under dot-joined names:
+
+```ts
+{ signup: event(), checkout: { started: event(), completed: event() } }
+// → 'signup', 'checkout.started', 'checkout.completed'
+```
+
+Names are flat on the wire. The nesting exists so a large plan stays readable.
+
+:::note[Reserved names]
+`$pageview` is sent by the browser client for itself. Built-in events are
+`$`-prefixed so a plan can never collide with one, and they carry no schema:
+their context (url, referrer) rides the envelope rather than the props.
+:::
+
+## The browser client
+
+### createAnalytics
+
+Typed from the plan, and holds no key. It talks only to the route you mounted
+in your own app.
+
+```ts
+import { createAnalytics } from '@stetcms/analytics/client';
+import type config from '../stet.config';
+
+export const analytics = createAnalytics<(typeof config)['analytics']>({
+  endpoint: '/api/analytics',
+});
+
+analytics.track('checkout.completed', { total: 42 });
+```
+
+The type parameter reads only a phantom `$types` field on the plan, so nothing
+in the plan's module graph — schemas, secrets, your whole Zod dependency —
+has to reach the browser.
+
+<TypeTable
+  type={{
+    endpoint: {
+      type: 'string',
+      required: true,
+      description: 'Path or URL of the route you mounted the handler on.',
+    },
+    context: {
+      type: 'Record<string, unknown>',
+      description: "Props attached to every event in a batch. Your server's values win over these.",
+    },
+    flushInterval: {
+      type: 'number',
+      description: 'Milliseconds a partial batch waits before being sent.',
+      default: '2000',
+    },
+    maxBatchSize: {
+      type: 'number',
+      description: 'Send as soon as this many events are queued.',
+      default: '20',
+    },
+    autoPageviews: {
+      type: 'boolean',
+      description: 'Record a pageview on load and on history navigation.',
+      default: 'true',
+    },
+    fetch: {
+      type: 'typeof fetch',
+      description: 'Override the fetch implementation, e.g. in tests.',
+    },
+  }}
+/>
+
+#### Methods
+
+<TypeTable
+  type={{
+    'track(name, props?)': {
+      type: 'void',
+      description:
+        'Record an event from the plan. A misspelled name, a missing prop, or a prop of the wrong type is a compile error. Never throws and never rejects.',
+    },
+    'pageview(url?)': {
+      type: 'void',
+      description:
+        'Record a pageview. Called for you unless autoPageviews is off. Repeating the current URL is ignored, so a redirect or re-render is not two views.',
+    },
+    'setContext(context)': {
+      type: 'void',
+      description: 'Merge props into the context sent with every later batch.',
+    },
+    'flush()': {
+      type: 'Promise<void>',
+      description: 'Send anything queued now. Resolves once the request settles.',
+    },
+  }}
+/>
+
+#### Batching and delivery
+
+Events queue and go out together: on `flushInterval`, on `maxBatchSize`, and on
+`pagehide` and `visibilitychange` so a closing tab still reports. Requests use
+`keepalive`, which lets them outlive the page that sent them.
+
+A failed send puts the events back at the front of the queue for the next
+flush. A page that never gets one drops them, which is the right trade for
+analytics and the reason `track` can promise never to throw.
+
+#### Pageviews in a single-page app
+
+On a site where every navigation is a real page load, there is nothing to do:
+the client patches `history.pushState` and listens for `popstate`, which covers
+most routers.
+
+If your router navigates without either — or you want the pageview to land
+after the route resolves rather than before — turn the automatic behaviour off
+and call `pageview()` yourself:
+
+```ts
+export const analytics = createAnalytics<(typeof config)['analytics']>({
+  endpoint: '/api/analytics',
+  autoPageviews: false,
+});
+
+router.subscribe('onResolved', () => analytics.pageview());
+```
+
+## The route handler
+
+### createAnalyticsHandler
+
+The route you mount in your own app. Events go browser → your backend → Stet,
+so there is no third-party origin in the page and every reader's address stays
+inside infrastructure you control.
+
+```ts
+import { createAnalyticsHandler } from '@stetcms/analytics/server';
+import config from '../stet.config';
+
+export const POST = createAnalyticsHandler(config.analytics, {
+  context: async (request) => ({ userId: (await session(request))?.userId }),
+});
+```
+
+It takes a plan and returns `(request: Request) => Promise<Response>` — a
+plain web handler, so it mounts anywhere that speaks the Fetch API.
+
+<TypeTable
+  type={{
+    context: {
+      type: 'Record<string, unknown> | ((request: Request) => Record<string, unknown> | Promise<…>)',
+      description:
+        'Props merged into every batch. Yours win over anything the browser sent, because the browser is the untrusted side. A function is called per request, which is how a session reaches here.',
+    },
+    origin: {
+      type: 'string',
+      description: "Stet deployment. Defaults to the plan's, then STET_ORIGIN, then the cloud.",
+    },
+    apiKey: {
+      type: 'string',
+      description: "Organization API key. Defaults to the plan's, then STET_API_KEY.",
+    },
+    salt: {
+      type: 'string',
+      description:
+        "Salt mixed into the visitor digest. Defaults to the request's host, which keeps visitor ids from being comparable across sites you run.",
+    },
+    onError: {
+      type: '(error: unknown) => void',
+      description: 'Called when a batch cannot be forwarded.',
+      default: 'console.error',
+    },
+    fetch: { type: 'typeof fetch', description: 'Override the fetch implementation.' },
+  }}
+/>
+
+A server-provided context value of `undefined` is skipped rather than written,
+so a missing session reads as "unknown" instead of deleting what the browser
+told you.
+
+#### Responses
+
+| Status | When                                                                   |
+| ------ | ---------------------------------------------------------------------- |
+| `200`  | Accepted: `{ accepted: n }`. Also the answer for bot traffic, with `0` |
+| `400`  | Malformed body, or props that failed the plan                          |
+| `405`  | Anything but `POST`                                                    |
+| `500`  | No API key configured                                                  |
+| `502`  | Stet rejected or could not be reached                                  |
+
+Automation is answered normally and thrown away: a `4xx` would only teach a
+crawler to retry, and counting it would flatter every number.
+
+### validateEvent
+
+The check the handler runs, exported so you can run it yourself.
+
+```ts
+const result = await validateEvent(plan.events, 'checkout.completed', { total: 42 });
+if (!result.ok) {
+  throw new Error(formatIssues(result.issues));
+}
+```
+
+Declared props are checked with their own schema and replaced by the parsed
+value. **Undeclared props pass through**, so adding a prop in the browser never
+blocks on a deploy of the plan. An unknown event name does not pass.
+
+## Publishing the plan
+
+### syncTrackingPlan
+
+Run by `@stetcms/vite` on dev-server start and at the end of a build, and by
+`stet sync`. Call it directly only in a pipeline that has neither.
+
+```ts
+import { syncTrackingPlan } from '@stetcms/analytics/sync';
+
+const { synced } = await syncTrackingPlan({
+  events: config.analytics.events,
+  apiKey: process.env.STET_API_KEY,
+});
+```
+
+<TypeTable
+  type={{
+    events: { type: 'EventsShape', required: true, description: "The plan's events." },
+    apiKey: {
+      type: 'string',
+      required: true,
+      description: 'Organization API key. Server-side only.',
+    },
+    origin: { type: 'string', description: 'Stet deployment.', default: 'https://stetcms.com' },
+    fetch: { type: 'typeof fetch', description: 'Override the fetch implementation.' },
+  }}
+/>
+
+Replacement, not merge: an event deleted from your code disappears from the
+list on the next sync, while anything already recorded under that name keeps
+its history.
+
+## The wire format
+
+What the browser posts to your route, and what your route forwards to Stet.
+You rarely touch these — they are exported for tests and for anything that
+speaks the protocol without the client.
+
+<TypeTable
+  type={{
+    WireEvent: {
+      type: '{ name, props, timestamp, url?, referrer? }',
+      description:
+        'One event. timestamp is epoch milliseconds, stamped in the browser when the event happened.',
+    },
+    ClientBatch: {
+      type: '{ context, events }',
+      description: 'The body the browser client POSTs to your route.',
+    },
+    IngestBatch: {
+      type: '{ context, metadata, events }',
+      description: 'The body the handler forwards to Stet, once it has enriched the batch.',
+    },
+    EventMetadata: {
+      type: '{ visitor?, country?, region?, city?, browser?, os?, device? }',
+      description:
+        'What the handler derives from the request. Every field is optional: a proxy may strip the headers it comes from, and analytics never fails a request over missing context.',
+    },
+    'parseClientBatch(body)': {
+      type: 'ParseResult',
+      description:
+        'Validates a batch by hand rather than trusting a cast, because the body is untrusted input from the open internet.',
+    },
+    MAX_BATCH_EVENTS: {
+      type: 'number',
+      description: 'Events per batch. Anything larger is a client bug or an abusive caller.',
+      default: '100',
+    },
+  }}
+/>
+
+The visitor digest covers the date, so the same reader is a different id
+tomorrow: uniques are countable within a day and nothing can be joined across
+days, by anyone. That is what removes the consent banner.

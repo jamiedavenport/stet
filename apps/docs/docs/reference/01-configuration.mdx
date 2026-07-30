@@ -1,0 +1,138 @@
+---
+title: stet.config.ts
+description: Everything about a project's Stet integration in one file, read by the Vite plugin, the CLI and your app, so none of them can disagree.
+icon: settings
+---
+
+`@stetcms/config` defines the shape of `stet.config.ts` and the ladder that
+resolves it. It has no runtime dependencies and no relative imports, because
+three different things load it: your build tool under plain Node, the CLI, and
+your app at runtime when it serves the analytics route.
+
+Your project rarely installs it directly — `@stetcms/vite` and `@stetcms/cli`
+both depend on it — but the types are worth reading.
+
+## defineStet
+
+```ts stet.config.ts
+import { defineAnalytics, event } from '@stetcms/analytics';
+import { defineStet } from '@stetcms/config';
+import { z } from 'zod';
+
+export default defineStet({
+  output: 'src/stet.gen.ts',
+  analytics: defineAnalytics({
+    events: { signup: event({ plan: z.enum(['free', 'paid']) }) },
+  }),
+});
+```
+
+`defineStet` returns exactly what it was given. That is the point: a config
+that declares `analytics` has a non-optional `analytics` at its use sites, so
+the handler and the browser client read it without a null check.
+
+### Options
+
+<TypeTable
+  type={{
+    origin: {
+      type: 'string',
+      description:
+        'The Stet deployment to generate from and send to. Defaults to STET_ORIGIN, then the hosted cloud.',
+      default: 'https://stetcms.com',
+    },
+    apiKey: {
+      type: 'string',
+      description:
+        'Organization API key. Prefer leaving this unset and exporting STET_API_KEY: a key in a committed file is a key in your git history.',
+    },
+    output: {
+      type: 'string',
+      description: 'Where the generated content client goes, relative to the project root.',
+      default: 'src/stet.gen.ts',
+    },
+    watch: {
+      type: 'boolean',
+      description:
+        'Regenerate the content client while the dev server runs, so model changes made in the Stet UI reach your types without a restart.',
+      default: 'true',
+    },
+    analytics: {
+      type: 'AnalyticsPlan',
+      description: 'The analytics tracking plan, as returned by defineAnalytics().',
+    },
+  }}
+/>
+
+`analytics` stays opaque in the type (`StetConfig<TAnalytics = unknown>`) so
+this package never depends on `@stetcms/analytics`. Whatever
+`defineAnalytics()` returns flows straight through to
+`createAnalytics<typeof config.analytics>`.
+
+## Where the file is found
+
+With no explicit path, the plugin and the CLI try these in order, relative to
+the project root, and use the first that exists:
+
+<FileTree>- stet.config.ts - stet.config.js - stet.config.mjs - src/stet.config.ts</FileTree>
+
+A config is loaded with [jiti](https://github.com/unjs/jiti), so a TypeScript
+file works whatever your project's own build setup is. The default export, a
+named export, or a zero-argument factory returning one are all accepted.
+
+:::note
+`cloudflare:workers` only exists inside workerd, so during config loading it
+resolves to a virtual module whose `env` is `process.env` — the same values
+Workers expose there on recent compatibility dates. A config that reads its
+origin from `env` therefore loads under plain Node too.
+:::
+
+## How settings resolve
+
+Every setting is settled by `resolveStetConfig`, shared so the plugin and the
+CLI cannot drift. Explicit wins, then the file, then the environment, then the
+default:
+
+| Setting  | 1. Explicit                  | 2. File  | 3. Environment | 4. Default            |
+| -------- | ---------------------------- | -------- | -------------- | --------------------- |
+| `origin` | `--url` / plugin `origin`    | `origin` | `STET_ORIGIN`  | `https://stetcms.com` |
+| `apiKey` | `--key` / plugin `apiKey`    | `apiKey` | `STET_API_KEY` | none                  |
+| `output` | `--output` / plugin `output` | `output` | —              | `src/stet.gen.ts`     |
+| `watch`  | plugin `watch`               | `watch`  | —              | `true`                |
+
+An empty environment variable reads as unset, not as an empty origin.
+
+`apiKey` resolves to `string | undefined`, and every caller tolerates the
+undefined: the plugin warns and leaves your last generated client in place
+rather than failing your build.
+
+## Exports
+
+<TypeTable
+  type={{
+    defineStet: {
+      type: '<T extends StetConfig>(config: T) => T',
+      description: 'Declares a config, preserving its exact type.',
+    },
+    resolveStetConfig: {
+      type: '(config, overrides?) => ResolvedStetConfig',
+      description:
+        'Settles the ladder above. Used by the plugin, the CLI, and the analytics handler.',
+    },
+    DEFAULT_ORIGIN: {
+      type: 'string',
+      description: 'The hosted Stet deployment, used when nothing names another one.',
+      default: 'https://stetcms.com',
+    },
+    StetConfig: { type: 'type', description: 'The shape of stet.config.ts.' },
+    ResolvedStetConfig: {
+      type: 'type',
+      description:
+        'The settled result: origin, apiKey, output and watch, with only apiKey optional.',
+    },
+    StetOverrides: {
+      type: 'type',
+      description: 'The explicit layer: a CLI flag or a plugin option.',
+    },
+  }}
+/>

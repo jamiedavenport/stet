@@ -1,0 +1,70 @@
+---
+title: Introduction
+description: Stet is the CMS where marketing owns the content model and engineering gets a typed client generated from it. Start reading here.
+icon: book-open
+---
+
+Stet is the CMS that refuses the marketing-vs-engineering trade-off: marketing
+owns the content model, engineering gets a typed client generated from it, and
+changes cross the gap as information, never as breakage.
+
+Stet is being built in the open and these docs grow with it.
+
+## Start here
+
+<CardGroup cols={2}>
+  <Card title="Quickstart" href="/quickstart" icon="rocket">
+    Install the plugin, generate a typed client, and read your first entry.
+  </Card>
+  <Card title="Content model" href="/content-model" icon="table">
+    The field types a model can carry, and what each one gives your code.
+  </Card>
+  <Card title="Analytics" href="/analytics" icon="chart-bar">
+    Cookieless, type-safe product analytics routed through your own backend.
+  </Card>
+  <Card title="Reference" href="/reference" icon="code">
+    Every export of every published package, and the CLI.
+  </Card>
+</CardGroup>
+
+## The shape of it
+
+Your content team builds the model in the Stet UI. A Vite plugin reads that
+model and writes a typed client into your project, so the collections and maps
+they shape become calls your editor autocompletes:
+
+```ts
+import { stet } from './stet.gen';
+
+const posts = await stet.posts.list(); // a collection
+const post = await stet.posts.get('hello-world'); // one entry
+const landing = await stet.landing.get(); // a map
+```
+
+Nothing about that client is hand-written, and nothing about it breaks when the
+model changes. A field an editor deletes reads as `null` in your code, not as a
+failed build.
+
+## Packages
+
+<CardGroup cols={2}>
+  <Card title="@stetcms/client" href="/reference/client" icon="plug">
+    The typed content client, and the REST client for the rest of the API.
+  </Card>
+  <Card title="@stetcms/vite" href="/reference/codegen" icon="wand-sparkles">
+    The plugin that generates the content client and publishes your tracking plan.
+  </Card>
+  <Card title="@stetcms/analytics" href="/reference/analytics" icon="chart-bar">
+    The tracking plan, the browser client, and the route handler.
+  </Card>
+  <Card title="@stetcms/config" href="/reference/configuration" icon="settings">
+    `stet.config.ts`, shared by the plugin and the CLI.
+  </Card>
+  <Card title="@stetcms/cli" href="/reference/cli" icon="terminal">
+    `stet login`, `generate`, `sync`, `org`, and `whoami`.
+  </Card>
+</CardGroup>
+
+## Built by jxd.dev
+
+Stet is built by [jxd.dev](https://jxd.dev).

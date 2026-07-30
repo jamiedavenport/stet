@@ -71,7 +71,6 @@ catalog:
   '@tsrx/typescript-plugin': ^0.3.103
   '@tsrx/vite-plugin-react': ^0.0.86
   '@types/better-sqlite3': ^7.6.13
-  '@types/mdx': ^2.0.14
   '@types/node': ^26.1.1
   '@types/react': ^19.2.17
   '@types/react-dom': ^19.2.3
@@ -86,12 +85,8 @@ catalog:
   conf: ^15.1.0
   drizzle-kit: ^0.31.10
   evlog: ^2.22.4
-  fumadocs-core: ^16.12.0
-  fumadocs-mdx: ^15.2.0
-  fumadocs-openapi: ^11.2.2
   drizzle-orm: ^0.45.2
   jiti: ^2.7.0
-  lucide-react: ^0.552.0
   '@phosphor-icons/react': ^2.1.10
   marked: ^17.0.6
   open: ^11.0.0
@@ -163,8 +158,6 @@ minimumReleaseAgeExclude:
   - '@better-auth/prisma-adapter@1.6.24'
   - '@better-auth/telemetry@1.6.24'
   - better-auth@1.6.24
-  - '@fumadocs/base-ui@16.12.0'
-  - fumadocs-core@16.12.0
   - '@jxdltd/tanstack@0.1.0 || 0.1.1 || 0.1.2'
   - '@policystack/core@1.2.0'
   - '@policystack/react@1.2.0'
@@ -173,3 +166,4 @@ minimumReleaseAgeExclude:
   - '@tsrx/core@0.1.54'
   - '@tsrx/react@0.2.54'
   - '@tsrx/vite-plugin-react@0.0.86'
+  - blume@1.2.1

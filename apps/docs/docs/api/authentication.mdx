@@ -1,0 +1,62 @@
+---
+title: Authentication
+description: 'How requests to the public REST API identify themselves: the base URL, organization API keys, rate limits, and when to prefer a typed client.'
+icon: key
+sidebar:
+  order: 1
+---
+
+The public API is defined once as an oRPC contract and served from the Worker
+at `/api/v1`. Every reference page in this section is generated from that
+contract's OpenAPI spec, so it always matches what is deployed.
+
+## Base URL
+
+```
+https://stetcms.com/api/v1
+```
+
+On your own deployment, the API lives at your origin followed by `/api/v1`.
+
+## API keys
+
+Every endpoint except the health check requires an organization-scoped API key,
+sent in the `x-api-key` header:
+
+```bash
+curl https://stetcms.com/api/v1/org \
+  -H "x-api-key: $STET_API_KEY"
+```
+
+Create one in the Stet app under **Developers → API keys**. You need to be an
+owner or admin of the organization. A key is scoped to that one organization
+and reads every entry it holds, so it belongs on a server, never in a browser
+bundle.
+
+`stet org` is the quickest way to confirm a key is the one you meant:
+
+```bash
+STET_API_KEY=... npx stet org
+```
+
+## Rate limits
+
+The public API and analytics ingest have separate budgets. Ingest is far
+larger and does not spend the organization's API request quota: it is one
+request per browser batch, so a busy site makes orders of magnitude more of
+them than it makes content reads.
+
+An exhausted budget answers `429`.
+
+## Prefer the typed clients
+
+Hand-written requests are the fallback, not the happy path:
+
+<CardGroup cols={2}>
+  <Card title="Content client" href="/reference/client" icon="plug">
+    Generated from your content model, so entries and their fields autocomplete.
+  </Card>
+  <Card title="CLI" href="/reference/cli" icon="terminal">
+    Calls the API from the terminal after a device-flow login.
+  </Card>
+</CardGroup>

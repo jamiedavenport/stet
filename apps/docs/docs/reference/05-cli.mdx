@@ -1,0 +1,186 @@
+---
+title: '@stetcms/cli'
+description: 'Stet from the terminal: log in, generate the typed content client, publish your tracking plan, and check which organization a key belongs to.'
+icon: terminal
+sidebar:
+  label: CLI
+---
+
+`@stetcms/cli` does what the [Vite plugin](/reference/codegen) does, without
+Vite: generate the content client, publish the tracking plan, and tell you
+which account and organization you are working against. That makes it the tool
+for CI, for scripts, and for projects that do not build with Vite at all.
+
+```package-install
+@stetcms/cli
+```
+
+Or run it without installing:
+
+```bash
+npx stet generate
+```
+
+## Two ways to authenticate
+
+The commands split by what they need, and it is worth knowing which is which:
+
+| Kind                | Commands                  | Credential                                                    |
+| ------------------- | ------------------------- | ------------------------------------------------------------- |
+| Organization-scoped | `generate`, `sync`, `org` | An API key: `--key` / `STET_API_KEY` (`org` uses `--api-key`) |
+| Account-scoped      | `login`, `whoami`         | A session from `stet login`, stored on this machine           |
+
+An API key belongs in CI. A login belongs on your laptop. Neither substitutes
+for the other.
+
+## Commands
+
+### stet generate
+
+Generates the typed content client from your content model — the same codegen
+`@stetcms/vite` runs, so the output is byte-identical.
+
+```bash
+stet generate
+```
+
+<TypeTable
+  type={{
+    '--url <origin>': {
+      type: 'string',
+      description: 'Stet server origin. Defaults to $STET_ORIGIN or the hosted app.',
+    },
+    '--key <api-key>': {
+      type: 'string',
+      description: 'Organization API key. Defaults to $STET_API_KEY.',
+    },
+    '--output <path>': {
+      type: 'string',
+      description: 'Where the generated module goes.',
+      default: 'src/stet.gen.ts',
+    },
+    '--config <path>': {
+      type: 'string',
+      description: 'Path to stet.config.ts. Auto-detected by default.',
+    },
+  }}
+/>
+
+Options settle against `stet.config.ts` through the
+[same ladder](/reference/configuration#how-settings-resolve) the plugin uses,
+so the CLI writes exactly where your dev server does.
+
+Unlike the plugin, `generate` **fails loudly**: no key or an unreachable API
+exits non-zero. A build that silently kept a stale client is right for a dev
+server and wrong for CI.
+
+### stet sync
+
+Publishes the analytics tracking plan from `stet.config.ts`, so its events can
+be charted in Stet before anyone has fired one.
+
+```bash
+stet sync
+```
+
+<TypeTable
+  type={{
+    '--url <origin>': {
+      type: 'string',
+      description: 'Stet server origin. Defaults to $STET_ORIGIN or the hosted app.',
+    },
+    '--key <api-key>': {
+      type: 'string',
+      description: 'Organization API key. Defaults to $STET_API_KEY.',
+    },
+    '--config <path>': {
+      type: 'string',
+      description: 'Path to stet.config.ts. Auto-detected by default.',
+    },
+  }}
+/>
+
+Exits non-zero when the config declares no `analytics`. See
+[syncTrackingPlan](/reference/analytics#synctrackingplan) for what publishing
+does to events you deleted.
+
+### stet login
+
+Logs in from this machine with the OAuth device flow: the CLI shows a code,
+opens your browser, and waits for you to approve it.
+
+```bash
+stet login
+```
+
+<TypeTable
+  type={{
+    '--url <origin>': {
+      type: 'string',
+      description: 'Stet server origin. Defaults to $STET_API_URL or the hosted app.',
+    },
+    '--no-open': {
+      type: 'boolean',
+      description: 'Print the verification link instead of opening a browser.',
+    },
+  }}
+/>
+
+The session token is written to `~/.config/stet/auth.json` (or
+`$XDG_CONFIG_HOME/stet/auth.json`), owner-readable only.
+
+### stet whoami
+
+Shows the account the stored session belongs to, its active organization, and
+the server.
+
+```bash
+stet whoami
+stet whoami --json
+```
+
+`--json` omits the session token, so the output is safe in logs and pipelines.
+
+### stet org
+
+Shows the organization your API key is scoped to — the quickest check that a
+key in CI is the key you meant.
+
+```bash
+stet org
+```
+
+<TypeTable
+  type={{
+    '--api-key <key>': {
+      type: 'string',
+      description: 'Organization API key. Defaults to $STET_API_KEY.',
+    },
+    '--url <url>': { type: 'string', description: 'Origin of the Stet deployment.' },
+    '--json': { type: 'boolean', description: 'Print the organization as JSON.' },
+  }}
+/>
+
+Prints the name, slug, id and server, plus the billing plan when that lookup
+succeeds — a billing failure never hides the organization. An invalid or
+revoked key exits non-zero with a message saying so.
+
+## In CI
+
+Codegen needs the model, which needs a key. Give CI one and run `generate`
+before the build:
+
+```yaml .github/workflows/ci.yml
+- run: npx stet generate
+  env:
+    STET_API_KEY: ${{ secrets.STET_API_KEY }}
+```
+
+You can skip this entirely if you build with Vite: the plugin already
+regenerates on `buildStart`, reading the same environment variable.
+
+:::note[Committing the generated file]
+`stet.gen.ts` embeds no key and reads its origin at runtime, so committing it
+is safe and gives you a working build when Stet is unreachable. Regenerate in
+CI anyway — a committed file is a floor, not a source of truth.
+:::
