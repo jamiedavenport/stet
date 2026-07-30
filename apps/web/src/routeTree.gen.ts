@@ -21,6 +21,7 @@ import { Route as MarketingIndexRouteImport } from './routes/_marketing/index'
 import { Route as MarketingChangelogRouteImport } from './routes/_marketing/changelog'
 import { Route as MarketingContactRouteImport } from './routes/_marketing/contact'
 import { Route as MarketingCookiesRouteImport } from './routes/_marketing/cookies'
+import { Route as MarketingPricingRouteImport } from './routes/_marketing/pricing'
 import { Route as MarketingPrivacyRouteImport } from './routes/_marketing/privacy'
 import { Route as AppIndexRouteImport } from './routes/app/index'
 import { Route as AppAdminRouteRouteImport } from './routes/app/admin/route'
@@ -42,6 +43,12 @@ import { Route as SignResetRouteImport } from './routes/sign/reset'
 import { Route as SignUpRouteImport } from './routes/sign/up'
 import { Route as MarketingBlogIndexRouteImport } from './routes/_marketing/blog.index'
 import { Route as MarketingBlogSlugRouteImport } from './routes/_marketing/blog.$slug'
+import { Route as MarketingCompareIndexRouteImport } from './routes/_marketing/compare.index'
+import { Route as MarketingCompareRivalRouteImport } from './routes/_marketing/compare.$rival'
+import { Route as MarketingFeaturesIndexRouteImport } from './routes/_marketing/features.index'
+import { Route as MarketingFeaturesSlugRouteImport } from './routes/_marketing/features.$slug'
+import { Route as MarketingForIndexRouteImport } from './routes/_marketing/for.index'
+import { Route as MarketingForPersonaRouteImport } from './routes/_marketing/for.$persona'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as ApiFilesIdRouteImport } from './routes/api/files/$id'
 import { Route as ApiV1SplatRouteImport } from './routes/api/v1/$'
@@ -113,6 +120,11 @@ const MarketingContactRoute = MarketingContactRouteImport.update({
 const MarketingCookiesRoute = MarketingCookiesRouteImport.update({
   id: '/cookies',
   path: '/cookies',
+  getParentRoute: () => MarketingRoute,
+} as any)
+const MarketingPricingRoute = MarketingPricingRouteImport.update({
+  id: '/pricing',
+  path: '/pricing',
   getParentRoute: () => MarketingRoute,
 } as any)
 const MarketingPrivacyRoute = MarketingPrivacyRouteImport.update({
@@ -220,6 +232,36 @@ const MarketingBlogSlugRoute = MarketingBlogSlugRouteImport.update({
   path: '/blog/$slug',
   getParentRoute: () => MarketingRoute,
 } as any)
+const MarketingCompareIndexRoute = MarketingCompareIndexRouteImport.update({
+  id: '/compare/',
+  path: '/compare/',
+  getParentRoute: () => MarketingRoute,
+} as any)
+const MarketingCompareRivalRoute = MarketingCompareRivalRouteImport.update({
+  id: '/compare/$rival',
+  path: '/compare/$rival',
+  getParentRoute: () => MarketingRoute,
+} as any)
+const MarketingFeaturesIndexRoute = MarketingFeaturesIndexRouteImport.update({
+  id: '/features/',
+  path: '/features/',
+  getParentRoute: () => MarketingRoute,
+} as any)
+const MarketingFeaturesSlugRoute = MarketingFeaturesSlugRouteImport.update({
+  id: '/features/$slug',
+  path: '/features/$slug',
+  getParentRoute: () => MarketingRoute,
+} as any)
+const MarketingForIndexRoute = MarketingForIndexRouteImport.update({
+  id: '/for/',
+  path: '/for/',
+  getParentRoute: () => MarketingRoute,
+} as any)
+const MarketingForPersonaRoute = MarketingForPersonaRouteImport.update({
+  id: '/for/$persona',
+  path: '/for/$persona',
+  getParentRoute: () => MarketingRoute,
+} as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
@@ -301,6 +343,7 @@ export interface FileRoutesByFullPath {
   '/changelog': typeof MarketingChangelogRoute
   '/contact': typeof MarketingContactRoute
   '/cookies': typeof MarketingCookiesRoute
+  '/pricing': typeof MarketingPricingRoute
   '/privacy': typeof MarketingPrivacyRoute
   '/app/analytics': typeof AppAnalyticsRoute
   '/app/audit': typeof AppAuditRoute
@@ -320,6 +363,9 @@ export interface FileRoutesByFullPath {
   '/sign/up': typeof SignUpRoute
   '/app/': typeof AppIndexRoute
   '/blog/$slug': typeof MarketingBlogSlugRoute
+  '/compare/$rival': typeof MarketingCompareRivalRoute
+  '/features/$slug': typeof MarketingFeaturesSlugRoute
+  '/for/$persona': typeof MarketingForPersonaRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/files/$id': typeof ApiFilesIdRoute
   '/api/v1/$': typeof ApiV1SplatRoute
@@ -328,6 +374,9 @@ export interface FileRoutesByFullPath {
   '/app/developers/keys': typeof AppDevelopersKeysRoute
   '/app/developers/webhooks': typeof AppDevelopersWebhooksRoute
   '/blog/': typeof MarketingBlogIndexRoute
+  '/compare/': typeof MarketingCompareIndexRoute
+  '/features/': typeof MarketingFeaturesIndexRoute
+  '/for/': typeof MarketingForIndexRoute
   '/app/admin/': typeof AppAdminIndexRoute
   '/app/m/$map/$field': typeof AppMMapFieldRoute
   '/app/c/$collection/': typeof AppCCollectionIndexRoute
@@ -345,6 +394,7 @@ export interface FileRoutesByTo {
   '/changelog': typeof MarketingChangelogRoute
   '/contact': typeof MarketingContactRoute
   '/cookies': typeof MarketingCookiesRoute
+  '/pricing': typeof MarketingPricingRoute
   '/privacy': typeof MarketingPrivacyRoute
   '/app/analytics': typeof AppAnalyticsRoute
   '/app/audit': typeof AppAuditRoute
@@ -365,6 +415,9 @@ export interface FileRoutesByTo {
   '/': typeof MarketingIndexRoute
   '/app': typeof AppIndexRoute
   '/blog/$slug': typeof MarketingBlogSlugRoute
+  '/compare/$rival': typeof MarketingCompareRivalRoute
+  '/features/$slug': typeof MarketingFeaturesSlugRoute
+  '/for/$persona': typeof MarketingForPersonaRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/files/$id': typeof ApiFilesIdRoute
   '/api/v1/$': typeof ApiV1SplatRoute
@@ -373,6 +426,9 @@ export interface FileRoutesByTo {
   '/app/developers/keys': typeof AppDevelopersKeysRoute
   '/app/developers/webhooks': typeof AppDevelopersWebhooksRoute
   '/blog': typeof MarketingBlogIndexRoute
+  '/compare': typeof MarketingCompareIndexRoute
+  '/features': typeof MarketingFeaturesIndexRoute
+  '/for': typeof MarketingForIndexRoute
   '/app/admin': typeof AppAdminIndexRoute
   '/app/m/$map/$field': typeof AppMMapFieldRoute
   '/app/c/$collection': typeof AppCCollectionIndexRoute
@@ -394,6 +450,7 @@ export interface FileRoutesById {
   '/_marketing/changelog': typeof MarketingChangelogRoute
   '/_marketing/contact': typeof MarketingContactRoute
   '/_marketing/cookies': typeof MarketingCookiesRoute
+  '/_marketing/pricing': typeof MarketingPricingRoute
   '/_marketing/privacy': typeof MarketingPrivacyRoute
   '/app/analytics': typeof AppAnalyticsRoute
   '/app/audit': typeof AppAuditRoute
@@ -414,6 +471,9 @@ export interface FileRoutesById {
   '/_marketing/': typeof MarketingIndexRoute
   '/app/': typeof AppIndexRoute
   '/_marketing/blog/$slug': typeof MarketingBlogSlugRoute
+  '/_marketing/compare/$rival': typeof MarketingCompareRivalRoute
+  '/_marketing/features/$slug': typeof MarketingFeaturesSlugRoute
+  '/_marketing/for/$persona': typeof MarketingForPersonaRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/files/$id': typeof ApiFilesIdRoute
   '/api/v1/$': typeof ApiV1SplatRoute
@@ -422,6 +482,9 @@ export interface FileRoutesById {
   '/app/developers/keys': typeof AppDevelopersKeysRoute
   '/app/developers/webhooks': typeof AppDevelopersWebhooksRoute
   '/_marketing/blog/': typeof MarketingBlogIndexRoute
+  '/_marketing/compare/': typeof MarketingCompareIndexRoute
+  '/_marketing/features/': typeof MarketingFeaturesIndexRoute
+  '/_marketing/for/': typeof MarketingForIndexRoute
   '/app/admin/': typeof AppAdminIndexRoute
   '/app/m/$map/$field': typeof AppMMapFieldRoute
   '/app/c/$collection/': typeof AppCCollectionIndexRoute
@@ -444,6 +507,7 @@ export interface FileRouteTypes {
     | '/changelog'
     | '/contact'
     | '/cookies'
+    | '/pricing'
     | '/privacy'
     | '/app/analytics'
     | '/app/audit'
@@ -463,6 +527,9 @@ export interface FileRouteTypes {
     | '/sign/up'
     | '/app/'
     | '/blog/$slug'
+    | '/compare/$rival'
+    | '/features/$slug'
+    | '/for/$persona'
     | '/api/auth/$'
     | '/api/files/$id'
     | '/api/v1/$'
@@ -471,6 +538,9 @@ export interface FileRouteTypes {
     | '/app/developers/keys'
     | '/app/developers/webhooks'
     | '/blog/'
+    | '/compare/'
+    | '/features/'
+    | '/for/'
     | '/app/admin/'
     | '/app/m/$map/$field'
     | '/app/c/$collection/'
@@ -488,6 +558,7 @@ export interface FileRouteTypes {
     | '/changelog'
     | '/contact'
     | '/cookies'
+    | '/pricing'
     | '/privacy'
     | '/app/analytics'
     | '/app/audit'
@@ -508,6 +579,9 @@ export interface FileRouteTypes {
     | '/'
     | '/app'
     | '/blog/$slug'
+    | '/compare/$rival'
+    | '/features/$slug'
+    | '/for/$persona'
     | '/api/auth/$'
     | '/api/files/$id'
     | '/api/v1/$'
@@ -516,6 +590,9 @@ export interface FileRouteTypes {
     | '/app/developers/keys'
     | '/app/developers/webhooks'
     | '/blog'
+    | '/compare'
+    | '/features'
+    | '/for'
     | '/app/admin'
     | '/app/m/$map/$field'
     | '/app/c/$collection'
@@ -536,6 +613,7 @@ export interface FileRouteTypes {
     | '/_marketing/changelog'
     | '/_marketing/contact'
     | '/_marketing/cookies'
+    | '/_marketing/pricing'
     | '/_marketing/privacy'
     | '/app/analytics'
     | '/app/audit'
@@ -556,6 +634,9 @@ export interface FileRouteTypes {
     | '/_marketing/'
     | '/app/'
     | '/_marketing/blog/$slug'
+    | '/_marketing/compare/$rival'
+    | '/_marketing/features/$slug'
+    | '/_marketing/for/$persona'
     | '/api/auth/$'
     | '/api/files/$id'
     | '/api/v1/$'
@@ -564,6 +645,9 @@ export interface FileRouteTypes {
     | '/app/developers/keys'
     | '/app/developers/webhooks'
     | '/_marketing/blog/'
+    | '/_marketing/compare/'
+    | '/_marketing/features/'
+    | '/_marketing/for/'
     | '/app/admin/'
     | '/app/m/$map/$field'
     | '/app/c/$collection/'
@@ -674,6 +758,13 @@ declare module '@tanstack/react-router' {
       path: '/cookies'
       fullPath: '/cookies'
       preLoaderRoute: typeof MarketingCookiesRouteImport
+      parentRoute: typeof MarketingRoute
+    }
+    '/_marketing/pricing': {
+      id: '/_marketing/pricing'
+      path: '/pricing'
+      fullPath: '/pricing'
+      preLoaderRoute: typeof MarketingPricingRouteImport
       parentRoute: typeof MarketingRoute
     }
     '/_marketing/privacy': {
@@ -821,6 +912,48 @@ declare module '@tanstack/react-router' {
       path: '/blog/$slug'
       fullPath: '/blog/$slug'
       preLoaderRoute: typeof MarketingBlogSlugRouteImport
+      parentRoute: typeof MarketingRoute
+    }
+    '/_marketing/compare/': {
+      id: '/_marketing/compare/'
+      path: '/compare'
+      fullPath: '/compare/'
+      preLoaderRoute: typeof MarketingCompareIndexRouteImport
+      parentRoute: typeof MarketingRoute
+    }
+    '/_marketing/compare/$rival': {
+      id: '/_marketing/compare/$rival'
+      path: '/compare/$rival'
+      fullPath: '/compare/$rival'
+      preLoaderRoute: typeof MarketingCompareRivalRouteImport
+      parentRoute: typeof MarketingRoute
+    }
+    '/_marketing/features/': {
+      id: '/_marketing/features/'
+      path: '/features'
+      fullPath: '/features/'
+      preLoaderRoute: typeof MarketingFeaturesIndexRouteImport
+      parentRoute: typeof MarketingRoute
+    }
+    '/_marketing/features/$slug': {
+      id: '/_marketing/features/$slug'
+      path: '/features/$slug'
+      fullPath: '/features/$slug'
+      preLoaderRoute: typeof MarketingFeaturesSlugRouteImport
+      parentRoute: typeof MarketingRoute
+    }
+    '/_marketing/for/': {
+      id: '/_marketing/for/'
+      path: '/for'
+      fullPath: '/for/'
+      preLoaderRoute: typeof MarketingForIndexRouteImport
+      parentRoute: typeof MarketingRoute
+    }
+    '/_marketing/for/$persona': {
+      id: '/_marketing/for/$persona'
+      path: '/for/$persona'
+      fullPath: '/for/$persona'
+      preLoaderRoute: typeof MarketingForPersonaRouteImport
       parentRoute: typeof MarketingRoute
     }
     '/api/auth/$': {
@@ -999,20 +1132,34 @@ interface MarketingRouteChildren {
   MarketingChangelogRoute: typeof MarketingChangelogRoute
   MarketingContactRoute: typeof MarketingContactRoute
   MarketingCookiesRoute: typeof MarketingCookiesRoute
+  MarketingPricingRoute: typeof MarketingPricingRoute
   MarketingPrivacyRoute: typeof MarketingPrivacyRoute
   MarketingIndexRoute: typeof MarketingIndexRoute
   MarketingBlogSlugRoute: typeof MarketingBlogSlugRoute
+  MarketingCompareRivalRoute: typeof MarketingCompareRivalRoute
+  MarketingFeaturesSlugRoute: typeof MarketingFeaturesSlugRoute
+  MarketingForPersonaRoute: typeof MarketingForPersonaRoute
   MarketingBlogIndexRoute: typeof MarketingBlogIndexRoute
+  MarketingCompareIndexRoute: typeof MarketingCompareIndexRoute
+  MarketingFeaturesIndexRoute: typeof MarketingFeaturesIndexRoute
+  MarketingForIndexRoute: typeof MarketingForIndexRoute
 }
 
 const MarketingRouteChildren: MarketingRouteChildren = {
   MarketingChangelogRoute: MarketingChangelogRoute,
   MarketingContactRoute: MarketingContactRoute,
   MarketingCookiesRoute: MarketingCookiesRoute,
+  MarketingPricingRoute: MarketingPricingRoute,
   MarketingPrivacyRoute: MarketingPrivacyRoute,
   MarketingIndexRoute: MarketingIndexRoute,
   MarketingBlogSlugRoute: MarketingBlogSlugRoute,
+  MarketingCompareRivalRoute: MarketingCompareRivalRoute,
+  MarketingFeaturesSlugRoute: MarketingFeaturesSlugRoute,
+  MarketingForPersonaRoute: MarketingForPersonaRoute,
   MarketingBlogIndexRoute: MarketingBlogIndexRoute,
+  MarketingCompareIndexRoute: MarketingCompareIndexRoute,
+  MarketingFeaturesIndexRoute: MarketingFeaturesIndexRoute,
+  MarketingForIndexRoute: MarketingForIndexRoute,
 }
 
 const MarketingRouteWithChildren = MarketingRoute._addFileChildren(

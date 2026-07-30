@@ -1,8 +1,8 @@
 import { Link, createFileRoute, notFound } from '@tanstack/react-router';
 
 import { brand } from '@repo/brand';
-import { CtaSection } from '@repo/ui/marketing/sections.tsrx';
 import { DisplayHeading, Label, Lede, PostMeta, TagRow } from '@repo/ui/marketing/ui.tsrx';
+import { MarketingCta } from '#/marketing/sections/bands.tsrx';
 import { findPost } from '#/marketing/content';
 import { blogPostingJsonLd, seo } from '#/marketing/seo';
 
@@ -67,7 +67,7 @@ function BlogPostPage() {
           <BackToPosts />
         </div>
       </section>
-      <CtaSection />
+      <MarketingCta />
     </>
   );
 }

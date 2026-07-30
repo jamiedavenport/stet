@@ -13,6 +13,21 @@ test('landing page renders', async ({ page }) => {
   await expect(page.getByRole('contentinfo')).toBeVisible();
 });
 
+// One of each dynamic marketing route. The page-error assertion is the point:
+// anything unserializable in a loader still renders on the server and then
+// fails to hydrate, which no visible-heading check would catch.
+test('feature, persona and comparison pages render and hydrate', async ({ page }) => {
+  const failures: string[] = [];
+  page.on('pageerror', (error) => failures.push(String(error)));
+
+  for (const path of ['/features/content', '/for/marketing', '/compare/sanity', '/pricing']) {
+    await page.goto(path);
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+  }
+
+  expect(failures).toEqual([]);
+});
+
 test('blog index renders', async ({ page }) => {
   await page.goto('/blog');
 
