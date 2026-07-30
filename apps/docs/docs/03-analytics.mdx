@@ -1,7 +1,7 @@
 ---
 title: Analytics
-description: Cookieless, type-safe product analytics routed through your own backend.
-icon: ChartBar
+description: Cookieless, type-safe product analytics routed through your own backend, so there is no consent banner, no blocked pixel and no second account.
+icon: chart-bar
 ---
 
 Every page your content team publishes reports how it performs, in the same
@@ -24,8 +24,7 @@ control.
 
 ## Three steps
 
-Install [`@stetcms/analytics`](https://github.com/jamiedavenport/stet/tree/main/published/analytics),
-then:
+Install `@stetcms/analytics`, then:
 
 ```ts
 // stet.config.ts — the tracking plan
@@ -68,8 +67,9 @@ analytics.track('checkout.completed', { total: 42 });
 On a site where every navigation is a real page load, pageviews are recorded
 for you and there is nothing else to do. In a single-page app, set
 `autoPageviews: false` and record them from your router instead — it is the
-only thing that knows what a navigation is. `@stetcms/analytics` documents a
-snippet for TanStack Router, Next.js, React Router, SvelteKit, Nuxt and Astro.
+only thing that knows what a navigation is. The
+[reference](/reference/analytics#pageviews-in-a-single-page-app) has the
+snippet.
 
 ## Type safety
 

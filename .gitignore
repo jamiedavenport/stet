@@ -15,8 +15,10 @@ playwright-report
 apps/web/e2e/.auth
 apps/web/e2e/.server.log
 apps/web/public/og
+apps/docs/public
 private/api/openapi.json
 
+.blume
 .source
 .tanstack
 .content-collections

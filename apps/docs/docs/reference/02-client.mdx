@@ -1,0 +1,245 @@
+---
+title: '@stetcms/client'
+description: The typed content client your codegen writes, the REST client for everything else in the API, and the types every entry carries.
+icon: plug
+sidebar:
+  label: Client
+---
+
+`@stetcms/client` is two clients in one package.
+
+**The content client** is what you use day to day. You do not construct it:
+[codegen](/reference/codegen) writes a `stet.gen.ts` that constructs it for
+you, typed by your organization's content model.
+
+**The REST client** covers everything else in the API — organizations,
+billing, webhooks — as a fully typed call for every endpoint in the
+[contract](/api).
+
+:::warning[Server-side only]
+Both clients send your organization API key, which reads every entry you hold.
+Call them from a loader, a server function, or a route handler, never from code
+that reaches the browser.
+:::
+
+## The content client
+
+### stet
+
+The generated module exports a ready `stet`. Its keys are your collections and
+maps:
+
+```ts
+import { stet } from './stet.gen';
+
+const posts = await stet.posts.list(); // PostsEntry[]
+const post = await stet.posts.get('hello-world'); // PostsEntry
+const landing = await stet.landing.get(); // LandingEntry
+```
+
+A **collection** holds many entries and gets `list()` and `get(slug)`. A
+**map** holds exactly one and gets `get()` with no argument — the type system
+knows which is which, so calling `list()` on a map is a compile error.
+
+<TypeTable
+  type={{
+    'list()': {
+      type: 'Promise<E[]>',
+      description: 'Every entry in the collection, oldest first. Collections only.',
+    },
+    'get(slug)': {
+      type: 'Promise<E>',
+      description: 'One entry, addressed by its slug. Collections only.',
+    },
+    'get()': {
+      type: 'Promise<E>',
+      description: "The map's single entry. Maps only; throws if the map is empty.",
+    },
+  }}
+/>
+
+Both reject with an `Error` carrying the status when a request fails, so a
+missing slug surfaces as a rejected promise rather than `undefined`.
+
+### createContentClient
+
+The function `stet.gen.ts` calls. Reach for it directly only when you need a
+second client — a different organization, or a fetch you control:
+
+```ts
+import { createContentClient } from '@stetcms/client';
+import type { StetContentModel } from './stet.gen';
+
+const preview = createContentClient<StetContentModel>({
+  origin: 'https://stetcms.com',
+  apiKey: process.env.STET_PREVIEW_KEY,
+});
+```
+
+<TypeTable
+  type={{
+    origin: {
+      type: 'string',
+      description: 'The Stet deployment to read from.',
+      default: 'https://stetcms.com',
+    },
+    apiKey: {
+      type: 'string',
+      description: 'Organization API key, sent as x-api-key.',
+    },
+    fetch: {
+      type: 'typeof fetch',
+      description: 'Override the fetch implementation, e.g. in tests.',
+    },
+  }}
+/>
+
+The runtime is one `Proxy` over the content API, so an unknown key costs
+nothing and the module stays small.
+
+### What an entry holds
+
+Every entry carries the same base, whatever its collection:
+
+<TypeTable
+  type={{
+    id: { type: 'string', required: true, description: "The entry's stable identifier." },
+    slug: {
+      type: 'string',
+      required: true,
+      description: 'The addressable name, unique per collection.',
+    },
+    title: { type: 'string', required: true, description: "The entry's title." },
+    createdAt: { type: 'string', required: true, description: 'ISO 8601.' },
+    updatedAt: { type: 'string', required: true, description: 'ISO 8601.' },
+    fields: {
+      type: 'Record<string, unknown>',
+      required: true,
+      description: 'The fields your content team defined, typed per collection.',
+    },
+  }}
+/>
+
+Everything under `fields` is optional and nullable, because an editor may not
+have filled it in. See the [content model](/content-model) for what each field
+type becomes.
+
+### Assets and references
+
+Two field types arrive as objects rather than scalars:
+
+<TypeTable
+  type={{
+    ContentAsset: {
+      type: '{ id, url, name, contentType, size }',
+      description:
+        'An uploaded file. url is fully qualified and public, so it goes straight into an img tag or a download link.',
+    },
+    ContentReference: {
+      type: '{ id, slug, title }',
+      description:
+        "A pointer at an entry of another collection: enough to render a link, plus the slug to fetch the rest. The target collection is named in the generated field's doc comment.",
+    },
+  }}
+/>
+
+The API returns asset URLs relative to itself, since the same bytes serve
+whichever origin you reach them through. The client joins them to the `origin`
+it was configured with — including the ones an editor dropped inside a rich
+text body — so what you get is ready to use on your own site.
+
+If you call the REST API directly rather than through the client, do that join
+yourself:
+
+<TypeTable
+  type={{
+    'assetUrl(url, origin)': {
+      type: 'string',
+      description: 'Joins one asset path to an origin. Anything already absolute is left alone.',
+    },
+    'resolveAssetPaths(text, origin)': {
+      type: 'string',
+      description:
+        "The same join applied inside a body's markdown: link and image destinations, and the src of any raw HTML.",
+    },
+  }}
+/>
+
+## The REST client
+
+`createStetClient` returns a typed call for every endpoint in the
+[contract](/api), over [oRPC](https://orpc.unnoq.com):
+
+```ts
+import { createStetClient, isDefinedError, safe } from '@stetcms/client';
+
+const client = createStetClient({ apiKey: process.env.STET_API_KEY });
+
+const { data, error, isDefined } = await safe(client.org.current());
+
+if (isDefined && error.code === 'UNAUTHORIZED') {
+  throw new Error('Invalid or revoked API key.');
+}
+```
+
+<TypeTable
+  type={{
+    origin: { type: 'string', description: 'The Stet deployment.', default: 'https://stetcms.com' },
+    apiKey: { type: 'string', description: 'Organization API key, sent as x-api-key.' },
+    fetch: { type: 'typeof fetch', description: 'Override the fetch implementation.' },
+  }}
+/>
+
+`safe` and `isDefinedError` are re-exported from `@orpc/client`, so error
+handling needs no second dependency. `safe` turns a rejection into a result
+object; `isDefined` tells you the error came from the contract rather than the
+network, which is what makes `error.code` safe to switch on.
+
+## Exports
+
+<TypeTable
+  type={{
+    createContentClient: {
+      type: 'function',
+      description: 'The model-shaped content client. Called for you by stet.gen.ts.',
+    },
+    createStetClient: {
+      type: 'function',
+      description: 'The typed REST client for the rest of the API.',
+    },
+    assetUrl: { type: 'function', description: 'Join an asset path to an origin.' },
+    resolveAssetPaths: {
+      type: 'function',
+      description: "Join every asset path inside a body's markdown.",
+    },
+    safe: {
+      type: 'function',
+      description: 'Re-export from @orpc/client: a rejection as a result object.',
+    },
+    isDefinedError: {
+      type: 'function',
+      description: 'Re-export from @orpc/client: whether an error came from the contract.',
+    },
+    DEFAULT_ORIGIN: { type: 'string', description: 'https://stetcms.com' },
+    ApiInputs: { type: 'type', description: 'Inputs of every contract procedure, keyed by path.' },
+    ApiOutputs: {
+      type: 'type',
+      description: 'Outputs of every contract procedure, keyed by path.',
+    },
+    StetClient: { type: 'type', description: 'The REST client type.' },
+    ContentClient: { type: 'type', description: 'The content client, given a model shape.' },
+    ContentModelShape: {
+      type: 'type',
+      description: 'What stet.gen.ts generates: each key carries a kind and an entry type.',
+    },
+    ContentEntryBase: { type: 'type', description: 'The fields every entry carries.' },
+    ContentAsset: { type: 'type', description: "An asset field's value." },
+    ContentReference: { type: 'type', description: "A reference field's value." },
+    CollectionClient: { type: 'type', description: 'list() and get(slug).' },
+    MapClient: { type: 'type', description: 'get().' },
+  }}
+/>
+
+`@stetcms/client/codegen` is a second entry point holding `fetchContentModel`,
+`renderContentModule` and `entryTypeName`. It is documented under
+[codegen](/reference/codegen).

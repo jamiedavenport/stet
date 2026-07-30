@@ -9,8 +9,8 @@
     },
     {
       "name": "docs",
-      "runtimeExecutable": "vp",
-      "runtimeArgs": ["dev", "apps/docs"],
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "@repo/docs", "dev"],
       "port": 3100
     }
   ]
