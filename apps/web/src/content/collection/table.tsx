@@ -35,7 +35,7 @@ export function EntriesTable({
     // Bleeds to the inset panel's edges: the negative margins cancel the page
     // padding, and the first/last cells put it back so content stays aligned.
     <div className="-mx-6 [&_td:first-child]:pl-6 [&_td:last-child]:pr-6 [&_th:first-child]:pl-6 [&_th:last-child]:pr-6">
-      <Table>
+      <Table className="border-b">
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>

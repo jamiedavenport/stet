@@ -103,10 +103,9 @@ export function CollectionEntries() @{
   };
 
   <CellDataProvider lookup={data.lookup} organizationId={activeOrganization.id}>
-    <div className="flex min-h-0 w-full min-w-0 flex-1 flex-col gap-6">
+    <div className="flex min-h-0 w-full min-w-0 flex-1 flex-col">
       <TypeHeader
         type={data.type}
-        entryCount={data.entries.length}
         onChanged={changed}
         onSlugChanged={(slug) =>
           router.navigate({ to: '/app/c/$collection', params: { collection: slug } })

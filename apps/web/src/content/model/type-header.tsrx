@@ -7,8 +7,6 @@ import { deleteContentType, updateContentType } from '#/content/model/functions'
 
 type TypeHeaderProps = {
   type: { id: string; slug: string; name: string; kind: 'collection' | 'map' };
-  /** Entries in the collection; null for maps, which always hold one. */
-  entryCount: number | null;
   onChanged: () => Promise<void>;
   /** The page's own URL carries the slug, so the caller must move to it. */
   onSlugChanged: (slug: string) => Promise<void>;
@@ -25,7 +23,7 @@ const commitOnEnter = (event: React.KeyboardEvent<HTMLInputElement>) => {
 
 /** A collection or map page's header: name and slug edited in place. */
 export function TypeHeader(props: TypeHeaderProps) @{
-  const { type, entryCount } = props;
+  const { type } = props;
 
   const rename = async (name: string) => {
     if (name.trim().length === 0 || name.trim() === type.name) {
@@ -52,36 +50,26 @@ export function TypeHeader(props: TypeHeaderProps) @{
     await props.onChanged();
   };
 
-  <div className="-mx-6 flex items-start gap-3 border-b px-6 pb-5">
-    <div className="flex min-w-0 flex-1 flex-col gap-1">
-      <Input
-        key={`name-${type.name}`}
-        defaultValue={type.name}
-        aria-label={type.kind === 'map' ? 'Map name' : 'Collection name'}
-        className="h-auto border-none px-0 text-2xl font-semibold tracking-tight shadow-none focus-visible:ring-0 dark:bg-transparent"
-        onBlur={(event) => void rename(event.target.value)}
-        onKeyDown={commitOnEnter}
-      />
-      <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-        @if (entryCount !== null) {
-          <span className="tabular-nums">
-            {`${entryCount} ${entryCount === 1 ? 'entry' : 'entries'}`}
-          </span>
-        } @else {
-          <span>{"Map"}</span>
-        }
-        <span aria-hidden="true">{"·"}</span>
-        <Input
-          key={`slug-${type.slug}`}
-          defaultValue={type.slug}
-          aria-label={type.kind === 'map' ? 'Map slug' : 'Collection slug'}
-          className="h-6 w-auto field-sizing-content min-w-16 rounded-md border-none bg-transparent px-1 font-mono text-xs shadow-none hover:bg-muted focus-visible:bg-background focus-visible:ring-1 dark:bg-transparent"
-          onBlur={(event) => void reslug(event.target.value)}
-          onKeyDown={commitOnEnter}
-        />
-      </div>
-    </div>
-    <div className="flex items-center gap-2">
+  <div className="-mx-6 flex items-center gap-3 border-b px-6 pb-5">
+    {/* Both sizes are set at md too: the shared Input's own md:text-sm wins
+        over an unprefixed size class above that breakpoint. */}
+    <Input
+      key={`name-${type.name}`}
+      defaultValue={type.name}
+      aria-label={type.kind === 'map' ? 'Map name' : 'Collection name'}
+      className="h-auto w-auto field-sizing-content min-w-24 border-none px-0 text-4xl font-semibold tracking-tight shadow-none focus-visible:ring-0 md:text-4xl dark:bg-transparent"
+      onBlur={(event) => void rename(event.target.value)}
+      onKeyDown={commitOnEnter}
+    />
+    <Input
+      key={`slug-${type.slug}`}
+      defaultValue={type.slug}
+      aria-label={type.kind === 'map' ? 'Map slug' : 'Collection slug'}
+      className="h-7 w-auto field-sizing-content min-w-16 rounded-md border-none bg-transparent px-1.5 font-mono text-sm text-muted-foreground shadow-none hover:bg-muted focus-visible:bg-background focus-visible:ring-1 md:text-sm dark:bg-transparent"
+      onBlur={(event) => void reslug(event.target.value)}
+      onKeyDown={commitOnEnter}
+    />
+    <div className="ml-auto flex items-center gap-2">
       {props.children}
       <Button
         variant="ghost"
