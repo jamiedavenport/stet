@@ -89,6 +89,42 @@ test('collections: model, table editing, and the entry editor', async ({ page })
   await expect(page.getByText('Hello World')).toBeVisible();
 });
 
+// The two cells that are more than a text box: a day comes from a calendar,
+// and a link is stored only once it is one.
+test('date cells pick a day and link cells insist on a URL', async ({ page, context }) => {
+  const name = `Events ${Date.now()}`;
+
+  await gotoHydrated(page, '/app');
+  await createType(page, 'collection', name);
+  await addField(page, 'Date', 'Published');
+  await addField(page, 'Link', 'Docs');
+
+  await page.getByRole('button', { name: 'New entry' }).click();
+  const row = page.getByRole('row').filter({ hasText: 'Untitled' });
+
+  await row.getByRole('button', { name: 'Published value' }).click();
+  await page.locator('button[data-day]').filter({ hasText: /^15$/ }).first().click();
+  await expect(row.getByText(/^15 \w{3} \d{4}$/)).toBeVisible();
+
+  // Text that is not an address keeps the editor open rather than being
+  // stored; a bare host gains the scheme it meant.
+  await row.getByRole('button', { name: 'Docs value' }).click();
+  await page.getByLabel('Cell value').fill('not a link');
+  await page.keyboard.press('Enter');
+  await expect(page.getByLabel('Cell value')).toHaveAttribute('aria-invalid', 'true');
+
+  await page.getByLabel('Cell value').fill('stetcms.com/docs');
+  await page.keyboard.press('Enter');
+  await expect(row.getByText('https://stetcms.com/docs')).toBeVisible();
+
+  // Ctrl+Click follows the link instead of editing it.
+  const opened = context.waitForEvent('page');
+  await row.getByRole('button', { name: 'Docs value' }).click({ modifiers: ['ControlOrMeta'] });
+  const tab = await opened;
+  expect(tab.url()).toContain('stetcms.com/docs');
+  await tab.close();
+});
+
 // The developer side of the same gap: what marketing modelled above must
 // come back typed through the public API, bodies as markdown.
 test('the public API serves modelled content with markdown bodies', async ({ page, request }) => {

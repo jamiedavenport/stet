@@ -3,6 +3,7 @@ import { Badge } from '@repo/ui/components/badge';
 import { FileIcon } from '@phosphor-icons/react';
 
 import { useCellData } from '#/content/cells/context';
+import { formatDay } from '#/content/cells/days';
 import type { Member } from '#/content/entry/functions';
 import { isReferenceType } from '@repo/content/schema';
 import type { FieldValue } from '@repo/content/schema';
@@ -74,8 +75,11 @@ export function CellDisplay({ field, value, members }: CellDisplayProps) @{
         {value}
       </span>
     }
-    @if ((field.type === 'text' || field.type === 'date') && typeof value === 'string') {
+    @if (field.type === 'text' && typeof value === 'string') {
       <span className="max-w-72 truncate text-sm">{value}</span>
+    }
+    @if (field.type === 'date' && typeof value === 'string') {
+      <span className="truncate text-sm">{formatDay(value)}</span>
     }
     @if (field.type === 'number' && typeof value === 'number') {
       <span className="text-sm tabular-nums">{value}</span>
