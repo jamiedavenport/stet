@@ -75,7 +75,7 @@ export function MapEditor() @{
   };
 
   <CellDataProvider lookup={data.lookup} organizationId={activeOrganization.id}>
-    <div className="flex min-h-0 w-full min-w-0 flex-1 flex-col gap-6">
+    <div className="flex min-h-0 w-full min-w-0 flex-1 flex-col">
       <TypeHeader
         type={data.type}
         onChanged={changed}
@@ -83,7 +83,7 @@ export function MapEditor() @{
         onDeleted={() => router.navigate({ to: '/app' })}
       />
       <div className="-mx-6 [&_td:first-child]:pl-6 [&_td:last-child]:pr-6 [&_th:first-child]:pl-6 [&_th:last-child]:pr-6">
-        <Table>
+        <Table className="border-b">
           <TableHeader>
             <TableRow>
               <TableHead className="w-56">{"Key"}</TableHead>
@@ -118,16 +118,12 @@ export function MapEditor() @{
                 </TableCell>
               </TableRow>
             }
-            <TableRow className="h-12">
-              <TableCell colSpan={2} className="px-2 py-0">
-                <AddField typeId={data.type.id} label="New key" onCreated={changed} />
-              </TableCell>
-            </TableRow>
           </TableBody>
         </Table>
+        <AddField typeId={data.type.id} label="New key" onCreated={changed} />
       </div>
       @if (data.type.fields.length === 0) {
-        <p className="text-sm text-muted-foreground">
+        <p className="mt-6 text-sm text-muted-foreground">
           {"Add keys to hold this map's values. A rich text key opens the collaborative editor."}
         </p>
       }

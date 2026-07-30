@@ -10,6 +10,7 @@ import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-tabl
 import type { ColumnDef } from '@tanstack/react-table';
 import { PlusIcon } from '@phosphor-icons/react';
 
+import { addRowClasses } from '#/content/add-row';
 import type { EntryRow } from '#/content/entry/functions';
 
 // Written as plain TSX rather than TSRX: the table renders through TanStack
@@ -61,11 +62,7 @@ export function EntriesTable({
           ))}
         </TableBody>
       </Table>
-      <button
-        type="button"
-        onClick={onAddEntry}
-        className="flex h-11 w-full items-center gap-2 border-b px-6 text-left text-sm text-muted-foreground hover:bg-muted/50 hover:text-foreground"
-      >
+      <button type="button" onClick={onAddEntry} className={addRowClasses}>
         <PlusIcon className="size-4 shrink-0" />
         {'New entry'}
       </button>

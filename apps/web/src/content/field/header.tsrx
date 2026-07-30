@@ -29,6 +29,7 @@ import {
   optionColors,
 } from '@repo/content/schema';
 import type { FieldType, SelectOption } from '@repo/content/schema';
+import { addRowClasses } from '#/content/add-row';
 import { createField, deleteField, moveField, updateField } from '#/content/field/functions';
 import { contentModelQuery } from '#/content/model/functions';
 import type { ModelField } from '#/content/model/functions';
@@ -293,7 +294,7 @@ export function AddField({ typeId, label, onCreated }: AddFieldProps) @{
       className={
         label === undefined
           ? 'flex size-6 items-center justify-center rounded-md hover:bg-muted'
-          : 'flex h-7 items-center gap-1.5 rounded-md px-1 text-sm text-muted-foreground hover:bg-muted hover:text-foreground'
+          : addRowClasses
       }
     >
       <PlusIcon className="size-4" />
@@ -301,7 +302,7 @@ export function AddField({ typeId, label, onCreated }: AddFieldProps) @{
         <span>{label}</span>
       }
     </DropdownMenuTrigger>
-    <DropdownMenuContent align="end" className="w-44">
+    <DropdownMenuContent align={label === undefined ? 'end' : 'start'} className="w-44">
       @for (const type of simpleTypes; key type) {
         <DropdownMenuItem onClick={() => void create(type)}>
           {fieldTypeLabels[type]}

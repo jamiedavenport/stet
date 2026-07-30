@@ -114,7 +114,7 @@ export function CollectionEntries() @{
       />
       <EntriesTable columns={columns} entries={data.entries} onAddEntry={() => void addEntry()} />
       @if (data.type.fields.length === 0) {
-        <p className="text-sm text-muted-foreground">
+        <p className="mt-6 text-sm text-muted-foreground">
           {"Add fields with the + button in the table header. Rich text fields open the collaborative editor."}
         </p>
       }
