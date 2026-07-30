@@ -197,7 +197,9 @@ db.insert(schema.apikey)
     id: seedApiKey.id,
     configId: 'default',
     name: seedApiKey.name,
-    start: seedApiKey.key.slice(0, 6),
+    // Matches startingCharactersConfig in private/auth, so the seeded key
+    // reads on the keys page exactly like a minted one.
+    start: seedApiKey.key.slice(0, 12),
     prefix: 'stet_',
     referenceId: seedOrganization.id,
     key: await defaultKeyHasher(seedApiKey.key),

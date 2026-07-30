@@ -40,9 +40,8 @@ that content performs.
    `seed-password-123` and edit content; write a body in the entry editor
    and it appears on the blog as markdown a few seconds later.
 
-Any other organization works too: mint a key with
-`POST /api/auth/api-key/create` (body `{"name":"example","organizationId":"…"}`,
-authenticated with your session) and pass it as `STET_API_KEY`.
+Any other organization works too: mint a key under Developers → API keys in the
+Stet app, copy it while it is shown, and pass it as `STET_API_KEY`.
 
 Rename a field in the Stet UI and watch: the plugin polls the model while the
 dev server runs, regenerates the client within a few seconds, and stale field

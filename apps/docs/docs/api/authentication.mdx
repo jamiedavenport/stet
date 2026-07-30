@@ -31,7 +31,8 @@ curl https://stetcms.com/api/v1/org \
 Create one in the Stet app under **Developers → API keys**. You need to be an
 owner or admin of the organization. A key is scoped to that one organization
 and reads every entry it holds, so it belongs on a server, never in a browser
-bundle.
+bundle. Only its hash is stored, so it is shown once, when it is created; the
+page lists what is left of it afterwards, and revokes it when you are done.
 
 `stet org` is the quickest way to confirm a key is the one you meant:
 
