@@ -10,6 +10,12 @@
   "assets": {
     "directory": "./dist",
     "not_found_handling": "404-page",
+    // Blume writes every page as `<route>/index.html` but links to it without a
+    // trailing slash, in the nav, the canonical tag and the sitemap alike. The
+    // default `auto-trailing-slash` would answer each of those URLs with a 307
+    // to the slashed form, redirecting every indexed page away from its own
+    // canonical; dropping the slash serves them directly instead.
+    "html_handling": "drop-trailing-slash",
   },
   "routes": [
     {
