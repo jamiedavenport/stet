@@ -19,7 +19,7 @@ import { nextOptionColor } from '@repo/content/schema';
 import type { FieldValue } from '@repo/content/schema';
 import { contentModelQuery } from '#/content/model/functions';
 import type { ModelField } from '#/content/model/functions';
-import { bumpContentVersion, setCellLocation, useContentVersion } from '#/content/presence';
+import { setCellLocation, useContentVersion } from '#/content/presence';
 import type { CellLocation } from '#/content/presence';
 import { TypeHeader } from '#/content/model/type-header.tsrx';
 import { useAppRoute } from '#/use-app-route';
@@ -37,7 +37,9 @@ export function CollectionEntries() @{
   const router = useRouter();
   const { room } = usePageRoomContext();
 
-  const refetch = async () => {
+  // Read the collection again: after our own write, and when the room says
+  // someone else's landed.
+  const changed = async () => {
     await Promise.all([
       queryClient.invalidateQueries({
         queryKey: entriesQuery(activeOrganization.id, collection).queryKey,
@@ -48,14 +50,7 @@ export function CollectionEntries() @{
     ]);
   };
 
-  // Refetch when someone else changes the collection; bump when we do.
-  useContentVersion(room, () => void refetch());
-  const changed = async () => {
-    await refetch();
-    if (room !== null) {
-      bumpContentVersion(room);
-    }
-  };
+  useContentVersion(room, () => void changed());
 
   // Keyed on the slice of the type the columns actually render: entry
   // refetches produce a fresh object every time, and rebuilding columns

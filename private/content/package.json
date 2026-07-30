@@ -11,6 +11,7 @@
     "./model": "./src/model.ts",
     "./prune-revisions": "./src/prune-revisions.ts",
     "./revisions": "./src/revisions.ts",
+    "./rooms": "./src/rooms.ts",
     "./schema": "./src/schema.ts",
     "./slug": "./src/slug.ts",
     "./write-body": "./src/write-body.ts"

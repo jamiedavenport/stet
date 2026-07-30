@@ -5,6 +5,7 @@ import { entryPage } from '@repo/realtime/entry';
 import { recordContentChange } from '@repo/webhooks/content';
 
 import { requireContentType, requireEntry } from './access';
+import { broadcastContentChange } from './broadcast';
 import { recordEntryRevision } from './revisions';
 import { parseValues, valuesText } from './schema';
 import type { EntryValues } from './schema';
@@ -61,6 +62,7 @@ export async function createEntry(
     slug,
     title,
   });
+  await broadcastContentChange(organizationId, type);
   return { id, slug };
 }
 
@@ -110,6 +112,7 @@ export async function updateEntry(
     slug,
     title: input.title ?? entry.title,
   });
+  await broadcastContentChange(organizationId, type);
   return { slug };
 }
 
@@ -141,4 +144,5 @@ export async function deleteEntry(organizationId: string, id: string, actor: Act
     slug: entry.slug,
     title: entry.title,
   });
+  await broadcastContentChange(organizationId, type);
 }

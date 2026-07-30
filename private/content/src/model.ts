@@ -5,6 +5,7 @@ import { entryPage } from '@repo/realtime/entry';
 import { recordContentChange } from '@repo/webhooks/content';
 
 import { requireContentType } from './access';
+import { broadcastContentChange } from './broadcast';
 import { fieldTypeSchema, parseConfig } from './schema';
 import { slugify, uniqueSlug } from './slug';
 
@@ -176,6 +177,9 @@ export async function updateContentType(
     slug,
     name: input.name ?? type.name,
   });
+  // The room it had, not the one it now has: a new slug is a new page, and
+  // the people to tell are the ones still on the old one.
+  await broadcastContentChange(organizationId, type);
   return { slug };
 }
 
@@ -220,4 +224,5 @@ export async function deleteContentType(
     slug: type.slug,
     name: type.name,
   });
+  await broadcastContentChange(organizationId, type);
 }
