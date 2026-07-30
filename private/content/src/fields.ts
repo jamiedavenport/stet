@@ -1,11 +1,13 @@
 import { recordAudit } from '@repo/audit';
 import type { Actor } from '@repo/audit';
-import { asc, database, eq, schema } from '@repo/db';
+import { and, asc, database, eq, inArray, schema } from '@repo/db';
+import { entryPage } from '@repo/realtime/entry';
 
 import { requireContentType, requireField } from './access';
-import { isReferenceType } from './schema';
+import { isReferenceType, parseValues, valuesText } from './schema';
 import type { FieldConfig, FieldType } from './schema';
 import { slugify, uniqueSlug } from './slug';
+import { moveEntryBody } from './write-body';
 
 // Field domain operations, shared by the server functions and the AI
 // assistant's tools. Server-only, like ./access: callers authenticate,
@@ -58,25 +60,93 @@ export async function updateField(
   organizationId: string,
   input: { id: string; name?: string; config?: FieldConfig },
   actor: Actor,
-): Promise<void> {
+): Promise<{ key: string }> {
   const db = await database();
   const field = await requireField(organizationId, input.id);
+  const name = input.name ?? field.name;
+  const renamed = name !== field.name;
+  // The key is the name in API form, so a rename carries it along, taking
+  // everything written under the old key with it.
+  const key = renamed ? await rekey(organizationId, field, name) : field.key;
   await db
     .update(schema.contentField)
     .set({
-      name: input.name ?? field.name,
+      key,
+      name,
       config: input.config === undefined ? field.config : JSON.stringify(input.config),
     })
     .where(eq(schema.contentField.id, field.id));
-  const renamed = input.name !== undefined && input.name !== field.name;
   await recordAudit({
     organizationId,
     actor,
     action: 'field.update',
-    subject: { type: 'field', id: field.id, label: input.name ?? field.name },
-    details: renamed ? { from: field.name, to: input.name ?? field.name } : {},
+    subject: { type: 'field', id: field.id, label: name },
+    details: renamed ? { from: field.name, to: name } : {},
     coalesceMs: 10 * 60_000,
   });
+  return { key };
+}
+
+type StoredField = Awaited<ReturnType<typeof requireField>>;
+
+/**
+ * Gives a renamed field the key its new name earns and moves the content
+ * stored under the old one: values live in each entry's JSON, rich text
+ * bodies in their own root of the entry's realtime document.
+ */
+async function rekey(organizationId: string, field: StoredField, name: string): Promise<string> {
+  const db = await database();
+  const siblings = await db.query.contentField.findMany({
+    where: eq(schema.contentField.typeId, field.typeId),
+    columns: { id: true, key: true },
+  });
+  const taken = new Set(
+    siblings.filter((sibling) => sibling.id !== field.id).map((sibling) => sibling.key),
+  );
+  const key = uniqueSlug(slugify(name, '_'), taken, '_');
+  if (key === field.key) {
+    return key;
+  }
+
+  const entries = await db.query.contentEntry.findMany({
+    where: eq(schema.contentEntry.typeId, field.typeId),
+    columns: { id: true, values: true },
+  });
+  for (const entry of entries) {
+    const values = parseValues(entry.values);
+    if (!(field.key in values)) {
+      continue;
+    }
+    const moved = { ...values, [key]: values[field.key] };
+    delete moved[field.key];
+    await db
+      .update(schema.contentEntry)
+      .set({ values: JSON.stringify(moved), fieldText: valuesText(moved) })
+      .where(eq(schema.contentEntry.id, entry.id));
+  }
+
+  if (field.type === 'rich_text' && entries.length > 0) {
+    // Only entries whose document has been flushed can hold a body, so the
+    // rest need no room woken to find out they have nothing to move.
+    const written = await db.query.document.findMany({
+      where: and(
+        eq(schema.document.organizationId, organizationId),
+        inArray(
+          schema.document.page,
+          entries.map((entry) => entryPage(entry.id)),
+        ),
+      ),
+      columns: { page: true },
+    });
+    const pages = new Set(written.map((row) => row.page));
+    for (const entry of entries) {
+      if (pages.has(entryPage(entry.id))) {
+        await moveEntryBody({ organizationId, entryId: entry.id, from: field.key, to: key });
+      }
+    }
+  }
+
+  return key;
 }
 
 export async function moveField(
