@@ -46,8 +46,12 @@ type FieldHeaderProps = {
 export function FieldHeader({ field, orientation = 'column', onChanged }: FieldHeaderProps) @{
   const { activeOrganization } = useAppRoute();
   const model = useSuspenseQuery(contentModelQuery(activeOrganization.id)).data;
+  const [open, setOpen] = useState(false);
   const [name, setName] = useState(field.name);
   const [options, setOptions] = useState(field.config.options ?? []);
+  // The name last written, so committing on Enter and again on the blur that
+  // closing causes is one rename, not two.
+  const saved = useRef(field.name);
   // Refetching the model rebuilds the table's columns, which remounts this
   // header and closes the popover mid-edit. So settings render from local
   // state and the refetch waits for the popover to close. Closing races the
@@ -72,10 +76,22 @@ export function FieldHeader({ field, orientation = 'column', onChanged }: FieldH
   };
 
   const rename = async () => {
-    if (name.trim().length === 0 || name.trim() === field.name) {
+    const next = name.trim();
+    if (next.length === 0 || next === saved.current) {
       return;
     }
-    await write({ name: name.trim() });
+    saved.current = next;
+    await write({ name: next });
+  };
+
+  // Closing from here is our own state change, which Base UI does not report
+  // back through onOpenChange, so this refetches for itself.
+  const submit = async () => {
+    await rename();
+    setOpen(false);
+    if (writing.current !== null) {
+      await refresh();
+    }
   };
 
   const saveOptions = async (next: SelectOption[]) => {
@@ -94,8 +110,10 @@ export function FieldHeader({ field, orientation = 'column', onChanged }: FieldH
   };
 
   <Popover
-    onOpenChange={(open) => {
-      if (!open && writing.current !== null) {
+    open={open}
+    onOpenChange={(next) => {
+      setOpen(next);
+      if (!next && writing.current !== null) {
         void refresh();
       }
     }}
@@ -113,7 +131,7 @@ export function FieldHeader({ field, orientation = 'column', onChanged }: FieldH
           onKeyDown={(event) => {
             if (event.key === 'Enter') {
               event.preventDefault();
-              void rename();
+              void submit();
             }
           }}
         />
