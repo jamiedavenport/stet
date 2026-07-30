@@ -4,6 +4,7 @@ import { createServerFn } from '@tanstack/react-start';
 import { notFound } from '@tanstack/react-router';
 import { z } from 'zod';
 
+import { liveFields } from '@repo/content/access';
 import * as entries from '@repo/content/entries';
 import { fieldTypeSchema, fieldValueSchema, parseConfig, parseValues } from '@repo/content/schema';
 import { appActor } from '#/content/actor';
@@ -23,10 +24,7 @@ async function typeWithFields(organizationId: string, where: { slug?: string; id
   if (type === undefined) {
     throw notFound();
   }
-  const fields = await db.query.contentField.findMany({
-    where: eq(schema.contentField.typeId, type.id),
-    orderBy: asc(schema.contentField.position),
-  });
+  const fields = await liveFields(type.id);
   return {
     id: type.id,
     slug: type.slug,

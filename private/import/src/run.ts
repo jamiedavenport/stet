@@ -7,7 +7,7 @@ import { createContentType } from '@repo/content/model';
 import { nextOptionColor, parseConfig } from '@repo/content/schema';
 import type { EntryValues, FieldValue } from '@repo/content/schema';
 import { writeEntryBody } from '@repo/content/write-body';
-import { database, eq, schema } from '@repo/db';
+import { and, database, eq, isNull, schema } from '@repo/db';
 
 import { extractEntry } from './extract';
 import { fetchPage } from './page';
@@ -183,7 +183,7 @@ async function optionIds(
 ): Promise<string[]> {
   const db = await database();
   const row = await db.query.contentField.findFirst({
-    where: eq(schema.contentField.id, fieldId),
+    where: and(eq(schema.contentField.id, fieldId), isNull(schema.contentField.deletedAt)),
   });
   if (row === undefined) {
     throw new Error('A field was deleted while the import ran');

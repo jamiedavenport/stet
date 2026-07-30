@@ -24,6 +24,8 @@ export type ContentModel = {
       options: { name: string }[];
       /** Slug of the collection a reference field points at. */
       collection?: string;
+      /** Deleted from the model: emitted as a deprecation, never dropped. */
+      deprecated?: boolean;
     }[];
   }[];
 };
@@ -81,17 +83,37 @@ function fieldTsType(field: ModelField): string {
 }
 
 /**
- * Which collection a reference points at, as a doc comment: the type itself is
- * the same shape whatever the target, so this is where the editor shows what
- * to pass the reference's slug to.
+ * What the editor needs that the type cannot say: which collection a reference
+ * points at, since the type is the same shape whatever the target, and whether
+ * the field has been deleted from the model.
+ *
+ * A deleted field is emitted as a deprecation rather than dropped. Removing it
+ * would turn every read of the key into a type error the moment the model was
+ * regenerated, which is the one thing a change made in the Stet UI must never
+ * do to a running build.
  */
-function fieldDoc(field: ModelField): string | null {
-  if (field.collection === undefined) {
-    return null;
+function fieldDoc(field: ModelField): string[] {
+  const lines: string[] = [];
+  if (field.collection !== undefined) {
+    const target = JSON.stringify(field.collection);
+    const plural = field.type === 'multi_reference' ? 'References' : 'Reference';
+    lines.push(`${plural} into ${target}: fetch with stet[${target}].get(slug).`);
   }
-  const target = JSON.stringify(field.collection);
-  const plural = field.type === 'multi_reference' ? 'References' : 'Reference';
-  return `    /** ${plural} into ${target}: fetch with stet[${target}].get(slug). */`;
+  if (field.deprecated === true) {
+    lines.push('@deprecated Deleted from the content model; entries no longer carry a value.');
+  }
+  return lines;
+}
+
+/** Renders doc lines as a comment: one line inline, several as a block. */
+function docComment(lines: string[], indent: string): string[] {
+  if (lines.length === 0) {
+    return [];
+  }
+  if (lines.length === 1) {
+    return [`${indent}/** ${lines[0]} */`];
+  }
+  return [`${indent}/**`, ...lines.map((line) => `${indent} * ${line}`), `${indent} */`];
 }
 
 /**
@@ -123,10 +145,7 @@ export function renderContentModule(model: ContentModel, origin: string): string
   for (const type of model.types) {
     lines.push(`export type ${entryTypeName(type.slug)} = ContentEntryBase & {`, '  fields: {');
     for (const field of type.fields) {
-      const doc = fieldDoc(field);
-      if (doc !== null) {
-        lines.push(doc);
-      }
+      lines.push(...docComment(fieldDoc(field), '    '));
       lines.push(`    ${JSON.stringify(field.key)}?: ${fieldTsType(field)} | null;`);
     }
     lines.push('  };', '};', '');

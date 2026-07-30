@@ -1,6 +1,6 @@
 import { recordAudit } from '@repo/audit';
 import type { Actor } from '@repo/audit';
-import { and, asc, count, database, eq, inArray, schema } from '@repo/db';
+import { and, asc, count, database, eq, inArray, isNull, schema } from '@repo/db';
 import { entryPage } from '@repo/realtime/entry';
 import { recordContentChange } from '@repo/webhooks/content';
 
@@ -12,6 +12,11 @@ import { slugify, uniqueSlug } from './slug';
 // assistant's tools. Server-only, like ./access: callers authenticate,
 // resolve the organization, and say who is acting before reaching them.
 
+/**
+ * The organization's collections and maps with their fields and entry counts,
+ * as the model editor and the assistant see it: deleted fields are gone. Only
+ * `/api/v1/model` keeps them, as deprecations for the generated client.
+ */
 export async function readContentModel(organizationId: string) {
   const db = await database();
   const types = await db.query.contentType.findMany({
@@ -23,7 +28,10 @@ export async function readContentModel(organizationId: string) {
     typeIds.length === 0
       ? []
       : await db.query.contentField.findMany({
-          where: inArray(schema.contentField.typeId, typeIds),
+          where: and(
+            inArray(schema.contentField.typeId, typeIds),
+            isNull(schema.contentField.deletedAt),
+          ),
           orderBy: asc(schema.contentField.position),
         });
   const counts =
