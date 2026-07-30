@@ -6,20 +6,40 @@ import { MarketingLink, Wordmark } from './ui.tsrx';
 
 const footerLink = 'text-muted-foreground hover:text-foreground';
 
-type FooterLink = { label: string; to?: LinkProps['to']; href?: string; hash?: string };
+type FooterLink = {
+  label: string;
+  to?: LinkProps['to'];
+  params?: LinkProps['params'];
+  href?: string;
+  hash?: string;
+};
 
 const columns: { title: string; links: FooterLink[] }[] = [
   {
     title: 'Product',
     links: [
+      { label: 'Features', to: '/features' },
+      { label: 'Pricing', to: '/pricing' },
+      { label: 'Compare', to: '/compare' },
+      { label: 'Book a demo', href: brand.demo },
       { label: 'Changelog', to: '/changelog' },
-      { label: 'Docs', href: brand.docs },
-      { label: 'GitHub', href: brand.repository },
+    ],
+  },
+  {
+    title: 'Who it is for',
+    links: [
+      { label: 'Marketing teams', to: '/for/$persona', params: { persona: 'marketing' } },
+      { label: 'Engineers', to: '/for/$persona', params: { persona: 'engineering' } },
+      { label: 'Agencies', to: '/for/$persona', params: { persona: 'agencies' } },
+      { label: 'Startups', to: '/for/$persona', params: { persona: 'startups' } },
+      { label: 'Enterprise', to: '/for/$persona', params: { persona: 'enterprise' } },
     ],
   },
   {
     title: 'Resources',
     links: [
+      { label: 'Docs', href: brand.docs },
+      { label: 'GitHub', href: brand.repository },
       { label: 'Blog', to: '/blog' },
       { label: 'Contact', to: '/contact' },
       { label: brand.author.name, href: brand.author.url },
@@ -58,12 +78,18 @@ export function MarketingFooter() @{
             </a>
           </p>
         </div>
-        <div className="grid grid-cols-2 gap-8 sm:grid-cols-3">
+        <div className="grid grid-cols-2 gap-8 sm:grid-cols-4">
           @for (const column of columns; key column.title) {
             <FooterColumn title={column.title}>
-              @for (const link of column.links; key link.to ?? link.href) {
+              @for (const link of column.links; key link.label) {
                 <li>
-                  <MarketingLink to={link.to} hash={link.hash} href={link.href} className={footerLink}>
+                  <MarketingLink
+                    to={link.to}
+                    params={link.params}
+                    hash={link.hash}
+                    href={link.href}
+                    className={footerLink}
+                  >
                     {link.label}
                   </MarketingLink>
                 </li>

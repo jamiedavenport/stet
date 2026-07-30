@@ -1,7 +1,9 @@
 import { brand } from '@repo/brand';
 import { createFileRoute } from '@tanstack/react-router';
 
-import { contentFeatures, engineerPoints } from '@repo/ui/marketing/data';
+import { features } from '#/marketing/data/features';
+import { personas } from '#/marketing/data/personas';
+import { rivals } from '#/marketing/data/rivals';
 import { sortedPosts } from '#/marketing/content';
 import { siteUrl } from '#/marketing/seo';
 
@@ -17,17 +19,34 @@ export const Route = createFileRoute('/llms.txt')({
         const text = [
           `# ${brand.name}`,
           '',
-          `> ${brand.description}. Marketing owns the content model; engineering gets a typed client generated from it; changes cross the gap as deprecations, never as breakage. Realtime collaboration, drafts and scheduled publishing, localization, AI assistance, and first-party analytics are built in.`,
+          `> ${brand.description}. Marketing owns the content model in the UI; engineering gets a typed client generated from it; changes cross the gap as deprecations, never as breakage. Realtime collaboration, first-party cookieless analytics and an approve-before-it-writes AI assistant are built in. Open source, hosted or self-hosted.`,
           '',
           `${brand.name} is built by ${brand.author.name} (${brand.author.url}). Source: ${brand.repository}`,
           '',
-          '## For content teams',
+          '## Features',
           '',
-          ...contentFeatures.map((feature) => `- ${feature.name}: ${feature.description}`),
+          ...features.map(
+            (feature) =>
+              `- [${feature.name}](${siteUrl}/features/${feature.slug}): ${feature.tagline}`,
+          ),
           '',
-          '## For engineers',
+          '## Who it is for',
           '',
-          ...engineerPoints.map((point) => `- ${point.term}: ${point.detail}`),
+          ...personas.map(
+            (persona) =>
+              `- [For ${persona.name}](${siteUrl}/for/${persona.slug}): ${persona.tagline}`,
+          ),
+          '',
+          '## Comparisons',
+          '',
+          ...rivals.map(
+            (rival) =>
+              `- [${brand.name} vs ${rival.name}](${siteUrl}/compare/${rival.slug}): ${rival.tagline}`,
+          ),
+          '',
+          '## Pricing',
+          '',
+          `- [Pricing](${siteUrl}/pricing): $10 per user per month on the hosted cloud, free to self-host, custom for enterprises. Every feature is on every plan.`,
           '',
           '## Docs',
           '',

@@ -1,5 +1,4 @@
 import { cn } from '../lib/utils';
-import type { Icon } from '@phosphor-icons/react';
 import type { ReactNode } from 'react';
 
 // Divider padding follows a first/middle/last pattern so rows sit flush with
@@ -28,29 +27,6 @@ export function RailRow({ rail, children }: { rail: ReactNode; children: ReactNo
     {rail}
     <div>{children}</div>
   </article>
-}
-
-export function FeatureGrid({
-  items,
-  className,
-}: {
-  items: { icon: Icon; name: string; description: string }[];
-  className?: string;
-}) @{
-  <dl
-    className={cn(
-      'grid grid-cols-1 gap-x-8 gap-y-10 text-sm/6 sm:grid-cols-2 lg:grid-cols-3',
-      className,
-    )}
-  >
-    @for (const item of items; key item.name) {
-      <div>
-        <item.icon aria-hidden className="size-5 shrink-0 text-foreground" strokeWidth={1.5} />
-        <dt className="mt-4 font-medium text-foreground">{item.name}</dt>
-        <dd className="mt-2 max-w-[48ch] text-muted-foreground">{item.description}</dd>
-      </div>
-    }
-  </dl>
 }
 
 export function TermRows({

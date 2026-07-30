@@ -9,9 +9,11 @@ import { Wordmark } from './ui.tsrx';
 type PageLink = { label: string; to: LinkProps['to']; hash?: string };
 
 const pageLinks: PageLink[] = [
+  { label: 'Features', to: '/features' },
+  { label: 'Who it is for', to: '/for' },
+  { label: 'Pricing', to: '/pricing' },
+  { label: 'Compare', to: '/compare' },
   { label: 'Blog', to: '/blog' },
-  { label: 'Changelog', to: '/changelog' },
-  { label: 'Contact', to: '/contact' },
 ];
 
 const navLink = 'text-muted-foreground hover:text-foreground';
@@ -79,7 +81,7 @@ export function MarketingHeader({ signedIn }: { signedIn: boolean }) @{
       </Link>
       <div className="flex items-center gap-6">
         <DesktopNav />
-        <Button size="sm" render={<Link to={cta.to} />}>
+        <Button size="sm" nativeButton={false} render={<Link to={cta.to} />}>
           {cta.label}
         </Button>
         <button

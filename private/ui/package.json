@@ -8,8 +8,7 @@
     "./components/*": "./src/components/*.tsx",
     "./hooks/*": "./src/hooks/*.ts",
     "./lib/*": "./src/lib/*.ts",
-    "./marketing/*.tsrx": "./src/marketing/*.tsrx",
-    "./marketing/*": "./src/marketing/*.ts"
+    "./marketing/*.tsrx": "./src/marketing/*.tsrx"
   },
   "scripts": {
     "build": "tsrx-tsc --noEmit",

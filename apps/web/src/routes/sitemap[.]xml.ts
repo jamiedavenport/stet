@@ -1,5 +1,8 @@
 import { createFileRoute } from '@tanstack/react-router';
 
+import { features } from '#/marketing/data/features';
+import { personas } from '#/marketing/data/personas';
+import { rivals } from '#/marketing/data/rivals';
 import { sortedPosts, sortedReleases } from '#/marketing/content';
 import { siteUrl } from '#/marketing/seo';
 
@@ -13,6 +16,13 @@ export const Route = createFileRoute('/sitemap.xml')({
 
         const pages: { path: string; lastmod?: string }[] = [
           { path: '/' },
+          { path: '/features' },
+          ...features.map((feature) => ({ path: `/features/${feature.slug}` })),
+          { path: '/for' },
+          ...personas.map((persona) => ({ path: `/for/${persona.slug}` })),
+          { path: '/compare' },
+          ...rivals.map((rival) => ({ path: `/compare/${rival.slug}` })),
+          { path: '/pricing' },
           { path: '/blog' },
           { path: '/changelog', lastmod: latestRelease },
           { path: '/contact' },
