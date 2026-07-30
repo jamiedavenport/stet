@@ -62,6 +62,7 @@
     "@tiptap/react": "catalog:",
     "@tiptap/suggestion": "catalog:",
     "@tiptap/y-tiptap": "catalog:",
+    "@tsrx/core": "catalog:",
     "@tsrx/react": "catalog:",
     "agents": "catalog:",
     "ai": "catalog:",

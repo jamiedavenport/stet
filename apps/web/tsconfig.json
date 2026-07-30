@@ -11,5 +11,5 @@
     "verbatimModuleSyntax": false,
     "plugins": [{ "name": "@tsrx/typescript-plugin" }]
   },
-  "include": ["src", "src/**/*.tsrx", "worker-configuration.d.ts"]
+  "include": ["src", "src/**/*.tsrx", "worker-configuration.d.ts", "tsrx-core.d.ts"]
 }
