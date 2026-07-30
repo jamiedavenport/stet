@@ -1,6 +1,7 @@
 import type { z } from 'zod';
 
 import { invitationReminder } from './workflows/invitation-reminder/definition.ts';
+import { siteImport } from './workflows/site-import/definition.ts';
 
 // Every workflow in the app. Adding one means creating a definition + class
 // under src/workflows/<name>/ and listing the definition here; the wrangler
@@ -8,6 +9,7 @@ import { invitationReminder } from './workflows/invitation-reminder/definition.t
 // up the params typing, and server.ts must export the class.
 export const registry = {
   [invitationReminder.name]: invitationReminder,
+  [siteImport.name]: siteImport,
 } as const;
 
 type Registry = typeof registry;

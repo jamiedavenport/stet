@@ -9,6 +9,8 @@ export type WorkflowsEnv = {
   BETTER_AUTH_URL: string;
   // Signs the one-click unsubscribe token in reminder emails.
   BETTER_AUTH_SECRET: string;
+  // The site-import workflow's extraction model.
+  ANTHROPIC_API_KEY: string;
   // Read by the Sentry wrapper around the workflow class, which initializes
   // the SDK per run because a workflow executes outside the fetch handler.
   SENTRY_DSN: string;

@@ -35,6 +35,7 @@
     "@repo/content": "workspace:*",
     "@repo/crons": "workspace:*",
     "@repo/db": "workspace:*",
+    "@repo/import": "workspace:*",
     "@repo/jobs": "workspace:*",
     "@repo/logging": "workspace:*",
     "@repo/mail": "workspace:*",

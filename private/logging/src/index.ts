@@ -15,6 +15,13 @@ export type StetEvent = {
   cron: { name: string };
   document: { page: string; bytes: number };
   workflow: { name: string; instanceId: string };
+  import: {
+    runId: string;
+    origin: string;
+    pages: number;
+    imported: number;
+    failed: number;
+  };
   webhook: {
     eventId: string;
     eventType: string;

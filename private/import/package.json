@@ -1,0 +1,32 @@
+{
+  "name": "@repo/import",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./discover": "./src/discover.ts",
+    "./extract": "./src/extract.ts",
+    "./page": "./src/page.ts",
+    "./plan": "./src/plan.ts",
+    "./propose": "./src/propose.ts",
+    "./run": "./src/run.ts",
+    "./status": "./src/status.ts"
+  },
+  "scripts": {
+    "build": "tsc --noEmit",
+    "tc": "tsc --noEmit",
+    "test": "vp test run"
+  },
+  "dependencies": {
+    "@repo/content": "workspace:*",
+    "@repo/db": "workspace:*",
+    "ai": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "catalog:",
+    "typescript": "catalog:",
+    "vite-plus": "catalog:",
+    "vitest": "catalog:"
+  }
+}

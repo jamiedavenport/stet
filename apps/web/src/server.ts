@@ -11,6 +11,7 @@ import { type HubEnv, NotificationHub as NotificationHubBase } from '@repo/notif
 import { PagePresenceRoom as PagePresenceRoomBase } from '@repo/realtime/server';
 import {
   InvitationReminderWorkflow as InvitationReminderWorkflowBase,
+  SiteImportWorkflow as SiteImportWorkflowBase,
   type WorkflowsEnv,
 } from '@repo/workflows/server';
 import * as Sentry from '@sentry/cloudflare';
@@ -47,6 +48,10 @@ export const PagePresenceRoom = Sentry.instrumentDurableObjectWithSentry(
 export const InvitationReminderWorkflow = Sentry.instrumentWorkflowWithSentry(
   sentryOptions<WorkflowsEnv>,
   InvitationReminderWorkflowBase,
+);
+export const SiteImportWorkflow = Sentry.instrumentWorkflowWithSentry(
+  sentryOptions<WorkflowsEnv>,
+  SiteImportWorkflowBase,
 );
 
 const entry = createServerEntry({

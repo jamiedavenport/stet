@@ -13,7 +13,10 @@
     "tc": "tsc --noEmit"
   },
   "dependencies": {
+    "@repo/ai": "workspace:*",
     "@repo/db": "workspace:*",
+    "@repo/import": "workspace:*",
+    "@repo/logging": "workspace:*",
     "@repo/mail": "workspace:*",
     "zod": "catalog:"
   },

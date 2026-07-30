@@ -4,6 +4,7 @@ import type { LinkProps } from '@tanstack/react-router';
 import {
   ChartBarIcon,
   BuildingsIcon,
+  DownloadSimpleIcon,
   HouseIcon,
   ImageIcon,
   KeyIcon,
@@ -46,6 +47,7 @@ const home = {
 const marketingItems = [
   { label: 'Media', to: '/app/media', icon: ImageIcon, key: 'm' },
   { label: 'Analytics', to: '/app/analytics', icon: ChartBarIcon, key: 'a' },
+  { label: 'Import', to: '/app/import', icon: DownloadSimpleIcon, key: 'i' },
 ] as const satisfies readonly NavItem[];
 
 const developerItems = [

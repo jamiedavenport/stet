@@ -25,6 +25,7 @@ import { Route as MarketingPrivacyRouteImport } from './routes/_marketing/privac
 import { Route as AppIndexRouteImport } from './routes/app/index'
 import { Route as AppAdminRouteRouteImport } from './routes/app/admin/route'
 import { Route as AppAnalyticsRouteImport } from './routes/app/analytics'
+import { Route as AppImportRouteImport } from './routes/app/import'
 import { Route as AppMediaRouteImport } from './routes/app/media'
 import { Route as AppOrganizationRouteImport } from './routes/app/organization'
 import { Route as AppSettingsRouteImport } from './routes/app/settings'
@@ -130,6 +131,11 @@ const AppAdminRouteRoute = AppAdminRouteRouteImport.update({
 const AppAnalyticsRoute = AppAnalyticsRouteImport.update({
   id: '/analytics',
   path: '/analytics',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppImportRoute = AppImportRouteImport.update({
+  id: '/import',
+  path: '/import',
   getParentRoute: () => AppRouteRoute,
 } as any)
 const AppMediaRoute = AppMediaRouteImport.update({
@@ -285,6 +291,7 @@ export interface FileRoutesByFullPath {
   '/cookies': typeof MarketingCookiesRoute
   '/privacy': typeof MarketingPrivacyRoute
   '/app/analytics': typeof AppAnalyticsRoute
+  '/app/import': typeof AppImportRoute
   '/app/media': typeof AppMediaRoute
   '/app/organization': typeof AppOrganizationRoute
   '/app/settings': typeof AppSettingsRoute
@@ -326,6 +333,7 @@ export interface FileRoutesByTo {
   '/cookies': typeof MarketingCookiesRoute
   '/privacy': typeof MarketingPrivacyRoute
   '/app/analytics': typeof AppAnalyticsRoute
+  '/app/import': typeof AppImportRoute
   '/app/media': typeof AppMediaRoute
   '/app/organization': typeof AppOrganizationRoute
   '/app/settings': typeof AppSettingsRoute
@@ -372,6 +380,7 @@ export interface FileRoutesById {
   '/_marketing/cookies': typeof MarketingCookiesRoute
   '/_marketing/privacy': typeof MarketingPrivacyRoute
   '/app/analytics': typeof AppAnalyticsRoute
+  '/app/import': typeof AppImportRoute
   '/app/media': typeof AppMediaRoute
   '/app/organization': typeof AppOrganizationRoute
   '/app/settings': typeof AppSettingsRoute
@@ -419,6 +428,7 @@ export interface FileRouteTypes {
     | '/cookies'
     | '/privacy'
     | '/app/analytics'
+    | '/app/import'
     | '/app/media'
     | '/app/organization'
     | '/app/settings'
@@ -460,6 +470,7 @@ export interface FileRouteTypes {
     | '/cookies'
     | '/privacy'
     | '/app/analytics'
+    | '/app/import'
     | '/app/media'
     | '/app/organization'
     | '/app/settings'
@@ -505,6 +516,7 @@ export interface FileRouteTypes {
     | '/_marketing/cookies'
     | '/_marketing/privacy'
     | '/app/analytics'
+    | '/app/import'
     | '/app/media'
     | '/app/organization'
     | '/app/settings'
@@ -665,6 +677,13 @@ declare module '@tanstack/react-router' {
       path: '/analytics'
       fullPath: '/app/analytics'
       preLoaderRoute: typeof AppAnalyticsRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/app/import': {
+      id: '/app/import'
+      path: '/import'
+      fullPath: '/app/import'
+      preLoaderRoute: typeof AppImportRouteImport
       parentRoute: typeof AppRouteRoute
     }
     '/app/media': {
@@ -878,6 +897,7 @@ const AppAdminRouteRouteWithChildren = AppAdminRouteRoute._addFileChildren(
 interface AppRouteRouteChildren {
   AppAdminRouteRoute: typeof AppAdminRouteRouteWithChildren
   AppAnalyticsRoute: typeof AppAnalyticsRoute
+  AppImportRoute: typeof AppImportRoute
   AppMediaRoute: typeof AppMediaRoute
   AppOrganizationRoute: typeof AppOrganizationRoute
   AppSettingsRoute: typeof AppSettingsRoute
@@ -894,6 +914,7 @@ interface AppRouteRouteChildren {
 const AppRouteRouteChildren: AppRouteRouteChildren = {
   AppAdminRouteRoute: AppAdminRouteRouteWithChildren,
   AppAnalyticsRoute: AppAnalyticsRoute,
+  AppImportRoute: AppImportRoute,
   AppMediaRoute: AppMediaRoute,
   AppOrganizationRoute: AppOrganizationRoute,
   AppSettingsRoute: AppSettingsRoute,
