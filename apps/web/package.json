@@ -116,7 +116,7 @@
       "name": "server worker JS (gzip)",
       "path": "dist/server/**/*.js",
       "gzip": true,
-      "limit": "3.3 MB"
+      "limit": "3.4 MB"
     }
   ]
 }

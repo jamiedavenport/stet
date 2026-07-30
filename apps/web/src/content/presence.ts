@@ -3,6 +3,8 @@ import type { PageRoom } from '@repo/realtime/client';
 import { isPresenceUser } from '@repo/realtime/types';
 import type { PresenceUser } from '@repo/realtime/types';
 
+import { useAppRoute } from '#/use-app-route';
+
 /** Where in the table a person is working: a row, or one cell of it. */
 export type CellLocation = { entryId: string; fieldKey: string | null };
 
@@ -25,10 +27,33 @@ export function setCellLocation(room: PageRoom, location: CellLocation | null): 
 type CellPresence = { user: PresenceUser; location: CellLocation };
 
 /**
- * Everyone else's location in this room's table. The caller's own state is
- * excluded: rendering your own presence back at you is just noise.
+ * One place per person, however many tabs, windows, or pages of the same
+ * content they brought. The cell wins over the row: it is the more specific
+ * of the two, and it is where they are actually typing.
+ */
+function onePlaceEach(presences: CellPresence[]): CellPresence[] {
+  const places = new Map<string, CellPresence>();
+  for (const presence of presences) {
+    const held = places.get(presence.user.id);
+    if (
+      held === undefined ||
+      (held.location.fieldKey === null && presence.location.fieldKey !== null)
+    ) {
+      places.set(presence.user.id, presence);
+    }
+  }
+  return [...places.values()];
+}
+
+/**
+ * Everyone else's location in this room's table. The caller is excluded by
+ * user id rather than by connection: the entry page and its body editor join
+ * the table's room too, and rendering your own presence back at you from one
+ * of them is just noise.
  */
 function useCellPresence(room: PageRoom | null): CellPresence[] {
+  const { user } = useAppRoute();
+  const self = user.id;
   const [presences, setPresences] = useState<CellPresence[]>([]);
 
   useEffect(() => {
@@ -39,31 +64,23 @@ function useCellPresence(room: PageRoom | null): CellPresence[] {
     const awareness = room.provider.awareness;
     const update = () => {
       const next: CellPresence[] = [];
-      for (const [clientId, state] of awareness.getStates()) {
-        if (clientId === awareness.clientID) {
-          continue;
-        }
+      for (const state of awareness.getStates().values()) {
         const user = (state as { user?: unknown }).user;
         const location = (state as { cell?: unknown }).cell;
-        if (isPresenceUser(user) && isCellLocation(location)) {
+        if (isPresenceUser(user) && user.id !== self && isCellLocation(location)) {
           next.push({ user, location });
         }
       }
-      setPresences(next);
+      setPresences(onePlaceEach(next));
     };
     awareness.on('change', update);
     update();
     return () => {
       awareness.off('change', update);
     };
-  }, [room]);
+  }, [room, self]);
 
   return presences;
-}
-
-/** One entry per person, however many tabs or windows they brought. */
-function dedupe(users: PresenceUser[]): PresenceUser[] {
-  return [...new Map(users.map((user) => [user.id, user])).values()];
 }
 
 /**
@@ -77,17 +94,17 @@ export function useCellWatchers(
   fieldKey: string,
 ): PresenceUser[] {
   const presence = useCellPresence(room);
-  return dedupe(
-    presence
-      .filter((p) => p.location.entryId === entryId && p.location.fieldKey === fieldKey)
-      .map((p) => p.user),
-  );
+  return presence
+    .filter((p) => p.location.entryId === entryId && p.location.fieldKey === fieldKey)
+    .map((p) => p.user);
 }
 
-/** Everyone else somewhere in the entry's row. */
+/** Everyone else in the entry's row, but not in a cell of it: that cell shows them. */
 export function useRowWatchers(room: PageRoom | null, entryId: string): PresenceUser[] {
   const presence = useCellPresence(room);
-  return dedupe(presence.filter((p) => p.location.entryId === entryId).map((p) => p.user));
+  return presence
+    .filter((p) => p.location.entryId === entryId && p.location.fieldKey === null)
+    .map((p) => p.user);
 }
 
 const caretPalette = ['#f783ac', '#74b816', '#4dabf7', '#ffa94d', '#9775fa', '#38d9a9'];

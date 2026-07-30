@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { usePageRoom } from '@repo/realtime/client';
 import { Input } from '@repo/ui/components/input';
 import { useSuspenseQuery } from '@tanstack/react-query';
@@ -33,6 +34,19 @@ export function EntryWorkspace(props: EntryWorkspaceProps) @{
   const members = useSuspenseQuery(membersQuery(activeOrganization.id)).data;
 
   const { room: presenceRoom } = usePageRoom({ page: props.presencePage, user: presenceUser });
+
+  // Having the entry open is being in its row, which is how the collection's
+  // table shows it; opening a cell below moves the marker into that cell.
+  const entryId = entry.id;
+  useEffect(() => {
+    if (presenceRoom === null) {
+      return;
+    }
+    setCellLocation(presenceRoom, { entryId, fieldKey: null });
+    return () => {
+      setCellLocation(presenceRoom, null);
+    };
+  }, [presenceRoom, entryId]);
 
   useContentVersion(presenceRoom, () => void props.onChanged());
   const changed = async () => {
@@ -103,10 +117,10 @@ export function EntryWorkspace(props: EntryWorkspaceProps) @{
                 onSave={(value) => saveValue(field, value)}
                 onEditingChange={(editing) => {
                   if (presenceRoom !== null) {
-                    setCellLocation(
-                      presenceRoom,
-                      editing ? { entryId: entry.id, fieldKey: field.key } : null,
-                    );
+                    setCellLocation(presenceRoom, {
+                      entryId: entry.id,
+                      fieldKey: editing ? field.key : null,
+                    });
                   }
                 }}
                 onAddOption={(name) => addOption(field, name)}

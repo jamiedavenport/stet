@@ -28,6 +28,14 @@ it hands your code.
 Every field is optional and nullable in the generated type: a field an editor
 has not filled in is absent, so your code decides what an empty one means.
 
+## Keys
+
+A field's key is its name in API form — `Published date` becomes
+`published_date` — and it is what your code reads: `post.fields.published_date`.
+Renaming a field renames its key with it, and the entries and bodies stored
+under the old key move across, so the model never carries a name it has
+outgrown. Your client picks the new key up the next time it is generated.
+
 ## Assets
 
 An asset field holds one uploaded file: an image, a PDF, a video. The client

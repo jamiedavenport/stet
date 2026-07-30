@@ -25,6 +25,23 @@ test('presence survives client-side navigation', async ({ page }) => {
   await expect(presence.getByText('SU')).toBeVisible();
 });
 
+// The header's avatar stack is who is here, yourself included. Presence in
+// the table is other people: the entry page and its body editor join the
+// collection's room too, so without excluding yourself by id you appear in
+// your own table, in as many places as you have tabs.
+test('the table never marks you as another person', async ({ page, context }) => {
+  await gotoHydrated(page, '/app/c/posts');
+  await expect(page.getByRole('row').filter({ hasText: 'Hello World' })).toBeVisible();
+
+  const other = await context.newPage();
+  await gotoHydrated(other, '/app/c/posts/seed-entry-hello/body');
+  await expect(other.getByLabel('Body body')).toBeVisible();
+  // Presence arrives over the room's socket, so give it time to be wrong.
+  await page.waitForTimeout(3000);
+
+  await expect(page.locator('[title$="is editing"], [title$="is here"]')).toHaveCount(0);
+});
+
 test('presence rooms are scoped per page', async ({ page, context }) => {
   await gotoHydrated(page, '/app');
   await expect(page.getByLabel('People active on this page')).toBeVisible();

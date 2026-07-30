@@ -1,6 +1,6 @@
 import { updateDocument } from '@repo/realtime/document';
 import { bodyFragment, entryPage } from '@repo/realtime/entry';
-import { prosemirrorJSONToYXmlFragment } from '@tiptap/y-tiptap';
+import { prosemirrorJSONToYXmlFragment, yXmlFragmentToProseMirrorRootNode } from '@tiptap/y-tiptap';
 
 import { bodyMarkdown, bodySchema, markdownToBody } from './body';
 
@@ -34,5 +34,31 @@ export async function writeEntryBody(options: {
     const fragment = bodyFragment(doc, options.fieldKey);
     fragment.delete(0, fragment.length);
     prosemirrorJSONToYXmlFragment(bodySchema, markdownToBody(markdown), fragment);
+  });
+}
+
+/**
+ * Moves a body to another field key, so renaming a field takes what was
+ * written with it. Goes through ProseMirror rather than markdown: a rename
+ * must not put the body through a round trip that only keeps what markdown
+ * can say.
+ */
+export async function moveEntryBody(options: {
+  organizationId: string;
+  entryId: string;
+  from: string;
+  to: string;
+}): Promise<void> {
+  const room = { organizationId: options.organizationId, page: entryPage(options.entryId) };
+  await updateDocument(room, (doc) => {
+    const source = bodyFragment(doc, options.from);
+    if (source.length === 0) {
+      return;
+    }
+    const content = yXmlFragmentToProseMirrorRootNode(source, bodySchema).toJSON();
+    source.delete(0, source.length);
+    const target = bodyFragment(doc, options.to);
+    target.delete(0, target.length);
+    prosemirrorJSONToYXmlFragment(bodySchema, content, target);
   });
 }

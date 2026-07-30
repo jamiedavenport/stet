@@ -29,6 +29,7 @@ import {
   optionColors,
 } from '@repo/content/schema';
 import type { FieldType, SelectOption } from '@repo/content/schema';
+import { addRowClasses } from '#/content/add-row';
 import { createField, deleteField, moveField, updateField } from '#/content/field/functions';
 import { contentModelQuery } from '#/content/model/functions';
 import type { ModelField } from '#/content/model/functions';
@@ -46,8 +47,12 @@ type FieldHeaderProps = {
 export function FieldHeader({ field, orientation = 'column', onChanged }: FieldHeaderProps) @{
   const { activeOrganization } = useAppRoute();
   const model = useSuspenseQuery(contentModelQuery(activeOrganization.id)).data;
+  const [open, setOpen] = useState(false);
   const [name, setName] = useState(field.name);
   const [options, setOptions] = useState(field.config.options ?? []);
+  // The name last written, so committing on Enter and again on the blur that
+  // closing causes is one rename, not two.
+  const saved = useRef(field.name);
   // Refetching the model rebuilds the table's columns, which remounts this
   // header and closes the popover mid-edit. So settings render from local
   // state and the refetch waits for the popover to close. Closing races the
@@ -72,10 +77,22 @@ export function FieldHeader({ field, orientation = 'column', onChanged }: FieldH
   };
 
   const rename = async () => {
-    if (name.trim().length === 0 || name.trim() === field.name) {
+    const next = name.trim();
+    if (next.length === 0 || next === saved.current) {
       return;
     }
-    await write({ name: name.trim() });
+    saved.current = next;
+    await write({ name: next });
+  };
+
+  // Closing from here is our own state change, which Base UI does not report
+  // back through onOpenChange, so this refetches for itself.
+  const submit = async () => {
+    await rename();
+    setOpen(false);
+    if (writing.current !== null) {
+      await refresh();
+    }
   };
 
   const saveOptions = async (next: SelectOption[]) => {
@@ -94,8 +111,10 @@ export function FieldHeader({ field, orientation = 'column', onChanged }: FieldH
   };
 
   <Popover
-    onOpenChange={(open) => {
-      if (!open && writing.current !== null) {
+    open={open}
+    onOpenChange={(next) => {
+      setOpen(next);
+      if (!next && writing.current !== null) {
         void refresh();
       }
     }}
@@ -113,7 +132,7 @@ export function FieldHeader({ field, orientation = 'column', onChanged }: FieldH
           onKeyDown={(event) => {
             if (event.key === 'Enter') {
               event.preventDefault();
-              void rename();
+              void submit();
             }
           }}
         />
@@ -275,7 +294,7 @@ export function AddField({ typeId, label, onCreated }: AddFieldProps) @{
       className={
         label === undefined
           ? 'flex size-6 items-center justify-center rounded-md hover:bg-muted'
-          : 'flex h-7 items-center gap-1.5 rounded-md px-1 text-sm text-muted-foreground hover:bg-muted hover:text-foreground'
+          : addRowClasses
       }
     >
       <PlusIcon className="size-4" />
@@ -283,7 +302,7 @@ export function AddField({ typeId, label, onCreated }: AddFieldProps) @{
         <span>{label}</span>
       }
     </DropdownMenuTrigger>
-    <DropdownMenuContent align="end" className="w-44">
+    <DropdownMenuContent align={label === undefined ? 'end' : 'start'} className="w-44">
       @for (const type of simpleTypes; key type) {
         <DropdownMenuItem onClick={() => void create(type)}>
           {fieldTypeLabels[type]}
