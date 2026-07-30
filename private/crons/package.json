@@ -12,6 +12,7 @@
     "tc": "tsc --noEmit"
   },
   "dependencies": {
+    "@repo/content": "workspace:*",
     "@repo/db": "workspace:*",
     "@repo/jobs": "workspace:*",
     "@repo/logging": "workspace:*",

@@ -13,6 +13,32 @@ export type ContentEntryBase = {
 };
 
 /**
+ * What a reference field holds: enough to render a link without a second
+ * request, and the slug to fetch the whole entry with the target
+ * collection's `get()`. Which collection that is stands in the generated
+ * field's doc comment.
+ */
+export type ContentReference = {
+  id: string;
+  slug: string;
+  title: string;
+};
+
+/**
+ * What an asset field holds. `url` is absolute-path and public: it serves
+ * without a key, so it can go straight into an `img` tag or a download link.
+ */
+export type ContentAsset = {
+  id: string;
+  url: string;
+  /** The original filename. */
+  name: string;
+  contentType: string;
+  /** Bytes. */
+  size: number;
+};
+
+/**
  * The shape `@stetcms/vite` generates from the organization's content model:
  * one key per collection or map, carrying its kind and full entry type.
  */

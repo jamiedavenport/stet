@@ -25,10 +25,12 @@ import { Route as MarketingPrivacyRouteImport } from './routes/_marketing/privac
 import { Route as AppIndexRouteImport } from './routes/app/index'
 import { Route as AppAdminRouteRouteImport } from './routes/app/admin/route'
 import { Route as AppAnalyticsRouteImport } from './routes/app/analytics'
+import { Route as AppAuditRouteImport } from './routes/app/audit'
 import { Route as AppImportRouteImport } from './routes/app/import'
 import { Route as AppMediaRouteImport } from './routes/app/media'
 import { Route as AppOrganizationRouteImport } from './routes/app/organization'
 import { Route as AppSettingsRouteImport } from './routes/app/settings'
+import { Route as AssetsIdRouteImport } from './routes/assets/$id'
 import { Route as InviteIdRouteImport } from './routes/invite/$id'
 import { Route as MailUnsubscribeRouteImport } from './routes/mail/unsubscribe'
 import { Route as OrgsNewRouteImport } from './routes/orgs/new'
@@ -133,6 +135,11 @@ const AppAnalyticsRoute = AppAnalyticsRouteImport.update({
   path: '/analytics',
   getParentRoute: () => AppRouteRoute,
 } as any)
+const AppAuditRoute = AppAuditRouteImport.update({
+  id: '/audit',
+  path: '/audit',
+  getParentRoute: () => AppRouteRoute,
+} as any)
 const AppImportRoute = AppImportRouteImport.update({
   id: '/import',
   path: '/import',
@@ -152,6 +159,11 @@ const AppSettingsRoute = AppSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
   getParentRoute: () => AppRouteRoute,
+} as any)
+const AssetsIdRoute = AssetsIdRouteImport.update({
+  id: '/assets/$id',
+  path: '/assets/$id',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const InviteIdRoute = InviteIdRouteImport.update({
   id: '/invite/$id',
@@ -291,10 +303,12 @@ export interface FileRoutesByFullPath {
   '/cookies': typeof MarketingCookiesRoute
   '/privacy': typeof MarketingPrivacyRoute
   '/app/analytics': typeof AppAnalyticsRoute
+  '/app/audit': typeof AppAuditRoute
   '/app/import': typeof AppImportRoute
   '/app/media': typeof AppMediaRoute
   '/app/organization': typeof AppOrganizationRoute
   '/app/settings': typeof AppSettingsRoute
+  '/assets/$id': typeof AssetsIdRoute
   '/invite/$id': typeof InviteIdRoute
   '/mail/unsubscribe': typeof MailUnsubscribeRoute
   '/orgs/new': typeof OrgsNewRoute
@@ -333,10 +347,12 @@ export interface FileRoutesByTo {
   '/cookies': typeof MarketingCookiesRoute
   '/privacy': typeof MarketingPrivacyRoute
   '/app/analytics': typeof AppAnalyticsRoute
+  '/app/audit': typeof AppAuditRoute
   '/app/import': typeof AppImportRoute
   '/app/media': typeof AppMediaRoute
   '/app/organization': typeof AppOrganizationRoute
   '/app/settings': typeof AppSettingsRoute
+  '/assets/$id': typeof AssetsIdRoute
   '/invite/$id': typeof InviteIdRoute
   '/mail/unsubscribe': typeof MailUnsubscribeRoute
   '/orgs/new': typeof OrgsNewRoute
@@ -380,10 +396,12 @@ export interface FileRoutesById {
   '/_marketing/cookies': typeof MarketingCookiesRoute
   '/_marketing/privacy': typeof MarketingPrivacyRoute
   '/app/analytics': typeof AppAnalyticsRoute
+  '/app/audit': typeof AppAuditRoute
   '/app/import': typeof AppImportRoute
   '/app/media': typeof AppMediaRoute
   '/app/organization': typeof AppOrganizationRoute
   '/app/settings': typeof AppSettingsRoute
+  '/assets/$id': typeof AssetsIdRoute
   '/invite/$id': typeof InviteIdRoute
   '/mail/unsubscribe': typeof MailUnsubscribeRoute
   '/orgs/new': typeof OrgsNewRoute
@@ -428,10 +446,12 @@ export interface FileRouteTypes {
     | '/cookies'
     | '/privacy'
     | '/app/analytics'
+    | '/app/audit'
     | '/app/import'
     | '/app/media'
     | '/app/organization'
     | '/app/settings'
+    | '/assets/$id'
     | '/invite/$id'
     | '/mail/unsubscribe'
     | '/orgs/new'
@@ -470,10 +490,12 @@ export interface FileRouteTypes {
     | '/cookies'
     | '/privacy'
     | '/app/analytics'
+    | '/app/audit'
     | '/app/import'
     | '/app/media'
     | '/app/organization'
     | '/app/settings'
+    | '/assets/$id'
     | '/invite/$id'
     | '/mail/unsubscribe'
     | '/orgs/new'
@@ -516,10 +538,12 @@ export interface FileRouteTypes {
     | '/_marketing/cookies'
     | '/_marketing/privacy'
     | '/app/analytics'
+    | '/app/audit'
     | '/app/import'
     | '/app/media'
     | '/app/organization'
     | '/app/settings'
+    | '/assets/$id'
     | '/invite/$id'
     | '/mail/unsubscribe'
     | '/orgs/new'
@@ -557,6 +581,7 @@ export interface RootRouteChildren {
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   RssDotxmlRoute: typeof RssDotxmlRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  AssetsIdRoute: typeof AssetsIdRoute
   InviteIdRoute: typeof InviteIdRoute
   MailUnsubscribeRoute: typeof MailUnsubscribeRoute
   OrgsNewRoute: typeof OrgsNewRoute
@@ -679,6 +704,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAnalyticsRouteImport
       parentRoute: typeof AppRouteRoute
     }
+    '/app/audit': {
+      id: '/app/audit'
+      path: '/audit'
+      fullPath: '/app/audit'
+      preLoaderRoute: typeof AppAuditRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
     '/app/import': {
       id: '/app/import'
       path: '/import'
@@ -706,6 +738,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/app/settings'
       preLoaderRoute: typeof AppSettingsRouteImport
       parentRoute: typeof AppRouteRoute
+    }
+    '/assets/$id': {
+      id: '/assets/$id'
+      path: '/assets/$id'
+      fullPath: '/assets/$id'
+      preLoaderRoute: typeof AssetsIdRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/invite/$id': {
       id: '/invite/$id'
@@ -897,6 +936,7 @@ const AppAdminRouteRouteWithChildren = AppAdminRouteRoute._addFileChildren(
 interface AppRouteRouteChildren {
   AppAdminRouteRoute: typeof AppAdminRouteRouteWithChildren
   AppAnalyticsRoute: typeof AppAnalyticsRoute
+  AppAuditRoute: typeof AppAuditRoute
   AppImportRoute: typeof AppImportRoute
   AppMediaRoute: typeof AppMediaRoute
   AppOrganizationRoute: typeof AppOrganizationRoute
@@ -914,6 +954,7 @@ interface AppRouteRouteChildren {
 const AppRouteRouteChildren: AppRouteRouteChildren = {
   AppAdminRouteRoute: AppAdminRouteRouteWithChildren,
   AppAnalyticsRoute: AppAnalyticsRoute,
+  AppAuditRoute: AppAuditRoute,
   AppImportRoute: AppImportRoute,
   AppMediaRoute: AppMediaRoute,
   AppOrganizationRoute: AppOrganizationRoute,
@@ -987,6 +1028,7 @@ const rootRouteChildren: RootRouteChildren = {
   RobotsDottxtRoute: RobotsDottxtRoute,
   RssDotxmlRoute: RssDotxmlRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  AssetsIdRoute: AssetsIdRoute,
   InviteIdRoute: InviteIdRoute,
   MailUnsubscribeRoute: MailUnsubscribeRoute,
   OrgsNewRoute: OrgsNewRoute,

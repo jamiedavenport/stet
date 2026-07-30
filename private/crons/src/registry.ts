@@ -1,4 +1,5 @@
 import { cleanupAuth } from './crons/cleanup-auth';
+import { pruneRevisionsCron } from './crons/prune-revisions';
 import { pruneWebhookDeliveriesCron } from './crons/prune-webhook-deliveries';
 import { sweepPendingAssets } from './crons/sweep-pending-assets';
 import type { CronHandler } from './define';
@@ -11,6 +12,7 @@ import type { CronExpression } from './schedule';
 export const registry = {
   '0 3 * * *': cleanupAuth,
   '30 3 * * *': pruneWebhookDeliveriesCron,
+  '45 3 * * *': pruneRevisionsCron,
   // Hourly, not nightly: abandoned uploads hold storage quota.
   '15 * * * *': sweepPendingAssets,
 } as const satisfies Record<CronExpression, CronHandler>;

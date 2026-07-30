@@ -17,6 +17,9 @@ export const fieldTypes = [
   'multi_select',
   'link',
   'person',
+  'asset',
+  'reference',
+  'multi_reference',
 ] as const satisfies readonly ContentFieldType[];
 
 export type FieldType = (typeof fieldTypes)[number];
@@ -33,7 +36,15 @@ export const fieldTypeLabels: Record<FieldType, string> = {
   multi_select: 'Multi-select',
   link: 'Link',
   person: 'Person',
+  asset: 'Asset',
+  reference: 'Reference',
+  multi_reference: 'Multi-reference',
 };
+
+/** The field types whose value points at entries of another collection. */
+export function isReferenceType(type: FieldType): boolean {
+  return type === 'reference' || type === 'multi_reference';
+}
 
 /** Colors a select option can carry, mapped to badge styles in the UI. */
 export const optionColors = [
@@ -60,6 +71,13 @@ export type SelectOption = z.infer<typeof selectOptionSchema>;
 
 export const fieldConfigSchema = z.object({
   options: z.array(selectOptionSchema).optional(),
+  /**
+   * The collection a reference or multi-reference field points at, by id so
+   * renaming the collection never touches the field. Set at creation and
+   * never changed: entries hold ids of the target's entries, so a retarget
+   * would silently orphan every value.
+   */
+  typeId: z.string().optional(),
 });
 
 export type FieldConfig = z.infer<typeof fieldConfigSchema>;

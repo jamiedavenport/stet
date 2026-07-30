@@ -113,6 +113,7 @@ export const startImport = createServerFn({ method: 'POST' })
       id: runId,
       organizationId: context.organizationId,
       origin: data.plan.origin,
+      startedBy: context.session.user.id,
       status: 'running',
       plan: JSON.stringify(data.plan),
       progress: JSON.stringify({ total, imported: 0, failed: 0 }),

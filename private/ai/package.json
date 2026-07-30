@@ -18,6 +18,7 @@
     "@ai-sdk/react": "catalog:",
     "@cloudflare/ai-chat": "catalog:",
     "@modelcontextprotocol/sdk": "catalog:",
+    "@repo/audit": "workspace:*",
     "@repo/brand": "workspace:*",
     "@repo/content": "workspace:*",
     "@repo/db": "workspace:*",

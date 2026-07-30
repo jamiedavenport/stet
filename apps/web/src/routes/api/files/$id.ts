@@ -3,8 +3,7 @@ import { createFileRoute } from '@tanstack/react-router';
 import { auth } from '#/auth-server';
 import { canReadAsset } from '#/files/access';
 import { completeUpload, findAsset } from '#/files/assets';
-import type { Asset } from '#/files/assets';
-import { applyTransform, isImageFormat, parseTransform } from '#/files/transform';
+import { serveAsset } from '#/files/serve';
 import { storage } from '#/storage';
 
 const notFound = () => new Response('Not found.', { status: 404 });
@@ -12,18 +11,9 @@ const notFound = () => new Response('Not found.', { status: 404 });
 const unauthorized = () => new Response('Unauthorized.', { status: 401 });
 
 // Ids are unguessable and every asset is written once, so a cached copy can
-// never go stale. Private because the response depends on who asked.
+// never go stale. Private because the response depends on who asked; content
+// assets serve from /assets/$id instead, where they are cacheable by any hop.
 const cacheControl = 'private, max-age=31536000, immutable';
-
-function disposition(asset: Asset): string {
-  if (isImageFormat(asset.contentType)) {
-    return 'inline';
-  }
-  // Downloading rather than rendering stops a kind that one day accepts SVG
-  // or HTML executing same-origin. The name is user-supplied, so it goes in
-  // the RFC 5987 slot, where it is percent-encoded.
-  return `attachment; filename*=UTF-8''${encodeURIComponent(asset.name)}`;
-}
 
 export const Route = createFileRoute('/api/files/$id')({
   server: {
@@ -56,7 +46,7 @@ export const Route = createFileRoute('/api/files/$id')({
         await storage.put(asset.key, request.body, {
           httpMetadata: { contentType: asset.contentType },
         });
-        await completeUpload(asset.id);
+        await completeUpload(asset);
         return new Response(null, { status: 204 });
       },
 
@@ -74,32 +64,7 @@ export const Route = createFileRoute('/api/files/$id')({
           return notFound();
         }
 
-        const headers = {
-          'Content-Type': asset.contentType,
-          'Content-Disposition': disposition(asset),
-          'Cache-Control': cacheControl,
-          'X-Content-Type-Options': 'nosniff',
-        };
-
-        const transform = parseTransform(new URL(request.url).searchParams, asset.contentType);
-        if (transform !== null) {
-          const object = await storage.get(asset.key);
-          if (object === null) {
-            return notFound();
-          }
-          const transformed = await applyTransform(object.body, transform);
-          if (transformed !== null) {
-            return new Response(transformed.body, {
-              headers: { ...headers, 'Content-Type': transform.format },
-            });
-          }
-        }
-
-        const stored = await storage.get(asset.key);
-        if (stored === null) {
-          return notFound();
-        }
-        return new Response(stored.body, { headers });
+        return (await serveAsset(asset, request, cacheControl)) ?? notFound();
       },
     },
   },

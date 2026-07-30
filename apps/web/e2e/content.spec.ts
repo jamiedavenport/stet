@@ -64,9 +64,12 @@ test('collections: model, table editing, and the entry editor', async ({ page })
   const renamed = page.getByRole('row').filter({ hasText: 'hello-world' });
   await expect(renamed.getByText('Hello World')).toBeVisible();
 
-  // The rich text cell opens the collaborative entry editor.
+  // The rich text cell opens that body's own editor page, which the
+  // breadcrumb names back to the entry it belongs to.
   await renamed.getByRole('link', { name: 'Open', exact: true }).click();
-  await expect(page.getByLabel('Entry title')).toHaveValue('Hello World');
+  await expect(
+    page.getByRole('navigation', { name: 'Breadcrumb' }).getByRole('link', { name: 'Hello World' }),
+  ).toBeVisible();
 
   const body = page.getByLabel('Body body');
   await expect(body).toBeVisible();

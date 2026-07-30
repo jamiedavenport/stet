@@ -4,6 +4,7 @@ import type { LinkProps } from '@tanstack/react-router';
 import {
   ChartBarIcon,
   BuildingsIcon,
+  ClockCounterClockwiseIcon,
   DownloadSimpleIcon,
   HouseIcon,
   ImageIcon,
@@ -53,6 +54,7 @@ const marketingItems = [
 const developerItems = [
   { label: 'API keys', to: '/app/developers/keys', icon: KeyIcon, key: 'k' },
   { label: 'Webhooks', to: '/app/developers/webhooks', icon: WebhooksLogoIcon, key: 'w' },
+  { label: 'Audit log', to: '/app/audit', icon: ClockCounterClockwiseIcon, key: 'l' },
 ] as const satisfies readonly NavItem[];
 
 const settingsItem = {

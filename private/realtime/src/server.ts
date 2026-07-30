@@ -2,6 +2,7 @@ import { createLogger } from '@repo/logging';
 import * as Sentry from '@sentry/cloudflare';
 import { YServer } from 'y-partyserver';
 import { applyUpdate, encodeStateAsUpdate } from 'yjs';
+import type { Doc } from 'yjs';
 
 import { loadDocumentState, parseRoomName, saveDocument, syncEntryBodyText } from './document';
 import type { DocumentRoom } from './document';
@@ -79,6 +80,11 @@ export class PagePresenceRoom extends YServer {
     return super.onRequest(request);
   }
 
+  // For the host app to run its own work on each flush (entry revisions, in
+  // apps/web). A hook rather than an import because the packages that read
+  // documents depend on this one, so the flush cannot call them directly.
+  protected async onFlush(_room: DocumentRoom, _doc: Doc): Promise<void> {}
+
   async onAlarm(): Promise<void> {
     const room = this.room();
     const log = createLogger({
@@ -89,6 +95,7 @@ export class PagePresenceRoom extends YServer {
     try {
       log.set({ document: { bytes: await saveDocument(room, this.document) } });
       await syncEntryBodyText(room, this.document);
+      await this.onFlush(room, this.document);
     } catch (error) {
       // Swallowed so the next attempt is the alarm set here rather than the
       // runtime's capped retry; captureException because nothing else would

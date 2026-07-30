@@ -1,0 +1,20 @@
+{
+  "name": "@repo/audit",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "build": "tsc --noEmit",
+    "tc": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@repo/db": "workspace:*"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "catalog:",
+    "typescript": "catalog:"
+  }
+}

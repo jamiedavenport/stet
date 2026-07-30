@@ -33,8 +33,24 @@ const model: ContentModel = {
           type: 'multi_select',
           options: [{ name: 'News' }],
         },
+        { key: 'cover', name: 'Cover', type: 'asset', options: [] },
+        {
+          key: 'written_by',
+          name: 'Written by',
+          type: 'reference',
+          options: [],
+          collection: 'authors',
+        },
+        {
+          key: 'related',
+          name: 'Related',
+          type: 'multi_reference',
+          options: [],
+          collection: 'posts',
+        },
       ],
     },
+    { slug: 'authors', name: 'Authors', kind: 'collection', fields: [] },
     { slug: 'landing', name: 'Landing', kind: 'map', fields: [] },
   ],
 };
@@ -55,6 +71,25 @@ describe('renderContentModule', () => {
     expect(code).toContain('"author"?: { id: string; name: string } | null;');
     expect(code).toContain('"status"?: "Draft" | "Live" | null;');
     expect(code).toContain('"tags"?: ("News")[] | null;');
+    expect(code).toContain('"cover"?: ContentAsset | null;');
+    expect(code).toContain('"written_by"?: ContentReference | null;');
+    expect(code).toContain('"related"?: ContentReference[] | null;');
+  });
+
+  it('names the collection a reference points at, which its type cannot', () => {
+    expect(code).toContain('References into "posts": fetch with stet["posts"].get(slug).');
+    expect(code).toContain('Reference into "authors": fetch with stet["authors"].get(slug).');
+  });
+
+  it('imports only the value types the model uses', () => {
+    expect(code).toContain(
+      "import type { ContentEntryBase, ContentAsset, ContentReference } from '@stetcms/client';",
+    );
+    const plain = renderContentModule(
+      { types: [{ slug: 'notes', name: 'Notes', kind: 'collection', fields: [] }] },
+      'http://localhost:3000',
+    );
+    expect(plain).toContain("import type { ContentEntryBase } from '@stetcms/client';");
   });
 
   it('keys the model by slug with the kind', () => {

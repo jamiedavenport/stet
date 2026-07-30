@@ -11,9 +11,9 @@ import { contentTools } from './tools/index';
  * confirmation, so tools execute directly once the worker has verified the
  * OAuth token, the organization, and the plan.
  */
-export function createContentMcpServer(organizationId: string): McpServer {
+export function createContentMcpServer(organizationId: string, userId: string): McpServer {
   const server = new McpServer({ name: 'stet', version: '1.0.0' });
-  for (const [name, definition] of Object.entries(contentTools(organizationId))) {
+  for (const [name, definition] of Object.entries(contentTools(organizationId, userId))) {
     register(server, name, definition);
   }
   return server;

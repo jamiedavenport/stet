@@ -13,11 +13,11 @@ export type UploadedAsset = {
  * without a round trip.
  */
 export async function uploadFile(kind: AssetKind, file: File): Promise<UploadedAsset> {
-  const asset = await createUpload({
+  const { id, uploadUrl, url } = await createUpload({
     data: { kind, name: file.name, contentType: file.type, size: file.size },
   });
 
-  const response = await fetch(asset.url, {
+  const response = await fetch(uploadUrl, {
     method: 'PUT',
     body: file,
     headers: { 'Content-Type': file.type },
@@ -26,5 +26,5 @@ export async function uploadFile(kind: AssetKind, file: File): Promise<UploadedA
     throw new Error(`Upload failed (${response.status}).`);
   }
 
-  return asset;
+  return { id, url };
 }

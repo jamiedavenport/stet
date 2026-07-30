@@ -11,6 +11,7 @@ import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
 import { getRouteApi, useRouter } from '@tanstack/react-router';
 
 import { useBreadcrumbs } from '#/components/breadcrumbs';
+import { CellDataProvider } from '#/content/cells/context';
 import { EntryCell } from '#/content/cells/entry-cell.tsrx';
 import { mapEntryQuery, membersQuery, updateEntry } from '#/content/entry/functions';
 import { AddField, FieldHeader } from '#/content/field/header.tsrx';
@@ -73,62 +74,64 @@ export function MapEditor() @{
     return option.id;
   };
 
-  <div className="flex min-h-0 w-full min-w-0 flex-1 flex-col gap-6">
-    <TypeHeader
-      type={data.type}
-      entryCount={null}
-      onChanged={changed}
-      onSlugChanged={(slug) => router.navigate({ to: '/app/m/$map', params: { map: slug } })}
-      onDeleted={() => router.navigate({ to: '/app' })}
-    />
-    <div className="-mx-6 [&_td:first-child]:pl-6 [&_td:last-child]:pr-6 [&_th:first-child]:pl-6 [&_th:last-child]:pr-6">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="w-56">{"Key"}</TableHead>
-            <TableHead>{"Value"}</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          @for (const field of data.type.fields; key field.id) {
-            <TableRow className="group/row h-12">
-              <TableCell className="px-2 py-0">
-                <FieldHeader field={field} orientation="row" onChanged={changed} />
-              </TableCell>
-              <TableCell className="px-2 py-0">
-                <EntryCell
-                  field={field}
-                  value={data.entry.values[field.key]}
-                  members={members}
-                  room={room}
-                  entryId={data.entry.id}
-                  onSave={(value) => saveValue(field, value)}
-                  onEditingChange={(editing) => {
-                    if (room !== null) {
-                      setCellLocation(
-                        room,
-                        editing ? { entryId: data.entry.id, fieldKey: field.key } : null,
-                      );
-                    }
-                  }}
-                  onAddOption={(name) => addOption(field, name)}
-                  editorLink={{ map: data.type.slug, fieldKey: field.key }}
-                />
+  <CellDataProvider lookup={data.lookup} organizationId={activeOrganization.id}>
+    <div className="flex min-h-0 w-full min-w-0 flex-1 flex-col gap-6">
+      <TypeHeader
+        type={data.type}
+        entryCount={null}
+        onChanged={changed}
+        onSlugChanged={(slug) => router.navigate({ to: '/app/m/$map', params: { map: slug } })}
+        onDeleted={() => router.navigate({ to: '/app' })}
+      />
+      <div className="-mx-6 [&_td:first-child]:pl-6 [&_td:last-child]:pr-6 [&_th:first-child]:pl-6 [&_th:last-child]:pr-6">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-56">{"Key"}</TableHead>
+              <TableHead>{"Value"}</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            @for (const field of data.type.fields; key field.id) {
+              <TableRow className="group/row h-12">
+                <TableCell className="px-2 py-0">
+                  <FieldHeader field={field} orientation="row" onChanged={changed} />
+                </TableCell>
+                <TableCell className="px-2 py-0">
+                  <EntryCell
+                    field={field}
+                    value={data.entry.values[field.key]}
+                    members={members}
+                    room={room}
+                    entryId={data.entry.id}
+                    onSave={(value) => saveValue(field, value)}
+                    onEditingChange={(editing) => {
+                      if (room !== null) {
+                        setCellLocation(
+                          room,
+                          editing ? { entryId: data.entry.id, fieldKey: field.key } : null,
+                        );
+                      }
+                    }}
+                    onAddOption={(name) => addOption(field, name)}
+                    editorLink={{ map: data.type.slug, fieldKey: field.key }}
+                  />
+                </TableCell>
+              </TableRow>
+            }
+            <TableRow className="h-12">
+              <TableCell colSpan={2} className="px-2 py-0">
+                <AddField typeId={data.type.id} label="New key" onCreated={changed} />
               </TableCell>
             </TableRow>
-          }
-          <TableRow className="h-12">
-            <TableCell colSpan={2} className="px-2 py-0">
-              <AddField typeId={data.type.id} label="New key" onCreated={changed} />
-            </TableCell>
-          </TableRow>
-        </TableBody>
-      </Table>
+          </TableBody>
+        </Table>
+      </div>
+      @if (data.type.fields.length === 0) {
+        <p className="text-sm text-muted-foreground">
+          {"Add keys to hold this map's values. A rich text key opens the collaborative editor."}
+        </p>
+      }
     </div>
-    @if (data.type.fields.length === 0) {
-      <p className="text-sm text-muted-foreground">
-        {"Add keys to hold this map's values. A rich text key opens the collaborative editor."}
-      </p>
-    }
-  </div>
+  </CellDataProvider>
 }

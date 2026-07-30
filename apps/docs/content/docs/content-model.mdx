@@ -1,0 +1,105 @@
+---
+title: Content model
+description: The field types a collection or map can carry, and what each one gives your code.
+icon: Table
+---
+
+Marketing builds the model in the UI; your generated client is typed from it.
+This page is the field vocabulary: what each type holds for an editor, and what
+it hands your code.
+
+## Fields
+
+| Field           | In the UI                                   | In the client               |
+| --------------- | ------------------------------------------- | --------------------------- |
+| Text            | A single line                               | `string`                    |
+| Rich text       | The collaborative editor, on its own page   | `string` of markdown        |
+| Number          | A number input                              | `number`                    |
+| Checkbox        | A checkbox                                  | `boolean`                   |
+| Date            | A date picker                               | `string`, `YYYY-MM-DD`      |
+| Select          | One option from a list the editor maintains | a union of the option names |
+| Multi-select    | Several of those options                    | an array of that union      |
+| Link            | A URL                                       | `string`                    |
+| Person          | A member of the organization                | `{ id, name }`              |
+| Asset           | An uploaded file                            | `ContentAsset`              |
+| Reference       | One entry of another collection             | `ContentReference`          |
+| Multi-reference | Several entries of another collection       | `ContentReference[]`        |
+
+Every field is optional and nullable in the generated type: a field an editor
+has not filled in is absent, so your code decides what an empty one means.
+
+## Assets
+
+An asset field holds one uploaded file: an image, a PDF, a video. The client
+gets everything needed to render or link it without a second request:
+
+```ts
+const post = await stet.posts.get('hello-world');
+
+if (post.fields.cover) {
+  const { url, name, contentType, size } = post.fields.cover;
+  // url is an absolute path and needs no API key: it serves to your readers.
+}
+```
+
+`url` is public delivery. It is unguessable, immutable, and cacheable forever,
+so it belongs directly in an `img` tag or a download link. Content assets are
+the only assets served this way; the files behind Stet's own UI, like avatars,
+stay behind a session.
+
+## References
+
+A reference field points at entries of another collection, which is how you
+model relationships Stet does not hard-code: an author on a post, related
+posts, a category that is itself an entry with its own fields.
+
+The value carries enough to render a link, plus the slug to fetch the whole
+entry when you need it:
+
+```ts
+const post = await stet.posts.get('hello-world');
+
+// { id, slug, title } — the collection it points at is in the field's doc comment.
+post.fields.author?.title;
+
+// Fetch the rest through the target collection.
+const author = post.fields.author ? await stet.authors.get(post.fields.author.slug) : null;
+```
+
+A multi-reference is the same shape as an array, in the order the editor set.
+
+Nothing cascades. Deleting a referenced entry does not delete the entry
+pointing at it: a single reference reads as `null` afterwards, and a
+multi-reference simply stops listing it. Your pages keep rendering.
+
+## Building your own structures
+
+Stet deliberately has no taxonomy type, no repeater, and no nested groups. The
+primitives above compose into all three, and the shape stays yours rather than
+ours:
+
+- **Categories or tags with their own pages** — a `Categories` collection, and
+  a multi-reference from `Posts`. Each category is an entry, so it gets a slug,
+  a description, an image, and analytics of its own. (A multi-select is the
+  lighter option when a tag is only ever a label.)
+- **A hierarchy** — a reference from a collection to itself, holding the
+  parent.
+- **A repeating list** — a collection for the rows, and a multi-reference from
+  whatever owns them. The rows become addressable and reusable, which a nested
+  repeater never is.
+
+## Versions
+
+Every entry keeps its history. Saving a field, renaming, or writing a body adds
+a version; a run of edits by one person folds into one so history stays
+readable. Open **History** on an entry to see who changed it and when, and
+restore any version, which puts back its values, title, slug, and bodies. A
+restore is itself a version, so it is never a one-way door.
+
+Each entry keeps its 50 most recent versions.
+
+## The audit log
+
+Organization admins get **Audit log**: every change to the content and the
+model, who made it, and which surface it came through — the app, the AI
+assistant, an import, or a restore.

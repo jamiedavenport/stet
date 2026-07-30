@@ -3,14 +3,22 @@ import { z } from 'zod';
 
 import * as fields from '@repo/content/fields';
 import { fieldConfigSchema, fieldTypeSchema } from '@repo/content/schema';
+import { appActor } from '#/content/actor';
 import { organizationMiddleware } from '#/session';
 
 export const createField = createServerFn({ method: 'POST' })
   .middleware([organizationMiddleware])
   .validator(
-    z.object({ typeId: z.string(), name: z.string().min(1).max(80), type: fieldTypeSchema }),
+    z.object({
+      typeId: z.string(),
+      name: z.string().min(1).max(80),
+      type: fieldTypeSchema,
+      config: fieldConfigSchema.optional(),
+    }),
   )
-  .handler(async ({ data, context }) => fields.createField(context.organizationId, data));
+  .handler(async ({ data, context }) =>
+    fields.createField(context.organizationId, data, appActor(context.session.user.id)),
+  );
 
 export const updateField = createServerFn({ method: 'POST' })
   .middleware([organizationMiddleware])
@@ -21,7 +29,9 @@ export const updateField = createServerFn({ method: 'POST' })
       config: fieldConfigSchema.optional(),
     }),
   )
-  .handler(async ({ data, context }) => fields.updateField(context.organizationId, data));
+  .handler(async ({ data, context }) =>
+    fields.updateField(context.organizationId, data, appActor(context.session.user.id)),
+  );
 
 export const moveField = createServerFn({ method: 'POST' })
   .middleware([organizationMiddleware])
@@ -31,4 +41,6 @@ export const moveField = createServerFn({ method: 'POST' })
 export const deleteField = createServerFn({ method: 'POST' })
   .middleware([organizationMiddleware])
   .validator(z.object({ id: z.string() }))
-  .handler(async ({ data, context }) => fields.deleteField(context.organizationId, data.id));
+  .handler(async ({ data, context }) =>
+    fields.deleteField(context.organizationId, data.id, appActor(context.session.user.id)),
+  );

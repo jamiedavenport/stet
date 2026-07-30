@@ -18,7 +18,8 @@ export class ChatAgent extends AIChatAgent<Cloudflare.Env & AiEnv> {
     onFinish: StreamTextOnFinishCallback<ToolSet>,
     options?: OnChatMessageOptions,
   ): Promise<Response> {
-    const tools = contentTools(this.organizationId());
+    const { organizationId, userId } = this.scope();
+    const tools = contentTools(organizationId, userId);
     const result = streamText({
       model: createChatModel(this.env),
       system: instructions(locationFrom(options)),
@@ -33,11 +34,14 @@ export class ChatAgent extends AIChatAgent<Cloudflare.Env & AiEnv> {
     return result.toUIMessageStreamResponse();
   }
 
-  private organizationId(): string {
+  private scope(): { organizationId: string; userId: string } {
     const separator = this.name.indexOf(':');
-    if (separator <= 0) {
+    if (separator <= 0 || separator === this.name.length - 1) {
       throw new Error(`Agent ${this.name} is not named "organizationId:userId".`);
     }
-    return this.name.slice(0, separator);
+    return {
+      organizationId: this.name.slice(0, separator),
+      userId: this.name.slice(separator + 1),
+    };
   }
 }

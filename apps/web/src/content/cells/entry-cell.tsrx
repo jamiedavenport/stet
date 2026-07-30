@@ -8,9 +8,13 @@ import { Popover, PopoverContent, PopoverTrigger } from '@repo/ui/components/pop
 import { Link } from '@tanstack/react-router';
 import { FileTextIcon } from '@phosphor-icons/react';
 
+import { AssetEditor } from '#/content/cells/asset-editor.tsrx';
 import { CellDisplay } from '#/content/cells/display.tsrx';
 import { PersonEditor, SelectEditor } from '#/content/cells/choice.tsrx';
+import { ReferenceEditor } from '#/content/cells/reference-editor.tsrx';
+import { useCellData } from '#/content/cells/context';
 import type { Member } from '#/content/entry/functions';
+import { isReferenceType } from '@repo/content/schema';
 import type { FieldValue } from '@repo/content/schema';
 import type { ModelField } from '#/content/model/functions';
 import { useCellWatchers } from '#/content/presence';
@@ -36,6 +40,7 @@ const inputTypes = { text: 'text', number: 'number', date: 'date', link: 'url' }
 
 export function EntryCell(props: EntryCellProps) @{
   const { field, value, members } = props;
+  const { lookup, organizationId } = useCellData();
   const watchers = useCellWatchers(props.room, props.entryId, field.key);
   const [open, setOpen] = useState(false);
 
@@ -143,6 +148,49 @@ export function EntryCell(props: EntryCellProps) @{
               value={typeof value === 'string' ? value : undefined}
               onPick={(userId) => {
                 void props.onSave(userId);
+                setOpenAndSignal(false);
+              }}
+              onClear={() => {
+                void props.onSave(null);
+                setOpenAndSignal(false);
+              }}
+            />
+          }
+          @if (isReferenceType(field.type) && field.config.typeId !== undefined) {
+            <ReferenceEditor
+              organizationId={organizationId}
+              targetTypeId={field.config.typeId}
+              value={typeof value === 'string' ? [value] : Array.isArray(value) ? value : []}
+              multiple={field.type === 'multi_reference'}
+              titles={lookup.entries}
+              onPick={(entryId) => {
+                if (field.type === 'multi_reference') {
+                  const current = Array.isArray(value) ? value : [];
+                  void props.onSave(
+                    current.includes(entryId)
+                      ? current.filter((id) => id !== entryId)
+                      : [...current, entryId],
+                  );
+                } else {
+                  void props.onSave(value === entryId ? null : entryId);
+                  setOpenAndSignal(false);
+                }
+              }}
+              onClear={() => {
+                void props.onSave(null);
+                setOpenAndSignal(false);
+              }}
+            />
+          }
+          @if (field.type === 'asset') {
+            <AssetEditor
+              asset={
+                typeof value === 'string' && lookup.assets[value] !== undefined
+                  ? { id: value, ...lookup.assets[value] }
+                  : null
+              }
+              onPick={async (assetId) => {
+                await props.onSave(assetId);
                 setOpenAndSignal(false);
               }}
               onClear={() => {

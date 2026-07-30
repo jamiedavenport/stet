@@ -5,8 +5,9 @@ import { z } from 'zod';
 // progress and items are what the workflow writes back as it works.
 
 /**
- * The field types an import can populate: the model's types minus `person`,
- * whose values must be existing member ids no source site can supply.
+ * The field types an import can populate: the model's types minus the ones
+ * whose values are ids of things that already exist here, which no source
+ * site can supply — `person`, `asset`, and the reference types.
  */
 export const importableFieldTypes = [
   'text',

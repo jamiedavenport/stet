@@ -1,9 +1,10 @@
 import { and, database, eq, lt, schema } from '@repo/db';
+import type { Logger } from '@repo/logging';
 
 // Better Auth checks expiry on read but never deletes the rows, so expired
 // sessions, verification tokens, device-flow codes, and pending invitations
 // accumulate in D1 forever. This sweeps them once a day.
-export async function cleanupAuth(): Promise<void> {
+export async function cleanupAuth(log: Logger): Promise<void> {
   const db = await database();
   const now = new Date();
 
@@ -20,9 +21,14 @@ export async function cleanupAuth(): Promise<void> {
     .delete(schema.invitation)
     .where(and(eq(schema.invitation.status, 'pending'), lt(schema.invitation.expiresAt, now)));
 
-  console.log(
-    `[crons] cleanup-auth removed ${sessions.meta.changes} sessions, ` +
-      `${verifications.meta.changes} verifications, ${deviceCodes.meta.changes} device codes, ` +
-      `${invitations.meta.changes} expired invitations.`,
+  const removed =
+    sessions.meta.changes +
+    verifications.meta.changes +
+    deviceCodes.meta.changes +
+    invitations.meta.changes;
+  log.set({ cron: { removed } });
+  log.info(
+    `Removed ${sessions.meta.changes} sessions, ${verifications.meta.changes} verifications, ` +
+      `${deviceCodes.meta.changes} device codes, ${invitations.meta.changes} expired invitations.`,
   );
 }

@@ -12,7 +12,7 @@ export type StetEvent = {
   user: { id: string };
   organization: { id: string };
   job: { name: string; messageId: string; attempt: number };
-  cron: { name: string };
+  cron: { name: string; removed: number };
   document: { page: string; bytes: number };
   workflow: { name: string; instanceId: string };
   import: {

@@ -2,6 +2,7 @@
 // the single `schema` namespace from @repo/db.
 export * from './analytics.ts';
 export * from './assets.ts';
+export * from './audit.ts';
 export * from './auth.ts';
 export * from './billing.ts';
 export * from './content.ts';

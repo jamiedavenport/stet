@@ -1,3 +1,5 @@
+import { recordAudit } from '@repo/audit';
+import type { Actor } from '@repo/audit';
 import { and, asc, count, database, eq, inArray, schema } from '@repo/db';
 import { entryPage } from '@repo/realtime/entry';
 
@@ -6,8 +8,8 @@ import { fieldTypeSchema, parseConfig } from './schema';
 import { slugify, uniqueSlug } from './slug';
 
 // Content model domain operations, shared by the server functions and the AI
-// assistant's tools. Server-only, like ./access: callers authenticate
-// and resolve the organization before reaching them.
+// assistant's tools. Server-only, like ./access: callers authenticate,
+// resolve the organization, and say who is acting before reaching them.
 
 export async function readContentModel(organizationId: string) {
   const db = await database();
@@ -69,6 +71,7 @@ function isUniqueViolation(error: unknown): boolean {
 export async function createContentType(
   organizationId: string,
   input: { name: string; kind: 'collection' | 'map' },
+  actor: Actor,
 ): Promise<{ id: string; slug: string }> {
   const db = await database();
   const id = crypto.randomUUID();
@@ -111,12 +114,20 @@ export async function createContentType(
       updatedAt: new Date(),
     });
   }
+  await recordAudit({
+    organizationId,
+    actor,
+    action: 'type.create',
+    subject: { type: 'type', id, label: input.name },
+    details: { kind: input.kind },
+  });
   return { id, slug };
 }
 
 export async function updateContentType(
   organizationId: string,
   input: { id: string; name?: string; slug?: string },
+  actor: Actor,
 ): Promise<{ slug: string }> {
   const db = await database();
   const type = await requireContentType(organizationId, input.id);
@@ -133,10 +144,23 @@ export async function updateContentType(
     .update(schema.contentType)
     .set({ name: input.name ?? type.name, slug })
     .where(eq(schema.contentType.id, type.id));
+  const renamed = input.name !== undefined && input.name !== type.name;
+  await recordAudit({
+    organizationId,
+    actor,
+    action: 'type.update',
+    subject: { type: 'type', id: type.id, label: input.name ?? type.name },
+    details: renamed ? { from: type.name, to: input.name ?? type.name } : {},
+    coalesceMs: 10 * 60_000,
+  });
   return { slug };
 }
 
-export async function deleteContentType(organizationId: string, id: string): Promise<void> {
+export async function deleteContentType(
+  organizationId: string,
+  id: string,
+  actor: Actor,
+): Promise<void> {
   const db = await database();
   const type = await requireContentType(organizationId, id);
   // Entry rows cascade with the type; their body documents do not, so
@@ -157,4 +181,11 @@ export async function deleteContentType(organizationId: string, id: string): Pro
     );
   }
   await db.delete(schema.contentType).where(eq(schema.contentType.id, type.id));
+  await recordAudit({
+    organizationId,
+    actor,
+    action: 'type.delete',
+    subject: { type: 'type', id: type.id, label: type.name },
+    details: { kind: type.kind, entries: entries.length },
+  });
 }

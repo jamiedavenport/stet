@@ -18,6 +18,7 @@
     "test": "vp test run"
   },
   "dependencies": {
+    "@repo/audit": "workspace:*",
     "@repo/content": "workspace:*",
     "@repo/db": "workspace:*",
     "ai": "catalog:",

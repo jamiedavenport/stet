@@ -1,5 +1,6 @@
 import type { LanguageModel } from 'ai';
 
+import type { Actor } from '@repo/audit';
 import { createEntry, updateEntry } from '@repo/content/entries';
 import { createField, updateField } from '@repo/content/fields';
 import { createContentType } from '@repo/content/model';
@@ -40,20 +41,22 @@ export type CreatedType = {
 export async function createModelFromPlan(
   organizationId: string,
   plan: ImportPlan,
+  actor: Actor,
 ): Promise<CreatedType[]> {
   const created: CreatedType[] = [];
   for (const planned of plan.types) {
-    const type = await createContentType(organizationId, {
-      name: planned.name,
-      kind: planned.kind,
-    });
+    const type = await createContentType(
+      organizationId,
+      { name: planned.name, kind: planned.kind },
+      actor,
+    );
     const fields: CreatedField[] = [];
     for (const field of planned.fields) {
-      const result = await createField(organizationId, {
-        typeId: type.id,
-        name: field.name,
-        type: field.type,
-      });
+      const result = await createField(
+        organizationId,
+        { typeId: type.id, name: field.name, type: field.type },
+        actor,
+      );
       fields.push({ ...result, name: field.name, type: field.type, hint: field.hint });
     }
     created.push({
@@ -85,6 +88,7 @@ export async function importPage(
   organizationId: string,
   type: CreatedType,
   url: string,
+  actor: Actor,
 ): Promise<ImportItem> {
   try {
     const page = await fetchPage(url);
@@ -104,7 +108,7 @@ export async function importPage(
       if (raw === null) {
         continue;
       }
-      values[field.key] = await resolveValue(organizationId, field, raw);
+      values[field.key] = await resolveValue(organizationId, field, raw, actor);
     }
 
     const title = extracted.title.trim().slice(0, 200) || 'Untitled';
@@ -115,15 +119,15 @@ export async function importPage(
         throw new Error('Map type has no entry');
       }
       entryId = type.mapEntryId;
-      ({ slug } = await updateEntry(organizationId, { id: entryId, title, values }));
+      ({ slug } = await updateEntry(organizationId, { id: entryId, title, values }, actor));
     } else {
-      const entry = await createEntry(organizationId, { typeId: type.typeId, title });
+      const entry = await createEntry(organizationId, { typeId: type.typeId, title }, actor);
       entryId = entry.id;
-      ({ slug } = await updateEntry(organizationId, {
-        id: entryId,
-        slug: entrySlugFromUrl(url) ?? undefined,
-        values,
-      }));
+      ({ slug } = await updateEntry(
+        organizationId,
+        { id: entryId, slug: entrySlugFromUrl(url) ?? undefined, values },
+        actor,
+      ));
     }
 
     for (const field of type.fields) {
@@ -151,13 +155,14 @@ async function resolveValue(
   organizationId: string,
   field: CreatedField,
   raw: string | number | boolean | string[],
+  actor: Actor,
 ): Promise<FieldValue> {
   if (field.type === 'select' && typeof raw === 'string') {
-    const [id] = await optionIds(organizationId, field.id, [raw]);
+    const [id] = await optionIds(organizationId, field.id, [raw], actor);
     return id;
   }
   if (field.type === 'multi_select' && Array.isArray(raw)) {
-    return optionIds(organizationId, field.id, raw);
+    return optionIds(organizationId, field.id, raw, actor);
   }
   if (field.type === 'date' && typeof raw === 'string') {
     const parsed = new Date(raw);
@@ -174,6 +179,7 @@ async function optionIds(
   organizationId: string,
   fieldId: string,
   names: string[],
+  actor: Actor,
 ): Promise<string[]> {
   const db = await database();
   const row = await db.query.contentField.findFirst({
@@ -197,7 +203,7 @@ async function optionIds(
     added = true;
   }
   if (added) {
-    await updateField(organizationId, { id: fieldId, config: { options } });
+    await updateField(organizationId, { id: fieldId, config: { options } }, actor);
   }
   return ids;
 }

@@ -9,6 +9,8 @@
     "./entries": "./src/entries.ts",
     "./fields": "./src/fields.ts",
     "./model": "./src/model.ts",
+    "./prune-revisions": "./src/prune-revisions.ts",
+    "./revisions": "./src/revisions.ts",
     "./schema": "./src/schema.ts",
     "./slug": "./src/slug.ts",
     "./write-body": "./src/write-body.ts"
@@ -20,6 +22,7 @@
   },
   "dependencies": {
     "@repo/api": "workspace:*",
+    "@repo/audit": "workspace:*",
     "@repo/db": "workspace:*",
     "@repo/realtime": "workspace:*",
     "@tiptap/core": "catalog:",
@@ -37,6 +40,10 @@
   },
   "devDependencies": {
     "@cloudflare/workers-types": "catalog:",
+    "@types/better-sqlite3": "catalog:",
+    "better-sqlite3": "catalog:",
+    "drizzle-kit": "catalog:",
+    "drizzle-orm": "catalog:",
     "typescript": "catalog:",
     "vite-plus": "catalog:",
     "vitest": "catalog:"

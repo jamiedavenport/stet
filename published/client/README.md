@@ -16,7 +16,7 @@ const post = await stet.posts.get('hello-world');
 const landing = await stet.landing.get(); // a map: one entry, no slug
 ```
 
-Rich text fields arrive as markdown, selects as option names, and person fields as `{ id, name }`. Keep the API key server-side: fetch content from loaders, server functions, or your own backend rather than the browser.
+Rich text fields arrive as markdown, selects as option names, person fields as `{ id, name }`, assets as `{ id, url, name, contentType, size }` whose `url` needs no key, and references as `{ id, slug, title }` (an array for multi-reference). Keep the API key server-side: fetch content from loaders, server functions, or your own backend rather than the browser.
 
 ## Install
 

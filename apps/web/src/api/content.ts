@@ -4,7 +4,8 @@ import { entryPage } from '@repo/realtime/entry';
 import { ORPCError } from '@orpc/server';
 
 import { authenticated, os } from '#/api/implementer';
-import { fieldTypeSchema, parseConfig, parseValues } from '@repo/content/schema';
+import { publicAssetUrl } from '#/files/urls';
+import { fieldTypeSchema, isReferenceType, parseConfig, parseValues } from '@repo/content/schema';
 import type { FieldValue } from '@repo/content/schema';
 import { bodyMarkdown } from '@repo/content/body';
 
@@ -13,6 +14,23 @@ type Field = {
   name: string;
   type: ReturnType<typeof fieldTypeSchema.parse>;
   options: { id: string; name: string; color: string }[];
+  /** The content type a reference field points at; undefined for other types. */
+  targetTypeId?: string;
+};
+
+/** What ids in entry values resolve to, gathered once per request. */
+type Targets = {
+  people: Map<string, { id: string; name: string }>;
+  entries: Map<string, { id: string; slug: string; title: string }>;
+  assets: Map<string, PublicAsset>;
+};
+
+type PublicAsset = {
+  id: string;
+  url: string;
+  name: string;
+  contentType: string;
+  size: number;
 };
 
 async function loadType(organizationId: string, slug: string) {
@@ -37,15 +55,52 @@ async function loadFields(typeId: string): Promise<Field[]> {
     where: eq(schema.contentField.typeId, typeId),
     orderBy: asc(schema.contentField.position),
   });
-  return rows.map((row) => ({
-    key: row.key,
-    name: row.name,
-    type: fieldTypeSchema.parse(row.type),
-    options: parseConfig(row.config).options ?? [],
-  }));
+  return rows.map((row) => {
+    const config = parseConfig(row.config);
+    return {
+      key: row.key,
+      name: row.name,
+      type: fieldTypeSchema.parse(row.type),
+      options: config.options ?? [],
+      targetTypeId: config.typeId,
+    };
+  });
 }
 
-function publicType(type: { slug: string; name: string; kind: string; fields: Field[] }) {
+/**
+ * The slugs of the collections these fields reference, by type id. The
+ * generated client types a reference against the target's entry type, so the
+ * model has to name it.
+ */
+async function loadReferenceSlugs(organizationId: string, fields: Field[]) {
+  const ids = [
+    ...new Set(
+      fields
+        .filter((field) => isReferenceType(field.type))
+        .map((field) => field.targetTypeId)
+        .filter((id): id is string => id !== undefined),
+    ),
+  ];
+  if (ids.length === 0) {
+    return new Map<string, string>();
+  }
+  const db = await database();
+  const rows = await db
+    .select({ id: schema.contentType.id, slug: schema.contentType.slug })
+    .from(schema.contentType)
+    .where(
+      and(
+        eq(schema.contentType.organizationId, organizationId),
+        inArray(schema.contentType.id, ids),
+      ),
+    );
+  return new Map(rows.map((row) => [row.id, row.slug]));
+}
+
+function publicType(
+  type: { slug: string; name: string; kind: string; fields: Field[] },
+  referenceSlugs: Map<string, string>,
+) {
   return {
     slug: type.slug,
     name: type.name,
@@ -55,36 +110,111 @@ function publicType(type: { slug: string; name: string; kind: string; fields: Fi
       name: field.name,
       type: field.type,
       options: field.options.map((option) => ({ name: option.name, color: option.color })),
+      collection:
+        field.targetTypeId === undefined ? undefined : referenceSlugs.get(field.targetTypeId),
     })),
   };
 }
 
-/** The people person fields across these entries point at, by user id. */
-async function loadPeople(rows: (typeof schema.contentEntry.$inferSelect)[], fields: Field[]) {
-  const personKeys = fields.filter((f) => f.type === 'person').map((f) => f.key);
-  const ids = new Set<string>();
+/**
+ * Everything the ids across these entries point at, in one query per kind:
+ * people, referenced entries, and assets. Ids whose target is gone are simply
+ * absent, and resolve to null.
+ */
+async function loadTargets(
+  organizationId: string,
+  rows: (typeof schema.contentEntry.$inferSelect)[],
+  fields: Field[],
+): Promise<Targets> {
+  const people = new Set<string>();
+  const entries = new Set<string>();
+  const assets = new Set<string>();
   for (const row of rows) {
     const values = parseValues(row.values);
-    for (const key of personKeys) {
-      const value = values[key];
-      if (typeof value === 'string') {
-        ids.add(value);
+    for (const field of fields) {
+      const value = values[field.key];
+      if (field.type === 'person' && typeof value === 'string') {
+        people.add(value);
+      }
+      if (field.type === 'asset' && typeof value === 'string') {
+        assets.add(value);
+      }
+      if (isReferenceType(field.type)) {
+        for (const id of typeof value === 'string' ? [value] : Array.isArray(value) ? value : []) {
+          entries.add(id);
+        }
       }
     }
   }
-  if (ids.size === 0) {
-    return new Map<string, { id: string; name: string }>();
-  }
+
   const db = await database();
-  const users = await db.query.user.findMany({ where: inArray(schema.user.id, [...ids]) });
-  return new Map(users.map((user) => [user.id, { id: user.id, name: user.name }]));
+  const [userRows, entryRows, assetRows] = await Promise.all([
+    people.size === 0
+      ? []
+      : db
+          .select({ id: schema.user.id, name: schema.user.name })
+          .from(schema.user)
+          .where(inArray(schema.user.id, [...people])),
+    entries.size === 0
+      ? []
+      : db
+          .select({
+            id: schema.contentEntry.id,
+            slug: schema.contentEntry.slug,
+            title: schema.contentEntry.title,
+          })
+          .from(schema.contentEntry)
+          .where(
+            and(
+              eq(schema.contentEntry.organizationId, organizationId),
+              inArray(schema.contentEntry.id, [...entries]),
+            ),
+          ),
+    assets.size === 0
+      ? []
+      : db
+          .select({
+            id: schema.asset.id,
+            name: schema.asset.name,
+            contentType: schema.asset.contentType,
+            size: schema.asset.size,
+            status: schema.asset.status,
+          })
+          .from(schema.asset)
+          .where(
+            and(
+              eq(schema.asset.organizationId, organizationId),
+              inArray(schema.asset.id, [...assets]),
+            ),
+          ),
+  ]);
+
+  return {
+    people: new Map(userRows.map((row) => [row.id, { id: row.id, name: row.name }])),
+    entries: new Map(entryRows.map((row) => [row.id, row])),
+    assets: new Map(
+      assetRows
+        // A reservation whose bytes never arrived would serve a 404.
+        .filter((row) => row.status === 'uploaded')
+        .map((row) => [
+          row.id,
+          {
+            id: row.id,
+            url: publicAssetUrl(row.id),
+            name: row.name,
+            contentType: row.contentType,
+            size: row.size,
+          },
+        ]),
+    ),
+  };
 }
 
 async function toApiEntry(
   organizationId: string,
   fields: Field[],
   row: typeof schema.contentEntry.$inferSelect,
-  people: Map<string, { id: string; name: string }>,
+  targets: Targets,
 ) {
   const values = parseValues(row.values);
   const hasBodies = fields.some((field) => field.type === 'rich_text');
@@ -92,7 +222,7 @@ async function toApiEntry(
 
   const resolved: Record<string, unknown> = {};
   for (const field of fields) {
-    const value = resolveValue(field, values[field.key], people);
+    const value = resolveValue(field, values[field.key], targets);
     if (field.type === 'rich_text') {
       resolved[field.key] = saved === null ? null : bodyMarkdown(saved.doc, field.key);
     } else if (value !== undefined) {
@@ -110,11 +240,7 @@ async function toApiEntry(
   };
 }
 
-function resolveValue(
-  field: Field,
-  value: FieldValue | undefined,
-  people: Map<string, { id: string; name: string }>,
-): unknown {
+function resolveValue(field: Field, value: FieldValue | undefined, targets: Targets): unknown {
   if (value === undefined || value === null) {
     return value;
   }
@@ -125,7 +251,18 @@ function resolveValue(
     return field.options.filter((option) => value.includes(option.id)).map((option) => option.name);
   }
   if (field.type === 'person' && typeof value === 'string') {
-    return people.get(value) ?? null;
+    return targets.people.get(value) ?? null;
+  }
+  if (field.type === 'asset' && typeof value === 'string') {
+    return targets.assets.get(value) ?? null;
+  }
+  if (field.type === 'reference' && typeof value === 'string') {
+    return targets.entries.get(value) ?? null;
+  }
+  if (field.type === 'multi_reference' && Array.isArray(value)) {
+    // Deleted targets drop out rather than becoming nulls the customer has to
+    // filter: the list is what still exists, in the order it was set.
+    return value.map((id) => targets.entries.get(id)).filter((entry) => entry !== undefined);
   }
   return value;
 }
@@ -136,11 +273,14 @@ const getContentModel = os.content.model.use(authenticated).handler(async ({ con
     where: eq(schema.contentType.organizationId, context.organizationId),
     orderBy: asc(schema.contentType.createdAt),
   });
-  return {
-    types: await Promise.all(
-      types.map(async (type) => publicType({ ...type, fields: await loadFields(type.id) })),
-    ),
-  };
+  const withFields = await Promise.all(
+    types.map(async (type) => ({ ...type, fields: await loadFields(type.id) })),
+  );
+  const referenceSlugs = await loadReferenceSlugs(
+    context.organizationId,
+    withFields.flatMap((type) => type.fields),
+  );
+  return { types: withFields.map((type) => publicType(type, referenceSlugs)) };
 });
 
 const listContent = os.content.list.use(authenticated).handler(async ({ input, context }) => {
@@ -150,11 +290,14 @@ const listContent = os.content.list.use(authenticated).handler(async ({ input, c
     where: eq(schema.contentEntry.typeId, type.id),
     orderBy: asc(schema.contentEntry.createdAt),
   });
-  const people = await loadPeople(rows, type.fields);
+  const [targets, referenceSlugs] = await Promise.all([
+    loadTargets(context.organizationId, rows, type.fields),
+    loadReferenceSlugs(context.organizationId, type.fields),
+  ]);
   return {
-    type: publicType(type),
+    type: publicType(type, referenceSlugs),
     entries: await Promise.all(
-      rows.map((row) => toApiEntry(context.organizationId, type.fields, row, people)),
+      rows.map((row) => toApiEntry(context.organizationId, type.fields, row, targets)),
     ),
   };
 });
@@ -170,8 +313,8 @@ const getContent = os.content.get.use(authenticated).handler(async ({ input, con
       message: 'No such content type or entry in this organization.',
     });
   }
-  const people = await loadPeople([row], type.fields);
-  return toApiEntry(context.organizationId, type.fields, row, people);
+  const targets = await loadTargets(context.organizationId, [row], type.fields);
+  return toApiEntry(context.organizationId, type.fields, row, targets);
 });
 
 export const content = {

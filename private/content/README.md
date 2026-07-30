@@ -4,7 +4,9 @@ The content domain: the operations behind collections, maps, fields, entries, an
 
 - `./schema`: field types, per-type config, and entry value parsing (client-safe).
 - `./slug`: slug and key derivation (client-safe).
-- `./model`, `./fields`, `./entries`: server-only operations over the content model and entries. Callers authenticate and resolve the organization first; every function takes it as the first argument.
+- `./model`, `./fields`, `./entries`: server-only operations over the content model and entries. Callers authenticate and resolve the organization first; every function takes it as the first argument, and an `Actor` (see `@repo/audit`) last, so every change records who made it and through which surface.
 - `./access`: server-only ownership checks (`requireContentType`, `requireField`, `requireEntry`).
 - `./body`: the rich text body schema and its serialization: TipTap extensions, body-to-markdown, and markdown-to-body. Everything here renders to markdown, so the schema must not grow an extension the renderer does not know.
 - `./write-body`: server-only body writes, routed through the entry's realtime room (see `@repo/realtime`) so open editors update live and the D1 mirror follows.
+- `./revisions`: entry version history. Every write here snapshots the entry (metadata, values, and bodies as markdown), coalescing one person's run of edits into a single revision; `restoreEntryRevision` puts an entry back, through the realtime room so open editors follow. Body edits that never pass through `./entries` are caught by the room's flush, which `apps/web` wires to `recordBodyRevision`.
+- `./prune-revisions`: the cap that bounds the revision table, swept nightly by `@repo/crons`.

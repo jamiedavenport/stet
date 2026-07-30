@@ -29,6 +29,7 @@
     "@repo/ai": "workspace:*",
     "@repo/analytics": "workspace:*",
     "@repo/api": "workspace:*",
+    "@repo/audit": "workspace:*",
     "@repo/auth": "workspace:*",
     "@repo/billing": "workspace:*",
     "@repo/brand": "workspace:*",

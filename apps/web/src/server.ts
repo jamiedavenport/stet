@@ -4,11 +4,13 @@ import { type AnalyticsEnv, AnalyticsStore as AnalyticsStoreBase } from '@repo/a
 import { ChatAgent as ChatAgentBase } from '@repo/ai/server';
 import { oAuthDiscoveryMetadata, oAuthProtectedResourceMetadata } from '@repo/auth/server';
 import { ai, BillingError } from '@repo/billing/server';
+import { recordBodyRevision } from '@repo/content/revisions';
 import { handleScheduled } from '@repo/crons/server';
 import { and, database, eq, schema } from '@repo/db';
 import { handleQueue } from '@repo/jobs/server';
 import { type HubEnv, NotificationHub as NotificationHubBase } from '@repo/notifications/server';
 import { PagePresenceRoom as PagePresenceRoomBase } from '@repo/realtime/server';
+import type { DocumentRoom } from '@repo/realtime/document';
 import {
   InvitationReminderWorkflow as InvitationReminderWorkflowBase,
   SiteImportWorkflow as SiteImportWorkflowBase,
@@ -41,9 +43,19 @@ export const NotificationHub = Sentry.instrumentDurableObjectWithSentry(
   sentryOptions<HubEnv>,
   NotificationHubBase,
 );
+// The revision hook lives here rather than in @repo/realtime because the
+// packages that serialize bodies depend on that one (see onFlush there).
+class PagePresenceRoomWithRevisions extends PagePresenceRoomBase {
+  protected override async onFlush(
+    room: DocumentRoom,
+    doc: PagePresenceRoomBase['document'],
+  ): Promise<void> {
+    await recordBodyRevision(room, doc);
+  }
+}
 export const PagePresenceRoom = Sentry.instrumentDurableObjectWithSentry(
   sentryOptions<Env>,
-  PagePresenceRoomBase,
+  PagePresenceRoomWithRevisions,
 );
 export const InvitationReminderWorkflow = Sentry.instrumentWorkflowWithSentry(
   sentryOptions<WorkflowsEnv>,
@@ -184,7 +196,11 @@ async function handleMcpRequest(request: Request, url: URL, ctx: ExecutionContex
     throw error;
   }
 
-  return createMcpHandler(createContentMcpServer(resolved), { route: '/mcp' })(request, env, ctx);
+  return createMcpHandler(createContentMcpServer(resolved, userId), { route: '/mcp' })(
+    request,
+    env,
+    ctx,
+  );
 }
 
 /**

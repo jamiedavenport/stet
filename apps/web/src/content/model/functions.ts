@@ -4,6 +4,7 @@ import { createServerFn } from '@tanstack/react-start';
 import { z } from 'zod';
 
 import * as model from '@repo/content/model';
+import { appActor } from '#/content/actor';
 import { organizationMiddleware } from '#/session';
 
 export type { ModelField } from '@repo/content/model';
@@ -25,7 +26,9 @@ export const ensureContentModel = (queryClient: QueryClient, organizationId: str
 export const createContentType = createServerFn({ method: 'POST' })
   .middleware([organizationMiddleware])
   .validator(z.object({ name: z.string().min(1).max(80), kind: z.enum(['collection', 'map']) }))
-  .handler(async ({ data, context }) => model.createContentType(context.organizationId, data));
+  .handler(async ({ data, context }) =>
+    model.createContentType(context.organizationId, data, appActor(context.session.user.id)),
+  );
 
 export const updateContentType = createServerFn({ method: 'POST' })
   .middleware([organizationMiddleware])
@@ -36,9 +39,13 @@ export const updateContentType = createServerFn({ method: 'POST' })
       slug: z.string().min(1).max(80).optional(),
     }),
   )
-  .handler(async ({ data, context }) => model.updateContentType(context.organizationId, data));
+  .handler(async ({ data, context }) =>
+    model.updateContentType(context.organizationId, data, appActor(context.session.user.id)),
+  );
 
 export const deleteContentType = createServerFn({ method: 'POST' })
   .middleware([organizationMiddleware])
   .validator(z.object({ id: z.string() }))
-  .handler(async ({ data, context }) => model.deleteContentType(context.organizationId, data.id));
+  .handler(async ({ data, context }) =>
+    model.deleteContentType(context.organizationId, data.id, appActor(context.session.user.id)),
+  );

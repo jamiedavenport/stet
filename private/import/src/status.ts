@@ -1,3 +1,4 @@
+import type { Actor } from '@repo/audit';
 import { and, database, eq, schema } from '@repo/db';
 
 import { importPlanSchema } from './plan';
@@ -6,7 +7,15 @@ import type { ImportItem, ImportPlan, ImportProgress, ImportRunStatus } from './
 // Reading and writing the import_run row: the workflow's progress feed and
 // the wizard's report, one row per run.
 
-export async function loadRunPlan(organizationId: string, runId: string): Promise<ImportPlan> {
+/**
+ * The frozen plan and who approved it. Everything the run writes is
+ * attributed to that person through the import surface, so an import is one
+ * legible act in the audit log rather than anonymous machine work.
+ */
+export async function loadRunPlan(
+  organizationId: string,
+  runId: string,
+): Promise<{ plan: ImportPlan; actor: Actor }> {
   const db = await database();
   const row = await db.query.importRun.findFirst({
     where: and(eq(schema.importRun.id, runId), eq(schema.importRun.organizationId, organizationId)),
@@ -14,7 +23,10 @@ export async function loadRunPlan(organizationId: string, runId: string): Promis
   if (row === undefined) {
     throw new Error(`Import run ${runId} not found`);
   }
-  return importPlanSchema.parse(JSON.parse(row.plan));
+  return {
+    plan: importPlanSchema.parse(JSON.parse(row.plan)),
+    actor: { userId: row.startedBy, via: 'import' },
+  };
 }
 
 export async function updateRun(

@@ -15,6 +15,8 @@ The room writes its own storage on every save, then flushes to D1 on a storage a
 
 Only rooms carrying shared state ever write. `onSave` runs off the document's own update events, so pages that use a room for presence alone never create a row.
 
+The flush also calls a protected `onFlush(room, doc)`, which does nothing here. It is the hook for work that needs the saved document but lives in a package depending on this one: `apps/web` overrides it to snapshot entry revisions (see `@repo/content`), which this package cannot import.
+
 ## Reading a document
 
 The accessors that read a live room read a persisted one, because it is the same document:

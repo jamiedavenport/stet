@@ -23,7 +23,7 @@ export async function handleScheduled(controller: ScheduledController): Promise<
   // No catch: an error propagates to the worker's Sentry wrapper, which is
   // what reports it. The event still records the run either way.
   try {
-    await handler();
+    await handler(log);
   } catch (error) {
     log.error(error instanceof Error ? error : String(error));
     throw error;

@@ -1,18 +1,25 @@
+import { recordAudit } from '@repo/audit';
+import type { Actor } from '@repo/audit';
 import { and, database, eq, schema } from '@repo/db';
 import { entryPage } from '@repo/realtime/entry';
 
 import { requireContentType, requireEntry } from './access';
+import { recordEntryRevision } from './revisions';
 import { parseValues, valuesText } from './schema';
 import type { EntryValues } from './schema';
 import { slugify, uniqueSlug } from './slug';
 
 // Entry domain operations, shared by the server functions and the AI
-// assistant's tools. Server-only, like ./access: callers authenticate
-// and resolve the organization before reaching them.
+// assistant's tools. Server-only, like ./access: callers authenticate,
+// resolve the organization, and say who is acting before reaching them.
+
+// One audit row per editing burst; the revision carries the actual states.
+const editCoalesceMs = 10 * 60_000;
 
 export async function createEntry(
   organizationId: string,
   input: { typeId: string; title?: string; values?: EntryValues },
+  actor: Actor,
 ): Promise<{ id: string; slug: string }> {
   const db = await database();
   const type = await requireContentType(organizationId, input.typeId);
@@ -38,12 +45,20 @@ export async function createEntry(
     createdAt: new Date(),
     updatedAt: new Date(),
   });
+  await recordEntryRevision(organizationId, id, actor);
+  await recordAudit({
+    organizationId,
+    actor,
+    action: 'entry.create',
+    subject: { type: 'entry', id, label: title },
+  });
   return { id, slug };
 }
 
 export async function updateEntry(
   organizationId: string,
   input: { id: string; title?: string; slug?: string; values?: EntryValues },
+  actor: Actor,
 ): Promise<{ slug: string }> {
   const db = await database();
   const entry = await requireEntry(organizationId, input.id);
@@ -69,10 +84,18 @@ export async function updateEntry(
       updatedAt: new Date(),
     })
     .where(eq(schema.contentEntry.id, entry.id));
+  await recordEntryRevision(organizationId, entry.id, actor);
+  await recordAudit({
+    organizationId,
+    actor,
+    action: 'entry.update',
+    subject: { type: 'entry', id: entry.id, label: input.title ?? entry.title },
+    coalesceMs: editCoalesceMs,
+  });
   return { slug };
 }
 
-export async function deleteEntry(organizationId: string, id: string): Promise<void> {
+export async function deleteEntry(organizationId: string, id: string, actor: Actor): Promise<void> {
   const db = await database();
   const entry = await requireEntry(organizationId, id);
   // The body document does not cascade with the row.
@@ -85,4 +108,10 @@ export async function deleteEntry(organizationId: string, id: string): Promise<v
       ),
     );
   await db.delete(schema.contentEntry).where(eq(schema.contentEntry.id, entry.id));
+  await recordAudit({
+    organizationId,
+    actor,
+    action: 'entry.delete',
+    subject: { type: 'entry', id: entry.id, label: entry.title },
+  });
 }

@@ -1,5 +1,6 @@
 import { index, integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 
+import { user } from './auth.ts';
 import { organization } from './organizations.ts';
 
 // One row per site import: the reviewed plan frozen at start, and the
@@ -15,6 +16,9 @@ export const importRun = sqliteTable(
       .references(() => organization.id, { onDelete: 'cascade' }),
     /** The origin the content came from, e.g. https://example.com. */
     origin: text('origin').notNull(),
+    // Who approved the plan. The workflow attributes every entry and field it
+    // writes to them, so an import reads as their work in the audit log.
+    startedBy: text('started_by').references(() => user.id, { onDelete: 'set null' }),
     status: text('status').notNull(),
     /** JSON ImportPlan (see @repo/import/plan), frozen when the run starts. */
     plan: text('plan').notNull(),

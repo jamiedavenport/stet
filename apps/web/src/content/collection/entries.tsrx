@@ -4,6 +4,7 @@ import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
 import { getRouteApi, useRouter } from '@tanstack/react-router';
 
 import { useBreadcrumbs } from '#/components/breadcrumbs';
+import { CellDataProvider } from '#/content/cells/context';
 import { EntriesTable } from '#/content/collection/table';
 import { buildEntryColumns } from '#/content/collection/columns';
 import {
@@ -101,21 +102,23 @@ export function CollectionEntries() @{
     await changed();
   };
 
-  <div className="flex min-h-0 w-full min-w-0 flex-1 flex-col gap-6">
-    <TypeHeader
-      type={data.type}
-      entryCount={data.entries.length}
-      onChanged={changed}
-      onSlugChanged={(slug) =>
-        router.navigate({ to: '/app/c/$collection', params: { collection: slug } })
+  <CellDataProvider lookup={data.lookup} organizationId={activeOrganization.id}>
+    <div className="flex min-h-0 w-full min-w-0 flex-1 flex-col gap-6">
+      <TypeHeader
+        type={data.type}
+        entryCount={data.entries.length}
+        onChanged={changed}
+        onSlugChanged={(slug) =>
+          router.navigate({ to: '/app/c/$collection', params: { collection: slug } })
+        }
+        onDeleted={() => router.navigate({ to: '/app' })}
+      />
+      <EntriesTable columns={columns} entries={data.entries} onAddEntry={() => void addEntry()} />
+      @if (data.type.fields.length === 0) {
+        <p className="text-sm text-muted-foreground">
+          {"Add fields with the + button in the table header. Rich text fields open the collaborative editor."}
+        </p>
       }
-      onDeleted={() => router.navigate({ to: '/app' })}
-    />
-    <EntriesTable columns={columns} entries={data.entries} onAddEntry={() => void addEntry()} />
-    @if (data.type.fields.length === 0) {
-      <p className="text-sm text-muted-foreground">
-        {"Add fields with the + button in the table header. Rich text fields open the collaborative editor."}
-      </p>
-    }
-  </div>
+    </div>
+  </CellDataProvider>
 }

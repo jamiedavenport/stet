@@ -1,5 +1,6 @@
 import { index, integer, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core';
 
+import { user } from './auth.ts';
 import { organization } from './organizations.ts';
 
 // The content model marketing builds in the UI: types own fields, entries
@@ -72,4 +73,33 @@ export const contentEntry = sqliteTable(
     uniqueIndex('content_entry_slug_idx').on(table.typeId, table.slug),
     index('content_entry_org_idx').on(table.organizationId),
   ],
+);
+
+// A full snapshot of an entry at a moment: metadata, field values, and every
+// rich text body as markdown. Written by @repo/content's revisions module on
+// entry writes and on realtime body flushes, coalescing bursts by the same
+// actor into one row, so history stays browsable rather than per-keystroke.
+export const contentRevision = sqliteTable(
+  'content_revision',
+  {
+    id: text('id').primaryKey(),
+    entryId: text('entry_id')
+      .notNull()
+      .references(() => contentEntry.id, { onDelete: 'cascade' }),
+    organizationId: text('organization_id')
+      .notNull()
+      .references(() => organization.id, { onDelete: 'cascade' }),
+    title: text('title').notNull(),
+    slug: text('slug').notNull(),
+    /** JSON object of field key to value, as `contentEntry.values`. */
+    values: text('values').notNull(),
+    /** JSON object of rich text field key to markdown; keys absent when never written. */
+    bodies: text('bodies').notNull(),
+    /** Null when the change has no signed-in author (body flushes, system work). */
+    authorId: text('author_id').references(() => user.id, { onDelete: 'set null' }),
+    /** Which surface produced the change, from @repo/audit's Via vocabulary. */
+    via: text('via').notNull(),
+    createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
+  },
+  (table) => [index('content_revision_entry_idx').on(table.entryId, table.createdAt)],
 );

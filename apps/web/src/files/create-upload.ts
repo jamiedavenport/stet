@@ -5,7 +5,7 @@ import { z } from 'zod';
 
 import { acceptsContentType, acceptsSize, assetKinds, isAssetKind } from '#/files/kinds';
 import type { AssetKind, AssetScope } from '#/files/kinds';
-import { assetUrl } from '#/files/urls';
+import { assetUrl, publicAssetUrl } from '#/files/urls';
 import { requireActiveOrganization } from '#/organization/membership';
 import { authenticatedMiddleware } from '#/session';
 
@@ -27,10 +27,12 @@ const uploadRequest = z.object({
 });
 
 /**
- * Reserves an asset and returns where to PUT its bytes. The row exists before
- * the bytes do, which is what the upload route authorizes the raw stream
- * against. The reservation holds quota immediately, so concurrent uploads
- * cannot each claim the same headroom; nothing serves until that PUT succeeds.
+ * Reserves an asset and returns where to PUT its bytes, plus where it will
+ * then be readable, which is not the same URL for a content asset (see
+ * ./kinds.ts). The row exists before the bytes do, which is what the upload
+ * route authorizes the raw stream against. The reservation holds quota
+ * immediately, so concurrent uploads cannot each claim the same headroom;
+ * nothing serves until that PUT succeeds.
  */
 export const createUpload = createServerFn({ method: 'POST' })
   .middleware([authenticatedMiddleware])
@@ -75,5 +77,9 @@ export const createUpload = createServerFn({ method: 'POST' })
       createdAt: new Date(),
     });
 
-    return { id, url: assetUrl(id) };
+    return {
+      id,
+      uploadUrl: assetUrl(id),
+      url: assetKinds[kind].delivery === 'public' ? publicAssetUrl(id) : assetUrl(id),
+    };
   });

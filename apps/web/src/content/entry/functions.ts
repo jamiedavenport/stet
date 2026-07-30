@@ -6,6 +6,8 @@ import { z } from 'zod';
 
 import * as entries from '@repo/content/entries';
 import { fieldTypeSchema, fieldValueSchema, parseConfig, parseValues } from '@repo/content/schema';
+import { appActor } from '#/content/actor';
+import { buildCellLookup } from '#/content/cells/lookup';
 import { organizationMiddleware } from '#/session';
 
 async function typeWithFields(organizationId: string, where: { slug?: string; id?: string }) {
@@ -61,7 +63,13 @@ const getEntries = createServerFn({ method: 'GET' })
       where: eq(schema.contentEntry.typeId, type.id),
       orderBy: asc(schema.contentEntry.createdAt),
     });
-    return { type, entries: rows.map(toEntry) };
+    const mapped = rows.map(toEntry);
+    const lookup = await buildCellLookup(
+      context.organizationId,
+      type.fields,
+      mapped.map((entry) => entry.values),
+    );
+    return { type, entries: mapped, lookup };
   });
 
 type EntriesData = Awaited<ReturnType<typeof getEntries>>;
@@ -90,7 +98,9 @@ const getEntry = createServerFn({ method: 'GET' })
       throw notFound();
     }
     const type = await typeWithFields(context.organizationId, { id: row.typeId });
-    return { type, entry: toEntry(row) };
+    const entry = toEntry(row);
+    const lookup = await buildCellLookup(context.organizationId, type.fields, [entry.values]);
+    return { type, entry, lookup };
   });
 
 export type EntryData = Awaited<ReturnType<typeof getEntry>>;
@@ -118,7 +128,9 @@ const getMapEntry = createServerFn({ method: 'GET' })
     if (row === undefined) {
       throw notFound();
     }
-    return { type, entry: toEntry(row) };
+    const entry = toEntry(row);
+    const lookup = await buildCellLookup(context.organizationId, type.fields, [entry.values]);
+    return { type, entry, lookup };
   });
 
 export const mapEntryQuery = (organizationId: string, typeSlug: string) =>
@@ -131,7 +143,9 @@ export const mapEntryQuery = (organizationId: string, typeSlug: string) =>
 export const createEntry = createServerFn({ method: 'POST' })
   .middleware([organizationMiddleware])
   .validator(z.object({ typeId: z.string(), title: z.string().max(200).optional() }))
-  .handler(async ({ data, context }) => entries.createEntry(context.organizationId, data));
+  .handler(async ({ data, context }) =>
+    entries.createEntry(context.organizationId, data, appActor(context.session.user.id)),
+  );
 
 export const updateEntry = createServerFn({ method: 'POST' })
   .middleware([organizationMiddleware])
@@ -143,12 +157,16 @@ export const updateEntry = createServerFn({ method: 'POST' })
       values: z.record(z.string(), fieldValueSchema).optional(),
     }),
   )
-  .handler(async ({ data, context }) => entries.updateEntry(context.organizationId, data));
+  .handler(async ({ data, context }) =>
+    entries.updateEntry(context.organizationId, data, appActor(context.session.user.id)),
+  );
 
 export const deleteEntry = createServerFn({ method: 'POST' })
   .middleware([organizationMiddleware])
   .validator(z.object({ id: z.string() }))
-  .handler(async ({ data, context }) => entries.deleteEntry(context.organizationId, data.id));
+  .handler(async ({ data, context }) =>
+    entries.deleteEntry(context.organizationId, data.id, appActor(context.session.user.id)),
+  );
 
 /** Members of the organization, for person fields and presence labels. */
 const getMembers = createServerFn({ method: 'GET' })

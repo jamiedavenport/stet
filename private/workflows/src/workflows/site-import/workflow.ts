@@ -1,4 +1,5 @@
 import { createFastModel } from '@repo/ai/model';
+import type { Actor } from '@repo/audit';
 import type { ImportItem } from '@repo/import/plan';
 import { createModelFromPlan, importPage } from '@repo/import/run';
 import type { CreatedType } from '@repo/import/run';
@@ -28,13 +29,13 @@ export class SiteImportWorkflow extends WorkflowEntrypoint<WorkflowsEnv, SiteImp
       organization: { id: organizationId },
     });
     try {
-      const plan = await step.do('load plan', () => loadRunPlan(organizationId, runId));
+      const { plan, actor } = await step.do('load plan', () => loadRunPlan(organizationId, runId));
       const jobs = plan.types.flatMap((type, index) =>
         type.urls.map((url) => ({ type: index, url })),
       );
 
       const types = await step.do('create content model', () =>
-        createModelFromPlan(organizationId, plan),
+        createModelFromPlan(organizationId, plan, actor),
       );
 
       // Pages already imported are replayed from cached step results, so a
@@ -43,7 +44,7 @@ export class SiteImportWorkflow extends WorkflowEntrypoint<WorkflowsEnv, SiteImp
       for (let start = 0; start < jobs.length; start += batchSize) {
         const batch = jobs.slice(start, start + batchSize);
         const items = await step.do(`import pages ${start + 1} to ${start + batch.length}`, () =>
-          this.importBatch(organizationId, runId, types, batch, jobs.length, report),
+          this.importBatch(organizationId, runId, types, batch, jobs.length, report, actor),
         );
         report.push(...items);
       }
@@ -88,11 +89,12 @@ export class SiteImportWorkflow extends WorkflowEntrypoint<WorkflowsEnv, SiteImp
     batch: { type: number; url: string }[],
     total: number,
     prior: ImportItem[],
+    actor: Actor,
   ): Promise<ImportItem[]> {
     const model = createFastModel(this.env);
     const items: ImportItem[] = [];
     for (const job of batch) {
-      items.push(await importPage(model, organizationId, types[job.type], job.url));
+      items.push(await importPage(model, organizationId, types[job.type], job.url, actor));
     }
     const all = [...prior, ...items];
     await updateRun(runId, {

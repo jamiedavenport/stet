@@ -3,6 +3,7 @@ import { getRouteApi } from '@tanstack/react-router';
 
 import { useBreadcrumbs } from '#/components/breadcrumbs';
 import { entriesQuery, entryQuery } from '#/content/entry/functions';
+import { EntryHistory } from '#/content/entry/history.tsrx';
 import { EntryWorkspace } from '#/content/entry/workspace.tsrx';
 import { contentModelQuery } from '#/content/model/functions';
 import { useAppRoute } from '#/use-app-route';
@@ -37,8 +38,10 @@ export function EntryEditor() @{
     <EntryWorkspace
       type={data.type}
       entry={data.entry}
+      lookup={data.lookup}
       presencePage={`/app/c/${data.type.slug}`}
       onChanged={onChanged}
     />
+    <EntryHistory entryId={data.entry.id} onRestored={onChanged} />
   </div>
 }

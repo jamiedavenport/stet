@@ -1,7 +1,13 @@
+import type { Actor } from '@repo/audit';
 import * as entries from '@repo/content/entries';
 import * as fields from '@repo/content/fields';
 import * as model from '@repo/content/model';
-import { fieldTypeSchema, fieldValueSchema, nextOptionColor } from '@repo/content/schema';
+import {
+  fieldTypeSchema,
+  fieldValueSchema,
+  isReferenceType,
+  nextOptionColor,
+} from '@repo/content/schema';
 import type { SelectOption } from '@repo/content/schema';
 import { writeEntryBody } from '@repo/content/write-body';
 import { and, asc, database, eq, schema } from '@repo/db';
@@ -16,6 +22,10 @@ const fieldInput = z.object({
     .array(z.string().min(1))
     .optional()
     .describe('Option names, for select and multi_select fields only'),
+  collection: z
+    .string()
+    .optional()
+    .describe('Slug of the collection to point at, for reference and multi_reference fields only'),
 });
 
 const valuesInput = z
@@ -36,20 +46,33 @@ async function createFieldWithOptions(
   organizationId: string,
   typeId: string,
   input: z.infer<typeof fieldInput>,
-): Promise<{ id: string; key: string }> {
-  const created = await fields.createField(organizationId, {
-    typeId,
-    name: input.name,
-    type: input.type,
-  });
-  if (input.options !== undefined && input.options.length > 0) {
-    const options: SelectOption[] = [];
-    for (const name of input.options) {
-      options.push({ id: crypto.randomUUID(), name, color: nextOptionColor(options) });
-    }
-    await fields.updateField(organizationId, { id: created.id, config: { options } });
+  actor: Actor,
+): Promise<{ id: string; key: string } | { error: string }> {
+  const options: SelectOption[] = [];
+  for (const name of input.options ?? []) {
+    options.push({ id: crypto.randomUUID(), name, color: nextOptionColor(options) });
   }
-  return created;
+  let target: string | undefined;
+  if (isReferenceType(input.type)) {
+    if (input.collection === undefined) {
+      return { error: `The "${input.name}" field needs a collection to point at.` };
+    }
+    const referenced = await typeBySlug(organizationId, input.collection);
+    if (referenced === undefined || referenced.kind !== 'collection') {
+      return { error: `No collection has the slug "${input.collection}".` };
+    }
+    target = referenced.id;
+  }
+  return fields.createField(
+    organizationId,
+    {
+      typeId,
+      name: input.name,
+      type: input.type,
+      config: { ...(options.length > 0 ? { options } : {}), ...(target ? { typeId: target } : {}) },
+    },
+    actor,
+  );
 }
 
 /**
@@ -74,7 +97,7 @@ function unknownKeys(values: Record<string, unknown>, valid: string[]): string[]
  * approval in the chat before it runs: content is live, so nothing changes
  * without a human saying so.
  */
-export function contentWriteTools(organizationId: string): ToolSet {
+export function contentWriteTools(organizationId: string, actor: Actor): ToolSet {
   return {
     createContentType: tool({
       description:
@@ -87,10 +110,12 @@ export function contentWriteTools(organizationId: string): ToolSet {
       }),
       needsApproval: true,
       execute: async ({ name, kind, fields: fieldInputs }) => {
-        const created = await model.createContentType(organizationId, { name, kind });
+        const created = await model.createContentType(organizationId, { name, kind }, actor);
         const createdFields = [];
         for (const input of fieldInputs ?? []) {
-          createdFields.push(await createFieldWithOptions(organizationId, created.id, input));
+          createdFields.push(
+            await createFieldWithOptions(organizationId, created.id, input, actor),
+          );
         }
         return { ...created, fields: createdFields };
       },
@@ -109,7 +134,7 @@ export function contentWriteTools(organizationId: string): ToolSet {
         if (type === undefined) {
           return { error: `No collection or map has the slug "${slug}".` };
         }
-        return model.updateContentType(organizationId, { id: type.id, ...input });
+        return model.updateContentType(organizationId, { id: type.id, ...input }, actor);
       },
     }),
 
@@ -122,7 +147,7 @@ export function contentWriteTools(organizationId: string): ToolSet {
         if (type === undefined) {
           return { error: `No collection or map has the slug "${slug}".` };
         }
-        await model.deleteContentType(organizationId, type.id);
+        await model.deleteContentType(organizationId, type.id, actor);
         return { deleted: type.name };
       },
     }),
@@ -139,7 +164,7 @@ export function contentWriteTools(organizationId: string): ToolSet {
         if (type === undefined) {
           return { error: `No collection or map has the slug "${slug}".` };
         }
-        return createFieldWithOptions(organizationId, type.id, field);
+        return createFieldWithOptions(organizationId, type.id, field, actor);
       },
     }),
 
@@ -148,7 +173,7 @@ export function contentWriteTools(organizationId: string): ToolSet {
       inputSchema: z.object({ fieldId: z.string().describe('From getContentModel') }),
       needsApproval: true,
       execute: async ({ fieldId }) => {
-        await fields.deleteField(organizationId, fieldId);
+        await fields.deleteField(organizationId, fieldId, actor);
         return { deleted: fieldId };
       },
     }),
@@ -171,7 +196,7 @@ export function contentWriteTools(organizationId: string): ToolSet {
         if (unknown.length > 0) {
           return { error: `Unknown field keys: ${unknown.join(', ')}.`, validKeys: valid };
         }
-        return entries.createEntry(organizationId, { typeId: type.id, title, values });
+        return entries.createEntry(organizationId, { typeId: type.id, title, values }, actor);
       },
     }),
 
@@ -200,7 +225,7 @@ export function contentWriteTools(organizationId: string): ToolSet {
         if (unknown.length > 0) {
           return { error: `Unknown field keys: ${unknown.join(', ')}.`, validKeys: valid };
         }
-        return entries.updateEntry(organizationId, { id: entryId, ...input });
+        return entries.updateEntry(organizationId, { id: entryId, ...input }, actor);
       },
     }),
 
@@ -209,7 +234,7 @@ export function contentWriteTools(organizationId: string): ToolSet {
       inputSchema: z.object({ entryId: z.string() }),
       needsApproval: true,
       execute: async ({ entryId }) => {
-        await entries.deleteEntry(organizationId, entryId);
+        await entries.deleteEntry(organizationId, entryId, actor);
         return { deleted: entryId };
       },
     }),

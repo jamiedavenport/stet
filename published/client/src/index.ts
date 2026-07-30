@@ -18,10 +18,12 @@ export type { ContentModel } from './codegen';
 export { createContentClient, DEFAULT_ORIGIN } from './content';
 export type {
   CollectionClient,
+  ContentAsset,
   ContentClient,
   ContentClientOptions,
   ContentEntryBase,
   ContentModelShape,
+  ContentReference,
   MapClient,
 } from './content';
 
