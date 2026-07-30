@@ -10,6 +10,7 @@ const order = [
   'contentful',
   'payload',
   'storyblok',
+  'webflow',
   'strapi',
   'prismic',
   'directus',

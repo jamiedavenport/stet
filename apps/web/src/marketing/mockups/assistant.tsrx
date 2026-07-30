@@ -26,22 +26,24 @@ function ApprovalCard() @{
   <div className="overflow-hidden rounded-lg ring-1 ring-foreground/10">
     <div className="flex items-center justify-between gap-2 bg-muted/60 px-3 py-2">
       <p className="truncate text-sm font-medium">Add a field</p>
-      <span className="shrink-0 rounded-md bg-background px-1.5 py-0.5 text-xs text-muted-foreground">
+      <span className="shrink-0 rounded-md bg-amber-500/15 px-1.5 py-0.5 text-xs font-medium text-amber-700 dark:text-amber-300">
         Needs you
       </span>
     </div>
     <dl className="flex flex-col gap-1 px-3 py-2.5 font-mono text-xs">
       <div className="flex gap-2">
         <dt className="w-20 shrink-0 text-muted-foreground">collection</dt>
-        <dd className="min-w-0 flex-1 truncate">posts</dd>
+        <dd className="min-w-0 flex-1 truncate text-blue-600 dark:text-blue-400">posts</dd>
       </div>
       <div className="flex gap-2">
         <dt className="w-20 shrink-0 text-muted-foreground">name</dt>
-        <dd className="min-w-0 flex-1 truncate">Reading time</dd>
+        <dd className="min-w-0 flex-1 truncate text-emerald-600 dark:text-emerald-400">
+          Reading time
+        </dd>
       </div>
       <div className="flex gap-2">
         <dt className="w-20 shrink-0 text-muted-foreground">type</dt>
-        <dd className="min-w-0 flex-1 truncate">number</dd>
+        <dd className="min-w-0 flex-1 truncate text-amber-600 dark:text-amber-400">number</dd>
       </div>
     </dl>
     <div className="flex items-center gap-2 border-t border-border px-3 py-2">
@@ -60,7 +62,7 @@ function ApprovalCard() @{
 function AssistantChat() @{
   <div className="flex flex-1 flex-col">
     <div className="flex h-11 items-center gap-2 border-b border-border px-3">
-      <SparkleIcon weight="duotone" className="size-4 shrink-0 text-muted-foreground" />
+      <SparkleIcon weight="duotone" className="size-4 shrink-0 text-violet-600 dark:text-violet-400" />
       <p className="min-w-0 flex-1 truncate text-sm font-medium">Assistant</p>
       <XIcon className="size-4 shrink-0 text-muted-foreground" />
     </div>

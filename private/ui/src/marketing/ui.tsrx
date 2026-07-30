@@ -10,8 +10,8 @@ import { cn } from '../lib/utils';
 // Plain marketing primitives on the app's design tokens.
 
 export function Wordmark() @{
-  <span className="flex items-center gap-2 text-lg font-semibold">
-    <BrandMark className="size-6 shrink-0" />
+  <span className="flex items-center gap-2.5 text-lg font-semibold">
+    <BrandMark className="w-6 shrink-0" />
     {brand.name}
   </span>
 }
@@ -81,18 +81,6 @@ export function MarketingLink({ to, params, hash, href, className, children }: L
       </a>
     )}
   </>
-}
-
-/** Its own component because the TSRX parser (0.1.44) mis-lexes non-ASCII
- * JSX text inlined into a ternary branch or a `const`. */
-function ArrowGlyph() @{
-  <span aria-hidden="true">→</span>
-}
-
-export function ArrowLink({ to, params, href, className, children }: LinkTarget) @{
-  <MarketingLink to={to} params={params} href={href} className={cn('font-medium hover:underline', className)}>
-    {children} <ArrowGlyph />
-  </MarketingLink>
 }
 
 export function PostMeta({

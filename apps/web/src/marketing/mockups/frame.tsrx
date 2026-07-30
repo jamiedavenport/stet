@@ -1,5 +1,4 @@
 import type { ReactNode } from 'react';
-import { BrandMark } from '@repo/brand/mark';
 import { cn } from '@repo/ui/lib/utils';
 import {
   CaretUpDownIcon,
@@ -11,6 +10,8 @@ import {
   StackIcon,
 } from '@phosphor-icons/react';
 import type { Icon } from '@phosphor-icons/react';
+
+import { people } from '#/marketing/mockups/palette';
 
 // Every mockup on the marketing site is a reproduction rather than a
 // screenshot: same shell, same tokens, same components, so a restyle carries
@@ -54,16 +55,26 @@ function MockSidebarItem({ item, active }: { item: MockNavItem; active: boolean 
       active ? 'bg-sidebar-accent font-medium' : 'text-muted-foreground',
     )}
   >
-    <item.icon weight="duotone" className="size-4 shrink-0" />
+    <item.icon
+      weight="duotone"
+      className={cn('size-4 shrink-0', active ? 'text-blue-600 dark:text-blue-400' : undefined)}
+    />
     <span className="truncate">{item.label}</span>
   </div>
+}
+
+/** The tenant's own logo, which in the product is whatever they uploaded. */
+function MockOrgTile() @{
+  <span className="flex size-5 shrink-0 items-center justify-center rounded-md bg-linear-to-br from-teal-500 to-emerald-600 text-[0.625rem] font-semibold text-white">
+    A
+  </span>
 }
 
 /** The inset sidebar: org switcher, grouped navigation, account row. */
 function MockSidebar({ active }: { active: string }) @{
   <div className="flex w-52 shrink-0 flex-col gap-4 px-2 py-1 @max-2xl:hidden">
     <div className="flex h-9 items-center gap-2 rounded-md px-2">
-      <BrandMark className="size-5 shrink-0" />
+      <MockOrgTile />
       <span className="min-w-0 flex-1 truncate text-sm font-medium">Acme</span>
       <CaretUpDownIcon className="size-3.5 shrink-0 text-muted-foreground" />
     </div>
@@ -78,10 +89,17 @@ function MockSidebar({ active }: { active: string }) @{
       </div>
     }
     <div className="mt-auto flex h-9 items-center gap-2 rounded-md px-2">
-      <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-muted text-[0.625rem] font-medium">
-        RS
+      <span
+        className={cn(
+          'flex size-5 shrink-0 items-center justify-center rounded-full text-[0.625rem] font-medium',
+          people.rae.solid,
+        )}
+      >
+        {people.rae.initials}
       </span>
-      <span className="min-w-0 flex-1 truncate text-sm text-muted-foreground">Rae Suzuki</span>
+      <span className="min-w-0 flex-1 truncate text-sm text-muted-foreground">
+        {people.rae.name}
+      </span>
     </div>
   </div>
 }
@@ -94,24 +112,34 @@ function MockSidebar({ active }: { active: string }) @{
 export function MockShell({
   active = 'Posts',
   aside,
+  className,
   children,
 }: {
   /** Which sidebar item this screen belongs to. */
   active?: string;
   aside?: ReactNode;
+  /** Overrides the frame height where the default reads too letterboxed. */
+  className?: string;
   children: ReactNode;
 }) @{
   <div
     aria-hidden="true"
     className="@container overflow-hidden rounded-xl bg-sidebar p-2 ring-1 ring-foreground/10 select-none"
   >
-    <div className="flex min-h-96 gap-1">
+    <div className={cn('flex min-h-96 gap-1', className)}>
       <MockSidebar active={active} />
-      <div className="flex min-w-0 flex-1 flex-col overflow-hidden rounded-lg bg-background shadow-sm ring-1 ring-foreground/5 dark:shadow-none">
+      {/* An aside is the subject of the mockup it appears in, so a frame too
+          narrow for both drops the page behind it rather than the aside. */}
+      <div
+        className={cn(
+          'flex min-w-0 flex-1 flex-col overflow-hidden rounded-lg bg-background shadow-sm ring-1 ring-foreground/5 dark:shadow-none',
+          aside === undefined ? undefined : '@max-xl:hidden',
+        )}
+      >
         {children}
       </div>
       @if (aside !== undefined) {
-        <div className="ml-1 flex w-80 shrink-0 flex-col overflow-hidden rounded-lg bg-background shadow-sm ring-1 ring-foreground/5 @max-3xl:hidden dark:shadow-none">
+        <div className="flex w-80 shrink-0 flex-col overflow-hidden rounded-lg bg-background shadow-sm ring-1 ring-foreground/5 @max-xl:w-auto @max-xl:flex-1 @xl:ml-1 dark:shadow-none">
           {aside}
         </div>
       }

@@ -1,19 +1,6 @@
 import { cn } from '../lib/utils';
 import type { ReactNode } from 'react';
 
-// Divider padding follows a first/middle/last pattern so rows sit flush with
-// the section edges.
-
-function rowDividers(i: number, count: number) {
-  if (i === 0) {
-    return 'pb-5';
-  }
-  if (i === count - 1) {
-    return 'border-t border-border pt-5';
-  }
-  return 'border-t border-border py-5';
-}
-
 /** Section wrapper for the rail-and-body row lists on /blog and /changelog. */
 export function RailList({ children }: { children: ReactNode }) @{
   <section className="border-t border-border">
@@ -29,6 +16,11 @@ export function RailRow({ rail, children }: { rail: ReactNode; children: ReactNo
   </article>
 }
 
+/**
+ * Term-and-detail pairs, stacked in two columns. The same shape the argument
+ * bands use, rather than a ruled rail that leaves a third of the row empty
+ * and sets the answer in a narrow strip down the middle of the page.
+ */
 export function TermRows({
   rows,
   className,
@@ -36,16 +28,13 @@ export function TermRows({
   rows: { term: string; detail: ReactNode }[];
   className?: string;
 }) @{
-  <dl className={cn('text-sm/6', className)}>
-    @for (const row of rows; index i; key row.term) {
-      <div
-        className={cn(
-          'grid grid-cols-1 gap-y-2 sm:grid-cols-[18rem_1fr] sm:gap-x-8 sm:gap-y-0',
-          rowDividers(i, rows.length),
-        )}
-      >
-        <dt className="font-medium text-foreground">{row.term}</dt>
-        <dd className="max-w-[56ch] text-muted-foreground">{row.detail}</dd>
+  <dl className={cn('grid grid-cols-1 gap-x-8 gap-y-10 sm:grid-cols-2', className)}>
+    @for (const row of rows; key row.term) {
+      <div>
+        <dt className="text-lg font-medium text-balance">{row.term}</dt>
+        <dd className="mt-3 max-w-[56ch] text-base/7 text-pretty text-muted-foreground">
+          {row.detail}
+        </dd>
       </div>
     }
   </dl>

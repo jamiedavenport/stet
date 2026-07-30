@@ -1,11 +1,11 @@
 import { brand } from '@repo/brand';
 import { Button } from '@repo/ui/components/button';
-import { ArrowLink } from '@repo/ui/marketing/ui.tsrx';
 import { Link } from '@tanstack/react-router';
 
 // One filled button per page. A page marks its main action row `primary` and
 // every later row `secondary`, which keeps the outline button from competing
-// with the hero. The link-style second action is the same in both.
+// with the hero. The second action is a ghost button in both, so the pair
+// always reads as two buttons rather than a button and a stray link.
 
 type ActionsProps = {
   emphasis?: 'primary' | 'secondary';
@@ -18,7 +18,7 @@ type ActionsProps = {
  */
 export function MarketingActions({ emphasis = 'primary', className }: ActionsProps) @{
   <div className={className}>
-    <div className="flex flex-wrap items-center gap-x-6 gap-y-4">
+    <div className="flex flex-wrap items-center gap-3">
       <Button
         size="lg"
         nativeButton={false}
@@ -27,7 +27,14 @@ export function MarketingActions({ emphasis = 'primary', className }: ActionsPro
       >
         Get started
       </Button>
-      <ArrowLink href={brand.demo}>Book a demo</ArrowLink>
+      <Button
+        size="lg"
+        nativeButton={false}
+        variant="ghost"
+        render={<a href={brand.demo} target="_blank" rel="noreferrer" />}
+      >
+        Book a demo
+      </Button>
     </div>
   </div>
 }

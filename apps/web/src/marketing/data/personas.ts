@@ -1,6 +1,12 @@
 import type { FeatureSlug } from '#/marketing/data/features';
 
-export type PersonaSlug = 'marketing' | 'engineering' | 'agencies' | 'startups' | 'enterprise';
+export type PersonaSlug =
+  | 'marketing'
+  | 'engineering'
+  | 'publishers'
+  | 'agencies'
+  | 'startups'
+  | 'enterprise';
 
 /** Who Stet is for, one page each. */
 export type Persona = {
@@ -94,6 +100,42 @@ export const personas: Persona[] = [
       },
     ],
     features: ['code-generation', 'content', 'analytics'],
+  },
+  {
+    slug: 'publishers',
+    name: 'publishers',
+    nav: 'Publishers',
+    tagline: 'A room full of writers, and one place the work happens.',
+    title: 'A newsroom pace, without a newsroom of tools.',
+    lede: 'Editorial teams write more, together, and under more pressure than anyone else using a CMS. Drafting, editing, review and the numbers that follow all sit on the piece itself.',
+    points: [
+      {
+        term: 'Everyone in the same document',
+        detail:
+          'Live cursors in the body and in the table, so a writer and a sub-editor work on the same piece at once instead of passing versions back and forth.',
+      },
+      {
+        term: 'The edit is attached to the sentence',
+        detail:
+          'Comments hang off the words they are about. The note and the line it refers to cannot drift apart, which is what happens the moment feedback moves into chat.',
+      },
+      {
+        term: 'A desk you can see',
+        detail:
+          'A collection is a table, so the whole slate is one screen: what is written, what is waiting on a read, and who has it. Status is a field you define, not a workflow we imposed.',
+      },
+      {
+        term: 'Numbers on the piece',
+        detail:
+          'Every entry carries its own performance where it was written. No separate analytics tab, no consent banner between your readers and the story.',
+      },
+      {
+        term: 'AI as a sub, not a byline',
+        detail:
+          'Editorial suggestions arrive as marked changes to accept or reject, and anything that would alter the piece stops for a human first.',
+      },
+    ],
+    features: ['content', 'ai', 'analytics'],
   },
   {
     slug: 'agencies',

@@ -29,6 +29,8 @@ export type Rival = {
   slug: string;
   /** The product's own name, as it writes it. */
   name: string;
+  /** Their primary domain, which is how logo.dev is asked for their mark. */
+  domain: string;
   /** One line for the comparison index. */
   tagline: string;
   /** What the page opens with: where this product genuinely sits. */

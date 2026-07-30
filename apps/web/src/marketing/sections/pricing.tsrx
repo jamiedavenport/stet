@@ -53,10 +53,10 @@ function PlanCard({ plan }: { plan: Plan }) @{
       <p className="mt-6 text-4xl font-semibold tracking-tight tabular-nums">{plan.price}</p>
       <p className="mt-1 text-sm text-muted-foreground">{plan.unit}</p>
       <p className="mt-6 text-base/7 text-pretty text-muted-foreground">{plan.description}</p>
-      <ul role="list" className="mt-8 flex flex-col gap-3">
+      <ul role="list" className="mt-8 flex flex-col gap-2">
         @for (const line of plan.includes; key line) {
-          <li className="flex items-baseline gap-3 text-base/7">
-            <CheckIcon className="size-4 h-lh shrink-0 text-muted-foreground" />
+          <li className="flex items-start gap-3 text-base/7">
+            <CheckIcon weight="bold" className="size-4 h-lh shrink-0 text-foreground" />
             <span>{line}</span>
           </li>
         }

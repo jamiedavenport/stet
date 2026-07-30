@@ -1,4 +1,6 @@
-import { ArrowLink, DisplayHeading, Label, Lede } from '@repo/ui/marketing/ui.tsrx';
+import { Button } from '@repo/ui/components/button';
+import { DisplayHeading, Label, Lede } from '@repo/ui/marketing/ui.tsrx';
+import { Link } from '@tanstack/react-router';
 
 export function NotFound() @{
   <main className="flex min-h-dvh flex-col bg-background text-foreground antialiased">
@@ -8,9 +10,15 @@ export function NotFound() @{
         This page doesn&apos;t exist.
       </DisplayHeading>
       <Lede className="mt-6">The address may be wrong, or the page may have moved.</Lede>
-      <p className="mt-10 text-sm">
-        <ArrowLink to="/">Back to the home page</ArrowLink>
-      </p>
+      <Button
+        size="lg"
+        variant="outline"
+        nativeButton={false}
+        className="mt-10"
+        render={<Link to="/" />}
+      >
+        Back to the home page
+      </Button>
     </div>
   </main>
 }

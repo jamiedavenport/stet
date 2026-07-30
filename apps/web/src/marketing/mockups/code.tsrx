@@ -1,9 +1,10 @@
 import { cn } from '@repo/ui/lib/utils';
 
-// Code renders in the same monochrome as the rest of the interface: weight
-// and contrast carry the structure, so nothing here needs a syntax palette.
+// A listing on the marketing site is a picture of an editor, so it is
+// highlighted like one. The palette is the mockups' own and stops at this
+// file; the site's own chrome stays monochrome.
 
-export type CodeTone = 'plain' | 'muted' | 'strong';
+export type CodeTone = 'plain' | 'muted' | 'strong' | 'keyword' | 'string' | 'type' | 'call';
 
 export type CodeSegment = { text: string; tone?: CodeTone };
 
@@ -14,6 +15,10 @@ const toneClasses: Record<CodeTone, string> = {
   plain: 'text-foreground',
   muted: 'text-muted-foreground',
   strong: 'font-medium text-foreground',
+  keyword: 'text-violet-600 dark:text-violet-400',
+  string: 'text-emerald-600 dark:text-emerald-400',
+  type: 'text-amber-600 dark:text-amber-400',
+  call: 'text-blue-600 dark:text-blue-400',
 };
 
 function toneClass(tone: CodeTone | undefined): string {

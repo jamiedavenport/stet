@@ -1,16 +1,26 @@
 import { useState } from 'react';
 import { brand } from '@repo/brand';
+import { CaretDownIcon } from '@phosphor-icons/react';
 import { Link } from '@tanstack/react-router';
 import type { LinkProps } from '@tanstack/react-router';
 
 import { Button } from '../components/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '../components/dropdown-menu';
 import { Wordmark } from './ui.tsrx';
+import type { MarketingNavLink } from './nav';
 
-type PageLink = { label: string; to: LinkProps['to']; hash?: string };
+/** The two lists the header opens onto, which the app owns rather than us. */
+type MenuLists = { features: MarketingNavLink[]; personas: MarketingNavLink[] };
+
+type PageLink = { label: string; to: LinkProps['to'] };
 
 const pageLinks: PageLink[] = [
-  { label: 'Features', to: '/features' },
-  { label: 'Who it is for', to: '/for' },
   { label: 'Pricing', to: '/pricing' },
   { label: 'Compare', to: '/compare' },
   { label: 'Blog', to: '/blog' },
@@ -18,12 +28,6 @@ const pageLinks: PageLink[] = [
 
 const navLink = 'text-muted-foreground hover:text-foreground';
 const activeLink = { className: 'text-foreground' };
-
-// A hash link's `to` stays active across the whole landing page, so active
-// styling would never switch off.
-function activeProps(link: PageLink) {
-  return link.hash ? undefined : activeLink;
-}
 
 function DocsLink({ className }: { className: string }) @{
   <a href={brand.docs} target="_blank" rel="noreferrer" className={className}>
@@ -42,10 +46,50 @@ function MenuIcon({ open }: { open: boolean }) @{
   </svg>
 }
 
-function DesktopNav() @{
+// The features and the personas are the product, so the header opens onto
+// them rather than making each index page a toll gate on the way.
+function NavMenu({
+  label,
+  indexLabel,
+  indexTo,
+  items,
+}: {
+  label: string;
+  indexLabel: string;
+  indexTo: LinkProps['to'];
+  items: MarketingNavLink[];
+}) @{
+  <DropdownMenu>
+    <DropdownMenuTrigger
+      className={`flex items-center gap-1 outline-none data-popup-open:text-foreground ${navLink}`}
+    >
+      {label}
+      <CaretDownIcon className="size-3 shrink-0" />
+    </DropdownMenuTrigger>
+    <DropdownMenuContent align="start" sideOffset={16} className="w-80">
+      @for (const item of items; key item.label) {
+        <DropdownMenuItem
+          className="flex-col items-start gap-0.5 px-3 py-2.5"
+          render={<Link to={item.to} params={item.params} />}
+        >
+          <p className="font-medium text-foreground">{item.label}</p>
+          <p className="text-sm text-pretty text-muted-foreground">{item.description}</p>
+        </DropdownMenuItem>
+      }
+      <DropdownMenuSeparator />
+      <DropdownMenuItem className="px-3 py-2" render={<Link to={indexTo} />}>
+        {indexLabel}
+      </DropdownMenuItem>
+    </DropdownMenuContent>
+  </DropdownMenu>
+}
+
+function DesktopNav({ features, personas }: MenuLists) @{
   <nav className="hidden items-center gap-6 text-sm lg:flex">
+    <NavMenu label="Features" indexLabel="All features" indexTo="/features" items={features} />
+    <NavMenu label="Who it is for" indexLabel="Everyone it is for" indexTo="/for" items={personas} />
     @for (const link of pageLinks; key link.to) {
-      <Link to={link.to} hash={link.hash} className={navLink} activeProps={activeProps(link)}>
+      <Link to={link.to} className={navLink} activeProps={activeLink}>
         {link.label}
       </Link>
     }
@@ -55,11 +99,42 @@ function DesktopNav() @{
 
 const mobileLink = 'block py-2 text-muted-foreground hover:text-foreground';
 
-function MobileMenu({ onNavigate }: { onNavigate: () => void }) @{
+function MobileGroup({
+  label,
+  to,
+  items,
+  onNavigate,
+}: {
+  label: string;
+  to: LinkProps['to'];
+  items: MarketingNavLink[];
+  onNavigate: () => void;
+}) @{
+  <div>
+    <Link to={to} onClick={onNavigate} className={mobileLink}>
+      {label}
+    </Link>
+    <div className="border-l border-border pl-4">
+      @for (const item of items; key item.label) {
+        <Link to={item.to} params={item.params} onClick={onNavigate} className={mobileLink}>
+          {item.label}
+        </Link>
+      }
+    </div>
+  </div>
+}
+
+function MobileMenu({
+  features,
+  personas,
+  onNavigate,
+}: MenuLists & { onNavigate: () => void }) @{
   <nav id="mobile-menu" className="border-t border-border lg:hidden">
-    <div className="mx-auto max-w-7xl px-6 py-4 text-sm">
+    <div className="mx-auto max-w-7xl px-6 py-4 text-base sm:text-sm">
+      <MobileGroup label="Features" to="/features" items={features} onNavigate={onNavigate} />
+      <MobileGroup label="Who it is for" to="/for" items={personas} onNavigate={onNavigate} />
       @for (const link of pageLinks; key link.to) {
-        <Link to={link.to} hash={link.hash} onClick={onNavigate} className={mobileLink}>
+        <Link to={link.to} onClick={onNavigate} className={mobileLink}>
           {link.label}
         </Link>
       }
@@ -68,7 +143,7 @@ function MobileMenu({ onNavigate }: { onNavigate: () => void }) @{
   </nav>
 }
 
-export function MarketingHeader({ signedIn }: { signedIn: boolean }) @{
+export function MarketingHeader({ signedIn, features, personas }: MenuLists & { signedIn: boolean }) @{
   const [open, setOpen] = useState(false);
   const cta = signedIn
     ? { label: "Dashboard", to: '/app' as const }
@@ -80,7 +155,7 @@ export function MarketingHeader({ signedIn }: { signedIn: boolean }) @{
         <Wordmark />
       </Link>
       <div className="flex items-center gap-6">
-        <DesktopNav />
+        <DesktopNav features={features} personas={personas} />
         <Button size="sm" nativeButton={false} render={<Link to={cta.to} />}>
           {cta.label}
         </Button>
@@ -97,7 +172,7 @@ export function MarketingHeader({ signedIn }: { signedIn: boolean }) @{
       </div>
     </div>
     @if (open) {
-      <MobileMenu onNavigate={() => setOpen(false)} />
+      <MobileMenu features={features} personas={personas} onNavigate={() => setOpen(false)} />
     }
   </header>
 }

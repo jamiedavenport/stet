@@ -1,9 +1,9 @@
 import { brand } from '@repo/brand';
-import { createFileRoute } from '@tanstack/react-router';
+import { Link, createFileRoute } from '@tanstack/react-router';
 
+import { Button } from '@repo/ui/components/button';
 import { TermRows } from '@repo/ui/marketing/lists.tsrx';
 import { PageIntro } from '@repo/ui/marketing/section.tsrx';
-import { ArrowLink } from '@repo/ui/marketing/ui.tsrx';
 import { pricingFaqs } from '#/marketing/data/pricing';
 import { Band } from '#/marketing/sections/bands.tsrx';
 import { PricingPlans } from '#/marketing/sections/pricing.tsrx';
@@ -40,9 +40,9 @@ function PricingPage() {
         title="Still weighing it up?"
         lede="The comparison pages put Stet next to whatever you are using now, and say what that product does better."
       >
-        <p className="text-base">
-          <ArrowLink to="/compare">Compare with your current CMS</ArrowLink>
-        </p>
+        <Button size="lg" variant="outline" nativeButton={false} render={<Link to="/compare" />}>
+          Compare with your current CMS
+        </Button>
       </Band>
     </>
   );

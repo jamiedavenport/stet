@@ -5,6 +5,7 @@ export const openRivals: Rival[] = [
   {
     slug: 'wordpress',
     name: 'WordPress',
+    domain: 'wordpress.org',
     tagline: 'The incumbent. Everyone can use it; nothing is typed.',
     summary:
       'WordPress runs a large share of the web for good reasons: content teams already know it, and there is a plugin for nearly everything. Used headlessly it shows its age. Custom fields usually arrive through a plugin, the REST API is untyped, and a change to a field is discovered by a reader rather than by a compiler.',
@@ -27,6 +28,7 @@ export const openRivals: Rival[] = [
   {
     slug: 'payload',
     name: 'Payload',
+    domain: 'payloadcms.com',
     tagline: 'A code-first CMS that lives inside your Next.js app.',
     summary:
       'Payload is the best code-first CMS available, and its type generation is excellent. Collections and fields are a TypeScript config in your repository, which is exactly right when engineering owns the model, and exactly the constraint Stet exists to remove. A marketer who wants one more field still needs a commit and a deploy.',
@@ -48,6 +50,7 @@ export const openRivals: Rival[] = [
   {
     slug: 'strapi',
     name: 'Strapi',
+    domain: 'strapi.io',
     tagline: 'Open source, UI modelling, deploys to change the schema.',
     summary:
       'Strapi is the best known open source headless CMS, and its content-type builder does put modelling in the UI. The catch is where that model lives: the builder writes schema files to disk, so it is a development-time tool. In production the model is part of the deployment, and consuming apps are left to describe the API themselves.',
@@ -70,6 +73,7 @@ export const openRivals: Rival[] = [
   {
     slug: 'directus',
     name: 'Directus',
+    domain: 'directus.io',
     tagline: 'A data platform wrapped around your own SQL database.',
     summary:
       'Directus is not really a competitor so much as a different category: it points at an existing SQL database and gives you an API and an admin over it. That is a genuinely good answer when the data already exists and the database is the source of truth. It is a heavier answer when what you want is somewhere to write a blog.',

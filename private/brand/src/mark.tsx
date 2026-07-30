@@ -2,8 +2,13 @@
 // The pragma pins the JSX runtime for the OG pipeline, whose tsx invocation
 // compiles this file without reading this package's tsconfig.
 
-// Placeholder mark: the proofreader's stet — a line of text with dots
-// beneath it, "let it stand".
+// The mark is the four dots the logo sets under the wordmark: the
+// proofreader's stet, "let it stand".
+
+/** The artwork is a wide strip, so a caller sizing by width gets the height. */
+const ASPECT = 50 / 260;
+
+const dots = [25, 95, 165, 235];
 
 // `size` sets explicit dimensions for renderers with no CSS layout (satori
 // in the OG pipeline); web consumers size through `className` instead.
@@ -15,15 +20,21 @@ export function BrandMark({
   color = 'currentColor',
 }: {
   className?: string;
+  /** Width in pixels. The height follows from the artwork. */
   size?: number;
   color?: string;
 }) {
   return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" className={className} width={size} height={size}>
-      <rect x="3.5" y="7.5" width="17" height="3" rx="1.5" fill={color} />
-      <circle cx="6.5" cy="16" r="1.6" fill={color} />
-      <circle cx="12" cy="16" r="1.6" fill={color} />
-      <circle cx="17.5" cy="16" r="1.6" fill={color} />
+    <svg
+      viewBox="0 0 260 50"
+      aria-hidden="true"
+      className={className}
+      width={size}
+      height={size === undefined ? undefined : Math.round(size * ASPECT)}
+    >
+      {dots.map((cx) => (
+        <circle key={cx} cx={cx} cy="25" r="25" fill={color} />
+      ))}
     </svg>
   );
 }

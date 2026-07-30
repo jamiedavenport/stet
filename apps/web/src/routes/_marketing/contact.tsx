@@ -2,8 +2,8 @@ import { brand } from '@repo/brand';
 import { createFileRoute } from '@tanstack/react-router';
 
 import { TermRows } from '@repo/ui/marketing/lists.tsrx';
+import { Button } from '@repo/ui/components/button';
 import { PageIntro } from '@repo/ui/marketing/section.tsrx';
-import { ArrowLink } from '@repo/ui/marketing/ui.tsrx';
 import { seo } from '#/marketing/seo';
 
 export const Route = createFileRoute('/_marketing/contact')({
@@ -51,9 +51,15 @@ function ContactPage() {
             </a>
           </p>
           <TermRows rows={reasons()} className="mt-12" />
-          <p className="mt-10 text-sm">
-            <ArrowLink href={brand.author.url}>{'More about JXD'}</ArrowLink>
-          </p>
+          <Button
+            size="lg"
+            variant="outline"
+            nativeButton={false}
+            className="mt-10"
+            render={<a href={brand.author.url} target="_blank" rel="noreferrer" />}
+          >
+            {'More about JXD'}
+          </Button>
         </div>
       </section>
     </>

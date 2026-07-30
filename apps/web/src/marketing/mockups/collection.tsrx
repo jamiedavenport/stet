@@ -2,54 +2,76 @@ import { cn } from '@repo/ui/lib/utils';
 import { PlusIcon } from '@phosphor-icons/react';
 
 import { MockCrumbs, MockShell, MockTypeHeader } from '#/marketing/mockups/frame.tsrx';
+import { people, statuses } from '#/marketing/mockups/palette';
+import type { Person, Status } from '#/marketing/mockups/palette';
 
 // The collection page: rows are entries, columns are the fields marketing
 // added. Two seats are in the room, so one cell carries someone else's caret.
 
 type Row = {
   title: string;
-  status: { label: string; tone: string };
-  author: { name: string; initials: string };
+  status: Status;
+  author: Person;
   published: string;
   /** The editor whose caret sits in this row's title, if any. */
-  heldBy?: string;
+  heldBy?: Person;
 };
-
-const draft = { label: 'Draft', tone: 'bg-muted text-muted-foreground' };
-const review = { label: 'In review', tone: 'bg-yellow-500/15 text-yellow-700 dark:text-yellow-300' };
-const live = { label: 'Live', tone: 'bg-green-500/15 text-green-700 dark:text-green-300' };
 
 const rows: Row[] = [
   {
     title: 'Both teams at full speed',
-    status: live,
-    author: { name: 'Rae Suzuki', initials: 'RS' },
+    status: statuses.live,
+    author: people.rae,
     published: '12 Jun 2026',
   },
   {
     title: 'Modelling content without a ticket',
-    status: live,
-    author: { name: 'Ade Okonjo', initials: 'AO' },
+    status: statuses.live,
+    author: people.ade,
     published: '28 May 2026',
   },
   {
     title: 'What a typed client buys you',
-    status: review,
-    author: { name: 'Rae Suzuki', initials: 'RS' },
+    status: statuses.review,
+    author: people.rae,
     published: '—',
-    heldBy: 'Ade',
+    heldBy: people.ade,
   },
   {
     title: 'Analytics that sit next to the words',
-    status: draft,
-    author: { name: 'Mira Halvorsen', initials: 'MH' },
+    status: statuses.draft,
+    author: people.mira,
+    published: '—',
+  },
+  {
+    title: 'Cookieless, and still worth reading',
+    status: statuses.scheduled,
+    author: people.mira,
+    published: '04 Aug 2026',
+  },
+  {
+    title: 'Deprecations instead of red builds',
+    status: statuses.live,
+    author: people.ade,
+    published: '19 May 2026',
+  },
+  {
+    title: 'What we mean by owning the model',
+    status: statuses.review,
+    author: people.mira,
+    published: '—',
+  },
+  {
+    title: 'A field is a column, and nothing more',
+    status: statuses.draft,
+    author: people.rae,
     published: '—',
   },
 ];
 
 const columns = ['Title', 'Status', 'Author', 'Published'];
 
-function StatusChip({ status }: { status: { label: string; tone: string } }) @{
+function StatusChip({ status }: { status: Status }) @{
   <span
     className={cn(
       'inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium',
@@ -60,23 +82,36 @@ function StatusChip({ status }: { status: { label: string; tone: string } }) @{
   </span>
 }
 
-function PersonCell({ person }: { person: { name: string; initials: string } }) @{
+function PersonCell({ person }: { person: Person }) @{
   <span className="flex items-center gap-2">
-    <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-muted text-[0.625rem] font-medium">
+    <span
+      className={cn(
+        'flex size-5 shrink-0 items-center justify-center rounded-full text-[0.625rem] font-medium',
+        person.solid,
+      )}
+    >
       {person.initials}
     </span>
     <span className="truncate">{person.name}</span>
   </span>
 }
 
-/** A second editor's caret, drawn on the cell they have open. */
-function HeldCell({ title, by }: { title: string; by: string }) @{
+// The name flag hangs off the top-left of the outline rather than the
+// top-right, because a caret is read from where it starts and the right edge
+// of a truncated title moves with the column.
+function HeldCell({ title, by }: { title: string; by: Person }) @{
   <span className="relative flex items-center">
-    <span className="absolute -inset-x-2 -inset-y-2 rounded-md ring-2 ring-chart-1" />
-    <span className="relative truncate">{title}</span>
-    <span className="absolute -top-4.5 -right-2 rounded-sm bg-chart-1 px-1 py-0.5 text-[0.625rem] font-medium text-white">
-      {by}
+    <span className={cn('absolute -inset-x-2 -inset-y-1.5 rounded-md ring-2', by.ring)}>
+      <span
+        className={cn(
+          'absolute bottom-full left-0 mb-1 rounded-sm px-1 py-0.5 text-[0.625rem] font-medium',
+          by.solid,
+        )}
+      >
+        {by.short}
+      </span>
     </span>
+    <span className={cn('relative truncate rounded-xs font-medium', by.wash)}>{title}</span>
   </span>
 }
 
@@ -96,7 +131,9 @@ export function CollectionMockup() @{
               <th
                 className={cn(
                   'h-10 text-left align-middle font-medium text-muted-foreground whitespace-nowrap',
-                  i === 0 ? 'pl-6' : 'px-2',
+                  // Titles are the reason to look at the table, so the column
+                  // takes the slack rather than splitting it four ways.
+                  i === 0 ? 'w-1/2 pl-6' : 'px-2',
                   i > 1 ? '@max-xl:hidden' : undefined,
                 )}
               >

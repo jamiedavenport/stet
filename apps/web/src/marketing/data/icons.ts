@@ -4,6 +4,7 @@ import {
   ChartBarIcon,
   CodeIcon,
   MegaphoneIcon,
+  NewspaperIcon,
   RocketLaunchIcon,
   ShapesIcon,
   SparkleIcon,
@@ -27,6 +28,7 @@ export const featureIcons: Record<FeatureSlug, Icon> = {
 export const personaIcons: Record<PersonaSlug, Icon> = {
   marketing: MegaphoneIcon,
   engineering: CodeIcon,
+  publishers: NewspaperIcon,
   agencies: BuildingsIcon,
   startups: RocketLaunchIcon,
   enterprise: BuildingOfficeIcon,

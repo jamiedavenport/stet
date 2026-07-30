@@ -1,15 +1,37 @@
 import type { CSSProperties } from 'react';
 import { cn } from '@repo/ui/lib/utils';
+import { TrendUpIcon } from '@phosphor-icons/react';
 
 import { MockCrumbs, MockShell } from '#/marketing/mockups/frame.tsrx';
+import { rampColor } from '#/marketing/mockups/palette';
 
 // The analytics page, drawn from the same card, bar and range-picker parts
-// the product uses. Only one hue is in play, and only where data lives.
+// the product uses.
 
-const stats = [
-  { label: 'Visitors', value: '18,204', hint: 'Distinct readers, counted per day' },
-  { label: 'Views', value: '42,981', hint: 'Pages opened' },
-  { label: 'Events', value: '96,330', hint: 'Everything recorded' },
+type Stat = { label: string; value: string; hint: string; delta: string; tone: string };
+
+const stats: Stat[] = [
+  {
+    label: 'Visitors',
+    value: '18,204',
+    hint: 'Distinct readers, counted per day',
+    delta: '12%',
+    tone: 'text-emerald-600 dark:text-emerald-400',
+  },
+  {
+    label: 'Views',
+    value: '42,981',
+    hint: 'Pages opened',
+    delta: '8%',
+    tone: 'text-emerald-600 dark:text-emerald-400',
+  },
+  {
+    label: 'Events',
+    value: '96,330',
+    hint: 'Everything recorded',
+    delta: '21%',
+    tone: 'text-emerald-600 dark:text-emerald-400',
+  },
 ];
 
 const series = [38, 52, 44, 61, 57, 72, 66, 81, 74, 92, 86, 78, 95, 88];
@@ -24,21 +46,29 @@ const pages = [
 
 const ranges = ['24h', '7d', '30d', '12m'];
 
-function StatCard({ stat }: { stat: { label: string; value: string; hint: string } }) @{
+function StatCard({ stat }: { stat: Stat }) @{
   <div className="flex flex-col gap-1 rounded-xl bg-card p-4 ring-1 ring-foreground/10">
     <p className="truncate text-sm text-muted-foreground">{stat.label}</p>
-    <p className="text-2xl font-semibold tracking-tight tabular-nums">{stat.value}</p>
+    <div className="flex items-baseline gap-2">
+      <p className="text-2xl font-semibold tracking-tight tabular-nums">{stat.value}</p>
+      <p className={cn('flex items-center gap-0.5 text-xs font-medium tabular-nums', stat.tone)}>
+        <TrendUpIcon weight="bold" className="size-3 h-lh shrink-0" />
+        {stat.delta}
+      </p>
+    </div>
     <p className="truncate text-xs text-muted-foreground">{stat.hint}</p>
   </div>
 }
 
-/** Views over time, as bars whose height is the only variable. */
+/** Views over time. The ramp is decoration: height is the only variable. */
 function TrafficChart() @{
   <div className="flex h-40 items-end gap-1.5">
     @for (const point of series; index i; key i) {
       <div
-        className="h-(--bar) min-w-0 flex-1 rounded-t-sm bg-chart-1/80"
-        style={{ '--bar': `${point}%` } as CSSProperties}
+        className="h-(--bar) min-w-0 flex-1 rounded-t-sm bg-(--fill)"
+        style={
+          { '--bar': `${point}%`, '--fill': rampColor(i, series.length) } as CSSProperties
+        }
       />
     }
   </div>
@@ -50,11 +80,16 @@ function Breakdown() @{
   <div className="flex flex-col gap-3 rounded-xl bg-card p-4 ring-1 ring-foreground/10">
     <p className="text-sm font-medium">Top pages</p>
     <ul role="list" className="flex flex-col gap-0.5">
-      @for (const page of pages; key page.key) {
+      @for (const page of pages; index i; key page.key) {
         <li className="relative flex items-center justify-between gap-4 rounded-sm px-2 py-1.5 text-sm">
           <span
-            className="absolute inset-y-0 left-0 w-(--share) rounded-sm bg-chart-1/12"
-            style={{ '--share': `${(page.count / largest) * 100}%` } as CSSProperties}
+            className="absolute inset-y-0 left-0 w-(--share) rounded-sm bg-(--fill) opacity-15"
+            style={
+              {
+                '--share': `${(page.count / largest) * 100}%`,
+                '--fill': rampColor(i, pages.length),
+              } as CSSProperties
+            }
           />
           <span className="relative truncate">{page.key}</span>
           <span className="relative shrink-0 font-mono text-xs tabular-nums text-muted-foreground">

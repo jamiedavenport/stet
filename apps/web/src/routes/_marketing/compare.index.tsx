@@ -4,9 +4,8 @@ import { createFileRoute } from '@tanstack/react-router';
 import { PageIntro } from '@repo/ui/marketing/section.tsrx';
 import { TermRows } from '@repo/ui/marketing/lists.tsrx';
 import { researchedOn } from '#/marketing/data/compare';
-import { rivals } from '#/marketing/data/rivals';
 import { Band, MarketingCta } from '#/marketing/sections/bands.tsrx';
-import { LinkCards } from '#/marketing/sections/cards.tsrx';
+import { RivalCards } from '#/marketing/sections/cards.tsrx';
 import { seo } from '#/marketing/seo';
 
 export const Route = createFileRoute('/_marketing/compare/')({
@@ -14,7 +13,7 @@ export const Route = createFileRoute('/_marketing/compare/')({
     seo({
       title: `Compare · ${brand.name}`,
       description:
-        'Stet against WordPress, Sanity, Contentful, Payload, Storyblok, Strapi, Prismic and Directus, with the same seven questions asked of each.',
+        'Stet against WordPress, Sanity, Contentful, Payload, Storyblok, Webflow, Strapi, Prismic and Directus, with the same seven questions asked of each.',
       path: '/compare',
     }),
   component: CompareIndexPage,
@@ -42,16 +41,6 @@ const method = [
   },
 ];
 
-function rivalCards() {
-  return rivals.map((rival) => ({
-    key: rival.slug,
-    to: '/compare/$rival' as const,
-    params: { rival: rival.slug },
-    title: `Stet vs ${rival.name}`,
-    description: rival.tagline,
-  }));
-}
-
 function CompareIndexPage() {
   return (
     <>
@@ -60,8 +49,8 @@ function CompareIndexPage() {
         title="How Stet differs, without the straw men."
         lede="Most of these products are good. They mostly make one team wait for the other, which is the specific thing Stet is built not to do."
       />
-      <Band title="Eight comparisons.">
-        <LinkCards items={rivalCards()} />
+      <Band title="Nine comparisons.">
+        <RivalCards />
       </Band>
       <Band
         title="How these pages are written."

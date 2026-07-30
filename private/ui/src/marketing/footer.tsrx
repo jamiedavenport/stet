@@ -3,15 +3,15 @@ import type { LinkProps } from '@tanstack/react-router';
 import type { ReactNode } from 'react';
 
 import { MarketingLink, Wordmark } from './ui.tsrx';
+import type { MarketingNavLink } from './nav';
 
-const footerLink = 'text-muted-foreground hover:text-foreground';
+const footerLink = 'font-normal text-muted-foreground hover:text-foreground';
 
 type FooterLink = {
   label: string;
   to?: LinkProps['to'];
   params?: LinkProps['params'];
   href?: string;
-  hash?: string;
 };
 
 const columns: { title: string; links: FooterLink[] }[] = [
@@ -30,6 +30,7 @@ const columns: { title: string; links: FooterLink[] }[] = [
     links: [
       { label: 'Marketing teams', to: '/for/$persona', params: { persona: 'marketing' } },
       { label: 'Engineers', to: '/for/$persona', params: { persona: 'engineering' } },
+      { label: 'Publishers', to: '/for/$persona', params: { persona: 'publishers' } },
       { label: 'Agencies', to: '/for/$persona', params: { persona: 'agencies' } },
       { label: 'Startups', to: '/for/$persona', params: { persona: 'startups' } },
       { label: 'Enterprise', to: '/for/$persona', params: { persona: 'enterprise' } },
@@ -63,40 +64,54 @@ function FooterColumn({ title, children }: { title: string; children: ReactNode 
   </div>
 }
 
-export function MarketingFooter() @{
+/**
+ * Every comparison is listed rather than hidden behind the index: these are
+ * the searches people arrive on, and one of them is why they are here.
+ */
+export function MarketingFooter({ comparisons }: { comparisons: MarketingNavLink[] }) @{
   <footer className="border-t border-border">
     <div className="mx-auto max-w-7xl px-6 py-16 lg:px-8">
-      <div className="grid grid-cols-1 gap-x-8 gap-y-12 lg:grid-cols-2">
-        <div>
-          <Wordmark />
-          <p className="mt-3 max-w-[36ch] text-sm text-muted-foreground">
-            {`${brand.description}. Marketing owns the model, engineering gets a typed contract, and nothing breaks between them.`}
-          </p>
-          <p className="mt-6 text-sm">
-            <a href={`mailto:${brand.email}`} className="font-medium hover:underline">
-              {brand.email}
-            </a>
-          </p>
-        </div>
-        <div className="grid grid-cols-2 gap-8 sm:grid-cols-4">
-          @for (const column of columns; key column.title) {
-            <FooterColumn title={column.title}>
-              @for (const link of column.links; key link.label) {
-                <li>
-                  <MarketingLink
-                    to={link.to}
-                    params={link.params}
-                    hash={link.hash}
-                    href={link.href}
-                    className={footerLink}
-                  >
-                    {link.label}
-                  </MarketingLink>
-                </li>
-              }
-            </FooterColumn>
+      <div>
+        <Wordmark />
+        <p className="mt-3 max-w-[52ch] text-sm text-muted-foreground">
+          {`${brand.description}. Marketing owns the model, engineering gets a typed contract, and nothing breaks between them. Open source, and yours to run.`}
+        </p>
+        <p className="mt-6 text-sm">
+          <a href={`mailto:${brand.email}`} className="font-medium hover:underline">
+            {brand.email}
+          </a>
+        </p>
+      </div>
+      <div className="mt-14 grid grid-cols-2 gap-x-8 gap-y-12 sm:grid-cols-3 lg:grid-cols-5">
+        @for (const column of columns; key column.title) {
+          <FooterColumn title={column.title}>
+            @for (const link of column.links; key link.label) {
+              <li>
+                <MarketingLink
+                  to={link.to}
+                  params={link.params}
+                  href={link.href}
+                  className={footerLink}
+                >
+                  {link.label}
+                </MarketingLink>
+              </li>
+            }
+          </FooterColumn>
+        }
+        <FooterColumn title="Compare">
+          @for (const comparison of comparisons; key comparison.label) {
+            <li>
+              <MarketingLink
+                to={comparison.to}
+                params={comparison.params}
+                className={footerLink}
+              >
+                {comparison.label}
+              </MarketingLink>
+            </li>
           }
-        </div>
+        </FooterColumn>
       </div>
       <div className="mt-14 flex flex-wrap items-center justify-between gap-4 border-t border-border pt-8 text-sm text-muted-foreground">
         <p>{`© ${new Date().getFullYear()} JXD Ltd`}</p>

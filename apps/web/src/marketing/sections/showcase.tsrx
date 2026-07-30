@@ -1,4 +1,4 @@
-import { ArrowLink } from '@repo/ui/marketing/ui.tsrx';
+import { Button } from '@repo/ui/components/button';
 
 import type { Showcase as ShowcaseData } from '#/marketing/mockups';
 
@@ -14,9 +14,15 @@ export function Showcase({ showcase }: { showcase: ShowcaseData }) @{
         {showcase.caption}
       </p>
       @if (showcase.link !== undefined) {
-        <p className="mt-4 text-base">
-          <ArrowLink href={showcase.link.href}>{showcase.link.label}</ArrowLink>
-        </p>
+        <Button
+          size="lg"
+          variant="outline"
+          nativeButton={false}
+          className="mt-8"
+          render={<a href={showcase.link.href} target="_blank" rel="noreferrer" />}
+        >
+          {showcase.link.label}
+        </Button>
       }
     </div>
   </section>

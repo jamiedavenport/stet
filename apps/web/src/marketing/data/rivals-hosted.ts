@@ -5,6 +5,7 @@ export const hostedRivals: Rival[] = [
   {
     slug: 'sanity',
     name: 'Sanity',
+    domain: 'sanity.io',
     tagline: 'Structured content with the schema in your repository.',
     summary:
       'Sanity is the strongest of the developer-first platforms. Content is genuinely structured, the query language is powerful, and the Studio is a real application you can extend. The trade is that the schema is a TypeScript file in a repository, so the content model belongs to whoever can open a pull request.',
@@ -27,6 +28,7 @@ export const hostedRivals: Rival[] = [
   {
     slug: 'contentful',
     name: 'Contentful',
+    domain: 'contentful.com',
     tagline: 'The enterprise headless CMS, priced accordingly.',
     summary:
       'Contentful is the default choice for large organisations, and it earns that with governance, environments and a mature ecosystem. Modelling does happen in the UI, which is the right instinct. What is missing is the other half: nothing generates a typed client for you, and nothing protects your build when a field goes away.',
@@ -48,6 +50,7 @@ export const hostedRivals: Rival[] = [
   {
     slug: 'storyblok',
     name: 'Storyblok',
+    domain: 'storyblok.com',
     tagline: 'A visual editor over your own rendered pages.',
     summary:
       'Storyblok is the most editor-friendly product in this list. Its visual editor renders your real front end in an iframe and lets marketers click the thing they want to change, which is a genuinely good experience. It also means Storyblok has an opinion about how your app is built, and the cost climbs with seats and traffic.',
@@ -67,8 +70,31 @@ export const hostedRivals: Rival[] = [
       'Pick Storyblok if visual, in-page editing is the requirement your content team will judge the project on. Stet deliberately does not build that: rendering belongs to your app.',
   },
   {
+    slug: 'webflow',
+    name: 'Webflow',
+    domain: 'webflow.com',
+    tagline: 'Design, host and edit in one place, if you build it there.',
+    summary:
+      'Webflow is the tool a marketing team asks for by name, and for a site it designs and hosts itself it is very good. It is also a different shape of product: the CMS is attached to a site Webflow renders. Take the content headless and the typed contract engineering wanted is not there, and the design tool most of the price pays for is doing nothing.',
+    strength:
+      'Nothing else lets a marketing team design, populate and publish a site without engineering at all. The visual editor and the hosting are the product, and both are excellent.',
+    theirs: {
+      modelling: 'Marketing, in the UI. CMS collections and fields are configured visually.',
+      types: 'None generated. The CMS API is untyped, so applications describe it themselves.',
+      change: 'No deprecation path. A removed field breaks whatever was reading it.',
+      analytics: 'Basic site analytics, with most teams adding a third-party script and a banner.',
+      ai: 'AI features inside the Designer, aimed at building pages rather than editing content.',
+      hosting: 'Hosted only, and it hosts the site itself. Not open source.',
+      pricing:
+        'Site plans and workspace seats are billed separately, with CMS item and API request caps per tier.',
+    },
+    pickThem:
+      'Pick Webflow if the site itself should be designed and hosted in the same tool as the content, and no separate application is reading it. Stet deliberately does neither: rendering and hosting stay yours.',
+  },
+  {
     slug: 'prismic',
     name: 'Prismic',
+    domain: 'prismic.io',
     tagline: 'Page building from slices, priced per repository.',
     summary:
       'Prismic splits the difference: types can be defined in the UI or through Slice Machine in your repository, and marketers assemble pages from the slices developers build. Pricing is per repository rather than per person, which suits a single large site and suits a portfolio of small ones much less.',
