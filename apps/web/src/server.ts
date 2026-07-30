@@ -24,6 +24,7 @@ import { env } from 'cloudflare:workers';
 import { getServerByName } from 'partyserver';
 
 import { auth } from '#/auth-server';
+import { redirectToCanonicalHost } from '#/canonical-host';
 import { sentryOptions } from '#/observability';
 import { enforceAuthRateLimit, withSecurityHeaders } from '#/security';
 
@@ -96,6 +97,12 @@ export default Sentry.withSentry(sentryOptions, {
   // pass through (the entry reads bindings from `cloudflare:workers` instead).
   fetch: (request: Request, _env: unknown, ctx: ExecutionContext) => {
     const url = new URL(request.url);
+    // Ahead of every other handler: nothing below should ever run for a host
+    // the app does not serve from.
+    const canonical = redirectToCanonicalHost(request, url);
+    if (canonical !== null) {
+      return withSecurityHeaders(canonical);
+    }
     // OAuth discovery for MCP clients, which expect these at the root.
     if (url.pathname === '/.well-known/oauth-authorization-server') {
       return oAuthDiscoveryMetadata(auth)(request);

@@ -4,6 +4,15 @@ The whole app deploys as one Cloudflare Worker, `stet-web`, configured in `apps/
 
 ## One-time setup
 
+### Domains
+
+`stet-web` serves `stetcms.com` and answers on `www.stetcms.com`, which it
+redirects to the apex (`apps/web/src/canonical-host.ts`); `stet-docs` serves
+`docs.stetcms.com`. All three are `custom_domain` routes, so `wrangler deploy`
+creates the DNS record and certificate for each. A hostname that already has a
+DNS record in the zone fails the deploy until that record is removed, which is
+the usual snag on `www`.
+
 Create the resources the Worker binds to:
 
 ```bash
