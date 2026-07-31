@@ -40,6 +40,11 @@ export function saveAuth(auth: StoredAuth): void {
   fs.chmodSync(configDir(), 0o700);
 }
 
+export function clearAuth(): void {
+  const store = createStore();
+  fs.rmSync(store.path, { force: true });
+}
+
 export function loadAuth(): StoredAuth | null {
   const store = createStore();
   const origin = store.get('origin');

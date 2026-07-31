@@ -1,6 +1,6 @@
 ---
 title: '@stetcms/cli'
-description: 'Stet from the terminal: log in, generate the typed content client, publish your tracking plan, and check which organization a key belongs to.'
+description: 'Stet from the terminal: log in or out, generate the typed content client, publish your tracking plan, and check which organization a key belongs to.'
 icon: terminal
 sidebar:
   label: CLI
@@ -25,10 +25,10 @@ npx stet generate
 
 The commands split by what they need, and it is worth knowing which is which:
 
-| Kind                | Commands                  | Credential                                                    |
-| ------------------- | ------------------------- | ------------------------------------------------------------- |
-| Organization-scoped | `generate`, `sync`, `org` | An API key: `--key` / `STET_API_KEY` (`org` uses `--api-key`) |
-| Account-scoped      | `login`, `whoami`         | A session from `stet login`, stored on this machine           |
+| Kind                | Commands                    | Credential                                                    |
+| ------------------- | --------------------------- | ------------------------------------------------------------- |
+| Organization-scoped | `generate`, `sync`, `org`   | An API key: `--key` / `STET_API_KEY` (`org` uses `--api-key`) |
+| Account-scoped      | `login`, `logout`, `whoami` | A session from `stet login`, stored on this machine           |
 
 An API key belongs in CI. A login belongs on your laptop. Neither substitutes
 for the other.
@@ -140,6 +140,15 @@ stet whoami --json
 ```
 
 `--json` omits the session token, so the output is safe in logs and pipelines.
+
+### stet logout
+
+Clears the session stored on this machine. The command also succeeds when no
+session is stored, so it is safe to run repeatedly.
+
+```bash
+stet logout
+```
 
 ### stet org
 
