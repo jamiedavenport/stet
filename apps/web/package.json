@@ -24,7 +24,6 @@
     "@orpc/openapi": "catalog:",
     "@orpc/server": "catalog:",
     "@phosphor-icons/react": "catalog:",
-    "@policystack/core": "catalog:",
     "@policystack/react": "catalog:",
     "@policystack/sdk": "catalog:",
     "@repo/ai": "workspace:*",

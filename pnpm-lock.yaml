@@ -289,9 +289,6 @@ catalogs:
     '@playwright/test':
       specifier: ^1.58.2
       version: 1.61.1
-    '@policystack/core':
-      specifier: ^1.2.0
-      version: 1.2.0
     '@policystack/react':
       specifier: ^1.2.0
       version: 1.2.0
@@ -610,9 +607,6 @@ importers:
       '@phosphor-icons/react':
         specifier: 'catalog:'
         version: 2.1.10(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
-      '@policystack/core':
-        specifier: 'catalog:'
-        version: 1.2.0
       '@policystack/react':
         specifier: 'catalog:'
         version: 1.2.0(react-dom@19.2.7(react@19.2.7))(react@19.2.7)

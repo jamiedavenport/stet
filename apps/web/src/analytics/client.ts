@@ -4,16 +4,16 @@ import { useLocation } from '@tanstack/react-router';
 
 import type config from '#/stet.config';
 
-/**
- * The browser analytics client. Typed from the plan by a type-only import, so
- * no schema and no key reach the bundle, and everything goes to our own route.
- *
- * autoPageviews is off because this is a single-page app: the router knows
- * what counts as a navigation, and the client's fallback (patching
- * history.pushState) cannot see a replaceState, which routers use for
- * redirects and search-parameter changes.
- */
-export const analytics = createAnalytics<(typeof config)['analytics']>({
+// The browser analytics client, typed from the plan by a type-only import, so
+// no schema and no key reach the bundle and everything goes to our own route.
+// Not exported: pageviews are all the browser records today, so the first
+// track() call site is what should export it.
+//
+// autoPageviews is off because this is a single-page app: the router knows
+// what counts as a navigation, and the client's fallback (patching
+// history.pushState) cannot see a replaceState, which routers use for
+// redirects and search-parameter changes.
+const analytics = createAnalytics<(typeof config)['analytics']>({
   endpoint: '/api/analytics',
   autoPageviews: false,
 });

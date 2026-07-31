@@ -8,7 +8,6 @@ packages:
 catalogMode: prefer
 
 catalog:
-  '@policystack/core': ^1.2.0
   '@policystack/react': ^1.2.0
   '@policystack/sdk': ^1.2.0
   '@policystack/vite': ^1.2.0
