@@ -1,7 +1,7 @@
 import { seedOrganization } from '@repo/db/seed-data';
-import { expect, test } from '@playwright/test';
+import { expect, type Page, test } from '@playwright/test';
 
-import { captchaTestHeader, gotoHydrated } from './helpers';
+import { captchaTestHeader, gotoHydrated, setCheckedUntil } from './helpers';
 
 // Drives a second user through sign-up and invitation acceptance entirely
 // over the API while the seed user's page stays open, covering the whole
@@ -59,18 +59,29 @@ test('a member joining notifies everyone else live', async ({ page, playwright }
 
 // Preference rows are exceptions on top of the registry defaults; the
 // checkbox state must survive a reload to prove the upsert round-trips.
-test('email channel preference persists across reloads', async ({ page }) => {
-  await gotoHydrated(page, '/app/settings');
+test.describe('email channel preference', () => {
+  const emailToggle = (page: Page) => page.getByLabel('Someone joins your organization by email');
 
-  const emailToggle = page.getByLabel('Someone joins your organization by email');
-  await expect(emailToggle).toBeChecked();
+  // Failing part-way leaves the seed user opted out, and the opening
+  // assertion of every retry then rejects that state, burying the real
+  // failure under a more confusing one.
+  test.afterEach(async ({ page }) => {
+    await gotoHydrated(page, '/app/settings');
+    await setCheckedUntil(emailToggle(page), true);
+  });
 
-  await emailToggle.click();
-  await expect(emailToggle).not.toBeChecked();
+  test('persists across reloads', async ({ page }) => {
+    await gotoHydrated(page, '/app/settings');
+    await expect(emailToggle(page)).toBeChecked();
 
-  await gotoHydrated(page, '/app/settings');
-  await expect(emailToggle).not.toBeChecked();
+    await setCheckedUntil(emailToggle(page), false);
+    await gotoHydrated(page, '/app/settings');
+    await expect(emailToggle(page)).not.toBeChecked();
 
-  await emailToggle.click();
-  await expect(emailToggle).toBeChecked();
+    await setCheckedUntil(emailToggle(page), true);
+    // Reloading rather than trusting the render is the whole point: a click
+    // that never reached the server renders identically to one that did.
+    await gotoHydrated(page, '/app/settings');
+    await expect(emailToggle(page)).toBeChecked();
+  });
 });
