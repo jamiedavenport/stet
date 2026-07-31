@@ -52,9 +52,8 @@ export function stripeOptions({
       // checkout and portal changes alike. referenceId is the subscribing
       // organization's id.
       onSubscriptionComplete: async ({ subscription, plan }) => {
-        capture('subscription.started', {
-          organizationId: subscription.referenceId,
-          props: { plan: plan.name },
+        capture({ organizationId: subscription.referenceId }, 'subscription.started', {
+          plan: plan.name,
         });
         await emitWebhook({
           organizationId: subscription.referenceId,
@@ -63,9 +62,8 @@ export function stripeOptions({
         });
       },
       onSubscriptionCancel: async ({ subscription }) => {
-        capture('subscription.canceled', {
-          organizationId: subscription.referenceId,
-          props: { plan: subscription.plan },
+        capture({ organizationId: subscription.referenceId }, 'subscription.canceled', {
+          plan: subscription.plan,
         });
         await emitWebhook({
           organizationId: subscription.referenceId,

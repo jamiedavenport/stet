@@ -13,8 +13,6 @@
     "test": "vp test run"
   },
   "dependencies": {
-    "@repo/logging": "workspace:*",
-    "@sentry/cloudflare": "catalog:",
     "@stetcms/analytics": "workspace:*",
     "zod": "catalog:"
   },

@@ -66,7 +66,7 @@ export function organizationOptions({ baseURL, mailer }: { baseURL: string; mail
         await purgeAssets('organization', organization.id);
       },
       afterCreateOrganization: async ({ organization, user }) => {
-        capture('organization.created', { userId: user.id, organizationId: organization.id });
+        capture({ userId: user.id, organizationId: organization.id }, 'organization.created');
       },
       // The membershipLimit backstop only fires when an invitee accepts;
       // checking at invite time puts the error in front of the person who can

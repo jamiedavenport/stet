@@ -11,7 +11,7 @@ export function authDatabaseHooks(database: Database): BetterAuthOptions['databa
       create: {
         // Best-effort: a queue hiccup must never fail the signup request.
         after: async (user) => {
-          capture('signup', { userId: user.id });
+          capture({ userId: user.id }, 'signup');
           try {
             await enqueue('send-welcome-email', { userId: user.id });
           } catch (error) {
