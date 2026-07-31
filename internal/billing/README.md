@@ -93,7 +93,7 @@ const usage = await usageReport(organizationId); // [{ feature, used, cap, windo
 
 ## How billing flows work
 
-Subscriptions belong to organizations (`subscription.referenceId` is the organization id) and only owners and admins can manage them. Upgrades run through Stripe Checkout, cancellation through the Stripe billing portal (taking effect at period end), and `authClient.subscription.restore` clears a pending cancellation. The paid plan is seat-only: checkout bills one unit per member and the plugin re-syncs the quantity whenever members join or leave. Webhooks land on `/api/auth/stripe/webhook` and keep the `subscription` table in `@repo/db` authoritative.
+Subscriptions belong to organizations (`subscription.referenceId` is the organization id) and only owners and admins can manage them. Upgrades run through Stripe Checkout, cancellation through the Stripe billing portal (taking effect at period end), and `authClient.subscription.restore` clears a pending cancellation. Checkout accepts promotion codes, so a discount is a coupon and a promotion code created in Stripe and nothing in the repository. The paid plan is seat-only: checkout bills one unit per member and the plugin re-syncs the quantity whenever members join or leave. Webhooks land on `/api/auth/stripe/webhook` and keep the `subscription` table in `@repo/db` authoritative.
 
 Metered features are quota enforcement only: nothing is reported to Stripe. Usage-based Stripe prices (overage billing) would bolt on with a reporting cron and a `lineItems` entry in the plugin's plan config.
 
