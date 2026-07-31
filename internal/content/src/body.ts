@@ -21,11 +21,11 @@ import type { Doc } from 'yjs';
 import './zeed-dom';
 
 /**
- * The schema a rich text body speaks: everything here has a markdown
- * rendering. The API serializes bodies with exactly this list, so an
- * extension the renderer does not know (task lists, mentions) would reach
- * customers as raw HTML embedded in their markdown, and must not be added
- * without teaching `renderToMarkdown` about it first.
+ * The schema a rich text body speaks: everything here has safe markdown and
+ * HTML renderings. The API serializes bodies with exactly this list, so an
+ * extension the renderers or HTML allowlist do not know (task lists,
+ * mentions) would be lost or reach customers as raw HTML embedded in their
+ * markdown. Additions must teach both output paths about the extension.
  *
  * Editor-only extensions live in the app's `editor-extensions.ts` instead:
  * this module is loaded by the worker to serialize bodies, so it stays free
@@ -48,10 +48,15 @@ const extensions = bodySchemaExtensions();
 
 const bodyHtmlSchema: Schema = {
   ...defaultSchema,
-  tagNames: [...(defaultSchema.tagNames ?? []), 'col', 'colgroup'],
+  tagNames: [...(defaultSchema.tagNames ?? []), 'col', 'colgroup', 'u'],
   attributes: {
     ...defaultSchema.attributes,
-    a: ['href', ['className', 'body-link'], 'rel', 'target'],
+    a: [
+      'href',
+      ['className', 'body-link'],
+      ['rel', 'nofollow', 'noopener', 'noreferrer'],
+      'target',
+    ],
     col: ['style'],
     img: [...(defaultSchema.attributes?.img ?? []), ['className', 'body-image']],
     table: [...(defaultSchema.attributes?.table ?? []), 'style'],
@@ -62,6 +67,10 @@ const bodyHtmlSchema: Schema = {
     ...defaultSchema.protocols,
     href: ['http', 'https', 'mailto', 'tel'],
     src: ['http', 'https'],
+  },
+  required: {
+    ...defaultSchema.required,
+    a: { rel: 'noopener noreferrer nofollow' },
   },
 };
 

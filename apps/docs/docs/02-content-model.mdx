@@ -96,7 +96,14 @@ the editor document and sanitised by Stet; markdown remains available for
 LLMs, feeds, diffs and custom renderers.
 
 ```tsx
-<article dangerouslySetInnerHTML={{ __html: post.fields.body.html }} />
+function PostBody() {
+  const body = post.fields.body;
+  if (body == null) {
+    return null;
+  }
+
+  return <article dangerouslySetInnerHTML={{ __html: body.html }} />;
+}
 ```
 
 If you call the REST API directly rather than through the client, join the

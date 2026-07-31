@@ -17,6 +17,12 @@ function render(markdown: string) {
   return bodyContent(doc, 'body');
 }
 
+function renderJson(content: Parameters<typeof prosemirrorJSONToYXmlFragment>[1]) {
+  const doc = new Doc();
+  prosemirrorJSONToYXmlFragment(bodySchema, content, bodyFragment(doc, 'body'));
+  return bodyContent(doc, 'body');
+}
+
 describe('body markdown round-trip', () => {
   it('parses markdown, fills a Yjs fragment, and serializes back', () => {
     const markdown =
@@ -72,33 +78,59 @@ describe('body markdown round-trip', () => {
     expect(out?.html).toContain('<th colspan="1" rowspan="1" style="text-align: right">');
   });
 
-  it('sanitizes unsafe HTML output', () => {
-    const doc = new Doc();
-    prosemirrorJSONToYXmlFragment(
-      bodySchema,
-      {
+  it('keeps every schema mark in HTML', () => {
+    for (const markName of Object.keys(bodySchema.marks)) {
+      const mark: { type: string; attrs?: Record<string, string> } = { type: markName };
+      if (markName === 'link') {
+        mark.attrs = { href: 'https://example.com' };
+      }
+
+      const out = renderJson({
         type: 'doc',
         content: [
           {
             type: 'paragraph',
-            content: [
-              { type: 'text', text: '<script>alert(1)</script>' },
-              {
-                type: 'text',
-                text: 'bad link',
-                marks: [{ type: 'link', attrs: { href: 'javascript:alert(1)' } }],
-              },
-            ],
+            content: [{ type: 'text', text: markName, marks: [mark] }],
           },
-          { type: 'image', attrs: { src: 'javascript:alert(2)', alt: 'bad image' } },
         ],
-      },
-      bodyFragment(doc, 'body'),
-    );
+      });
 
-    const out = bodyContent(doc, 'body');
-    expect(out?.html).toContain('alert(1)');
-    expect(out?.html).not.toContain('<script>');
+      expect(out?.html, markName).not.toBe(`<p>${markName}</p>`);
+    }
+  });
+
+  it('adds a safe rel to links that open a new tab', () => {
+    const out = renderJson({
+      type: 'doc',
+      content: [
+        {
+          type: 'paragraph',
+          content: [
+            {
+              type: 'text',
+              text: 'link',
+              marks: [
+                {
+                  type: 'link',
+                  attrs: { href: 'https://example.com', rel: null, target: '_blank' },
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    });
+
+    expect(out?.html).toContain('target="_blank"');
+    expect(out?.html).toContain('rel="noopener noreferrer nofollow"');
+  });
+
+  it('strips unsafe image URLs from HTML', () => {
+    const out = renderJson({
+      type: 'doc',
+      content: [{ type: 'image', attrs: { src: 'javascript:alert(2)', alt: 'bad image' } }],
+    });
+
     expect(out?.html).not.toContain('javascript:');
     expect(out?.html).toContain('alt="bad image"');
   });
