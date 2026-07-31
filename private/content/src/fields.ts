@@ -5,6 +5,7 @@ import { entryPage } from '@repo/realtime/entry';
 import { recordContentChange } from '@repo/webhooks/content';
 
 import { liveFields, requireContentType, requireField } from './access';
+import { broadcastContentChange } from './broadcast';
 import { isReferenceType, parseValues, valuesText } from './schema';
 import type { FieldConfig, FieldType } from './schema';
 import { slugify, uniqueSlug } from './slug';
@@ -64,6 +65,7 @@ export async function createField(
     key,
     name: input.name,
   });
+  await broadcastContentChange(organizationId, type);
   return { id, key };
 }
 
@@ -104,6 +106,7 @@ export async function updateField(
     key,
     name,
   });
+  await broadcastContentChange(organizationId, type);
   return { key };
 }
 
@@ -192,6 +195,8 @@ export async function moveField(
     .update(schema.contentField)
     .set({ position: field.position })
     .where(eq(schema.contentField.id, neighbor.id));
+  const type = await requireContentType(organizationId, field.typeId);
+  await broadcastContentChange(organizationId, type);
 }
 
 /**
@@ -225,4 +230,5 @@ export async function deleteField(organizationId: string, id: string, actor: Act
     key: field.key,
     name: field.name,
   });
+  await broadcastContentChange(organizationId, type);
 }

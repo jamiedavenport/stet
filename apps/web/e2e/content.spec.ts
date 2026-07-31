@@ -89,6 +89,33 @@ test('collections: model, table editing, and the entry editor', async ({ page })
   await expect(page.getByText('Hello World')).toBeVisible();
 });
 
+// Every write bumps the collection's realtime room server-side, so a table
+// follows a change it did not make. Two tabs is what a test can stage; the
+// same bump is what carries a write from the API or an agent to an editor.
+test('a table follows a change made somewhere else', async ({ page, context }) => {
+  const name = `Live ${Date.now()}`;
+
+  await gotoHydrated(page, '/app');
+  await createType(page, 'collection', name);
+  await addField(page, 'Text', 'Summary');
+
+  const watcher = await context.newPage();
+  await gotoHydrated(watcher, page.url());
+  await expect(watcher.getByLabel('Collection name')).toHaveValue(name);
+  // The bump only reaches clients already in the room, and presence is this
+  // page's proof that its socket is up.
+  await expect(watcher.getByLabel('People active on this page')).toBeVisible();
+
+  await page.getByRole('button', { name: 'New entry' }).click();
+  const row = page.getByRole('row').filter({ hasText: 'Untitled' });
+  await row.getByRole('button', { name: 'Summary value' }).click();
+  await page.getByLabel('Cell value').fill('Arrived over the room');
+  await page.keyboard.press('Enter');
+
+  await expect(watcher.getByText('Arrived over the room')).toBeVisible();
+  await watcher.close();
+});
+
 // The two cells that are more than a text box: a day comes from a calendar,
 // and a link is stored only once it is one.
 test('date cells pick a day and link cells insist on a URL', async ({ page, context }) => {

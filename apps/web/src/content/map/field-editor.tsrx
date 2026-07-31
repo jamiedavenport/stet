@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { contentTypePage } from '@repo/content/rooms';
 import { usePageRoom } from '@repo/realtime/client';
 import { entryPage } from '@repo/realtime/entry';
 import { useSuspenseQuery } from '@tanstack/react-query';
@@ -28,7 +29,7 @@ export function MapFieldEditor() @{
   ]);
 
   const { room: presenceRoom } = usePageRoom({
-    page: `/app/m/${data.type.slug}`,
+    page: contentTypePage(data.type),
     user: presenceUser,
   });
   const { room: bodyRoom } = usePageRoom({ page: entryPage(data.entry.id), user: presenceUser });

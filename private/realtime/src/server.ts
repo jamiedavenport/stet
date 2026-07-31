@@ -6,6 +6,7 @@ import type { Doc } from 'yjs';
 
 import { loadDocumentState, parseRoomName, saveDocument, syncEntryBodyText } from './document';
 import type { DocumentRoom } from './document';
+import { bumpContentVersion } from './version';
 
 const storageKey = 'ydoc';
 
@@ -60,12 +61,13 @@ export class PagePresenceRoom extends YServer {
     }
   }
 
-  // Internal document access for off-session writes (see `updateDocument` in
-  // document.ts). Unreachable from outside: the worker only ever forwards
-  // WebSocket upgrades to this object, so plain HTTP exists solely for
-  // server code holding the binding.
+  // Internal room access for off-session writes (see `updateDocument` and
+  // `notifyContentChanged` in document.ts). Unreachable from outside: the
+  // worker only ever forwards WebSocket upgrades to this object, so plain
+  // HTTP exists solely for server code holding the binding.
   async onRequest(request: Request): Promise<Response> {
-    if (new URL(request.url).pathname === '/document') {
+    const path = new URL(request.url).pathname;
+    if (path === '/document') {
       if (request.method === 'GET') {
         // slice() narrows the buffer to ArrayBuffer, which BodyInit wants.
         return new Response(encodeStateAsUpdate(this.document).slice());
@@ -76,6 +78,13 @@ export class PagePresenceRoom extends YServer {
         applyUpdate(this.document, new Uint8Array(await request.arrayBuffer()));
         return new Response(null, { status: 204 });
       }
+    }
+    if (path === '/content-version' && request.method === 'POST') {
+      // Here rather than through a diff from a replica: the counter is one
+      // number, so the whole transaction is cheaper than fetching the state
+      // it applies to.
+      bumpContentVersion(this.document);
+      return new Response(null, { status: 204 });
     }
     return super.onRequest(request);
   }

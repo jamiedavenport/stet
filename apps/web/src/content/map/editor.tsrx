@@ -20,7 +20,7 @@ import { nextOptionColor } from '@repo/content/schema';
 import type { FieldValue } from '@repo/content/schema';
 import { contentModelQuery } from '#/content/model/functions';
 import type { ModelField } from '#/content/model/functions';
-import { bumpContentVersion, setCellLocation, useContentVersion } from '#/content/presence';
+import { setCellLocation, useContentVersion } from '#/content/presence';
 import { TypeHeader } from '#/content/model/type-header.tsrx';
 import { useAppRoute } from '#/use-app-route';
 
@@ -41,7 +41,9 @@ export function MapEditor() @{
   const router = useRouter();
   const { room } = usePageRoomContext();
 
-  const refetch = async () => {
+  // Read the map again: after our own write, and when the room says someone
+  // else's landed.
+  const changed = async () => {
     await Promise.all([
       queryClient.invalidateQueries({
         queryKey: mapEntryQuery(activeOrganization.id, params.map).queryKey,
@@ -52,14 +54,7 @@ export function MapEditor() @{
     ]);
   };
 
-  // Refetch when someone else changes the map; bump when we do.
-  useContentVersion(room, () => void refetch());
-  const changed = async () => {
-    await refetch();
-    if (room !== null) {
-      bumpContentVersion(room);
-    }
-  };
+  useContentVersion(room, () => void changed());
 
   const saveValue = async (field: ModelField, value: FieldValue) => {
     await updateEntry({ data: { id: data.entry.id, values: { [field.key]: value } } });

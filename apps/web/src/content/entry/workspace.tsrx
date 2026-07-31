@@ -11,7 +11,7 @@ import { updateField } from '#/content/field/functions';
 import { nextOptionColor } from '@repo/content/schema';
 import type { FieldValue } from '@repo/content/schema';
 import type { ModelField } from '#/content/model/functions';
-import { bumpContentVersion, setCellLocation, useContentVersion } from '#/content/presence';
+import { setCellLocation, useContentVersion } from '#/content/presence';
 import { useAppRoute } from '#/use-app-route';
 
 type EntryWorkspaceProps = {
@@ -48,13 +48,10 @@ export function EntryWorkspace(props: EntryWorkspaceProps) @{
     };
   }, [presenceRoom, entryId]);
 
-  useContentVersion(presenceRoom, () => void props.onChanged());
-  const changed = async () => {
-    await props.onChanged();
-    if (presenceRoom !== null) {
-      bumpContentVersion(presenceRoom);
-    }
-  };
+  // The page reads the entry again after our own write, and when the room
+  // says someone else's landed.
+  const changed = props.onChanged;
+  useContentVersion(presenceRoom, () => void changed());
 
   const saveMeta = async (patch: { title?: string; slug?: string }) => {
     await updateEntry({ data: { id: entry.id, ...patch } });

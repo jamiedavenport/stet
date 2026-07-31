@@ -1,4 +1,5 @@
 import { and, database, eq, schema } from '@repo/db';
+import * as Sentry from '@sentry/cloudflare';
 import type { Server } from 'partyserver';
 import { applyUpdate, Doc, encodeStateAsUpdate, encodeStateVector } from 'yjs';
 
@@ -85,6 +86,35 @@ export async function updateDocument(
 }
 
 /**
+ * Bumps the room's content version (see ./version), so pages open on it read
+ * their content again. This is how a write that never joined the room — the
+ * public API, the assistant's tools, an import — reaches the people who have
+ * it open. The counter transaction runs inside the room, which broadcasts it
+ * like any other edit.
+ *
+ * Best-effort, like the content webhooks: a refresh someone else misses is
+ * not a reason to fail the write that earned it.
+ */
+export async function notifyContentChanged(room: DocumentRoom): Promise<void> {
+  // Unit tests run this domain code under plain Node, where there is no
+  // binding, and so nobody who could have the page open either.
+  if ((await roomNamespace()) === undefined) {
+    return;
+  }
+  try {
+    const stub = await roomStub(room);
+    const bumped = await stub.fetch('https://room/content-version', { method: 'POST' });
+    if (!bumped.ok) {
+      throw new Error(
+        `Bumping the content version of ${room.organizationId}:${room.page} failed (${bumped.status}).`,
+      );
+    }
+  } catch (error) {
+    Sentry.captureException(error);
+  }
+}
+
+/**
  * The document as the room holds it right now, waking the room if needed.
  * Unlike `loadDocument` this never trails the live state, so it is what
  * anything answering about current content (the AI tools) should read;
@@ -103,6 +133,16 @@ async function roomStub(room: DocumentRoom) {
   ]);
   const namespace = (env as { PAGE_PRESENCE: DurableObjectNamespace<Server> }).PAGE_PRESENCE;
   return getServerByName(namespace, `${room.organizationId}:${room.page}`);
+}
+
+/** The rooms binding, or undefined outside a worker, where there are none. */
+async function roomNamespace(): Promise<DurableObjectNamespace<Server> | undefined> {
+  try {
+    const { env } = await import('cloudflare:workers');
+    return (env as { PAGE_PRESENCE?: DurableObjectNamespace<Server> }).PAGE_PRESENCE;
+  } catch {
+    return undefined;
+  }
 }
 
 async function fetchLiveDocument(

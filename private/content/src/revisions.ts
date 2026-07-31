@@ -9,6 +9,7 @@ import type { Doc } from 'yjs';
 
 import { requireContentType, requireEntry } from './access';
 import { bodyMarkdown } from './body';
+import { broadcastContentChange } from './broadcast';
 import { parseValues, valuesText } from './schema';
 import { slugify, uniqueSlug } from './slug';
 import { writeEntryBody } from './write-body';
@@ -270,5 +271,6 @@ export async function restoreEntryRevision(
     slug,
     title: revision.title,
   });
+  await broadcastContentChange(organizationId, type);
   return { slug };
 }

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { PageRoom } from '@repo/realtime/client';
 import { isPresenceUser } from '@repo/realtime/types';
 import type { PresenceUser } from '@repo/realtime/types';
+import { observeContentVersion } from '@repo/realtime/version';
 
 import { useAppRoute } from '#/use-app-route';
 
@@ -118,19 +119,12 @@ export function caretColor(userId: string): string {
   return caretPalette[hash % caretPalette.length];
 }
 
-const versionKey = 'version';
-
 /**
- * Signals other clients in the room that the collection changed, so their
- * entry queries refetch. The counter rides the room's shared doc: nothing
- * reads its value, only the change event matters.
+ * Runs `onBump` when the room says this collection or map changed. Every
+ * write bumps it server-side, whoever made it and wherever from (see
+ * `broadcastContentChange` in `@repo/content`), so this is how a page learns
+ * about a change it did not make itself.
  */
-export function bumpContentVersion(room: PageRoom): void {
-  const map = room.doc.getMap<number>('content');
-  map.set(versionKey, (map.get(versionKey) ?? 0) + 1);
-}
-
-/** Runs `onBump` when another client bumps the room's content version. */
 export function useContentVersion(room: PageRoom | null, onBump: () => void): void {
   // A ref so a new callback identity never tears down the observer.
   const callback = useRef(onBump);
@@ -140,16 +134,6 @@ export function useContentVersion(room: PageRoom | null, onBump: () => void): vo
     if (room === null) {
       return;
     }
-    const map = room.doc.getMap<number>('content');
-    const observer = (event: { transaction: { local: boolean } }) => {
-      // The local mutation already refetched; only remote bumps matter.
-      if (!event.transaction.local) {
-        callback.current();
-      }
-    };
-    map.observe(observer);
-    return () => {
-      map.unobserve(observer);
-    };
+    return observeContentVersion(room.doc, () => callback.current());
   }, [room]);
 }

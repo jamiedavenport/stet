@@ -1,3 +1,4 @@
+import { contentTypePage } from '@repo/content/rooms';
 import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
 import { getRouteApi } from '@tanstack/react-router';
 
@@ -39,7 +40,7 @@ export function EntryEditor() @{
       type={data.type}
       entry={data.entry}
       lookup={data.lookup}
-      presencePage={`/app/c/${data.type.slug}`}
+      presencePage={contentTypePage(data.type)}
       onChanged={onChanged}
     />
     <EntryHistory entryId={data.entry.id} onRestored={onChanged} />
