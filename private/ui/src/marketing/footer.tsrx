@@ -115,9 +115,15 @@ export function MarketingFooter({ comparisons }: { comparisons: MarketingNavLink
       </div>
       <div className="mt-14 flex flex-wrap items-center justify-between gap-4 border-t border-border pt-8 text-sm text-muted-foreground">
         <p>{`© ${new Date().getFullYear()} JXD Ltd`}</p>
-        <a href={brand.author.url} target="_blank" rel="noreferrer" className="hover:text-foreground">
-          {`Built by ${brand.author.name}`}
-        </a>
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+          {/* The logo.dev free tier asks for this on commercial use. */}
+          <a href="https://logo.dev" target="_blank" rel="noreferrer" className="hover:text-foreground">
+            {"Logos provided by Logo.dev"}
+          </a>
+          <a href={brand.author.url} target="_blank" rel="noreferrer" className="hover:text-foreground">
+            {`Built by ${brand.author.name}`}
+          </a>
+        </div>
       </div>
     </div>
   </footer>

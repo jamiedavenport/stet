@@ -1,20 +1,27 @@
-// Competitor marks come from logo.dev, which needs a publishable token.
-// The token is publishable by design: it ships in the HTML, so it is a build
-// var rather than a worker secret.
+// Competitor marks come from logo.dev's image CDN, which takes a publishable
+// key. It is publishable by design -- it ships in the HTML of every
+// comparison page -- so it lives here rather than in a secret, the same call
+// DEPLOY.md makes for the Sentry DSN. An operator self-hosting Stet can point
+// it at their own key with VITE_LOGO_DEV_TOKEN.
 //
-// Without it every logo call would 401, so `logoUrl` returns undefined and
-// the comparison pages fall back to the product's name in type. A missing
-// third-party key is never allowed to leave a hole in the page.
+// Free-tier commercial use requires attribution, which the footer carries.
 
-const token = import.meta.env.VITE_LOGO_DEV_TOKEN;
+const DEFAULT_TOKEN = 'pk_BqdEKAWHSTeXXKuiH4dxAw';
+
+const token = import.meta.env.VITE_LOGO_DEV_TOKEN ?? DEFAULT_TOKEN;
+
+/** Where the attribution link the free tier asks for has to point. */
+export const logoAttribution = 'https://logo.dev';
 
 /** Whether competitor marks can be rendered at all. */
 export const logosEnabled = typeof token === 'string' && token.length > 0;
 
 /**
  * A square mark for a company domain, or undefined when no token is set.
- * `size` is the intrinsic pixel size requested; render it at half that for
- * a sharp result on a 2x display.
+ *
+ * `fallback=404` is deliberate: left to itself the CDN answers a missing
+ * logo with a monogram of its own, and two monogram styles on one page is
+ * worse than one. A 404 renders nothing, so our own tile shows through.
  */
 export function logoUrl(domain: string, size = 128): string | undefined {
   if (!logosEnabled) {
@@ -25,6 +32,7 @@ export function logoUrl(domain: string, size = 128): string | undefined {
     size: String(size),
     format: 'png',
     retina: 'true',
+    fallback: '404',
   });
   return `https://img.logo.dev/${domain}?${query.toString()}`;
 }
