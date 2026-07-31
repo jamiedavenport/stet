@@ -16,6 +16,8 @@ type CellDisplayProps = {
   field: ModelField;
   value: FieldValue | undefined;
   members: Member[];
+  /** Keeps pills on one line and clips the overflow, so table rows stay level. */
+  singleLine?: boolean;
 };
 
 /** The ids a reference value holds, whether it is single or multiple. */
@@ -27,9 +29,11 @@ function referencedIds(value: FieldValue | undefined): string[] {
 }
 
 /** The read view of one structured value, shared by the table and the entry page. */
-export function CellDisplay({ field, value, members }: CellDisplayProps) @{
+export function CellDisplay({ field, value, members, singleLine }: CellDisplayProps) @{
   const { lookup } = useCellData();
   const options = field.config.options ?? [];
+  const pills =
+    singleLine === true ? 'flex min-w-0 gap-1 overflow-hidden' : 'flex flex-wrap gap-1';
   const referenced = isReferenceType(field.type)
     ? referencedIds(value).map((id) => ({ id, title: lookup.entries[id] }))
     : [];
@@ -55,7 +59,7 @@ export function CellDisplay({ field, value, members }: CellDisplayProps) @{
       <Badge className={optionColorClasses[option.color]}>{option.name}</Badge>
     }
     @if (picked.length > 0) {
-      <span className="flex flex-wrap gap-1">
+      <span className={pills}>
         @for (const item of picked; key item.id) {
           <Badge className={optionColorClasses[item.color]}>{item.name}</Badge>
         }
@@ -85,7 +89,7 @@ export function CellDisplay({ field, value, members }: CellDisplayProps) @{
       <span className="text-sm tabular-nums">{value}</span>
     }
     @if (referenced.length > 0) {
-      <span className="flex flex-wrap gap-1">
+      <span className={pills}>
         @for (const item of referenced; key item.id) {
           {/* A title of undefined means the target is gone: the value stays
             until someone edits the field, so it has to render as something. */}

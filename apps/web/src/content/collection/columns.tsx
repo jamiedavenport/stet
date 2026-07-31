@@ -115,6 +115,7 @@ export function buildEntryColumns(context: TableContext): ColumnDef<EntryRow>[] 
           }
           onAddOption={(name: string) => context.addOption(field, name)}
           editorLink={{ collection: context.type.slug, entryId: row.original.id }}
+          singleLine
         />
       ),
     }),

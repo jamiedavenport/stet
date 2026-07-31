@@ -27,6 +27,8 @@ export type EntryCellProps = {
   onAddOption: (name: string) => Promise<string>;
   /** Where the rich text cell opens its dedicated editor page. */
   editorLink: { collection: string; entryId: string } | { map: string; fieldKey: string } | null;
+  /** Set in the table, where a wrapping value would make the row taller than its neighbours. */
+  singleLine?: boolean;
 };
 
 const inputTypes = { text: 'text', number: 'number', link: 'url' } as const;
@@ -114,7 +116,7 @@ export function EntryCell(props: EntryCellProps) @{
         onEditingChange={props.onEditingChange}
         onModifierClick={link === null ? undefined : () => window.open(link, '_blank', 'noopener')}
       >
-        <CellDisplay field={field} value={value} members={members} />
+        <CellDisplay field={field} value={value} members={members} singleLine={props.singleLine} />
       </InlineCell>
     }
     @if (field.type === 'date') {
@@ -124,7 +126,7 @@ export function EntryCell(props: EntryCellProps) @{
         onSave={(next: string | null) => void props.onSave(next)}
         onEditingChange={props.onEditingChange}
       >
-        <CellDisplay field={field} value={value} members={members} />
+        <CellDisplay field={field} value={value} members={members} singleLine={props.singleLine} />
       </DateCell>
     }
     @if (field.type === 'select' || field.type === 'multi_select' || field.type === 'person' || field.type === 'asset' || field.type === 'reference' || field.type === 'multi_reference') {
@@ -136,7 +138,7 @@ export function EntryCell(props: EntryCellProps) @{
         onEditingChange={props.onEditingChange}
         onAddOption={props.onAddOption}
       >
-        <CellDisplay field={field} value={value} members={members} />
+        <CellDisplay field={field} value={value} members={members} singleLine={props.singleLine} />
       </ChoiceCell>
     }
     <Watchers watchers={watchers} />
