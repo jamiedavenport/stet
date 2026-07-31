@@ -1,4 +1,4 @@
-# @stetcms/cli
+# @stetcms/config
 
 ## 0.1.0
 
@@ -11,21 +11,3 @@
   `@stetcms/config` is new, and this is a breaking change to how projects are configured. `stet.config.ts` now describes the whole integration through `defineStet({ origin, apiKey, output, watch, analytics })`, and both `@stetcms/vite` and `@stetcms/cli` read it, so a plugin option and a CLI flag can no longer disagree. Plugin options and CLI flags still win over the file, which wins over the environment.
 
   `@stetcms/vite` publishes the tracking plan on dev-server and build start alongside the content codegen, and takes a `config` option pointing at the config file. `@stetcms/cli` gains `stet sync`, and `stet generate` reads the config file too.
-
-- b2bc001: The generated content client now reads `STET_ORIGIN` at runtime, falling back to the origin it was generated against, so it resolves its origin the same way it already resolved its API key.
-
-  Previously the origin was baked in as a literal. Because codegen deliberately never fails a build — without a key it keeps the last generated file — a build in an environment with no `STET_API_KEY` could ship a client still pointed at whatever origin a developer last generated from, typically `http://localhost:3000`. The symptom was content silently failing to load rather than an error naming the cause.
-
-  Behaviour change for anyone who both commits `stet.gen.ts` and sets `STET_ORIGIN` at runtime to something other than the origin they generated against: the environment now wins.
-
-### Patch Changes
-
-- Updated dependencies [b2bc001]
-- Updated dependencies [b2bc001]
-- Updated dependencies [ccca43f]
-- Updated dependencies [b2bc001]
-- Updated dependencies [8b73910]
-  - @stetcms/analytics@0.1.0
-  - @stetcms/config@0.1.0
-  - @stetcms/client@0.1.0
-  - @stetcms/vite@0.1.0

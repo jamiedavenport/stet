@@ -1,4 +1,4 @@
-# @stetcms/cli
+# @stetcms/analytics
 
 ## 0.1.0
 
@@ -12,20 +12,12 @@
 
   `@stetcms/vite` publishes the tracking plan on dev-server and build start alongside the content codegen, and takes a `config` option pointing at the config file. `@stetcms/cli` gains `stet sync`, and `stet generate` reads the config file too.
 
-- b2bc001: The generated content client now reads `STET_ORIGIN` at runtime, falling back to the origin it was generated against, so it resolves its origin the same way it already resolved its API key.
-
-  Previously the origin was baked in as a literal. Because codegen deliberately never fails a build — without a key it keeps the last generated file — a build in an environment with no `STET_API_KEY` could ship a client still pointed at whatever origin a developer last generated from, typically `http://localhost:3000`. The symptom was content silently failing to load rather than an error naming the cause.
-
-  Behaviour change for anyone who both commits `stet.gen.ts` and sets `STET_ORIGIN` at runtime to something other than the origin they generated against: the environment now wins.
-
 ### Patch Changes
 
+- b2bc001: Recording events no longer spends the organization's API request quota, and ingest has its own rate limit rather than sharing the one sized for content reads. Analytics traffic is one request per browser batch, so the shared budget would have run out on a normally busy site — and because `track()` never throws, the first symptom would have been data quietly going missing.
+- 8b73910: Documented per-framework pageview snippets for TanStack Router, Next.js, React Router, SvelteKit, Nuxt and Astro, and the reason single-page apps should turn `autoPageviews` off: the fallback patches `history.pushState` and so cannot see the `replaceState` a router uses for redirects and search-parameter changes.
+
+  Every snippet passes the router's URL to `pageview()` rather than letting it read `window.location`. By the time an effect or a navigation callback runs, the router has advanced and `window.location` may not have, so a bare call labels the view with the previous page — and the same-URL guard then silently drops every other one. Verified in a browser against the TanStack example, where it was doing exactly that.
+
 - Updated dependencies [b2bc001]
-- Updated dependencies [b2bc001]
-- Updated dependencies [ccca43f]
-- Updated dependencies [b2bc001]
-- Updated dependencies [8b73910]
-  - @stetcms/analytics@0.1.0
   - @stetcms/config@0.1.0
-  - @stetcms/client@0.1.0
-  - @stetcms/vite@0.1.0
