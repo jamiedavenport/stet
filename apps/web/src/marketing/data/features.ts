@@ -158,6 +158,11 @@ export const features: Feature[] = [
         detail:
           'Give it a job rather than a prompt: add the field, fill it in across the drafts, and report back. You stay in the loop at every write.',
       },
+      {
+        term: 'Or bring your own agent',
+        detail:
+          'The same tools are served over MCP, so Claude, Cursor or whatever you already code in can read the model, search entries and write bodies. It signs in as you over OAuth, there is no key to paste, and your client is what confirms each write.',
+      },
     ],
   },
 ];

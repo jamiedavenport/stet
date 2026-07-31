@@ -94,12 +94,17 @@ export const personas: Persona[] = [
           'Events post to a route in your app and are enriched server-side. Type-safe at the call site, immune to ad-blockers, and never able to throw in the browser.',
       },
       {
+        term: 'Your agent works on the real model',
+        detail:
+          'An MCP server hands Claude, Cursor or whatever you code in the same tools the assistant uses: read the model, search entries, add a field, write a body. It is OAuth, so there is no key to paste, and every change it makes is attributed to you.',
+      },
+      {
         term: 'Open source, self-hostable',
         detail:
           'Run it on your own Cloudflare account if you would rather. The hosted version is a convenience, not a hostage situation.',
       },
     ],
-    features: ['code-generation', 'content', 'analytics'],
+    features: ['code-generation', 'content', 'ai', 'analytics'],
   },
   {
     slug: 'publishers',

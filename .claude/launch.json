@@ -10,7 +10,7 @@
     {
       "name": "docs",
       "runtimeExecutable": "pnpm",
-      "runtimeArgs": ["--filter", "@repo/docs", "dev"],
+      "runtimeArgs": ["--filter", "docs", "dev"],
       "port": 3100
     }
   ]

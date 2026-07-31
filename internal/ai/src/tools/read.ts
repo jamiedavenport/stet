@@ -1,4 +1,4 @@
-import { and, asc, database, eq, inArray, schema } from '@repo/db';
+import { and, database, desc, eq, inArray, schema } from '@repo/db';
 import { byRank, entryIndex, ftsSearch } from '@repo/db/search';
 import { loadLiveDocument } from '@repo/realtime/document';
 import { entryPage } from '@repo/realtime/entry';
@@ -29,7 +29,7 @@ export function contentReadTools(organizationId: string): ToolSet {
     }),
 
     listEntries: tool({
-      description: `Entries of one collection or map by type slug, newest first, up to ${listLimit}. Titles and ids only; use getEntry for content.`,
+      description: `Entries of one collection or map by type slug, newest first, up to ${listLimit}. Titles and ids only; use getEntry for content, or searchContent when the list comes back truncated.`,
       inputSchema: z.object({ type: z.string().describe('The collection or map slug') }),
       execute: async ({ type: typeSlug }) => {
         const db = await database();
@@ -42,14 +42,19 @@ export function contentReadTools(organizationId: string): ToolSet {
         if (type === undefined) {
           return { error: `No collection or map has the slug "${typeSlug}".` };
         }
+        // The collection table and the public API both read oldest first and
+        // return everything. This is the one listing that truncates, so it
+        // inverts the order to spend its budget on the end callers ask about.
         const rows = await db.query.contentEntry.findMany({
           where: eq(schema.contentEntry.typeId, type.id),
-          orderBy: asc(schema.contentEntry.createdAt),
-          limit: listLimit,
+          orderBy: desc(schema.contentEntry.createdAt),
+          limit: listLimit + 1,
         });
+        const truncated = rows.length > listLimit;
         return {
           type: { id: type.id, slug: type.slug, name: type.name, kind: type.kind },
-          entries: rows.map((row) => ({
+          truncated,
+          entries: rows.slice(0, listLimit).map((row) => ({
             id: row.id,
             slug: row.slug,
             title: row.title,

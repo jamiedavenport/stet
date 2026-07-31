@@ -6,7 +6,7 @@ its own Cloudflare Worker (`stet-docs`).
 ## Development
 
 ```bash
-pnpm --filter @repo/docs dev   # http://localhost:3100
+pnpm --filter docs dev   # http://localhost:3100
 ```
 
 ## Commands
