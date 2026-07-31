@@ -30,9 +30,9 @@ async function handle(request: Request): Promise<Response> {
     return limited;
   }
 
-  // A blank key is the documented local default, not a fault, so it answers
+  // No key is the documented local default, not a fault, so it answers
   // normally instead of letting the handler call it a 500 on every batch.
-  if (env.STET_API_KEY === '') {
+  if (!env.STET_API_KEY) {
     if (!warned) {
       warned = true;
       log.info('analytics', 'events are dropped: STET_API_KEY is unset');

@@ -57,9 +57,10 @@ signup. `@repo/auth` records `signup`, `organization.created`,
 
 ## Credentials
 
-None here. The route holds them: `STET_API_KEY` and `STET_ORIGIN`, both in
-`apps/web/wrangler.jsonc`. With the key blank the route answers 200 and drops
-the batch, which is the local default.
+None here. The route holds them: `STET_ORIGIN`, a var in
+`apps/web/wrangler.jsonc`, and `STET_API_KEY`, a Worker secret set with
+`wrangler secret put`. With no key the route answers 200 and drops the batch,
+which is the local default.
 
 ## Tests
 
