@@ -1,11 +1,10 @@
 {
-  "name": "@repo/openpanel",
+  "name": "@dogfood/analytics",
   "version": "0.0.0",
   "private": true,
   "type": "module",
   "exports": {
-    "./events": "./src/events.ts",
-    "./client": "./src/client.ts",
+    "./plan": "./src/plan.ts",
     "./server": "./src/server.ts"
   },
   "scripts": {
@@ -14,15 +13,14 @@
     "test": "vp test run"
   },
   "dependencies": {
-    "@openpanel/sdk": "catalog:",
-    "@openpanel/web": "catalog:",
-    "@repo/brand": "workspace:*",
+    "@repo/logging": "workspace:*",
+    "@sentry/cloudflare": "catalog:",
+    "@stetcms/analytics": "workspace:*",
     "zod": "catalog:"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "catalog:",
     "typescript": "catalog:",
-    "vite": "npm:@voidzero-dev/vite-plus-core@0.2.2",
     "vite-plus": "catalog:",
     "vitest": "catalog:"
   }

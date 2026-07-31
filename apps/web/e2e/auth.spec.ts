@@ -3,8 +3,7 @@ import { expect, test } from '@playwright/test';
 
 import { freshStorageState, gotoHydrated, signIn, signOut } from './helpers';
 
-// Signed out, with consent pre-accepted so the banner never overlays the
-// auth flows under test.
+// Signed out: these flows are about arriving without a session.
 test.use({ storageState: freshStorageState() });
 
 test('sign up creates an account, org, and signs in', async ({ page }) => {

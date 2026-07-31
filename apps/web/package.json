@@ -18,6 +18,7 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
+    "@dogfood/analytics": "workspace:*",
     "@jxdltd/tanstack": "^0.1.2",
     "@marsidev/react-turnstile": "catalog:",
     "@orpc/openapi": "catalog:",
@@ -41,12 +42,13 @@
     "@repo/logging": "workspace:*",
     "@repo/mail": "workspace:*",
     "@repo/notifications": "workspace:*",
-    "@repo/openpanel": "workspace:*",
     "@repo/realtime": "workspace:*",
     "@repo/ui": "workspace:*",
     "@repo/webhooks": "workspace:*",
     "@repo/workflows": "workspace:*",
     "@sentry/cloudflare": "catalog:",
+    "@stetcms/analytics": "workspace:*",
+    "@stetcms/config": "workspace:*",
     "@tanstack/react-form": "catalog:",
     "@tanstack/react-query": "catalog:",
     "@tanstack/react-router": "catalog:",

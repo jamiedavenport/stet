@@ -1,4 +1,4 @@
-import { capture, upsertOrganizationGroup } from '@repo/openpanel/server';
+import { capture } from '@dogfood/analytics/server';
 import { BillingError, members } from '@repo/billing/server';
 import type { Mailer } from '@repo/mail';
 import { notify } from '@repo/notifications/client';
@@ -65,11 +65,8 @@ export function organizationOptions({ baseURL, mailer }: { baseURL: string; mail
       beforeDeleteOrganization: async ({ organization }) => {
         await purgeAssets('organization', organization.id);
       },
-      // The group gives OpenPanel a display name for the organization so
-      // org-level views read as names, not ids.
       afterCreateOrganization: async ({ organization, user }) => {
-        upsertOrganizationGroup({ id: organization.id, name: organization.name });
-        capture('organization_created', { userId: user.id, organizationId: organization.id });
+        capture('organization.created', { userId: user.id, organizationId: organization.id });
       },
       // The membershipLimit backstop only fires when an invitee accepts;
       // checking at invite time puts the error in front of the person who can

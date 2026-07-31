@@ -30,7 +30,7 @@ README.md is the accurate statement of what exists, including a "Not built yet" 
 - Background work produces one wide event per entry point: one per queue message, cron run, or webhook event. Create it there with `createLogger` from `@repo/logging` and `emit()` it once in a `finally`, so failures are recorded too.
 - Pass that logger down to the work. Deeper functions add to the event they are given with `set()`, and record steps with `info()` and `warn()`, which fold into it rather than printing. Starting a second event splits one story across several lines, which is what wide events exist to avoid.
 - Set fields from the `StetEvent` vocabulary. Needing a new one means extending that type, not inventing a key at the call site.
-- Never `console.log`. For something genuinely unattached to a unit of work, evlog's `log` writes a standalone tagged line.
+- Never `console.log`. For something genuinely unattached to a unit of work, `log` from `@repo/logging` writes a standalone tagged line.
 - Don't log HTTP requests. Cloudflare's invocation logs already cover them.
 
 # Errors

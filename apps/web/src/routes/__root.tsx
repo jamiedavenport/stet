@@ -3,8 +3,7 @@ import { brand } from '@repo/brand';
 import type { QueryClient } from '@tanstack/react-query';
 import { HeadContent, Outlet, Scripts, createRootRouteWithContext } from '@tanstack/react-router';
 
-import { ensureAnalyticsClientId } from '#/analytics/client-id';
-import { ConsentRuntime } from '#/legal/consent-runtime';
+import { usePageviews } from '#/analytics/client';
 import { NotFound } from '#/components/not-found.tsrx';
 import { ensureSession } from '#/session';
 import faviconUrl from '@repo/brand/favicon.svg?url';
@@ -14,11 +13,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   // Resolve the session for every route, including marketing: a cookie-cache
   // read (see #/session), not a D1 query. Only /app also fetches orgs.
   beforeLoad: async ({ context }) => {
-    const [analyticsClientId, session] = await Promise.all([
-      ensureAnalyticsClientId(context.queryClient),
-      ensureSession(context.queryClient),
-    ]);
-    return { analyticsClientId, session };
+    return { session: await ensureSession(context.queryClient) };
   },
   head: () => ({
     meta: [
@@ -42,10 +37,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 });
 
 function RootComponent() {
+  usePageviews();
+
   return (
     <RootDocument>
       <Outlet />
-      <ConsentRuntime />
     </RootDocument>
   );
 }

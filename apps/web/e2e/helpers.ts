@@ -1,6 +1,4 @@
-import { createConsentStore } from '@policystack/core/consent';
 import { expect, type Locator, type Page } from '@playwright/test';
-import policystack, { consentCookie } from '../src/policystack';
 
 // Direct auth POSTs need a captcha token when the Turnstile test keys are
 // configured (CI does this); the always-pass secret accepts any value, and
@@ -135,35 +133,7 @@ export async function signUpWithOrg(
   await expect(page.getByText(`Signed in as ${email}`)).toBeVisible();
 }
 
-// Pre-seeding an accepted record keeps the banner from overlaying controls in
-// specs that are not about consent (consent.spec starts bare instead). Minted
-// through the real store and encoder so it tracks policy-version hashes and
-// the adapter's cookie format.
-function consentCookieValue(): string {
-  const store = createConsentStore(policystack);
-  store.acceptAll();
-  const record = store.getConsentRecord();
-  if (record === null) {
-    throw new Error('acceptAll() left the consent store undecided');
-  }
-  return consentCookie.serialize(record);
-}
-
-/** storageState for specs that need a fresh user but no consent banner. */
+/** storageState for specs that need a signed-out browser of their own. */
 export function freshStorageState() {
-  return {
-    cookies: [
-      {
-        name: consentCookie.name,
-        value: consentCookieValue(),
-        domain: 'localhost',
-        path: '/',
-        expires: -1,
-        httpOnly: false,
-        secure: false,
-        sameSite: 'Lax' as const,
-      },
-    ],
-    origins: [],
-  };
+  return { cookies: [], origins: [] };
 }

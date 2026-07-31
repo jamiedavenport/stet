@@ -4,7 +4,7 @@ import path from 'node:path';
 import { seedUser } from '@repo/db/seed-data';
 import { expect, test as setup } from '@playwright/test';
 
-import { captchaTestHeader, freshStorageState, signIn } from './helpers';
+import { captchaTestHeader, signIn } from './helpers';
 
 const authFile = path.join(import.meta.dirname, '.auth/user.json');
 
@@ -13,10 +13,6 @@ setup('seed database and persist auth state', async ({ page, request }) => {
   // demand, which blows the default timeouts (CI burned both retries here
   // before passing on a warm server).
   setup.setTimeout(120_000);
-  // Pre-accept consent so the banner never overlays controls here, and so
-  // the saved auth state carries the decision into every spec that reuses
-  // it. consent.spec covers the banner itself from a bare context.
-  await page.context().addCookies(freshStorageState().cookies);
   // On a fresh checkout miniflare only creates the local D1 sqlite file once a
   // request touches the database, so hit an auth endpoint before seeding. The
   // Origin header matters: better-auth rejects the request before querying the

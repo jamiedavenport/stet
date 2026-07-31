@@ -4,6 +4,7 @@ Structured logging on [evlog](https://www.evlog.dev). The package is the repo's 
 
 - `initLogging({ service, production })`: configures the isolate. Called once at module scope in `apps/web/src/server.ts`.
 - `createLogger(context?)`: starts a wide event, typed against `StetEvent`.
+- `log`: evlog's standalone logger, re-exported for the rare line that belongs to no unit of work.
 - `ExpectedFailure`: a failure that is normal operation, logged but kept out of Sentry.
 - `StetEvent`, `StetEventContext`, `Logger`: the field vocabulary, what the logger accepts, and the logger type.
 
@@ -50,7 +51,7 @@ log.emit({ status: 200 });
 }
 ```
 
-So narrate freely; it costs no extra lines. Reaching for a second event usually means the function is really two units of work. For something genuinely unattached to a unit of work, such as a one-off diagnostic, evlog's own `log` export writes a standalone tagged line instead.
+So narrate freely; it costs no extra lines. Reaching for a second event usually means the function is really two units of work. For something genuinely unattached to a unit of work, such as a one-off diagnostic or a startup notice that a feature is unconfigured, `log` writes a standalone tagged line instead: `log.info('analytics', 'events are dropped: STET_API_KEY is unset')`.
 
 ## The vocabulary
 

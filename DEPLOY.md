@@ -46,7 +46,11 @@ wrangler secret put STRIPE_SECRET_KEY
 wrangler secret put STRIPE_WEBHOOK_SECRET
 ```
 
-Analytics is optional: without `OPENPANEL_CLIENT_SECRET` (and the `OPENPANEL_CLIENT_ID` var) events are logged to the console instead of sent.
+Analytics is optional: without `STET_API_KEY` no product analytics are recorded, and both the mounted route and the Worker's own `capture()` say so once and drop the events. The key is an organization API key on the Stet in `STET_ORIGIN`, made under Developers → API keys once that deployment is up and an organization exists:
+
+```bash
+wrangler secret put STET_API_KEY
+```
 
 Social sign-in is optional. To enable it, create OAuth apps and set the matching secrets (leave a pair unset to hide that button):
 
@@ -73,7 +77,7 @@ Update the vars in `wrangler.jsonc`:
 - `BETTER_AUTH_URL`: your deployed origin.
 - `MAIL_FROM`: a sender on a Resend-verified domain. The default `onboarding@resend.dev` only delivers to the Resend account owner.
 - `STRIPE_PRICE_PAID`: the paid plan's price id (per-seat, monthly).
-- `OPENPANEL_CLIENT_ID`: your OpenPanel client id. Add your deployed origin to the client's allowed domains in the OpenPanel dashboard so browser events are accepted.
+- `STET_ORIGIN`: the Stet that this deployment's own product analytics go to. Pointing it at your own origin is the dogfooding default: events leave the Worker and come back in through the public API, so you run the path your customers take.
 
 ## Promote the first admin
 

@@ -21,7 +21,7 @@ vp run dev   # apps/web on http://localhost:3000
 That is the whole thing. Sign in as `seed@example.com` with the password in
 [internal/db/src/seed-data.ts](internal/db/src/seed-data.ts).
 
-The defaults in `.dev.vars.example` run the whole app locally with no external accounts, and CI copies it verbatim. It documents each value inline: notably the blank `OPENPANEL_CLIENT_ID` that keeps local traffic out of the real analytics project (see [internal/openpanel](internal/openpanel)), Cloudflare's always-pass Turnstile test pair, and the commented-out optional keys for Resend, Anthropic, Stripe (see [internal/billing](internal/billing) for the Stripe CLI sandbox setup), and social sign-in.
+The defaults in `.dev.vars.example` run the whole app locally with no external accounts, and CI copies it verbatim. It documents each value inline: notably the blank `STET_API_KEY` that keeps local traffic out of the real analytics project (see [dogfooding/analytics](dogfooding/analytics)), Cloudflare's always-pass Turnstile test pair, and the commented-out optional keys for Resend, Anthropic, Stripe (see [internal/billing](internal/billing) for the Stripe CLI sandbox setup), and social sign-in.
 
 Add a new local secret by adding it to `.dev.vars.example` (commented out if optional) so contributors and CI stay in sync.
 
