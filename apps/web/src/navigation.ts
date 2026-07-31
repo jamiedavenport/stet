@@ -7,7 +7,6 @@ import {
   ClockCounterClockwiseIcon,
   DownloadSimpleIcon,
   HouseIcon,
-  ImageIcon,
   KeyIcon,
   GearIcon,
   ShieldIcon,
@@ -46,7 +45,6 @@ const home = {
 } as const satisfies NavItem;
 
 const marketingItems = [
-  { label: 'Media', to: '/app/media', icon: ImageIcon, key: 'm' },
   { label: 'Analytics', to: '/app/analytics', icon: ChartBarIcon, key: 'a' },
   { label: 'Import', to: '/app/import', icon: DownloadSimpleIcon, key: 'i' },
 ] as const satisfies readonly NavItem[];

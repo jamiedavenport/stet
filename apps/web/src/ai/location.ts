@@ -15,7 +15,6 @@ export type AssistantLocation = {
 };
 
 const staticPages: Record<string, Omit<AssistantLocation, 'kind'>> = {
-  '/app/media': { label: 'Media', prompt: 'the media library' },
   '/app/analytics': { label: 'Analytics', prompt: 'the analytics page' },
   '/app/developers/keys': { label: 'API keys', prompt: 'the API keys page' },
   '/app/developers/webhooks': { label: 'Webhooks', prompt: 'the webhooks page' },

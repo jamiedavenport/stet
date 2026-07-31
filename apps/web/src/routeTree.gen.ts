@@ -28,7 +28,6 @@ import { Route as AppAdminRouteRouteImport } from './routes/app/admin/route'
 import { Route as AppAnalyticsRouteImport } from './routes/app/analytics'
 import { Route as AppAuditRouteImport } from './routes/app/audit'
 import { Route as AppImportRouteImport } from './routes/app/import'
-import { Route as AppMediaRouteImport } from './routes/app/media'
 import { Route as AppOrganizationRouteImport } from './routes/app/organization'
 import { Route as AppSettingsRouteImport } from './routes/app/settings'
 import { Route as AssetsIdRouteImport } from './routes/assets/$id'
@@ -155,11 +154,6 @@ const AppAuditRoute = AppAuditRouteImport.update({
 const AppImportRoute = AppImportRouteImport.update({
   id: '/import',
   path: '/import',
-  getParentRoute: () => AppRouteRoute,
-} as any)
-const AppMediaRoute = AppMediaRouteImport.update({
-  id: '/media',
-  path: '/media',
   getParentRoute: () => AppRouteRoute,
 } as any)
 const AppOrganizationRoute = AppOrganizationRouteImport.update({
@@ -348,7 +342,6 @@ export interface FileRoutesByFullPath {
   '/app/analytics': typeof AppAnalyticsRoute
   '/app/audit': typeof AppAuditRoute
   '/app/import': typeof AppImportRoute
-  '/app/media': typeof AppMediaRoute
   '/app/organization': typeof AppOrganizationRoute
   '/app/settings': typeof AppSettingsRoute
   '/assets/$id': typeof AssetsIdRoute
@@ -399,7 +392,6 @@ export interface FileRoutesByTo {
   '/app/analytics': typeof AppAnalyticsRoute
   '/app/audit': typeof AppAuditRoute
   '/app/import': typeof AppImportRoute
-  '/app/media': typeof AppMediaRoute
   '/app/organization': typeof AppOrganizationRoute
   '/app/settings': typeof AppSettingsRoute
   '/assets/$id': typeof AssetsIdRoute
@@ -455,7 +447,6 @@ export interface FileRoutesById {
   '/app/analytics': typeof AppAnalyticsRoute
   '/app/audit': typeof AppAuditRoute
   '/app/import': typeof AppImportRoute
-  '/app/media': typeof AppMediaRoute
   '/app/organization': typeof AppOrganizationRoute
   '/app/settings': typeof AppSettingsRoute
   '/assets/$id': typeof AssetsIdRoute
@@ -512,7 +503,6 @@ export interface FileRouteTypes {
     | '/app/analytics'
     | '/app/audit'
     | '/app/import'
-    | '/app/media'
     | '/app/organization'
     | '/app/settings'
     | '/assets/$id'
@@ -563,7 +553,6 @@ export interface FileRouteTypes {
     | '/app/analytics'
     | '/app/audit'
     | '/app/import'
-    | '/app/media'
     | '/app/organization'
     | '/app/settings'
     | '/assets/$id'
@@ -618,7 +607,6 @@ export interface FileRouteTypes {
     | '/app/analytics'
     | '/app/audit'
     | '/app/import'
-    | '/app/media'
     | '/app/organization'
     | '/app/settings'
     | '/assets/$id'
@@ -807,13 +795,6 @@ declare module '@tanstack/react-router' {
       path: '/import'
       fullPath: '/app/import'
       preLoaderRoute: typeof AppImportRouteImport
-      parentRoute: typeof AppRouteRoute
-    }
-    '/app/media': {
-      id: '/app/media'
-      path: '/media'
-      fullPath: '/app/media'
-      preLoaderRoute: typeof AppMediaRouteImport
       parentRoute: typeof AppRouteRoute
     }
     '/app/organization': {
@@ -1071,7 +1052,6 @@ interface AppRouteRouteChildren {
   AppAnalyticsRoute: typeof AppAnalyticsRoute
   AppAuditRoute: typeof AppAuditRoute
   AppImportRoute: typeof AppImportRoute
-  AppMediaRoute: typeof AppMediaRoute
   AppOrganizationRoute: typeof AppOrganizationRoute
   AppSettingsRoute: typeof AppSettingsRoute
   AppIndexRoute: typeof AppIndexRoute
@@ -1089,7 +1069,6 @@ const AppRouteRouteChildren: AppRouteRouteChildren = {
   AppAnalyticsRoute: AppAnalyticsRoute,
   AppAuditRoute: AppAuditRoute,
   AppImportRoute: AppImportRoute,
-  AppMediaRoute: AppMediaRoute,
   AppOrganizationRoute: AppOrganizationRoute,
   AppSettingsRoute: AppSettingsRoute,
   AppIndexRoute: AppIndexRoute,
