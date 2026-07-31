@@ -22,12 +22,13 @@ that content performs.
 1. Start Stet: `vp run dev` (from the repo root), then seed it:
 
    ```bash
-   pnpm --filter @repo/db seed
+   pnpm seed
    ```
 
    The seed creates exactly this app's model (the **Posts** collection and
-   **Landing** map with the fields above), two posts, and a deterministic
-   API key, so a reseed never breaks the example.
+   **Landing** map with the fields above), ten posts with bodies, authors and
+   cover images, a filled-in landing page, and a deterministic API key, so a
+   reseed never breaks the example.
 
 2. Run the example with the seeded key:
 

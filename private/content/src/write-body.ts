@@ -2,7 +2,7 @@ import { updateDocument } from '@repo/realtime/document';
 import { bodyFragment, entryPage } from '@repo/realtime/entry';
 import { prosemirrorJSONToYXmlFragment, yXmlFragmentToProseMirrorRootNode } from '@tiptap/y-tiptap';
 
-import { bodyMarkdown, bodySchema, markdownToBody } from './body';
+import { bodyMarkdown, bodySchema, setBodyMarkdown } from './body';
 
 export type WriteBodyMode = 'replace' | 'append';
 
@@ -31,9 +31,7 @@ export async function writeEntryBody(options: {
         markdown = `${existing.trimEnd()}\n\n${options.markdown}`;
       }
     }
-    const fragment = bodyFragment(doc, options.fieldKey);
-    fragment.delete(0, fragment.length);
-    prosemirrorJSONToYXmlFragment(bodySchema, markdownToBody(markdown), fragment);
+    setBodyMarkdown(doc, options.fieldKey, markdown);
   });
 }
 

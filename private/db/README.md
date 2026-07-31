@@ -5,7 +5,7 @@ Drizzle schema and typed data access for Cloudflare D1 (binding `DB` in `apps/we
 - `src/index.ts`: `database()`, the ambient client every caller shares, plus `setDatabase()` for tests and `createDb(d1)` for the one synchronous caller (the Better Auth adapter).
 - `src/schema/`: single source of truth for all tables, one file per domain (assets, audit, auth, organizations, billing, content, documents, imports, notifications, webhooks), re-exported flat from `src/schema/index.ts`.
 - `src/search/`: `@repo/db/search`, the FTS5 full-text primitive. `fts.ts` holds it, `indexes.ts` declares this app's indexes.
-- `src/seed-data.ts` and `pnpm seed`: deterministic local seed, used by the e2e tests. It creates `seed@example.com` (a regular member of Seed Org) and `admin@example.com` (platform admin, for `/app/admin`), both with the password in `seed-data.ts`.
+- `src/seed-data.ts`: `@repo/db/seed-data`, the ids and names the local seed writes and the e2e tests assert against: the accounts (`seed@example.com`, `admin@example.com` for `/app/admin`, and three authors, all sharing the password in that file), the organizations, the API key, and the two content types the example app's committed client is generated from. What fills them lives in [private/seed](../seed), which runs `pnpm seed`.
 
 ## Schema changes
 

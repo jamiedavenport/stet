@@ -56,8 +56,11 @@ test('typing filters the static actions', async ({ page }) => {
 
   await input(page).fill('sign');
 
-  await expect(menu(page).getByRole('option')).toHaveCount(1);
-  await expect(menu(page).getByRole('option', { name: 'Sign out' })).toBeVisible();
+  // Scoped to the group: the seeded workspace is real content, so any word
+  // typed here also matches entries, which arrive in their own group.
+  const actions = menu(page).getByRole('group', { name: 'Actions' });
+  await expect(actions.getByRole('option')).toHaveCount(1);
+  await expect(actions.getByRole('option', { name: 'Sign out' })).toBeVisible();
 });
 
 test('unmatchable input reports no results rather than failing', async ({ page }) => {

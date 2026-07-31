@@ -7,10 +7,12 @@ import Typography from '@tiptap/extension-typography';
 import { DOMParser as ProseMirrorDOMParser } from '@tiptap/pm/model';
 import { renderToMarkdown } from '@tiptap/static-renderer/pm/markdown';
 import StarterKit from '@tiptap/starter-kit';
-import { yXmlFragmentToProseMirrorRootNode } from '@tiptap/y-tiptap';
+import { prosemirrorJSONToYXmlFragment, yXmlFragmentToProseMirrorRootNode } from '@tiptap/y-tiptap';
 import { marked } from 'marked';
 import { parseHTML } from 'zeed-dom';
 import type { Doc } from 'yjs';
+
+import './zeed-dom';
 
 /**
  * The schema a rich text body speaks: everything here has a markdown
@@ -66,4 +68,16 @@ export function markdownToBody(markdown: string): JSONContent {
   const html = marked.parse(markdown, { async: false });
   const dom = parseHTML(html) as unknown as Node;
   return ProseMirrorDOMParser.fromSchema(bodySchema).parse(dom).toJSON() as JSONContent;
+}
+
+/**
+ * Replaces a body with what `markdown` says, the inverse of `bodyMarkdown`.
+ * Takes a document rather than a room, so it serves both the live write in
+ * `../write-body` and offline callers building a document of their own (the
+ * seed).
+ */
+export function setBodyMarkdown(doc: Doc, fieldKey: string, markdown: string): void {
+  const fragment = bodyFragment(doc, fieldKey);
+  fragment.delete(0, fragment.length);
+  prosemirrorJSONToYXmlFragment(bodySchema, markdownToBody(markdown), fragment);
 }
