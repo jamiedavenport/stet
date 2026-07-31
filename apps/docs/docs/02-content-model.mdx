@@ -90,11 +90,13 @@ whichever origin you reach them through, and the client joins them to the
 `origin` in your `stet.config.ts`. That is why the URL you get is ready to use
 on your own site, which is a different origin from Stet.
 
-The same join reaches inside rich text: an image an editor dropped into a body
-arrives as a whole URL too, so a body renders as it stands.
+The same join reaches inside both representations of rich text: an asset an
+editor embedded or linked arrives as a whole URL too. HTML is rendered from
+the editor document and sanitised by Stet; markdown remains available for
+LLMs, feeds, diffs and custom renderers.
 
 ```tsx
-<Markdown>{post.fields.body}</Markdown>
+<article dangerouslySetInnerHTML={{ __html: post.fields.body.html }} />
 ```
 
 If you call the REST API directly rather than through the client, join the

@@ -114,6 +114,9 @@ catalog:
   zod: ^4.4.3
   knip: 6.29.0
   '@marsidev/react-turnstile': ^1.5.3
+  hast-util-from-html: ^2.0.3
+  hast-util-sanitize: ^5.0.2
+  hast-util-to-html: ^9.0.5
 
 overrides:
   vite: npm:@voidzero-dev/vite-plus-core@0.2.2

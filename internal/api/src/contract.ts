@@ -296,11 +296,11 @@ export const contentTypeSchema = z.object({
 export type ContentType = z.infer<typeof contentTypeSchema>;
 
 // Values follow the field's type: text/date/link are strings, rich text is
-// markdown, number/checkbox their primitives, selects are option names (an
-// array for multi-select), person is { id, name }, asset is { id, url, name,
-// contentType, size }, reference is { id, slug, title } (an array for
-// multi-reference, with deleted targets dropped). Absent means the field was
-// never set; a deleted single-reference or asset target reads as null. A
+// { markdown, html }, number/checkbox their primitives, selects are option
+// names (an array for multi-select), person is { id, name }, asset is { id,
+// url, name, contentType, size }, reference is { id, slug, title } (an array
+// for multi-reference, with deleted targets dropped). Absent means the field
+// was never set; a deleted single-reference or asset target reads as null. A
 // deprecated key is here too, frozen at the last value it was given.
 export const contentEntrySchema = z.object({
   id: z.string(),
@@ -339,8 +339,8 @@ const listContent = oc
     path: '/content/{type}',
     summary: 'List entries',
     description:
-      "A content type's entries with resolved field values; rich text bodies are markdown as " +
-      'last saved by the realtime room. A map returns its single entry as a one-element list.',
+      "A content type's entries with resolved field values; rich text bodies contain canonical " +
+      'HTML and markdown. A map returns its single entry as a one-element list.',
     tags: ['Content'],
   })
   .input(z.object({ type: z.string() }))

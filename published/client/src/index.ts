@@ -23,6 +23,7 @@ export type {
   ContentClientOptions,
   ContentEntryBase,
   ContentModelShape,
+  ContentRichText,
   ContentReference,
   MapClient,
 } from './content';

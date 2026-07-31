@@ -154,7 +154,10 @@ test('date cells pick a day and link cells insist on a URL', async ({ page, cont
 
 // The developer side of the same gap: what marketing modelled above must
 // come back typed through the public API, bodies as markdown.
-test('the public API serves modelled content with markdown bodies', async ({ page, request }) => {
+test('the public API serves modelled content with rich text representations', async ({
+  page,
+  request,
+}) => {
   // The body reaches the API through the room's D1 mirror, so the poll below
   // alone can spend most of the default budget on a cold server.
   test.slow();
@@ -205,9 +208,9 @@ test('the public API serves modelled content with markdown bodies', async ({ pag
       async () => {
         const list = await request.get(`/api/v1/content/${type!.slug}`, { headers });
         const data = (await list.json()) as {
-          entries: { fields: Record<string, unknown> }[];
+          entries: { fields: { body?: { markdown: string; html: string } | null } }[];
         };
-        return data.entries[0]?.fields.body ?? null;
+        return data.entries[0]?.fields.body?.markdown ?? null;
       },
       { timeout: 30_000 },
     )
@@ -215,10 +218,14 @@ test('the public API serves modelled content with markdown bodies', async ({ pag
 
   const one = await request.get(`/api/v1/content/${type!.slug}/untitled`, { headers });
   expect(one.status()).toBe(200);
-  const entry = (await one.json()) as { title: string; fields: Record<string, unknown> };
+  const entry = (await one.json()) as {
+    title: string;
+    fields: { summary?: string; body?: { markdown: string; html: string } | null };
+  };
   expect(entry.title).toBe('Untitled');
   expect(entry.fields.summary).toBe('From the API');
-  expect(entry.fields.body).toContain('# Heading');
+  expect(entry.fields.body?.markdown).toContain('# Heading');
+  expect(entry.fields.body?.html).toContain('<h1>Heading</h1>');
 });
 
 // A map is one entry as a key/value table: keys edit inline, and a rich

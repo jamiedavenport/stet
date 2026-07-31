@@ -7,7 +7,7 @@ import { authenticated, os } from '#/api/implementer';
 import { publicAssetUrl } from '#/files/urls';
 import { fieldTypeSchema, isReferenceType, parseConfig, parseValues } from '@repo/content/schema';
 import type { FieldValue } from '@repo/content/schema';
-import { bodyMarkdown } from '@repo/content/body';
+import { bodyContent } from '@repo/content/body';
 
 type Deprecation = {
   /** When the field was deleted. */
@@ -257,7 +257,7 @@ async function toApiEntry(
   for (const field of fields) {
     const value = resolveValue(field, values[field.key], targets);
     if (field.type === 'rich_text') {
-      resolved[field.key] = saved === null ? null : bodyMarkdown(saved.doc, field.key);
+      resolved[field.key] = saved === null ? null : bodyContent(saved.doc, field.key);
     } else if (value !== undefined) {
       resolved[field.key] = value;
     }

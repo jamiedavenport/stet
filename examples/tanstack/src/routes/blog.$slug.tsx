@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import { createFileRoute, Link } from '@tanstack/react-router';
-import Markdown from 'react-markdown';
 
 import { analytics } from '../analytics';
 import { fetchPost } from '../content';
@@ -31,7 +30,7 @@ function Post() {
       {post.fields.body == null ? (
         <p className="muted">This post has no body yet.</p>
       ) : (
-        <Markdown>{post.fields.body}</Markdown>
+        <div dangerouslySetInnerHTML={{ __html: post.fields.body.html }} />
       )}
     </main>
   );
