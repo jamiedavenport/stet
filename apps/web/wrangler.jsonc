@@ -48,6 +48,15 @@
     // deployment: events leave the Worker and come back in through the public
     // API, so the path customers take is the path we run on.
     "STET_ORIGIN": "https://stetcms.com",
+    // The off switch for this deployment's own product analytics. Separate
+    // from the STET_API_KEY secret because that key has a second job: a
+    // developer generating the content client needs a real one, and their
+    // traffic still has to stay out of this project. Only the literal "false"
+    // turns recording off; blank leaves it to whether a key is configured, so
+    // forgetting the var records rather than silently dropping. A var and not
+    // a secret, so an entry here is how it binds. Local dev sets it in
+    // .dev.vars. See dogfooding/analytics.
+    "ANALYTICS_ENABLED": "",
     // Sentry error tracking. The DSN is public (it ships in the worker and
     // only accepts event submissions). Blank disables reporting entirely, so
     // the app runs with no Sentry account.

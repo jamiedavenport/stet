@@ -129,6 +129,37 @@ describe('analytics handler', () => {
     expect((await handler(post({ events: [{ name: '' }] }))).status).toBe(400);
   });
 
+  it('accepts and discards everything while disabled', async () => {
+    const { handler, fetch } = harness({ enabled: false });
+    const response = await handler(post(batch()));
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({ accepted: 0 });
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it('still checks a batch against the plan while disabled', async () => {
+    const { handler } = harness({ enabled: false });
+    expect((await handler(post(batch('nope', {})))).status).toBe(400);
+  });
+
+  it('stays quiet rather than erroring when no key is configured', async () => {
+    const { handler, fetch } = harness({ apiKey: undefined });
+    const response = await handler(post(batch()));
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({ accepted: 0 });
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it('reports a missing key once tracking is asked for explicitly', async () => {
+    const onError = vi.fn();
+    const { handler } = harness({ apiKey: undefined, enabled: true, onError });
+
+    expect((await handler(post(batch()))).status).toBe(500);
+    expect(onError).toHaveBeenCalled();
+  });
+
   it('reports a failed forward without throwing', async () => {
     const onError = vi.fn();
     const { handler } = harness({

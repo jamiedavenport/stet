@@ -46,11 +46,13 @@ wrangler secret put STRIPE_SECRET_KEY
 wrangler secret put STRIPE_WEBHOOK_SECRET
 ```
 
-Analytics is optional: without `STET_API_KEY` no product analytics are recorded, and both the mounted route and the Worker's own `capture()` say so once and drop the events. The key is an organization API key on the Stet in `STET_ORIGIN`, made under Developers → API keys once that deployment is up and an organization exists:
+Analytics is optional: without `STET_API_KEY` no product analytics are recorded, and both the mounted route and the Worker's own `capture()` drop the events. The key is an organization API key on the Stet in `STET_ORIGIN`, made under Developers → API keys once that deployment is up and an organization exists:
 
 ```bash
 wrangler secret put STET_API_KEY
 ```
+
+Recording is switched off by `ANALYTICS_ENABLED` in `wrangler.jsonc`, not by removing the key, because the same key generates the content client and so is real anywhere content is generated, a developer's machine included. Only the literal `"false"` turns it off; blank leaves it to whether a key is configured. Set it to `"false"` on any deployment whose traffic should stay out of your dashboards, such as a preview or staging environment sharing the production key.
 
 Social sign-in is optional. To enable it, create OAuth apps and set the matching secrets (leave a pair unset to hide that button):
 

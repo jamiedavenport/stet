@@ -38,6 +38,13 @@ export type AnalyticsHandlerOptions = {
   /** Organization API key. Defaults to the plan's, then `STET_API_KEY`. */
   apiKey?: string;
   /**
+   * Whether to forward batches at all. Defaults to whether a key resolved, so
+   * an unconfigured deployment stays quiet rather than erroring. Set it
+   * explicitly to keep a developer's own traffic out of a project whose key is
+   * present for another reason, such as generating the content client.
+   */
+  enabled?: boolean;
+  /**
    * Salt mixed into the visitor digest. Defaults to the request's host, which
    * keeps visitor ids from being comparable across sites you run.
    */
@@ -117,6 +124,12 @@ export function createAnalyticsHandler<TEvents extends EventsShape>(
       { origin: plan.origin, apiKey: plan.apiKey },
       { origin: options.origin, apiKey: options.apiKey },
     );
+    // Checked after validation rather than at the top, so a batch that does
+    // not match the plan is still answered with a 400 while tracking is off,
+    // which is when a developer most wants to hear about it.
+    if (!(options.enabled ?? apiKey !== undefined)) {
+      return json({ accepted: 0 });
+    }
     if (apiKey === undefined) {
       onError(new Error('No API key. Set STET_API_KEY or pass apiKey.'));
       return json({ error: 'analytics is not configured' }, 500);

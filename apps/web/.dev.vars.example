@@ -18,6 +18,13 @@ BETTER_AUTH_URL=http://localhost:3000
 # came from (this dev server, if you want the local dashboard to fill up).
 # STET_ORIGIN=http://localhost:3000
 
+# Off, so that once you do add a key the traffic you make while developing
+# still stays out of that Stet's analytics. The key cannot be the switch on its
+# own: it also generates the content client, so it has to be real wherever
+# content is. Delete this line to send events to whatever STET_ORIGIN names,
+# which is how you fill a local dashboard.
+ANALYTICS_ENABLED=false
+
 # Same reason: blank overrides the committed production DSN so local and CI
 # errors do not report to the real Sentry project. Local failures are already
 # in the dev server output. Set a DSN here only to test reporting itself.
