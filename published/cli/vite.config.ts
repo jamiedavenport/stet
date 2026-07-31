@@ -1,6 +1,11 @@
+import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vite-plus';
 
 export default defineConfig({
+  // `vp pack` reads the `#/` paths from tsconfig.json; the test runner does not.
+  resolve: {
+    alias: { '#': fileURLToPath(new URL('./src', import.meta.url)) },
+  },
   pack: {
     entry: ['src/index.ts'],
     platform: 'node',

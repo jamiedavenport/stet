@@ -1,4 +1,4 @@
-import { intro, log, note, outro, spinner } from '@clack/prompts';
+import { intro, log, note as clackNote, outro, spinner } from '@clack/prompts';
 import pc from 'picocolors';
 
 // Every command funnels its output through this module so the CLI keeps one
@@ -20,6 +20,10 @@ export function fail(message: string): never {
   log.error(pc.red(message));
   outro(pc.red('Something went wrong.'));
   process.exit(1);
+}
+
+export function note(message: string, title: string): void {
+  clackNote(message, title);
 }
 
 export function showVerification(verificationUri: string, userCode: string): void {
