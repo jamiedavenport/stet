@@ -132,6 +132,37 @@ function resolveAssetUrls(payload: unknown, origin: string): unknown {
 }
 
 /**
+ * The human message a failed request carries, if any. The API answers an error
+ * with a described body — oRPC serializes a thrown error to JSON with a `message`
+ * the contract writes for a person (`UNAUTHORIZED` explains the missing
+ * `x-api-key` header; `QUOTA_EXCEEDED`, `RATE_LIMITED` and `NOT_FOUND` each say
+ * what happened). Pulling it out turns a bare status code into a sentence that
+ * names the cause.
+ *
+ * Returns `undefined` when the body is empty or not JSON (a proxy's HTML error
+ * page, say) or carries no `message`, so the caller keeps the status-only
+ * message rather than inventing one.
+ */
+async function errorMessage(response: Response): Promise<string | undefined> {
+  let body: unknown;
+  try {
+    body = await response.json();
+  } catch {
+    // Empty or non-JSON body — the status-only message is the best we have.
+    return undefined;
+  }
+  if (typeof body !== 'object' || body === null) {
+    return undefined;
+  }
+  const message = (body as { message?: unknown }).message;
+  if (typeof message !== 'string') {
+    return undefined;
+  }
+  const trimmed = message.trim();
+  return trimmed.length > 0 ? trimmed : undefined;
+}
+
+/**
  * The model-shaped client `stet.gen.ts` instantiates: `stet.posts.list()`,
  * `stet.posts.get('hello-world')`, `stet.landing.get()`. The type parameter
  * narrows which keys exist and what their entries look like; the runtime is
@@ -148,7 +179,9 @@ export function createContentClient<M extends ContentModelShape>(
       headers: options.apiKey === undefined ? {} : { 'x-api-key': options.apiKey },
     });
     if (!response.ok) {
-      throw new Error(`Stet request ${path} failed with status ${response.status}.`);
+      const summary = `Stet request ${path} failed with status ${response.status}.`;
+      const detail = await errorMessage(response);
+      throw new Error(detail === undefined ? summary : `${summary} ${detail}`);
     }
     return resolveAssetUrls(await response.json(), origin);
   };

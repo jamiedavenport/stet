@@ -142,3 +142,74 @@ describe('createContentClient asset resolution', () => {
     expect(post.createdAt).toBe('2026-07-30T00:00:00.000Z');
   });
 });
+
+/** A fetch that answers every call with a non-ok response carrying `body`. */
+function errorFetch(status: number, body: unknown, kind: 'json' | 'text' = 'json') {
+  return () =>
+    Promise.resolve(
+      new Response(kind === 'json' ? JSON.stringify(body) : String(body), {
+        status,
+        headers: kind === 'json' ? { 'Content-Type': 'application/json' } : {},
+      }),
+    ) as unknown as ReturnType<typeof globalThis.fetch>;
+}
+
+describe('createContentClient error handling', () => {
+  /** Awaits a rejection and returns the thrown error, or fails if none is thrown. */
+  async function rejection(promise: Promise<unknown>): Promise<Error> {
+    try {
+      await promise;
+    } catch (error) {
+      return error as Error;
+    }
+    throw new Error('Expected the request to reject, but it resolved.');
+  }
+
+  it('surfaces the API error message alongside the status', async () => {
+    const stet = createContentClient<Model>({
+      origin,
+      fetch: errorFetch(401, {
+        code: 'UNAUTHORIZED',
+        message: 'Authentication required. Pass an organization API key in the `x-api-key` header.',
+      }),
+    });
+
+    const error = await rejection(stet.posts.get('hello-world'));
+    expect(error.message).toContain('401');
+    expect(error.message).toContain('Authentication required');
+  });
+
+  it('surfaces the message when listing a collection fails', async () => {
+    const stet = createContentClient<Model>({
+      origin,
+      fetch: errorFetch(429, {
+        code: 'RATE_LIMITED',
+        message: 'Too many requests. Try again shortly.',
+      }),
+    });
+
+    const error = await rejection(stet.posts.list());
+    expect(error.message).toContain('Too many requests. Try again shortly.');
+  });
+
+  it('falls back to the status-only message for a non-JSON body', async () => {
+    const stet = createContentClient<Model>({
+      origin,
+      fetch: errorFetch(502, '<html>Bad Gateway</html>', 'text'),
+    });
+
+    const error = await rejection(stet.posts.get('hello-world'));
+    expect(error.message).toContain('502');
+    expect(error.message).toContain('failed with status');
+  });
+
+  it('falls back to the status-only message when the body carries no message', async () => {
+    const stet = createContentClient<Model>({
+      origin,
+      fetch: errorFetch(404, { code: 'NOT_FOUND' }),
+    });
+
+    const error = await rejection(stet.posts.get('missing'));
+    expect(error.message.endsWith('failed with status 404.')).toBe(true);
+  });
+});
