@@ -6,6 +6,7 @@
   "exports": {
     "./access": "./src/access.ts",
     "./body": "./src/body.ts",
+    "./deprecations": "./src/deprecations.ts",
     "./entries": "./src/entries.ts",
     "./fields": "./src/fields.ts",
     "./model": "./src/model.ts",

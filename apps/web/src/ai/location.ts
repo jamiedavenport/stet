@@ -18,6 +18,10 @@ const staticPages: Record<string, Omit<AssistantLocation, 'kind'>> = {
   '/app/analytics': { label: 'Analytics', prompt: 'the analytics page' },
   '/app/developers/keys': { label: 'API keys', prompt: 'the API keys page' },
   '/app/developers/webhooks': { label: 'Webhooks', prompt: 'the webhooks page' },
+  '/app/developers/danger': {
+    label: 'Danger zone',
+    prompt: 'the danger zone, where deleted fields are purged',
+  },
   '/app/organization': { label: 'Organization', prompt: 'the organization settings' },
   '/app/settings': { label: 'Settings', prompt: 'their account settings' },
 };

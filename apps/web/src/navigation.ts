@@ -10,6 +10,7 @@ import {
   KeyIcon,
   GearIcon,
   ShieldIcon,
+  WarningIcon,
   WebhooksLogoIcon,
 } from '@phosphor-icons/react';
 import type { Icon } from '@phosphor-icons/react';
@@ -53,6 +54,7 @@ const developerItems = [
   { label: 'API keys', to: '/app/developers/keys', icon: KeyIcon, key: 'k' },
   { label: 'Webhooks', to: '/app/developers/webhooks', icon: WebhooksLogoIcon, key: 'w' },
   { label: 'Audit log', to: '/app/audit', icon: ClockCounterClockwiseIcon, key: 'l' },
+  { label: 'Danger zone', to: '/app/developers/danger', icon: WarningIcon, key: 'd' },
 ] as const satisfies readonly NavItem[];
 
 const settingsItem = {

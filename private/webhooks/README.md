@@ -17,6 +17,7 @@ Outbound webhooks on the platform's own primitives: per-organization endpoints i
 
 - Every content operation in `@repo/content` calls `recordContentChange(organizationId, change)` from `./content`, which lands in that organization's `ContentChangeBatch` Durable Object (binding `CONTENT_CHANGES`). It is best-effort: a batch that cannot be reached is reported to Sentry, never raised at the editor who was saving.
 - The batch holds one record per subject, so an editing session on one entry is one line in the payload. A subject created and then edited inside the window still reports `created`; created and then deleted reports `deleted`.
+- A field carries one action the others do not: `purged`, the erasure of a key already `deleted` (see `@repo/content/deprecations`). It is the change that takes the key out of a regenerated client, so a receiver that types itself from the model wants to know.
 - A single alarm closes the window after `WEBHOOKS_BATCH_SECONDS` (wrangler var, 60 by default; override in `.dev.vars` to watch a rebuild fire quickly) and emits one event through `emitWebhookEvent()`. The alarm is armed only when none is pending and never pushed back by a new change, so continuous editing still flushes once per window.
 - Past `maxBatchChanges` records the batch stops growing and sets `truncated`, which is the signal to resync rather than read the list. A site import lands here.
 

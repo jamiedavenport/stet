@@ -54,6 +54,7 @@ import { Route as ApiV1SplatRouteImport } from './routes/api/v1/$'
 import { Route as AppAdminIndexRouteImport } from './routes/app/admin/index'
 import { Route as AppAdminOrganizationsRouteImport } from './routes/app/admin/organizations'
 import { Route as AppAdminUsersRouteImport } from './routes/app/admin/users'
+import { Route as AppDevelopersDangerRouteImport } from './routes/app/developers.danger'
 import { Route as AppDevelopersKeysRouteImport } from './routes/app/developers.keys'
 import { Route as AppDevelopersWebhooksRouteImport } from './routes/app/developers.webhooks'
 import { Route as AppCCollectionIndexRouteImport } from './routes/app/c.$collection.index'
@@ -286,6 +287,11 @@ const AppAdminUsersRoute = AppAdminUsersRouteImport.update({
   path: '/users',
   getParentRoute: () => AppAdminRouteRoute,
 } as any)
+const AppDevelopersDangerRoute = AppDevelopersDangerRouteImport.update({
+  id: '/developers/danger',
+  path: '/developers/danger',
+  getParentRoute: () => AppRouteRoute,
+} as any)
 const AppDevelopersKeysRoute = AppDevelopersKeysRouteImport.update({
   id: '/developers/keys',
   path: '/developers/keys',
@@ -364,6 +370,7 @@ export interface FileRoutesByFullPath {
   '/api/v1/$': typeof ApiV1SplatRoute
   '/app/admin/organizations': typeof AppAdminOrganizationsRoute
   '/app/admin/users': typeof AppAdminUsersRoute
+  '/app/developers/danger': typeof AppDevelopersDangerRoute
   '/app/developers/keys': typeof AppDevelopersKeysRoute
   '/app/developers/webhooks': typeof AppDevelopersWebhooksRoute
   '/blog/': typeof MarketingBlogIndexRoute
@@ -415,6 +422,7 @@ export interface FileRoutesByTo {
   '/api/v1/$': typeof ApiV1SplatRoute
   '/app/admin/organizations': typeof AppAdminOrganizationsRoute
   '/app/admin/users': typeof AppAdminUsersRoute
+  '/app/developers/danger': typeof AppDevelopersDangerRoute
   '/app/developers/keys': typeof AppDevelopersKeysRoute
   '/app/developers/webhooks': typeof AppDevelopersWebhooksRoute
   '/blog': typeof MarketingBlogIndexRoute
@@ -470,6 +478,7 @@ export interface FileRoutesById {
   '/api/v1/$': typeof ApiV1SplatRoute
   '/app/admin/organizations': typeof AppAdminOrganizationsRoute
   '/app/admin/users': typeof AppAdminUsersRoute
+  '/app/developers/danger': typeof AppDevelopersDangerRoute
   '/app/developers/keys': typeof AppDevelopersKeysRoute
   '/app/developers/webhooks': typeof AppDevelopersWebhooksRoute
   '/_marketing/blog/': typeof MarketingBlogIndexRoute
@@ -525,6 +534,7 @@ export interface FileRouteTypes {
     | '/api/v1/$'
     | '/app/admin/organizations'
     | '/app/admin/users'
+    | '/app/developers/danger'
     | '/app/developers/keys'
     | '/app/developers/webhooks'
     | '/blog/'
@@ -576,6 +586,7 @@ export interface FileRouteTypes {
     | '/api/v1/$'
     | '/app/admin/organizations'
     | '/app/admin/users'
+    | '/app/developers/danger'
     | '/app/developers/keys'
     | '/app/developers/webhooks'
     | '/blog'
@@ -630,6 +641,7 @@ export interface FileRouteTypes {
     | '/api/v1/$'
     | '/app/admin/organizations'
     | '/app/admin/users'
+    | '/app/developers/danger'
     | '/app/developers/keys'
     | '/app/developers/webhooks'
     | '/_marketing/blog/'
@@ -979,6 +991,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdminUsersRouteImport
       parentRoute: typeof AppAdminRouteRoute
     }
+    '/app/developers/danger': {
+      id: '/app/developers/danger'
+      path: '/developers/danger'
+      fullPath: '/app/developers/danger'
+      preLoaderRoute: typeof AppDevelopersDangerRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
     '/app/developers/keys': {
       id: '/app/developers/keys'
       path: '/developers/keys'
@@ -1055,6 +1074,7 @@ interface AppRouteRouteChildren {
   AppOrganizationRoute: typeof AppOrganizationRoute
   AppSettingsRoute: typeof AppSettingsRoute
   AppIndexRoute: typeof AppIndexRoute
+  AppDevelopersDangerRoute: typeof AppDevelopersDangerRoute
   AppDevelopersKeysRoute: typeof AppDevelopersKeysRoute
   AppDevelopersWebhooksRoute: typeof AppDevelopersWebhooksRoute
   AppMMapFieldRoute: typeof AppMMapFieldRoute
@@ -1072,6 +1092,7 @@ const AppRouteRouteChildren: AppRouteRouteChildren = {
   AppOrganizationRoute: AppOrganizationRoute,
   AppSettingsRoute: AppSettingsRoute,
   AppIndexRoute: AppIndexRoute,
+  AppDevelopersDangerRoute: AppDevelopersDangerRoute,
   AppDevelopersKeysRoute: AppDevelopersKeysRoute,
   AppDevelopersWebhooksRoute: AppDevelopersWebhooksRoute,
   AppMMapFieldRoute: AppMMapFieldRoute,

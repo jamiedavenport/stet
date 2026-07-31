@@ -275,10 +275,12 @@ export const contentFieldSchema = z.object({
   /**
    * Present once the field has been deleted from the model, naming when and
    * by whom so a stale key can be traced back to the change that retired it.
-   * Only `/model` carries these: entries no longer hold a value for the key,
-   * so the routes that describe a payload leave them out. A generated client
-   * turns it into a deprecation rather than dropping the key, so code reading
-   * it keeps compiling.
+   * Editors stop seeing the field, but entries keep the last value it held
+   * and go on returning it, so a deletion costs a running site nothing. A
+   * generated client turns it into a deprecation rather than dropping the
+   * key, so code reading it keeps compiling. The key and its values go for
+   * good only when a developer purges the field from the Danger Zone, after
+   * which it leaves this list.
    */
   deprecated: contentDeprecationSchema.optional(),
 });
@@ -298,7 +300,8 @@ export type ContentType = z.infer<typeof contentTypeSchema>;
 // array for multi-select), person is { id, name }, asset is { id, url, name,
 // contentType, size }, reference is { id, slug, title } (an array for
 // multi-reference, with deleted targets dropped). Absent means the field was
-// never set; a deleted single-reference or asset target reads as null.
+// never set; a deleted single-reference or asset target reads as null. A
+// deprecated key is here too, frozen at the last value it was given.
 export const contentEntrySchema = z.object({
   id: z.string(),
   slug: z.string(),
@@ -323,7 +326,8 @@ const getContentModel = oc
     description:
       'Every collection and map in the organization with its fields. The generated client is ' +
       'typed from this. Deleted fields are still listed, carrying a `deprecated` record of when ' +
-      'and by whom, so a client regenerated after a deletion marks the key instead of dropping it.',
+      'and by whom, so a client regenerated after a deletion marks the key instead of dropping ' +
+      'it and entries go on returning the last value it held.',
     tags: ['Content'],
   })
   .output(z.object({ types: z.array(contentTypeSchema) }));

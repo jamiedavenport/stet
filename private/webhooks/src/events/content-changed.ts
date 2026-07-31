@@ -4,8 +4,6 @@ import { defineWebhookEvent } from '../define';
 
 const actionSchema = z.enum(['created', 'updated', 'deleted']);
 
-export type ContentChangeAction = z.output<typeof actionSchema>;
-
 const entryChangeSchema = z.object({
   subject: z.literal('entry'),
   action: actionSchema,
@@ -26,7 +24,12 @@ const typeChangeSchema = z.object({
 
 const fieldChangeSchema = z.object({
   subject: z.literal('field'),
-  action: actionSchema,
+  /**
+   * `deleted` retires the key: the client deprecates it and entries keep the
+   * last value they held. `purged` is the later, deliberate erasure of both,
+   * and the one that takes the key out of a regenerated client.
+   */
+  action: z.enum(['created', 'updated', 'deleted', 'purged']),
   id: z.string(),
   /** Slug of the collection or map the field belongs to. */
   type: z.string(),
@@ -41,6 +44,9 @@ export const contentChangeSchema = z.discriminatedUnion('subject', [
 ]);
 
 export type ContentChange = z.output<typeof contentChangeSchema>;
+
+/** Every action a change can carry; only a field is ever `purged`. */
+export type ContentChangeAction = ContentChange['action'];
 
 /**
  * Everything an organization changed in one batch window, so a receiver that

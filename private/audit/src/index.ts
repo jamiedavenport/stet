@@ -22,6 +22,7 @@ export type AuditAction =
   | 'field.create'
   | 'field.update'
   | 'field.delete'
+  | 'field.purge'
   | 'entry.create'
   | 'entry.update'
   | 'entry.delete'

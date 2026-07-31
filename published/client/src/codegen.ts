@@ -90,7 +90,7 @@ function fieldTsType(field: ModelField): string {
 function deprecationNote(deprecation: { at: string; by?: string }): string {
   const who = deprecation.by === undefined ? '' : ` by ${deprecation.by}`;
   const when = deprecation.at.slice(0, 10);
-  return `@deprecated Deleted from the content model on ${when}${who}; entries no longer carry a value.`;
+  return `@deprecated Deleted from the content model on ${when}${who}; entries still return the last value it held, until it is purged.`;
 }
 
 /**
@@ -98,10 +98,11 @@ function deprecationNote(deprecation: { at: string; by?: string }): string {
  * points at, since the type is the same shape whatever the target, and whether
  * the field has been deleted from the model.
  *
- * A deleted field is emitted as a deprecation rather than dropped. Removing it
- * would turn every read of the key into a type error the moment the model was
- * regenerated, which is the one thing a change made in the Stet UI must never
- * do to a running build.
+ * A deleted field is emitted as a deprecation rather than dropped, and the
+ * entries behind it keep answering with the last value they held. Removing it
+ * would turn every read of the key into a type error, and dropping the value
+ * would blank the page that read it, the moment the model was regenerated:
+ * the two things a change made in the Stet UI must never do to a running site.
  */
 function fieldDoc(field: ModelField): string[] {
   const lines: string[] = [];

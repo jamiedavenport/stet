@@ -5,7 +5,6 @@ import { ORPCError } from '@orpc/server';
 
 import { authenticated, os } from '#/api/implementer';
 import { publicAssetUrl } from '#/files/urls';
-import { liveFields } from '@repo/content/access';
 import { fieldTypeSchema, isReferenceType, parseConfig, parseValues } from '@repo/content/schema';
 import type { FieldValue } from '@repo/content/schema';
 import { bodyMarkdown } from '@repo/content/body';
@@ -24,7 +23,7 @@ type Field = {
   options: { id: string; name: string; color: string }[];
   /** The content type a reference field points at; undefined for other types. */
   targetTypeId?: string;
-  /** Set once the field is deleted from the model. Only the model route carries these. */
+  /** Set once the field is deleted from the model; its values live on. */
   deprecated?: Deprecation;
 };
 
@@ -56,7 +55,7 @@ async function loadType(organizationId: string, slug: string) {
       message: 'No content type with that slug in this organization.',
     });
   }
-  return { ...type, fields: await loadFields(type.id) };
+  return { ...type, fields: await loadModelFields(type.id) };
 }
 
 function toField(row: typeof schema.contentField.$inferSelect, deprecated?: Deprecation): Field {
@@ -71,16 +70,16 @@ function toField(row: typeof schema.contentField.$inferSelect, deprecated?: Depr
   };
 }
 
-/** The fields entries are read through: what an editor can still fill in. */
-async function loadFields(typeId: string): Promise<Field[]> {
-  return (await liveFields(typeId)).map((row) => toField(row));
-}
-
 /**
- * The fields the model is published with, tombstones and all. A deleted field
- * stays here as a deprecation so a regenerated client marks the key rather
- * than dropping it out from under code that reads it. The deleter is joined in
- * so the deprecation can say who to ask about a key that has gone.
+ * Every field the type has ever published, tombstones and all: a deleted one
+ * stays as a deprecation so a regenerated client marks the key rather than
+ * dropping it out from under code that reads it, and entries keep answering
+ * with the last value it held. The deleter is joined in so the deprecation can
+ * say who to ask about a key that has gone.
+ *
+ * Both the model and the entry routes read through here, which is what makes
+ * a deletion cost a customer's running pages nothing: the key goes on
+ * resolving until someone purges it in the Danger Zone.
  */
 async function loadModelFields(typeId: string): Promise<Field[]> {
   const db = await database();

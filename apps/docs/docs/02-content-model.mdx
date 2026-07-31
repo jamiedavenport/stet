@@ -39,16 +39,32 @@ outgrown. Your client picks the new key up the next time it is generated.
 ## Deleting a field
 
 Deleting a field takes it out of the app straight away: editors stop seeing it,
-and entries stop returning a value for it.
+and nobody can fill it in again.
 
-Your code is told rather than broken. The key stays in your generated types
-marked [`@deprecated`](/reference/codegen), so your editor strikes it through
-where you read it and your build carries on. A deletion made in the UI reaches
-a running dev server within seconds, so this matters: engineering finds out on
-its own schedule instead of at a red build someone else caused.
+Your code is told rather than broken, twice over. The key stays in your
+generated types marked [`@deprecated`](/reference/codegen), so your editor
+strikes it through where you read it and your build carries on. And entries go
+on returning the last value the field held, so the page reading it renders
+exactly as it did before. A deletion made in the UI reaches a running dev
+server within seconds, so both matter: engineering migrates on its own
+schedule instead of meeting a red build, or a blank page, that someone else
+caused.
 
 A deleted key is never handed back. Creating a field with the same name again
 gives it a new key, so nothing inherits the values entries still hold.
+
+## Purging a field
+
+A deprecated key stays until someone takes it away deliberately, from
+**Developers → Danger zone** in the app. Purging one erases the key and
+everything written under it: the values entries were still returning, any rich
+text bodies, and the copies held in version history. The field leaves the
+model, so the next generated client drops the key instead of deprecating it,
+and its name becomes available again.
+
+This is the one content change that can break a build, which is why nothing
+does it on the model's behalf: it is a developer's call, made once the code
+reading the key has moved on.
 
 ## Assets
 

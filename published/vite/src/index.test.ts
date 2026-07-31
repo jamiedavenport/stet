@@ -127,7 +127,7 @@ describe('renderContentModule', () => {
     expect(deleted).toContain('"subtitle"?: string | null;');
     expect(deleted).toContain(
       '/** @deprecated Deleted from the content model on 2026-03-12 by Ada Lovelace; ' +
-        'entries no longer carry a value. */',
+        'entries still return the last value it held, until it is purged. */',
     );
     // Only the deleted one is marked.
     expect(deleted.split('@deprecated')).toHaveLength(2);
@@ -158,7 +158,7 @@ describe('renderContentModule', () => {
 
     expect(deleted).toContain(
       '/** @deprecated Deleted from the content model on 2026-03-12; ' +
-        'entries no longer carry a value. */',
+        'entries still return the last value it held, until it is purged. */',
     );
   });
 

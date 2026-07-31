@@ -8,16 +8,16 @@
 
 ## Run sheet
 
-| Time      | Beat                          | Where                                |
-| --------- | ----------------------------- | ------------------------------------ |
-| 0:00–0:03 | Two questions. Don't open the app. | —                               |
-| 0:03–0:11 | Import their real site        | `/app/import`                        |
-| 0:11–0:18 | Marketing owns the model      | `/app/c/posts`                       |
-| 0:18–0:25 | Engineering gets a contract   | Editor + `localhost:3001`            |
-| 0:25–0:32 | What they're paying others for | `/app/analytics`, assistant, webhooks |
-| 0:32–0:40 | The ask                       | Laptop closed                        |
+| Time      | Beat                               | Where                                 |
+| --------- | ---------------------------------- | ------------------------------------- |
+| 0:00–0:03 | Two questions. Don't open the app. | —                                     |
+| 0:03–0:11 | Import their real site             | `/app/import`                         |
+| 0:11–0:18 | Marketing owns the model           | `/app/c/posts`                        |
+| 0:18–0:25 | Engineering gets a contract        | Editor + `localhost:3001`             |
+| 0:25–0:32 | What they're paying others for     | `/app/analytics`, assistant, webhooks |
+| 0:32–0:40 | The ask                            | Laptop closed                         |
 
-**The one line to land:** *"Your marketing team stops filing tickets, and your developers stop finding out from a reader."*
+**The one line to land:** _"Your marketing team stops filing tickets, and your developers stop finding out from a reader."_
 
 ---
 
@@ -92,11 +92,11 @@ Laptop closed. Get them describing their own problem in their own words, because
 
 > "Before I show you anything — last time your marketing team wanted a new field on the site, something small, a byline or a badge on a case study. What actually happened?"
 
-Let them answer fully. You are listening for: *a ticket, a developer, a wait, a deploy.* Whatever noun they use, use it for the rest of the demo.
+Let them answer fully. You are listening for: _a ticket, a developer, a wait, a deploy._ Whatever noun they use, use it for the rest of the demo.
 
 > "And when a page goes out — how do you know if it worked?"
 
-Listening for: *GA4, a spreadsheet, a monthly report, nobody looks.*
+Listening for: _GA4, a spreadsheet, a monthly report, nobody looks._
 
 Then:
 
@@ -124,7 +124,7 @@ Paste their domain into the Site step. Talk while it scans:
 
 **Model step.** This is the moment. It has proposed collections and fields from their actual pages.
 
-> "Nobody wrote that. It read your site and worked out what your content model is. Those are your fields, with your names. Look at this one —" *(point at something specific from their site)*
+> "Nobody wrote that. It read your site and worked out what your content model is. Those are your fields, with your names. Look at this one —" _(point at something specific from their site)_
 
 **Preview step.** Show a real extracted entry against the live page in the other tab.
 
@@ -134,7 +134,7 @@ Paste their domain into the Site step. Talk while it scans:
 
 > "One thing to be straight about: your images are still being served from your WordPress host. The links point back at you. Copying the media across is on my list and it isn't done."
 
-**If it goes wrong:** it will have gone wrong in rehearsal too, so you'll know which way. Don't debug in front of them. Say *"that section's server-rendered oddly, we'd handle that one differently"*, move to the group you know works, and carry on. If the whole thing falls over, go to the seeded `posts` collection and say *"I ran yours this morning, let me show you what came out"* — but only if you actually did.
+**If it goes wrong:** it will have gone wrong in rehearsal too, so you'll know which way. Don't debug in front of them. Say _"that section's server-rendered oddly, we'd handle that one differently"_, move to the group you know works, and carry on. If the whole thing falls over, go to the seeded `posts` collection and say _"I ran yours this morning, let me show you what came out"_ — but only if you actually did.
 
 ---
 
@@ -164,7 +164,7 @@ Create the field, pick the type. Then edit values straight in the table cells.
 
 > "There's no draft/publish toggle, on purpose. Publishing states are different at every company I've looked at, and a fixed one is always wrong for somebody. You model it — a status field and a branch in your site code — and it works exactly the way your team works. If that's a dealbreaker for you, that's a genuinely useful thing for me to know today."
 
-That's honest, it's the actual design decision, and for a design-partner ask their objection is *worth more to you than the sale*.
+That's honest, it's the actual design decision, and for a design-partner ask their objection is _worth more to you than the sale_.
 
 ---
 
@@ -190,9 +190,9 @@ const posts = await stet.posts.list();
 
 > "Here's what happens when marketing deletes a field. In your setup today, nothing warns anyone. The query keeps working, the page renders an empty div, and you find out because a reader tells you — or you never find out.
 >
-> Here, the field leaves the generated types, so your developer gets a type error in their editor the moment they next pull. And the generation step can never fail your build: if it can't reach Stet, it keeps the last file and warns. So the worst case is your site builds and ships exactly as it did yesterday."
+> Here, the key stays in the generated types with a deprecation on it, naming who deleted it and when. Your developer's editor strikes it through where they read it; the build stays green. And the entries keep returning the last value the field held, so the page renders exactly as it did yesterday while they migrate. Nothing is erased until one of them says so, on a page called Danger zone. And the generation step can never fail your build either: if it can't reach Stet, it keeps the last file and warns."
 
-**Do not say "it becomes a deprecation and keeps serving the last value."** See the honesty section below.
+**This is the moment to show it rather than say it.** Delete a field in the other window, let the watcher regenerate, and let them read the strikethrough and the still-rendering page.
 
 ---
 
@@ -202,7 +202,7 @@ Move fast. Three things, two minutes each.
 
 **Analytics** — `/app/analytics`, a month of traffic already there.
 
-> "First-party, cookieless, routed through your own backend. No consent banner, because there's no cookie and no third party. Ad blockers don't touch it because it's your domain." *(Then, if they run GA4 — and they do:)* "How much of your traffic do you think GA4 is currently missing?"
+> "First-party, cookieless, routed through your own backend. No consent banner, because there's no cookie and no third party. Ad blockers don't touch it because it's your domain." _(Then, if they run GA4 — and they do:)_ "How much of your traffic do you think GA4 is currently missing?"
 
 **The assistant** — open the panel, ask it to do something real to their imported content.
 
@@ -212,7 +212,7 @@ When the approval card appears — **stop and point at it**:
 
 > "That's the important bit. It won't write anything without that. It's not a chatbot next to your content, it's got the same tools I have, and every write stops here."
 
-Mention MCP in one line only if their technical person is in the room: *"same tools are an MCP server, so Claude or Cursor can edit content directly."*
+Mention MCP in one line only if their technical person is in the room: _"same tools are an MCP server, so Claude or Cursor can edit content directly."_
 
 **Webhooks** — `/app/developers/webhooks`.
 
@@ -264,16 +264,11 @@ Then stop talking.
 
 ## What NOT to claim
 
-Read this section before you walk in. The marketing site and README describe the product Stet is becoming; some of it isn't built, and their setup is precisely the one the biggest claim is about. If their developer or contractor pokes at it afterwards and finds the gap, you lose the room retrospectively — and for a design-partner relationship, credibility *is* the product.
+Read this section before you walk in. The marketing site and README describe the product Stet is becoming; some of it isn't built, and their setup is precisely the one the biggest claim is about. If their developer or contractor pokes at it afterwards and finds the gap, you lose the room retrospectively — and for a design-partner relationship, credibility _is_ the product.
 
-**Deprecations — not implemented.** The site says a removed field "becomes a deprecation in the generated types and keeps serving its last value" and "the build stays green". Neither half is true today:
+**Deprecations — built, so say it plainly.** Both halves the site claims are true now: `deleteField` in [fields.ts](private/content/src/fields.ts) tombstones the field and leaves every value in place, the model route serves it flagged `deprecated`, and [codegen.ts](published/client/src/codegen.ts) emits an `@deprecated` naming who deleted it and when. Erasing a key for good is a separate, deliberate step under Developers → Danger zone. Sync still can never fail their build ([vite plugin](published/vite/README.md:51) keeps the last generated file and warns).
 
-- `renderContentModule` in [codegen.ts](published/client/src/codegen.ts) emits only currently-present fields. There is no `@deprecated` anywhere in the codegen.
-- `deleteField` in [fields.ts:195](private/content/src/fields.ts:195) drops the field row, and stale keys in entry values are dropped on read. The last value is not served.
-
-What *is* true, and is enough: sync can never fail their build ([vite plugin](published/vite/README.md:51) keeps the last generated file and warns), and a removed field surfaces as a type error in the developer's editor rather than as a blank region on a live page. Use the Act 3 wording above — it's strictly better than their WPGraphQL setup and it's accurate.
-
-**Comments — not built.** README and the marketing site promise realtime comments on content. There's no comment table in the schema and no UI. Don't open the collaboration story with it. Presence and co-editing *are* real; demo those.
+**Comments — not built.** README and the marketing site promise realtime comments on content. There's no comment table in the schema and no UI. Don't open the collaboration story with it. Presence and co-editing _are_ real; demo those.
 
 **Drafts, scheduled publishing — deliberately absent.** Covered above. Never imply they exist.
 
@@ -281,7 +276,7 @@ What *is* true, and is enough: sync can never fail their build ([vite plugin](pu
 
 **Image migration — not built.** Imported bodies keep original URLs. Disclose during the run.
 
-**One safe sentence for all of it:** *"That's on the roadmap and it isn't built. If it matters to you, it moves up — that's the whole point of you going first."*
+**One safe sentence for all of it:** _"That's on the roadmap and it isn't built. If it matters to you, it moves up — that's the whole point of you going first."_
 
 ---
 
@@ -294,10 +289,10 @@ Fair, and the honest answer is the licence. It's open source and it self-hosts �
 Content is markdown out of a REST API. The client is a thin wrapper. Compare that to getting content out of WordPress with ACF fields and shortcodes — which they've just watched you do, badly, in the import step. That comparison is yours to make.
 
 **"Our WordPress works fine."**
-Agree with it. *"It does. I wouldn't move you off it to save £288."* Then go back to their answer to question one. The case is the wait, not the software.
+Agree with it. _"It does. I wouldn't move you off it to save £288."_ Then go back to their answer to question one. The case is the wait, not the software.
 
 **"Who else uses it?"**
-*"Nobody. That's the offer."* Don't invent traction. A CEO can smell it, and it's the one lie that would actually cost you this deal.
+_"Nobody. That's the offer."_ Don't invent traction. A CEO can smell it, and it's the one lie that would actually cost you this deal.
 
 **"Can our clients use it?"**
 Yes, and that's the interesting conversation — but only after their own site works. Don't let the demo become about a channel deal before you have a single live site.
@@ -312,6 +307,6 @@ Stet manages content; building and serving the site is theirs. They already have
 You're on localhost in front of a CEO. Have these ready:
 
 1. **Import fails** → fall back to the seeded collection, keep moving. Never debug live.
-2. **AI doesn't respond** → `ANTHROPIC_API_KEY`. Skip the act, don't investigate. *"That one needs the internet more than I do."*
+2. **AI doesn't respond** → `ANTHROPIC_API_KEY`. Skip the act, don't investigate. _"That one needs the internet more than I do."_
 3. **Dev server dies** → both servers restart in seconds; keep talking through it. The two questions from Act 1 are enough material to fill sixty seconds.
 4. **Total loss** → close the laptop and do the ask anyway. You had them at their own content in Act 1; the rest is supporting evidence. A CEO buys the person more often than the software, and this ask is mostly about the person.

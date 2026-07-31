@@ -6,7 +6,9 @@ import type { ContentChange } from './events/content-changed';
 
 const now = new Date('2026-07-30T12:00:00.000Z');
 
-function entry(id: string, action: ContentChange['action'], title = 'Hello'): ContentChange {
+type EntryChange = Extract<ContentChange, { subject: 'entry' }>;
+
+function entry(id: string, action: EntryChange['action'], title = 'Hello'): ContentChange {
   return { subject: 'entry', action, id, type: 'posts', slug: 'hello', title };
 }
 

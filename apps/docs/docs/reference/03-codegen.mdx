@@ -155,7 +155,7 @@ types, marked `@deprecated`:
 export type PostsEntry = ContentEntryBase & {
   fields: {
     body?: string | null;
-    /** @deprecated Deleted from the content model on 2026-03-12 by Ada Lovelace; entries no longer carry a value. */
+    /** @deprecated Deleted from the content model on 2026-03-12 by Ada Lovelace; entries still return the last value it held, until it is purged. */
     subtitle?: string | null;
   };
 };
@@ -171,9 +171,15 @@ into a type error moments after someone else made a change — with the watcher
 running, while you were mid-task. The deprecation says the same thing without
 stopping you, so you migrate when it suits you.
 
-Entries stop carrying a value for a deprecated field, so it reads as
-`undefined`. Both halves of `?: T | null` already covered that, which is why
-nothing has to change at the call site to keep compiling.
+Entries keep the last value a deprecated field held and go on returning it, so
+the page reading the key renders as it always did. A type that still compiles
+over a value that has vanished is only half a promise; this is the other half.
+
+The value goes when someone purges the field from **Developers → Danger zone**
+(see [Content model](/content-model)). That takes the key out of the model, so
+the next generated client drops it rather than deprecating it, and the reads
+that were struck through become type errors. That is the point at which they
+should be: a developer chose it, knowing what still referred to the key.
 
 ### How fields are typed
 

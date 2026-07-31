@@ -1,4 +1,4 @@
-import type { ContentChange, ContentChangeAction } from './events/content-changed';
+import type { ContentChange } from './events/content-changed';
 
 // The batch a window accumulates, and the folding that keeps it small. Kept
 // apart from ./batch, which persists it, because that module extends a
@@ -41,7 +41,7 @@ export function addChange(
   }
 
   const changes = [...open.changes];
-  changes[index] = { ...change, action: foldAction(open.changes[index].action, change.action) };
+  changes[index] = foldChange(open.changes[index], change);
   return { ...open, changes };
 }
 
@@ -49,9 +49,9 @@ export function addChange(
 // receiver, so the create sticks. Everything else is the latest action:
 // notably a create followed by a delete reports the delete, which is what an
 // id that is no longer there means.
-function foldAction(previous: ContentChangeAction, next: ContentChangeAction): ContentChangeAction {
-  if (previous === 'created' && next === 'updated') {
-    return 'created';
+function foldChange(previous: ContentChange, next: ContentChange): ContentChange {
+  if (previous.action === 'created' && next.action === 'updated') {
+    return { ...next, action: 'created' };
   }
   return next;
 }
