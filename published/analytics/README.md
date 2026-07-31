@@ -294,6 +294,7 @@ because a `4xx` only teaches a crawler to retry.
 | `context` | `{}`                          | Props, or a function of the request, that win over the browser's |
 | `origin`  | `STET_ORIGIN`, then the cloud | Stet deployment to forward to                                    |
 | `apiKey`  | `STET_API_KEY`                | Organization API key                                             |
+| `enabled` | whether a key resolved        | Whether to forward batches at all                                |
 | `salt`    | the request's host            | Mixed into the visitor digest                                    |
 | `onError` | `console.error`               | Called when a batch cannot be forwarded                          |
 
@@ -301,6 +302,26 @@ Responses: `200 { accepted }` on success, `400` for a malformed batch or an
 event that does not match the plan, `502` when Stet could not be reached. An
 event outside the plan fails loudly rather than being dropped quietly, so a
 typo surfaces the first time it runs.
+
+### Keeping development out of your analytics
+
+The same organization key generates your content client, so on a developer's
+machine it is present and real, and every page they load would otherwise land
+in the project your dashboards read. `enabled` is the switch, kept separate
+from the key for exactly that reason:
+
+```ts
+const handler = createAnalyticsHandler(plan, {
+  enabled: process.env.ANALYTICS_ENABLED !== 'false',
+});
+```
+
+Test for the off value rather than the on one, so an environment that never
+sets the variable records instead of silently dropping. A disabled handler
+answers `200 { accepted: 0 }` and still checks each batch against the plan, so
+a typo'd event is still a `400` while you are working on it. Leave it on
+locally, point `STET_ORIGIN` at a Stet of your own, and your dashboard fills up
+with your own traffic instead.
 
 ## Development
 

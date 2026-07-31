@@ -59,8 +59,10 @@ signup. `@repo/auth` records `signup`, `organization.created`,
 
 None here. The route holds them: `STET_ORIGIN`, a var in
 `apps/web/wrangler.jsonc`, and `STET_API_KEY`, a Worker secret set with
-`wrangler secret put`. With no key the route answers 200 and drops the batch,
-which is the local default.
+`wrangler secret put`. The key is not the switch, because it also generates the
+content client and so has to be real wherever content is, a developer's machine
+included; `ANALYTICS_ENABLED` is, and `.dev.vars.example` ships it off. With it
+off, or with no key at all, the route answers 200 and drops the batch.
 
 ## Tests
 
