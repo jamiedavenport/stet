@@ -58,7 +58,7 @@ export function CompareTable({ rival }: { rival: Rival }) @{
         </th>
         <th className="px-5 pb-3 align-bottom">
           <span className="flex items-center gap-2 text-base font-medium whitespace-nowrap">
-            <RivalLogo domain={rival.domain} className="size-4 rounded-xs" />
+            <RivalLogo domain={rival.domain} name={rival.name} className="size-5 rounded-sm text-[0.625rem]" />
             {rival.name}
           </span>
         </th>

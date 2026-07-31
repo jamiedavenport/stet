@@ -13,7 +13,7 @@ export type LinkCard = {
   params?: LinkProps['params'];
   icon?: Icon;
   /** A company's own mark, where the card is about someone else's product. */
-  logoDomain?: string;
+  logo?: { domain: string; name: string };
   title: string;
   /** The strapline under the title. Cards without one show the arrow alone. */
   description: string;
@@ -42,8 +42,8 @@ export function LinkCards({ items, columns = 3 }: { items: LinkCard[]; columns?:
           @if (item.icon !== undefined) {
             <item.icon weight="duotone" className="size-6 shrink-0 text-foreground" />
           }
-          @if (item.logoDomain !== undefined) {
-            <RivalLogo domain={item.logoDomain} />
+          @if (item.logo !== undefined) {
+            <RivalLogo domain={item.logo.domain} name={item.logo.name} />
           }
           <p className="mt-4 text-lg font-medium">{item.title}</p>
           <p className="mt-2 text-base/7 text-pretty text-muted-foreground">{item.description}</p>
@@ -63,7 +63,7 @@ function rivalCards(except: string | undefined): LinkCard[] {
       key: rival.slug,
       to: '/compare/$rival' as const,
       params: { rival: rival.slug },
-      logoDomain: rival.domain,
+      logo: { domain: rival.domain, name: rival.name },
       title: `Stet vs ${rival.name}`,
       description: rival.tagline,
     }));
