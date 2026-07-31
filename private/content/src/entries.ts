@@ -9,7 +9,7 @@ import { broadcastContentChange } from './broadcast';
 import { recordEntryRevision } from './revisions';
 import { parseValues, valuesText } from './schema';
 import type { EntryValues } from './schema';
-import { slugify, uniqueSlug } from './slug';
+import { isDerivedSlug, slugify, uniqueSlug } from './slug';
 
 // Entry domain operations, shared by the server functions and the AI
 // assistant's tools. Server-only, like ./access: callers authenticate,
@@ -74,13 +74,28 @@ export async function updateEntry(
   const db = await database();
   const entry = await requireEntry(organizationId, input.id);
   const type = await requireContentType(organizationId, entry.typeId);
+  // A slug the writer has never touched keeps following the title, which is
+  // what makes renaming a fresh entry feel like nothing happened. The moment
+  // it stops matching the title it is theirs, and a rename leaves it alone:
+  // the slug is the entry's public handle, so moving one anybody has chosen
+  // would break their URLs and their client calls to no purpose.
+  const chosen = input.slug !== undefined && slugify(input.slug) !== entry.slug;
+  const following =
+    !chosen &&
+    input.title !== undefined &&
+    isDerivedSlug(entry.slug, entry.title) &&
+    slugify(input.title) !== entry.slug;
+
   let slug = entry.slug;
-  if (input.slug !== undefined && slugify(input.slug) !== entry.slug) {
+  if (chosen || following) {
     const siblings = await db.query.contentEntry.findMany({
       where: eq(schema.contentEntry.typeId, entry.typeId),
       columns: { slug: true },
     });
-    slug = uniqueSlug(slugify(input.slug), new Set(siblings.map((row) => row.slug)));
+    const taken = new Set(siblings.map((row) => row.slug));
+    // Its own slug is about to be given up, so it cannot collide with itself.
+    taken.delete(entry.slug);
+    slug = uniqueSlug(slugify(chosen ? (input.slug ?? '') : (input.title ?? '')), taken);
   }
   const values =
     input.values === undefined
