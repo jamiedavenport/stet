@@ -1,3 +1,5 @@
+import { createORPCErrorFromJson, isORPCErrorJson } from '@orpc/client';
+
 import { DEFAULT_ORIGIN } from './codegen';
 
 export { DEFAULT_ORIGIN };
@@ -133,15 +135,17 @@ function resolveAssetUrls(payload: unknown, origin: string): unknown {
 
 /**
  * The human message a failed request carries, if any. The API answers an error
- * with a described body — oRPC serializes a thrown error to JSON with a `message`
- * the contract writes for a person (`UNAUTHORIZED` explains the missing
- * `x-api-key` header; `QUOTA_EXCEEDED`, `RATE_LIMITED` and `NOT_FOUND` each say
- * what happened). Pulling it out turns a bare status code into a sentence that
- * names the cause.
+ * with an oRPC error body: a JSON object carrying the `message` the contract
+ * writes for a person (`UNAUTHORIZED` explains the missing `x-api-key` header;
+ * `QUOTA_EXCEEDED`, `RATE_LIMITED` and `NOT_FOUND` each say what happened).
+ * Surfacing it turns a bare status code into a sentence that names the cause.
  *
- * Returns `undefined` when the body is empty or not JSON (a proxy's HTML error
- * page, say) or carries no `message`, so the caller keeps the status-only
- * message rather than inventing one.
+ * The body is validated and read with oRPC's own `isORPCErrorJson` /
+ * `createORPCErrorFromJson`, so the shape check and the `code`-based message
+ * fallback match the server rather than being reimplemented here.
+ *
+ * Returns `undefined` when the body is empty, not JSON, or not an oRPC error
+ * (a proxy's HTML error page, say), so the caller keeps the status-only message.
  */
 async function errorMessage(response: Response): Promise<string | undefined> {
   let body: unknown;
@@ -151,15 +155,7 @@ async function errorMessage(response: Response): Promise<string | undefined> {
     // Empty or non-JSON body — the status-only message is the best we have.
     return undefined;
   }
-  if (typeof body !== 'object' || body === null) {
-    return undefined;
-  }
-  const message = (body as { message?: unknown }).message;
-  if (typeof message !== 'string') {
-    return undefined;
-  }
-  const trimmed = message.trim();
-  return trimmed.length > 0 ? trimmed : undefined;
+  return isORPCErrorJson(body) ? createORPCErrorFromJson(body).message : undefined;
 }
 
 /**
