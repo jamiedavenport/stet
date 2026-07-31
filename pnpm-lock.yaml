@@ -238,18 +238,6 @@ catalogs:
     '@cloudflare/workers-types':
       specifier: ^5.20260723.1
       version: 5.20260723.1
-    '@content-collections/cli':
-      specifier: ^0.1.9
-      version: 0.1.9
-    '@content-collections/core':
-      specifier: ^0.15.2
-      version: 0.15.2
-    '@content-collections/markdown':
-      specifier: ^0.1.4
-      version: 0.1.4
-    '@content-collections/vite':
-      specifier: ^0.3.0
-      version: 0.3.0
     '@fontsource-variable/geist':
       specifier: ^5.3.0
       version: 5.3.0
@@ -307,9 +295,6 @@ catalogs:
     '@sentry/vite-plugin':
       specifier: ^5.4.0
       version: 5.4.0
-    '@shikijs/rehype':
-      specifier: ^4.3.1
-      version: 4.3.1
     '@size-limit/file':
       specifier: ^12.1.0
       version: 12.1.0
@@ -676,6 +661,9 @@ importers:
       '@stetcms/analytics':
         specifier: workspace:*
         version: link:../../published/analytics
+      '@stetcms/client':
+        specifier: workspace:*
+        version: link:../../published/client
       '@stetcms/config':
         specifier: workspace:*
         version: link:../../published/config
@@ -736,6 +724,9 @@ importers:
       ai:
         specifier: 'catalog:'
         version: 6.0.233(zod@4.4.3)
+      marked:
+        specifier: 'catalog:'
+        version: 17.0.6
       partyserver:
         specifier: 'catalog:'
         version: 0.5.8(@cloudflare/workers-types@5.20260723.1)
@@ -764,18 +755,6 @@ importers:
       '@cloudflare/vite-plugin':
         specifier: 'catalog:'
         version: 1.45.1(@voidzero-dev/vite-plus-core@0.2.2(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(publint@0.3.21)(tsx@4.23.1)(typescript@5.9.3)(yaml@2.9.0))(wrangler@4.113.0(@cloudflare/workers-types@5.20260723.1))
-      '@content-collections/cli':
-        specifier: 'catalog:'
-        version: 0.1.9(@content-collections/core@0.15.2(typescript@5.9.3))
-      '@content-collections/core':
-        specifier: 'catalog:'
-        version: 0.15.2(typescript@5.9.3)
-      '@content-collections/markdown':
-        specifier: 'catalog:'
-        version: 0.1.4(@content-collections/core@0.15.2(typescript@5.9.3))(supports-color@10.2.2)
-      '@content-collections/vite':
-        specifier: 'catalog:'
-        version: 0.3.0(@content-collections/core@0.15.2(typescript@5.9.3))(@voidzero-dev/vite-plus-core@0.2.2(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(publint@0.3.21)(tsx@4.23.1)(typescript@5.9.3)(yaml@2.9.0))
       '@playwright/test':
         specifier: 'catalog:'
         version: 1.61.1
@@ -785,12 +764,12 @@ importers:
       '@sentry/vite-plugin':
         specifier: 'catalog:'
         version: 5.4.0(supports-color@10.2.2)
-      '@shikijs/rehype':
-        specifier: 'catalog:'
-        version: 4.3.1
       '@size-limit/file':
         specifier: 'catalog:'
         version: 12.1.0(size-limit@12.1.0(jiti@2.7.0))
+      '@stetcms/vite':
+        specifier: workspace:*
+        version: link:../../published/vite
       '@tailwindcss/vite':
         specifier: 'catalog:'
         version: 4.3.3(@voidzero-dev/vite-plus-core@0.2.2(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(publint@0.3.21)(tsx@4.23.1)(typescript@5.9.3)(yaml@2.9.0))
@@ -2566,30 +2545,6 @@ packages:
     resolution: {integrity: sha512-y7/yvZ2TPAnR9+jnc00klvNNLkJiXFFrQA/hlLCcxA9a2A4zQIOimyFQ9XfwYKiGD1fb5GY8vbKIIgO8d5Tb2A==}
     engines: {node: '>= 20.12.0'}
 
-  '@clerc/core@1.3.1':
-    resolution: {integrity: sha512-8jowdURow2tXga2gUa4E7/j8/9tl5TLXAvtpbnsY3JK4PTcaKB3lyc6YrcfUTJfV06whBzBpPvr3jGcNja3Wtg==}
-
-  '@clerc/parser@1.3.1':
-    resolution: {integrity: sha512-e1rb82ENJNfZYjkf5tR7OcsmwNShINJumxfy7fS9SYypSZNRbQmzHj7k7miQ3u+Mfc08fpBtvpAGqeBWQKQxRQ==}
-
-  '@clerc/plugin-completions@1.3.1':
-    resolution: {integrity: sha512-zotC2qXVnDZLdwsFI6RPzhA90aNLkZSMuAeYsmrTEekknI3KMp2VFMKEBkQ+Zjsq3XCdaT8P4WEvPFkLJIMZjA==}
-    peerDependencies:
-      '@clerc/core': '*'
-
-  '@clerc/plugin-help@1.3.1':
-    resolution: {integrity: sha512-8cibdUMgZpUqv2kVfTK2HcbxeEz53NQnX+SR4Dh0V+oqB95MmRc0ihXUdXb2qR0J5h5zd7F9QC6yRiG9t00F/g==}
-    peerDependencies:
-      '@clerc/core': '*'
-
-  '@clerc/plugin-version@1.3.1':
-    resolution: {integrity: sha512-g8bn+J/oX8dwNhFCwh8E1BGka9Z9PLCjQ+dgByMc7EA7RH0agxU9bWXgHqkL4JFMPhVWFG2w6sGxL6pN6tyq4Q==}
-    peerDependencies:
-      '@clerc/core': '*'
-
-  '@clerc/utils@1.3.1':
-    resolution: {integrity: sha512-wkK6daYkmTQKnhSADMkunfDhNJI6rRCn2R++7cI2EoEBmOZWYqn7frkk5ac7zsxBi0Mc3UnMVaJiNFU+t6PPWQ==}
-
   '@cloudflare/ai-chat@0.9.3':
     resolution: {integrity: sha512-IjOngV/V+Fmlzc4wIl9to2/dKOAB1T5iCl1p623ArLEXPD4d9T5fBQkXWkRlMlVqQvTANZyWAKjwZWHwNdO9/g==}
     peerDependencies:
@@ -2698,33 +2653,6 @@ packages:
 
   '@cloudflare/workers-types@5.20260723.1':
     resolution: {integrity: sha512-+P5tDo+ZjW5nmWq/zagLVIyV8U/mSk7n8n0mLUHjn3pOdY7kdEDmURUxvhwwYqLJ/VPnyMJPAYtZjHbqAnIpDg==}
-
-  '@content-collections/cli@0.1.9':
-    resolution: {integrity: sha512-KLMNihimrB/6/2AtnA775HeBeCZexZ64+JfxahqBCrGUiw3L31/DONVy+Kqb24Zr0dgVLoKHkEGtTAjdx9MYRw==}
-    hasBin: true
-    peerDependencies:
-      '@content-collections/core': 0.x
-
-  '@content-collections/core@0.15.2':
-    resolution: {integrity: sha512-Oaz3J3lw/8NXxmV/YSsTl8tTmxscTiotNp1wUNDHvRqW0MtNU8a0h843XYCFWSrlW5q6dcVoM0rGb2UF8kX5Ig==}
-    peerDependencies:
-      typescript: ^5.0.2 || ^6.0.0 || ^7.0.0
-
-  '@content-collections/integrations@0.5.0':
-    resolution: {integrity: sha512-1en7r518sct0Y8CQ5IsuuBN4uAmtNLaWuxmseW43OxeXyj43Uu2aPBfbopjL4b5xH8WZBdDrrPmikgOl42U46A==}
-    peerDependencies:
-      '@content-collections/core': 0.x
-
-  '@content-collections/markdown@0.1.4':
-    resolution: {integrity: sha512-hUi+O9SDmYmn63aiftSw1KtmSZIjc6ger42rfQobBhPx+3n8kTJsWm1Cs//yU5iIAVRKyLX3qrtlheiOPdJT9w==}
-    peerDependencies:
-      '@content-collections/core': 0.x
-
-  '@content-collections/vite@0.3.0':
-    resolution: {integrity: sha512-1YDIQNXRKfU4diHQswX8xxhBk+0cJTfC54RRQMNMGOWPnkREVcCySt8ZbPZ9/osx3ACT0+kiWvHRzOKMKPubYA==}
-    peerDependencies:
-      '@content-collections/core': ^0.x
-      vite: ^6 || ^7 || ^8
 
   '@cspotcode/source-map-support@0.8.1':
     resolution: {integrity: sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw==}
@@ -5021,10 +4949,6 @@ packages:
     resolution: {integrity: sha512-CXQRQOYy1leqQ8ceTeJdmXv/bsUY++6QyLpXJ94LZAAYj5X2SKRdc5ipguv4NPyGVKItB2PPwUpRNe0Sjh5S1A==}
     engines: {node: '>=20'}
 
-  '@shikijs/rehype@4.3.1':
-    resolution: {integrity: sha512-oshrlfUF3VPUJfnp5K1lLwsS/SRBKrIxONpdWebSKZXdBE3UsZnxgqpvRUA8UsofS7vmjFOCAHIT71ECbmOxTw==}
-    engines: {node: '>=20'}
-
   '@shikijs/themes@4.3.1':
     resolution: {integrity: sha512-dgpoJ4WqNi2yTmizQHBJ5zcX6j2lE6icN/0yt4l1kkf16jrY/pwPLoTb1ETsWMz0OBLf9ZNvwmxft+cH+N9qSA==}
     engines: {node: '>=20'}
@@ -5962,9 +5886,6 @@ packages:
   '@upsetjs/venn.js@2.0.0':
     resolution: {integrity: sha512-WbBhLrooyePuQ1VZxrJjtLvTc4NVfpOyKx0sKqioq9bX1C1m7Jgykkn8gLrtwumBioXIqam8DLxp88Adbue6Hw==}
 
-  '@uttr/tint@0.1.3':
-    resolution: {integrity: sha512-nQlAxBriuQ7NPxvMlxCXdw0n4alhEAIzsjFNNyU4CR7AitUwMFp1A5e/47JYQ7NMcooaI06OEQKylYhNhbpuIA==}
-
   '@vercel/analytics@1.6.1':
     resolution: {integrity: sha512-oH9He/bEM+6oKlv3chWuOOcp8Y6fo6/PSro8hEkgCW3pu9/OiCXiUpRUogDh3Fs3LH2sosDrx8CxeOLBEE+afg==}
     peerDependencies:
@@ -6691,10 +6612,6 @@ packages:
   callsites@3.1.0:
     resolution: {integrity: sha512-P8BjAsXvZS+VIDUI11hHCQEv74YT67YUi5JJFNWIqL235sBmjX4+qx9Muvls5ivyNENctx46xQLQ3aTuE7ssaQ==}
     engines: {node: '>=6'}
-
-  camelcase@8.0.0:
-    resolution: {integrity: sha512-8WB3Jcas3swSvjIeA2yvCJ+Miyz5l1ZmB6HFb9R1317dt9LCQoswg/BGrmAmkWVEszSrrg4RwmO46qIm2OEnSA==}
-    engines: {node: '>=16'}
 
   camelize@1.0.1:
     resolution: {integrity: sha512-dU+Tx2fsypxTgtLoE36npi3UqcjSSMNYfkqgmoEhtZrraP5VWq0K7FkWVTYa8eMPtnU/G2txVsfdCJTn9uzpuQ==}
@@ -7948,9 +7865,6 @@ packages:
   hast-util-to-parse5@8.0.1:
     resolution: {integrity: sha512-MlWT6Pjt4CG9lFCjiz4BH7l9wmrMkfkJYCxFwKQic8+RTZgWPuWxwAfjJElsXkex7DJjfSJsQIt931ilUgmwdA==}
 
-  hast-util-to-string@3.0.1:
-    resolution: {integrity: sha512-XelQVTDWvqcl3axRfI0xSeoVKzyIFPwsAGSLIsKdJKQMXDYJS4WYrBNF/8J7RdhIcFI2BOHgAifggsvsxp/3+A==}
-
   hast-util-to-text@4.0.2:
     resolution: {integrity: sha512-KK6y/BN8lbaq654j7JgBydev7wuNMcID54lkRav1P0CaE1e47P72AWWPiGKXTJU271ooYzcvTAn/Zt0REnvc7A==}
 
@@ -8420,9 +8334,6 @@ packages:
 
   linkifyjs@4.3.3:
     resolution: {integrity: sha512-P8aEP5U/D1/IlTY2OeYsErdwh9bGuLE30NcXtKEjgdHcahveQoQwM2yZNsioQHsWFz0P7KKudisbrzCgR0sDHg==}
-
-  lite-emit@4.0.0:
-    resolution: {integrity: sha512-8krVeIZLS7JbkXz4R9xYziqHcxga6UgmomVWb45g21aB4M8qzDwr7FTEW3PJa80PTUASXeqbfipveKCB5YZdug==}
 
   load-tsconfig@0.2.5:
     resolution: {integrity: sha512-IXO6OCs9yg8tMKzfPZ1YmheJbZCiEsnBdcB03l0OcfK9prKnJb96siuHCr5Fl37/yo9DnKU+TLpxzTUspw9shg==}
@@ -9002,10 +8913,6 @@ packages:
     resolution: {integrity: sha512-TYOanM3wGwNGsZN2cVTYPArw454xnXj5qmWF1bEoAc4+cU/ol7GVh7odevjp1FNHduHc3KZMcFduxU5Xc6uJRQ==}
     engines: {node: '>=10'}
 
-  p-limit@6.2.0:
-    resolution: {integrity: sha512-kuUqqHNUqoIWp/c467RI4X6mmyuojY5jGutNU0wVTmEOOfcuwLqyMVoAi9MKi2Ak+5i9+nhmrK4ufZE8069kHA==}
-    engines: {node: '>=18'}
-
   p-limit@7.3.1:
     resolution: {integrity: sha512-0trZaiG7Y7kN/Egy9a8j47t9osC0Tch4PaIWd9yGF6bvmlk7muExRvGNYb8sXBwEKMoNKsbNN9P8EefuQekE4Q==}
     engines: {node: '>=20'}
@@ -9178,10 +9085,6 @@ packages:
     resolution: {integrity: sha512-DWnY5o3YbLWK4GovuAVwpqL+1VwGNdUGrRr++8j8PtQQzvAVZUIMjKQ90fY689sEJZJBbZVw1rXaOKSTitkzPQ==}
     engines: {node: '>=18'}
     hasBin: true
-
-  pluralize@8.0.0:
-    resolution: {integrity: sha512-Nc3IT5yHzflTfbjgqWcCPpo7DaKy4FnpB0l/zCAW0Tc7jxAiuqSxHasntB3D7887LSrA93kDJ9IXovxJYxyLCA==}
-    engines: {node: '>=4'}
 
   pngjs@7.0.0:
     resolution: {integrity: sha512-LKWqWJRhstyYo9pGvgor/ivk2w94eSjE3RGVuzLGlr3NmD8bf7RcYGze1mNdEHRP6TRP6rMuDHk5t44hnTRyow==}
@@ -9637,10 +9540,6 @@ packages:
     resolution: {integrity: sha512-1gnZf7DFcoIcajTjTwjwuDjzuz4PPcY2StKPlsGAQ1+YH20IRVrBaXSWmdjowTJ6u8Rc01PoYOGHXfP1mYcZNQ==}
     engines: {node: '>= 18'}
 
-  serialize-javascript@7.0.7:
-    resolution: {integrity: sha512-YAy8Od6KV+uuwUuU50np8fGB/Aues6Y0nAhA9y/hId74PlKUcme4pXcBD46NWKr1Q4osN/iseZ17YqO1XfmI8g==}
-    engines: {node: '>=20.0.0'}
-
   seroval-plugins@1.5.5:
     resolution: {integrity: sha512-+BDhqYM6CEn3x09v44dpa9p6974FuUB2dxk+Ctn04k0cO1Zt6QODTXfmEZK0eBaTe/fJBvP4NMGuNJ+R8T+QMg==}
     engines: {node: '>=10'}
@@ -9938,9 +9837,6 @@ packages:
   term-size@2.2.1:
     resolution: {integrity: sha512-wK0Ri4fOGjv/XPy8SBHZChl8CM7uMc5VML7SqiQ0zG7+J5Vr+RMQDoHa2CNT6KHUnTGIXH34UDMkPzAUyapBZg==}
     engines: {node: '>=8'}
-
-  text-table@0.2.0:
-    resolution: {integrity: sha512-N+8UisAXDGk8PFXP4HAzVR9nbfmVJ3zYLAWiTIoqC5v5isinhr+r5uaO8+7r3BMfuNIufIsA7RdpVgacC2cSpw==}
 
   throttleit@2.1.0:
     resolution: {integrity: sha512-nt6AMGKW1p/70DF/hGBdJB57B8Tspmbp5gfJ8ilhLnt7kkr2ye7hzD6NVG8GGErk2HWF34igrL2CXmNIkzKqKw==}
@@ -11683,35 +11579,6 @@ snapshots:
       fast-wrap-ansi: 0.2.2
       sisteransi: 1.0.5
 
-  '@clerc/core@1.3.1':
-    dependencies:
-      '@clerc/parser': 1.3.1
-      '@clerc/utils': 1.3.1
-      lite-emit: 4.0.0
-
-  '@clerc/parser@1.3.1':
-    dependencies:
-      '@clerc/utils': 1.3.1
-
-  '@clerc/plugin-completions@1.3.1(@clerc/core@1.3.1)':
-    dependencies:
-      '@clerc/core': 1.3.1
-
-  '@clerc/plugin-help@1.3.1(@clerc/core@1.3.1)':
-    dependencies:
-      '@clerc/core': 1.3.1
-      '@clerc/utils': 1.3.1
-      '@uttr/tint': 0.1.3
-      fast-string-width: 3.0.2
-      text-table: 0.2.0
-
-  '@clerc/plugin-version@1.3.1(@clerc/core@1.3.1)':
-    dependencies:
-      '@clerc/core': 1.3.1
-      '@clerc/utils': 1.3.1
-
-  '@clerc/utils@1.3.1': {}
-
   '@cloudflare/ai-chat@0.9.3(@ai-sdk/react@3.0.235(react@19.2.7)(zod@4.4.3))(agents@0.17.4(@ai-sdk/react@3.0.235(react@19.2.7)(zod@4.4.3))(@babel/core@8.0.1)(@babel/runtime@7.29.7)(@cloudflare/workers-types@5.20260723.1)(@voidzero-dev/vite-plus-core@0.2.2(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(publint@0.3.21)(tsx@4.23.1)(typescript@5.9.3)(yaml@2.9.0))(ai@6.0.233(zod@4.4.3))(react@19.2.7)(rolldown@1.1.5)(supports-color@10.2.2)(zod@4.4.3))(ai@6.0.233(zod@4.4.3))(react@19.2.7)(zod@4.4.3)':
     dependencies:
       '@ai-sdk/react': 3.0.235(react@19.2.7)(zod@4.4.3)
@@ -11788,51 +11655,6 @@ snapshots:
     optional: true
 
   '@cloudflare/workers-types@5.20260723.1': {}
-
-  '@content-collections/cli@0.1.9(@content-collections/core@0.15.2(typescript@5.9.3))':
-    dependencies:
-      '@clerc/core': 1.3.1
-      '@clerc/plugin-completions': 1.3.1(@clerc/core@1.3.1)
-      '@clerc/plugin-help': 1.3.1(@clerc/core@1.3.1)
-      '@clerc/plugin-version': 1.3.1(@clerc/core@1.3.1)
-      '@content-collections/core': 0.15.2(typescript@5.9.3)
-      '@content-collections/integrations': 0.5.0(@content-collections/core@0.15.2(typescript@5.9.3))
-
-  '@content-collections/core@0.15.2(typescript@5.9.3)':
-    dependencies:
-      '@standard-schema/spec': 1.1.0
-      camelcase: 8.0.0
-      chokidar: 5.0.0
-      esbuild: 0.25.12
-      gray-matter: 4.0.3
-      p-limit: 6.2.0
-      picomatch: 4.0.5
-      pluralize: 8.0.0
-      serialize-javascript: 7.0.7
-      tinyglobby: 0.2.17
-      typescript: 5.9.3
-      yaml: 2.9.0
-
-  '@content-collections/integrations@0.5.0(@content-collections/core@0.15.2(typescript@5.9.3))':
-    dependencies:
-      '@content-collections/core': 0.15.2(typescript@5.9.3)
-
-  '@content-collections/markdown@0.1.4(@content-collections/core@0.15.2(typescript@5.9.3))(supports-color@10.2.2)':
-    dependencies:
-      '@content-collections/core': 0.15.2(typescript@5.9.3)
-      rehype-raw: 7.0.0
-      rehype-stringify: 10.0.1
-      remark-parse: 11.0.0(supports-color@10.2.2)
-      remark-rehype: 11.1.2
-      unified: 11.0.5
-    transitivePeerDependencies:
-      - supports-color
-
-  '@content-collections/vite@0.3.0(@content-collections/core@0.15.2(typescript@5.9.3))(@voidzero-dev/vite-plus-core@0.2.2(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(publint@0.3.21)(tsx@4.23.1)(typescript@5.9.3)(yaml@2.9.0))':
-    dependencies:
-      '@content-collections/core': 0.15.2(typescript@5.9.3)
-      '@content-collections/integrations': 0.5.0(@content-collections/core@0.15.2(typescript@5.9.3))
-      vite: '@voidzero-dev/vite-plus-core@0.2.2(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(publint@0.3.21)(tsx@4.23.1)(typescript@5.9.3)(yaml@2.9.0)'
 
   '@cspotcode/source-map-support@0.8.1':
     dependencies:
@@ -13690,15 +13512,6 @@ snapshots:
       '@shikijs/vscode-textmate': 10.0.2
       '@types/hast': 3.0.5
 
-  '@shikijs/rehype@4.3.1':
-    dependencies:
-      '@shikijs/types': 4.3.1
-      '@types/hast': 3.0.5
-      hast-util-to-string: 3.0.1
-      shiki: 4.3.1
-      unified: 11.0.5
-      unist-util-visit: 5.1.0
-
   '@shikijs/themes@4.3.1':
     dependencies:
       '@shikijs/types': 4.3.1
@@ -14882,8 +14695,6 @@ snapshots:
       d3-selection: 3.0.0
       d3-transition: 3.0.1(d3-selection@3.0.0)
 
-  '@uttr/tint@0.1.3': {}
-
   '@vercel/analytics@1.6.1(react@19.2.7)':
     optionalDependencies:
       react: 19.2.7
@@ -15692,8 +15503,6 @@ snapshots:
       get-intrinsic: 1.3.0
 
   callsites@3.1.0: {}
-
-  camelcase@8.0.0: {}
 
   camelize@1.0.1: {}
 
@@ -16997,10 +16806,6 @@ snapshots:
       web-namespaces: 2.0.1
       zwitch: 2.0.4
 
-  hast-util-to-string@3.0.1:
-    dependencies:
-      '@types/hast': 3.0.5
-
   hast-util-to-text@4.0.2:
     dependencies:
       '@types/hast': 3.0.5
@@ -17384,8 +17189,6 @@ snapshots:
   lines-and-columns@1.2.4: {}
 
   linkifyjs@4.3.3: {}
-
-  lite-emit@4.0.0: {}
 
   load-tsconfig@0.2.5: {}
 
@@ -18302,10 +18105,6 @@ snapshots:
     dependencies:
       yocto-queue: 0.1.0
 
-  p-limit@6.2.0:
-    dependencies:
-      yocto-queue: 1.2.2
-
   p-limit@7.3.1:
     dependencies:
       yocto-queue: 1.2.2
@@ -18464,8 +18263,6 @@ snapshots:
       playwright-core: 1.61.1
     optionalDependencies:
       fsevents: 2.3.2
-
-  pluralize@8.0.0: {}
 
   pngjs@7.0.0: {}
 
@@ -19085,8 +18882,6 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  serialize-javascript@7.0.7: {}
-
   seroval-plugins@1.5.5(seroval@1.5.5):
     dependencies:
       seroval: 1.5.5
@@ -19458,8 +19253,6 @@ snapshots:
       yallist: 5.0.0
 
   term-size@2.2.1: {}
-
-  text-table@0.2.0: {}
 
   throttleit@2.1.0: {}
 

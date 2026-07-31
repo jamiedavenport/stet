@@ -1,22 +1,13 @@
-import { allPosts, allReleases } from 'content-collections';
-import type { Post, Release } from 'content-collections';
+import { createServerFn } from '@tanstack/react-start';
 
-// Dates are `YYYY-MM-DD` (see content-collections.ts), so they order
-// lexicographically. `toSorted` leaves the generated arrays untouched.
-function newestFirst<T extends { date: string }>(items: T[]): T[] {
-  return items.toSorted((a, b) => b.date.localeCompare(a.date));
-}
+import { findPost, listPosts } from '#/marketing/posts';
 
-/** All blog posts, newest first. */
-export function sortedPosts(): Post[] {
-  return newestFirst(allPosts);
-}
+// Route loaders run in the browser as well as the worker, so they reach Stet
+// through server functions: the organization API key stays on the server, the
+// same way a customer's own app would read its content.
 
-export function findPost(slug: string): Post | undefined {
-  return allPosts.find((post) => post.slug === slug);
-}
+export const fetchPosts = createServerFn({ method: 'GET' }).handler(() => listPosts());
 
-/** All changelog releases, newest first. */
-export function sortedReleases(): Release[] {
-  return newestFirst(allReleases);
-}
+export const fetchPost = createServerFn({ method: 'GET' })
+  .validator((slug: string) => slug)
+  .handler(({ data }) => findPost(data));

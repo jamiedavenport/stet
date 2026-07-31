@@ -3,7 +3,7 @@ import { createFileRoute } from '@tanstack/react-router';
 import { features } from '#/marketing/data/features';
 import { personas } from '#/marketing/data/personas';
 import { rivals } from '#/marketing/data/rivals';
-import { sortedPosts, sortedReleases } from '#/marketing/content';
+import { listPosts, postDate } from '#/marketing/posts';
 import { siteUrl } from '#/marketing/seo';
 
 // Marketing pages only: the signed-in app, auth pages, and API stay out of
@@ -11,8 +11,8 @@ import { siteUrl } from '#/marketing/seo';
 export const Route = createFileRoute('/sitemap.xml')({
   server: {
     handlers: {
-      GET: () => {
-        const latestRelease = sortedReleases().at(0)?.date;
+      GET: async () => {
+        const posts = await listPosts();
 
         const pages: { path: string; lastmod?: string }[] = [
           { path: '/' },
@@ -24,11 +24,10 @@ export const Route = createFileRoute('/sitemap.xml')({
           ...rivals.map((rival) => ({ path: `/compare/${rival.slug}` })),
           { path: '/pricing' },
           { path: '/blog' },
-          { path: '/changelog', lastmod: latestRelease },
           { path: '/contact' },
           { path: '/privacy' },
           { path: '/cookies' },
-          ...sortedPosts().map((post) => ({ path: `/blog/${post.slug}`, lastmod: post.date })),
+          ...posts.map((post) => ({ path: `/blog/${post.slug}`, lastmod: postDate(post) })),
         ];
 
         const urls = pages

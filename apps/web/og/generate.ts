@@ -5,17 +5,16 @@ import { fileURLToPath } from 'node:url';
 import { brand } from '@repo/brand';
 import { createOgHandler } from '@jxdltd/tanstack/og/server';
 
-import { sortedPosts } from '../src/marketing/content';
 import { features } from '../src/marketing/data/features';
 import { personas } from '../src/marketing/data/personas';
 import { rivals } from '../src/marketing/data/rivals';
-import config from './config';
+import config, { ogPosts } from './config';
 import template from './template';
 
 // Each dynamic config key expands from the data behind it, so a new post,
 // feature, persona or comparison gets its image without touching this file.
 const expansions: Record<string, string[]> = {
-  '/blog/$slug': sortedPosts().map((post) => `/blog/${post.slug}`),
+  '/blog/$slug': (await ogPosts()).map((post) => `/blog/${post.slug}`),
   '/features/$slug': features.map((feature) => `/features/${feature.slug}`),
   '/for/$persona': personas.map((persona) => `/for/${persona.slug}`),
   '/compare/$rival': rivals.map((rival) => `/compare/${rival.slug}`),

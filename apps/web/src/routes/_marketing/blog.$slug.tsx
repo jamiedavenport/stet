@@ -3,12 +3,13 @@ import { Link, createFileRoute, notFound } from '@tanstack/react-router';
 import { brand } from '@repo/brand';
 import { DisplayHeading, Label, Lede, PostMeta, TagRow } from '@repo/ui/marketing/ui.tsrx';
 import { MarketingCta } from '#/marketing/sections/bands.tsrx';
-import { findPost } from '#/marketing/content';
+import { fetchPost } from '#/marketing/content';
+import { postDate, postSummary } from '#/marketing/posts';
 import { blogPostingJsonLd, seo } from '#/marketing/seo';
 
 export const Route = createFileRoute('/_marketing/blog/$slug')({
-  loader: ({ params }) => {
-    const post = findPost(params.slug);
+  loader: async ({ params }) => {
+    const post = await fetchPost({ data: params.slug });
     if (post === undefined) {
       throw notFound();
     }
@@ -19,7 +20,7 @@ export const Route = createFileRoute('/_marketing/blog/$slug')({
       ? {
           ...seo({
             title: `${loaderData.post.title} · ${brand.name}`,
-            description: loaderData.post.summary,
+            description: postSummary(loaderData.post),
             path: `/blog/${loaderData.post.slug}`,
             type: 'article',
           }),
@@ -53,9 +54,9 @@ function BlogPostPage() {
           <DisplayHeading as="h1" className="max-w-[24ch] text-4xl text-pretty sm:text-5xl">
             {post.title}
           </DisplayHeading>
-          <PostMeta author={post.author} readingTime={post.readingTime} className="mt-5" />
-          <Lede className="mt-6">{post.summary}</Lede>
-          <TagRow tags={post.tags} className="mt-6" />
+          <PostMeta author={post.fields.author?.name} date={postDate(post)} className="mt-5" />
+          <Lede className="mt-6">{postSummary(post)}</Lede>
+          <TagRow tags={post.fields.tags ?? []} className="mt-6" />
           <div
             className="prose mt-12 max-w-[65ch]"
             dangerouslySetInnerHTML={{ __html: post.html }}

@@ -18,7 +18,6 @@ import { Route as RssDotxmlRouteImport } from './routes/rss[.]xml'
 import { Route as SignRouteRouteImport } from './routes/sign/route'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as MarketingIndexRouteImport } from './routes/_marketing/index'
-import { Route as MarketingChangelogRouteImport } from './routes/_marketing/changelog'
 import { Route as MarketingContactRouteImport } from './routes/_marketing/contact'
 import { Route as MarketingCookiesRouteImport } from './routes/_marketing/cookies'
 import { Route as MarketingPricingRouteImport } from './routes/_marketing/pricing'
@@ -106,11 +105,6 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
 const MarketingIndexRoute = MarketingIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => MarketingRoute,
-} as any)
-const MarketingChangelogRoute = MarketingChangelogRouteImport.update({
-  id: '/changelog',
-  path: '/changelog',
   getParentRoute: () => MarketingRoute,
 } as any)
 const MarketingContactRoute = MarketingContactRouteImport.update({
@@ -346,7 +340,6 @@ export interface FileRoutesByFullPath {
   '/rss.xml': typeof RssDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/app/admin': typeof AppAdminRouteRouteWithChildren
-  '/changelog': typeof MarketingChangelogRoute
   '/contact': typeof MarketingContactRoute
   '/cookies': typeof MarketingCookiesRoute
   '/pricing': typeof MarketingPricingRoute
@@ -398,7 +391,6 @@ export interface FileRoutesByTo {
   '/robots.txt': typeof RobotsDottxtRoute
   '/rss.xml': typeof RssDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/changelog': typeof MarketingChangelogRoute
   '/contact': typeof MarketingContactRoute
   '/cookies': typeof MarketingCookiesRoute
   '/pricing': typeof MarketingPricingRoute
@@ -455,7 +447,6 @@ export interface FileRoutesById {
   '/rss.xml': typeof RssDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/app/admin': typeof AppAdminRouteRouteWithChildren
-  '/_marketing/changelog': typeof MarketingChangelogRoute
   '/_marketing/contact': typeof MarketingContactRoute
   '/_marketing/cookies': typeof MarketingCookiesRoute
   '/_marketing/pricing': typeof MarketingPricingRoute
@@ -513,7 +504,6 @@ export interface FileRouteTypes {
     | '/rss.xml'
     | '/sitemap.xml'
     | '/app/admin'
-    | '/changelog'
     | '/contact'
     | '/cookies'
     | '/pricing'
@@ -565,7 +555,6 @@ export interface FileRouteTypes {
     | '/robots.txt'
     | '/rss.xml'
     | '/sitemap.xml'
-    | '/changelog'
     | '/contact'
     | '/cookies'
     | '/pricing'
@@ -621,7 +610,6 @@ export interface FileRouteTypes {
     | '/rss.xml'
     | '/sitemap.xml'
     | '/app/admin'
-    | '/_marketing/changelog'
     | '/_marketing/contact'
     | '/_marketing/cookies'
     | '/_marketing/pricing'
@@ -750,13 +738,6 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof MarketingIndexRouteImport
-      parentRoute: typeof MarketingRoute
-    }
-    '/_marketing/changelog': {
-      id: '/_marketing/changelog'
-      path: '/changelog'
-      fullPath: '/changelog'
-      preLoaderRoute: typeof MarketingChangelogRouteImport
       parentRoute: typeof MarketingRoute
     }
     '/_marketing/contact': {
@@ -1149,7 +1130,6 @@ const SignRouteRouteWithChildren = SignRouteRoute._addFileChildren(
 )
 
 interface MarketingRouteChildren {
-  MarketingChangelogRoute: typeof MarketingChangelogRoute
   MarketingContactRoute: typeof MarketingContactRoute
   MarketingCookiesRoute: typeof MarketingCookiesRoute
   MarketingPricingRoute: typeof MarketingPricingRoute
@@ -1166,7 +1146,6 @@ interface MarketingRouteChildren {
 }
 
 const MarketingRouteChildren: MarketingRouteChildren = {
-  MarketingChangelogRoute: MarketingChangelogRoute,
   MarketingContactRoute: MarketingContactRoute,
   MarketingCookiesRoute: MarketingCookiesRoute,
   MarketingPricingRoute: MarketingPricingRoute,

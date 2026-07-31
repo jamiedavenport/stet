@@ -9,6 +9,15 @@ import { cn } from '../lib/utils';
 
 // Plain marketing primitives on the app's design tokens.
 
+// Built per call so dates format in the request's locale.
+function formatDate(date: string): string {
+  return new Intl.DateTimeFormat('en-GB', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  }).format(new Date(date));
+}
+
 export function Wordmark() @{
   <span className="flex items-center gap-2.5 text-lg font-semibold">
     <BrandMark className="w-6 shrink-0" />
@@ -85,16 +94,16 @@ export function MarketingLink({ to, params, hash, href, className, children }: L
 
 export function PostMeta({
   author,
-  readingTime,
+  date,
   className,
 }: {
   author?: string;
-  readingTime: number;
+  /** `YYYY-MM-DD`; formatted here so it reads as a date rather than a key. */
+  date?: string;
   className?: string;
 }) @{
   <p className={cn('text-sm text-muted-foreground', className)}>
-    {author ? `${author} · ` : ''}
-    {`${readingTime} min read`}
+    {[author, date === undefined ? undefined : formatDate(date)].filter(Boolean).join(' · ')}
   </p>
 }
 
