@@ -3,7 +3,7 @@ import { createFileRoute } from '@tanstack/react-router';
 import { features } from '#/marketing/data/features';
 import { personas } from '#/marketing/data/personas';
 import { rivals } from '#/marketing/data/rivals';
-import { listPosts } from '#/marketing/posts';
+import { listPosts, postDate } from '#/marketing/posts';
 import { siteUrl } from '#/marketing/seo';
 
 // Marketing pages only: the signed-in app, auth pages, and API stay out of
@@ -27,7 +27,7 @@ export const Route = createFileRoute('/sitemap.xml')({
           { path: '/contact' },
           { path: '/privacy' },
           { path: '/cookies' },
-          ...posts.map((post) => ({ path: `/blog/${post.slug}`, lastmod: post.date })),
+          ...posts.map((post) => ({ path: `/blog/${post.slug}`, lastmod: postDate(post) })),
         ];
 
         const urls = pages

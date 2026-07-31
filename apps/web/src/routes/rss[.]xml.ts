@@ -1,7 +1,7 @@
 import { brand } from '@repo/brand';
 import { createFileRoute } from '@tanstack/react-router';
 
-import { listPosts } from '#/marketing/posts';
+import { listPosts, postDate, postSummary } from '#/marketing/posts';
 import { siteUrl } from '#/marketing/seo';
 
 function escapeXml(value: string) {
@@ -23,8 +23,8 @@ export const Route = createFileRoute('/rss.xml')({
       <title>${escapeXml(post.title)}</title>
       <link>${siteUrl}/blog/${post.slug}</link>
       <guid isPermaLink="true">${siteUrl}/blog/${post.slug}</guid>
-      <description>${escapeXml(post.summary)}</description>
-      <pubDate>${new Date(post.date).toUTCString()}</pubDate>
+      <description>${escapeXml(postSummary(post))}</description>
+      <pubDate>${new Date(postDate(post)).toUTCString()}</pubDate>
     </item>`,
           )
           .join('\n');

@@ -4,7 +4,7 @@ import { createFileRoute } from '@tanstack/react-router';
 import { features } from '#/marketing/data/features';
 import { personas } from '#/marketing/data/personas';
 import { rivals } from '#/marketing/data/rivals';
-import { listPosts } from '#/marketing/posts';
+import { listPosts, postSummary } from '#/marketing/posts';
 import { siteUrl } from '#/marketing/seo';
 
 // A plain-text overview for AI agents, following the llms.txt convention.
@@ -13,7 +13,7 @@ export const Route = createFileRoute('/llms.txt')({
     handlers: {
       GET: async () => {
         const posts = (await listPosts()).map(
-          (post) => `- [${post.title}](${siteUrl}/blog/${post.slug}): ${post.summary}`,
+          (post) => `- [${post.title}](${siteUrl}/blog/${post.slug}): ${postSummary(post)}`,
         );
 
         const text = [

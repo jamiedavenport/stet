@@ -5,6 +5,7 @@ import { RailList, RailRow } from '@repo/ui/marketing/lists.tsrx';
 import { PageIntro } from '@repo/ui/marketing/section.tsrx';
 import { DisplayHeading, PostMeta, TagRow } from '@repo/ui/marketing/ui.tsrx';
 import { fetchPosts } from '#/marketing/content';
+import { postDate, postSummary } from '#/marketing/posts';
 import { seo } from '#/marketing/seo';
 
 export const Route = createFileRoute('/_marketing/blog/')({
@@ -32,7 +33,7 @@ function BlogIndexPage() {
         {posts.map((post) => (
           <RailRow
             key={post.slug}
-            rail={<PostMeta author={post.author} readingTime={post.readingTime} />}
+            rail={<PostMeta author={post.fields.author?.name} date={postDate(post)} />}
           >
             <DisplayHeading as="h2" className="max-w-[40ch] text-2xl text-pretty">
               <Link to="/blog/$slug" params={{ slug: post.slug }} className="hover:underline">
@@ -40,9 +41,9 @@ function BlogIndexPage() {
               </Link>
             </DisplayHeading>
             <p className="mt-3 max-w-[56ch] text-sm/6 text-pretty text-muted-foreground">
-              {post.summary}
+              {postSummary(post)}
             </p>
-            <TagRow tags={post.tags} className="mt-4" />
+            <TagRow tags={post.fields.tags ?? []} className="mt-4" />
           </RailRow>
         ))}
       </RailList>
