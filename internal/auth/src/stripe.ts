@@ -48,6 +48,7 @@ export function stripeOptions({
           seatPriceId: stripePricePaid ?? '',
         },
       ],
+      getCheckoutSessionParams: () => ({ params: { allow_promotion_codes: true } }),
       // Billing truths come from Stripe's webhooks, so these captures cover
       // checkout and portal changes alike. referenceId is the subscribing
       // organization's id.
