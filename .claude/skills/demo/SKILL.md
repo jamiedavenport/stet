@@ -1,6 +1,6 @@
 ---
 name: demo
-description: Reset local data to the demo state described in notes/demo-script.md - a clean organization, the seeded workspace, and a month of analytics traffic. Use when asked to reset, reseed, or prepare the demo, or to get a clean seeded local environment.
+description: Reset local data to the demo state - a clean organization, the seeded workspace, and a month of analytics traffic. Use when asked to reset, reseed, or prepare the demo, or to get a clean seeded local environment.
 ---
 
 # Demo reset
@@ -51,5 +51,3 @@ the organization clean, and it is not optional after a rehearsal import:
   is a long silence on a call).
 - Warming is the user's job: click through every route the demo visits so
   nothing compiles live, and leave `/app/import` loaded rather than `/app`.
-
-`notes/demo-script.md` is the run sheet.
