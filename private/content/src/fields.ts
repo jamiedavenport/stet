@@ -213,7 +213,7 @@ export async function deleteField(organizationId: string, id: string, actor: Act
   // not rewritten here.
   await db
     .update(schema.contentField)
-    .set({ deletedAt: new Date() })
+    .set({ deletedAt: new Date(), deletedBy: actor.userId })
     .where(eq(schema.contentField.id, field.id));
   await recordAudit({
     organizationId,

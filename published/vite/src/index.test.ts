@@ -110,7 +110,13 @@ describe('renderContentModule', () => {
             kind: 'collection',
             fields: [
               { key: 'summary', name: 'Summary', type: 'text', options: [] },
-              { key: 'subtitle', name: 'Subtitle', type: 'text', options: [], deprecated: true },
+              {
+                key: 'subtitle',
+                name: 'Subtitle',
+                type: 'text',
+                options: [],
+                deprecated: { at: '2026-03-12T09:41:00.000Z', by: 'Ada Lovelace' },
+              },
             ],
           },
         ],
@@ -120,10 +126,40 @@ describe('renderContentModule', () => {
 
     expect(deleted).toContain('"subtitle"?: string | null;');
     expect(deleted).toContain(
-      '/** @deprecated Deleted from the content model; entries no longer carry a value. */',
+      '/** @deprecated Deleted from the content model on 2026-03-12 by Ada Lovelace; ' +
+        'entries no longer carry a value. */',
     );
     // Only the deleted one is marked.
     expect(deleted.split('@deprecated')).toHaveLength(2);
+  });
+
+  it('deprecates without an author when nobody signed in made the deletion', () => {
+    const deleted = renderContentModule(
+      {
+        types: [
+          {
+            slug: 'posts',
+            name: 'Posts',
+            kind: 'collection',
+            fields: [
+              {
+                key: 'subtitle',
+                name: 'Subtitle',
+                type: 'text',
+                options: [],
+                deprecated: { at: '2026-03-12T09:41:00.000Z' },
+              },
+            ],
+          },
+        ],
+      },
+      'http://localhost:3000',
+    );
+
+    expect(deleted).toContain(
+      '/** @deprecated Deleted from the content model on 2026-03-12; ' +
+        'entries no longer carry a value. */',
+    );
   });
 
   it('keeps the reference doc when a reference field is deprecated', () => {
@@ -141,7 +177,7 @@ describe('renderContentModule', () => {
                 type: 'reference',
                 options: [],
                 collection: 'authors',
-                deprecated: true,
+                deprecated: { at: '2026-03-12T09:41:00.000Z', by: 'Ada Lovelace' },
               },
             ],
           },

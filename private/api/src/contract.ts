@@ -257,6 +257,13 @@ export const contentFieldTypeSchema = z.enum([
 
 export type ContentFieldType = z.infer<typeof contentFieldTypeSchema>;
 
+export const contentDeprecationSchema = z.object({
+  /** When the field was deleted from the model. */
+  at: z.iso.datetime(),
+  /** Who deleted it; absent when no signed-in user did, or the account is gone. */
+  by: z.string().optional(),
+});
+
 export const contentFieldSchema = z.object({
   key: z.string(),
   name: z.string(),
@@ -266,13 +273,14 @@ export const contentFieldSchema = z.object({
   /** Slug of the collection a reference or multi-reference field points at. */
   collection: z.string().optional(),
   /**
-   * Present, and true, once the field has been deleted from the model. Only
-   * `/model` carries these: entries no longer hold a value for the key, so
-   * the routes that describe a payload leave them out. A generated client
-   * turns the flag into a deprecation rather than dropping the key, so code
-   * reading it keeps compiling.
+   * Present once the field has been deleted from the model, naming when and
+   * by whom so a stale key can be traced back to the change that retired it.
+   * Only `/model` carries these: entries no longer hold a value for the key,
+   * so the routes that describe a payload leave them out. A generated client
+   * turns it into a deprecation rather than dropping the key, so code reading
+   * it keeps compiling.
    */
-  deprecated: z.boolean().optional(),
+  deprecated: contentDeprecationSchema.optional(),
 });
 
 export const contentTypeSchema = z.object({
@@ -314,8 +322,8 @@ const getContentModel = oc
     summary: 'Content model',
     description:
       'Every collection and map in the organization with its fields. The generated client is ' +
-      'typed from this. Deleted fields are still listed, flagged `deprecated`, so a client ' +
-      'regenerated after a deletion marks the key instead of dropping it.',
+      'typed from this. Deleted fields are still listed, carrying a `deprecated` record of when ' +
+      'and by whom, so a client regenerated after a deletion marks the key instead of dropping it.',
     tags: ['Content'],
   })
   .output(z.object({ types: z.array(contentTypeSchema) }));

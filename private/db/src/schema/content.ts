@@ -46,6 +46,12 @@ export const contentField = sqliteTable(
      * under it.
      */
     deletedAt: integer('deleted_at', { mode: 'timestamp' }),
+    /**
+     * Who deleted it, so the deprecation the generated client emits can name
+     * them and a developer can ask. Null when no signed-in user did it, or
+     * once that account is gone.
+     */
+    deletedBy: text('deleted_by').references(() => user.id, { onDelete: 'set null' }),
   },
   (table) => [
     uniqueIndex('content_field_key_idx').on(table.typeId, table.key),

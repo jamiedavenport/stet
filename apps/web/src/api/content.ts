@@ -10,6 +10,13 @@ import { fieldTypeSchema, isReferenceType, parseConfig, parseValues } from '@rep
 import type { FieldValue } from '@repo/content/schema';
 import { bodyMarkdown } from '@repo/content/body';
 
+type Deprecation = {
+  /** When the field was deleted. */
+  at: string;
+  /** Who deleted it; absent when no signed-in user did, or the account is gone. */
+  by?: string;
+};
+
 type Field = {
   key: string;
   name: string;
@@ -17,8 +24,8 @@ type Field = {
   options: { id: string; name: string; color: string }[];
   /** The content type a reference field points at; undefined for other types. */
   targetTypeId?: string;
-  /** Deleted from the model. Only the model route carries these. */
-  deprecated: boolean;
+  /** Set once the field is deleted from the model. Only the model route carries these. */
+  deprecated?: Deprecation;
 };
 
 /** What ids in entry values resolve to, gathered once per request. */
@@ -52,7 +59,7 @@ async function loadType(organizationId: string, slug: string) {
   return { ...type, fields: await loadFields(type.id) };
 }
 
-function toField(row: typeof schema.contentField.$inferSelect): Field {
+function toField(row: typeof schema.contentField.$inferSelect, deprecated?: Deprecation): Field {
   const config = parseConfig(row.config);
   return {
     key: row.key,
@@ -60,27 +67,37 @@ function toField(row: typeof schema.contentField.$inferSelect): Field {
     type: fieldTypeSchema.parse(row.type),
     options: config.options ?? [],
     targetTypeId: config.typeId,
-    deprecated: row.deletedAt !== null,
+    deprecated,
   };
 }
 
 /** The fields entries are read through: what an editor can still fill in. */
 async function loadFields(typeId: string): Promise<Field[]> {
-  return (await liveFields(typeId)).map(toField);
+  return (await liveFields(typeId)).map((row) => toField(row));
 }
 
 /**
  * The fields the model is published with, tombstones and all. A deleted field
  * stays here as a deprecation so a regenerated client marks the key rather
- * than dropping it out from under code that reads it.
+ * than dropping it out from under code that reads it. The deleter is joined in
+ * so the deprecation can say who to ask about a key that has gone.
  */
 async function loadModelFields(typeId: string): Promise<Field[]> {
   const db = await database();
-  const rows = await db.query.contentField.findMany({
-    where: eq(schema.contentField.typeId, typeId),
-    orderBy: asc(schema.contentField.position),
-  });
-  return rows.map(toField);
+  const rows = await db
+    .select({ field: schema.contentField, deletedByName: schema.user.name })
+    .from(schema.contentField)
+    .leftJoin(schema.user, eq(schema.user.id, schema.contentField.deletedBy))
+    .where(eq(schema.contentField.typeId, typeId))
+    .orderBy(asc(schema.contentField.position));
+  return rows.map(({ field, deletedByName }) =>
+    toField(
+      field,
+      field.deletedAt === null
+        ? undefined
+        : { at: field.deletedAt.toISOString(), by: deletedByName ?? undefined },
+    ),
+  );
 }
 
 /**
@@ -128,7 +145,7 @@ function publicType(
       options: field.options.map((option) => ({ name: option.name, color: option.color })),
       collection:
         field.targetTypeId === undefined ? undefined : referenceSlugs.get(field.targetTypeId),
-      deprecated: field.deprecated ? true : undefined,
+      deprecated: field.deprecated,
     })),
   };
 }

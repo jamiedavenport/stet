@@ -155,11 +155,15 @@ types, marked `@deprecated`:
 export type PostsEntry = ContentEntryBase & {
   fields: {
     body?: string | null;
-    /** @deprecated Deleted from the content model; entries no longer carry a value. */
+    /** @deprecated Deleted from the content model on 2026-03-12 by Ada Lovelace; entries no longer carry a value. */
     subtitle?: string | null;
   };
 };
 ```
+
+The date and the name come from the deletion itself, so a key you meet months
+later can be traced to the change that retired it and to someone who can
+explain it.
 
 Your editor strikes the field through wherever you read it, and your build
 keeps passing. Dropping the key instead would turn every `post.fields.subtitle`

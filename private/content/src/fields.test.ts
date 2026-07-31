@@ -67,6 +67,9 @@ describe('deleteField', () => {
     // what would break a customer's build.
     expect(row?.key).toBe('subtitle');
     expect(row?.deletedAt).toBeInstanceOf(Date);
+    // The deprecation the generated client emits names the deleter, so a
+    // developer meeting the strikethrough knows who to ask.
+    expect(row?.deletedBy).toBe(editor.userId);
   });
 
   it('stops listing the field in the model editors work from', async () => {

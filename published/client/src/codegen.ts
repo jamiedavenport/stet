@@ -25,7 +25,7 @@ export type ContentModel = {
       /** Slug of the collection a reference field points at. */
       collection?: string;
       /** Deleted from the model: emitted as a deprecation, never dropped. */
-      deprecated?: boolean;
+      deprecated?: { at: string; by?: string };
     }[];
   }[];
 };
@@ -83,6 +83,17 @@ function fieldTsType(field: ModelField): string {
 }
 
 /**
+ * Names the change that retired the key, so whoever meets the strikethrough
+ * knows when it happened and who to ask. The date is the ISO day rather than a
+ * locale format, which would make the generated file differ between machines.
+ */
+function deprecationNote(deprecation: { at: string; by?: string }): string {
+  const who = deprecation.by === undefined ? '' : ` by ${deprecation.by}`;
+  const when = deprecation.at.slice(0, 10);
+  return `@deprecated Deleted from the content model on ${when}${who}; entries no longer carry a value.`;
+}
+
+/**
  * What the editor needs that the type cannot say: which collection a reference
  * points at, since the type is the same shape whatever the target, and whether
  * the field has been deleted from the model.
@@ -99,8 +110,8 @@ function fieldDoc(field: ModelField): string[] {
     const plural = field.type === 'multi_reference' ? 'References' : 'Reference';
     lines.push(`${plural} into ${target}: fetch with stet[${target}].get(slug).`);
   }
-  if (field.deprecated === true) {
-    lines.push('@deprecated Deleted from the content model; entries no longer carry a value.');
+  if (field.deprecated !== undefined) {
+    lines.push(deprecationNote(field.deprecated));
   }
   return lines;
 }
