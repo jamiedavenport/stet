@@ -1,4 +1,4 @@
-# Stet
+[![Stet](./banner.png)](https://stetcms.com)
 
 **Both teams at full speed. Neither waits, nothing breaks.**
 
