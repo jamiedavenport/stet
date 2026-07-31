@@ -24,16 +24,6 @@ function hourLabel(hour: number): string {
   return `${String(hour).padStart(2, '0')}:00`;
 }
 
-// Registry labels are English canonical values keyed by type; the UI renders
-// them through the catalog. The switch is exhaustive over NotificationType,
-// so adding a type fails compilation here until it gets a label.
-function typeLabel(type: NotificationType): string {
-  switch (type) {
-    case 'member-joined':
-      return "Someone joins your organization";
-  }
-}
-
 export function NotificationSettings() @{
   const queryClient = useQueryClient();
 
@@ -107,18 +97,18 @@ export function NotificationSettings() @{
           <span className="text-xs text-muted-foreground">{"Email"}</span>
           @for (const definition of types; key definition.type) {
             <>
-              <span>{typeLabel(definition.type)}</span>
+              <span>{definition.label}</span>
               <input
                 type="checkbox"
                 className="size-4 justify-self-center accent-primary"
-                aria-label={`${typeLabel(definition.type)} in-app`}
+                aria-label={`${definition.label} in-app`}
                 checked={isEnabled(definition.type, 'app')}
                 onChange={() => void onToggle(definition.type, 'app')}
               />
               <input
                 type="checkbox"
                 className="size-4 justify-self-center accent-primary"
-                aria-label={`${typeLabel(definition.type)} by email`}
+                aria-label={`${definition.label} by email`}
                 checked={isEnabled(definition.type, 'email')}
                 onChange={() => void onToggle(definition.type, 'email')}
               />

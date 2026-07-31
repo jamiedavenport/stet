@@ -1,5 +1,5 @@
 import { createConsentStore } from '@policystack/core/consent';
-import { expect, type Page } from '@playwright/test';
+import { expect, type Locator, type Page } from '@playwright/test';
 import policystack, { consentCookie } from '../src/policystack';
 
 // Direct auth POSTs need a captcha token when the Turnstile test keys are
@@ -58,6 +58,26 @@ export async function pressUntil(
   await expect(async () => {
     await page.keyboard.press(shortcut);
     await landed();
+  }).toPass({ timeout: 15_000, intervals: [100, 250, 500, 1000] });
+}
+
+/**
+ * Sets a checkbox and presses on until the change sticks.
+ *
+ * Same window as `pressUntil`: `gotoHydrated` returns once `document.body`
+ * carries a fiber, which is the commit starting rather than every control
+ * being bound. A click landing before React owns the input flips the DOM,
+ * gets rendered straight back, and fires no request at all, so the box looks
+ * merely unchanged and nothing reports an error. Re-clicking is safe because
+ * the handlers derive the next value from the query data rather than from the
+ * checkbox, so a click during an in-flight write rewrites the same value.
+ */
+export async function setCheckedUntil(toggle: Locator, checked: boolean): Promise<void> {
+  await expect(async () => {
+    if ((await toggle.isChecked()) !== checked) {
+      await toggle.click();
+    }
+    await expect(toggle).toBeChecked({ checked, timeout: 2_000 });
   }).toPass({ timeout: 15_000, intervals: [100, 250, 500, 1000] });
 }
 
