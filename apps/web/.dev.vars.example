@@ -9,11 +9,13 @@
 BETTER_AUTH_SECRET=a19bd96b08be9cb7dd86eb877b65275fd5479e5ed54f0334fc3bc2eafbb56459
 BETTER_AUTH_URL=http://localhost:3000
 
-# Blank means Stet's own analytics record nothing, so local traffic stays out
-# of the real project. To point local dev at your own Stet instead, set both:
-# an organization API key from Developers -> API keys, and the origin it came
-# from (this same dev server, if you want the local dashboard to fill up).
-STET_API_KEY=
+# Stet's own analytics record nothing here, so local traffic stays out of the
+# real project. STET_API_KEY is deliberately absent rather than blank: it is a
+# secret, and `secrets.required` in wrangler.jsonc switches off .dev.vars name
+# inference, so a name declared in neither `vars` nor `secrets.required` never
+# becomes a binding. To point local dev at your own Stet, add STET_API_KEY to
+# `secrets.required` in your working copy, then set it here with the origin it
+# came from (this dev server, if you want the local dashboard to fill up).
 # STET_ORIGIN=http://localhost:3000
 
 # Same reason: blank overrides the committed production DSN so local and CI
