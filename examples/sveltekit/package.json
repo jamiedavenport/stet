@@ -1,0 +1,7 @@
+{
+  "name": "stet-sveltekit-example",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": { "dev": "vite dev", "build": "vite build", "preview": "vite preview" },
+  "dependencies": { "svelte": "^4.0.0", "@stetcms/svelte": "workspace:*" }
+}
