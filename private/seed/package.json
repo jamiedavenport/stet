@@ -1,0 +1,28 @@
+{
+  "name": "@repo/seed",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc --noEmit",
+    "seed": "pnpm --filter @repo/db push:force && tsx src/index.ts",
+    "tc": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@better-auth/api-key": "catalog:",
+    "@cloudflare/workers-types": "catalog:",
+    "@nerdfolio/drizzle-d1-helpers": "catalog:",
+    "@repo/content": "workspace:*",
+    "@repo/db": "workspace:*",
+    "@repo/realtime": "workspace:*",
+    "@types/better-sqlite3": "catalog:",
+    "@types/node": "catalog:",
+    "better-auth": "catalog:",
+    "better-sqlite3": "catalog:",
+    "drizzle-orm": "catalog:",
+    "tsx": "catalog:",
+    "typescript": "catalog:",
+    "vite-plus": "catalog:",
+    "yjs": "catalog:"
+  }
+}

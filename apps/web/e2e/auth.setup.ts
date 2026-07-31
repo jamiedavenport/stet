@@ -26,7 +26,7 @@ setup('seed database and persist auth state', async ({ page, request }) => {
     headers: { origin: process.env.E2E_BASE_URL ?? 'http://localhost:3000', ...captchaTestHeader },
   });
 
-  execSync('pnpm --filter @repo/db seed', {
+  execSync('pnpm --filter @repo/seed seed', {
     cwd: path.resolve(import.meta.dirname, '../../..'),
     stdio: 'inherit',
   });

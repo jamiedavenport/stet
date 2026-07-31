@@ -1,9 +1,14 @@
-// Deterministic data written by `pnpm seed` and referenced by e2e tests.
+// Deterministic data written by `pnpm seed` and referenced by e2e tests. The
+// demo workspace those accounts sign in to — the content model, its posts,
+// their bodies, and the files they point at — lives in private/seed.
+
+const seedPassword = 'seed-password-123';
+
 export const seedUser = {
   id: 'seed-user',
   name: 'Seed User',
   email: 'seed@example.com',
-  password: 'seed-password-123',
+  password: seedPassword,
 };
 
 // Platform staff for the admin panel. Separate from seedUser so e2e tests can
@@ -13,8 +18,17 @@ export const seedAdmin = {
   id: 'seed-admin',
   name: 'Seed Admin',
   email: 'admin@example.com',
-  password: 'seed-password-123',
+  password: seedPassword,
 };
+
+// Who the demo posts are by. Ordinary members of the seed organization, so
+// they fill person fields and the presence list; they share seedUser's
+// password so a second browser can join a document as someone else.
+export const seedAuthors = [
+  { id: 'seed-author-nadia', name: 'Nadia Okonkwo', email: 'nadia@example.com' },
+  { id: 'seed-author-tomas', name: 'Tomas Ferreira', email: 'tomas@example.com' },
+  { id: 'seed-author-priya', name: 'Priya Raman', email: 'priya@example.com' },
+].map((author) => ({ ...author, password: seedPassword }));
 
 export const seedOrganization = {
   id: 'seed-org',
@@ -33,9 +47,9 @@ export const seedInvitation = {
   email: 'invited@example.com',
 };
 
-// An uploaded file in the seed org, so full-text search has something to
-// match. Nothing writes these bytes to R2: only the row is needed, and only
-// search reads it.
+// The one file in the seed org that is not an image, so full-text search has
+// a name to match on and the download path has something to serve. Its bytes,
+// and every other file's, are written by private/seed.
 export const seedAsset = {
   id: 'seed-asset',
   name: 'quarterly report.pdf',
@@ -62,11 +76,8 @@ export const seedApiKey = {
 };
 
 // The content model examples/tanstack's committed stet.gen.ts is generated
-// from, so a reseed leaves the example serving real entries. Rich text
-// bodies live in realtime documents the seed does not fabricate: body fields
-// serve null until someone writes in the app.
+// from, so a reseed leaves the example serving real entries.
 export const seedContent = {
   posts: { id: 'seed-type-posts', slug: 'posts', name: 'Posts' },
   landing: { id: 'seed-type-landing', slug: 'landing', name: 'Landing' },
-  post: { id: 'seed-entry-hello', slug: 'hello-world', title: 'Hello World' },
 };

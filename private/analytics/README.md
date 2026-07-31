@@ -63,11 +63,12 @@ the inputs.
 ## Demo traffic
 
 A new store is empty, so the dashboard demos as a blank chart. With `vp dev`
-running and the database seeded (`pnpm --filter @repo/db seed`), backfill a
-month of synthetic traffic for the seeded organization:
+running and the database seeded (`pnpm seed` from the repository root, see
+[private/seed](../seed)), backfill a month of synthetic traffic for the seeded
+organization:
 
 ```bash
-pnpm seed
+pnpm --filter @repo/analytics seed
 ```
 
 It reads the seeded model through `/api/v1/model` and sends its traffic to

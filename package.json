@@ -12,7 +12,8 @@
     "dev": "vp dev apps/web",
     "knip": "knip",
     "ready": "vp check && knip && vp run -r tc && vp run -r build",
-    "release": "vp run --filter './published/*' build && pnpm publish -r --no-git-checks && changeset tag"
+    "release": "vp run --filter './published/*' build && pnpm publish -r --no-git-checks && changeset tag",
+    "seed": "pnpm --filter @repo/seed seed"
   },
   "devDependencies": {
     "@changesets/cli": "catalog:",

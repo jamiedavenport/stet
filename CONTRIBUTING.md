@@ -28,6 +28,14 @@ Push the schema into the local sqlite database created by `vp dev`:
 cd private/db && pnpm push
 ```
 
+Then fill it with accounts to sign in as and a workspace to look at (see
+[private/seed](private/seed), which pushes the schema itself, so this replaces
+the command above after the first run):
+
+```bash
+pnpm seed
+```
+
 ## Checks
 
 ```bash

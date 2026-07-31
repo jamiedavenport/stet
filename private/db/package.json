@@ -14,7 +14,7 @@
     "push": "drizzle-kit push && node scripts/push-fts.ts",
     "push:remote": "DRIZZLE_REMOTE=1 drizzle-kit push && DRIZZLE_REMOTE=1 node scripts/push-fts.ts",
     "push:fts": "node scripts/push-fts.ts",
-    "seed": "drizzle-kit push --force && node scripts/push-fts.ts && node src/seed.ts",
+    "push:force": "drizzle-kit push --force && node scripts/push-fts.ts",
     "tc": "tsc --noEmit",
     "test": "vp test run"
   },
@@ -22,12 +22,10 @@
     "drizzle-orm": "catalog:"
   },
   "devDependencies": {
-    "@better-auth/api-key": "catalog:",
     "@cloudflare/workers-types": "catalog:",
     "@nerdfolio/drizzle-d1-helpers": "catalog:",
     "@types/better-sqlite3": "catalog:",
     "@types/node": "catalog:",
-    "better-auth": "catalog:",
     "better-sqlite3": "catalog:",
     "drizzle-kit": "catalog:",
     "typescript": "catalog:",

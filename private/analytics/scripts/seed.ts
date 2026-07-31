@@ -6,7 +6,7 @@ import type { SyntheticBatch, SyntheticPage } from '../src/synthetic';
 // Backfills a month of traffic for the seeded organization, through the same
 // public endpoint a customer's mounted handler posts to, so the store rolls
 // up and prunes exactly as it would in production. Needs `vp dev` running and
-// the database seeded (`pnpm --filter @repo/db seed`).
+// the database seeded (`pnpm seed`).
 
 /** Where examples/tanstack serves each seeded content type. */
 const SITE: Record<string, string> = { posts: '/blog', landing: '/' };
@@ -51,7 +51,7 @@ function sleep(ms: number): Promise<void> {
 async function discoverPages(): Promise<SyntheticPage[]> {
   const { types } = await api<{ types: { slug: string; kind: 'collection' | 'map' }[] }>('/model');
   if (types.length === 0) {
-    throw new Error('No content types. Seed the database first: pnpm --filter @repo/db seed');
+    throw new Error('No content types. Seed the database first: pnpm seed');
   }
 
   const pages: SyntheticPage[] = [];
