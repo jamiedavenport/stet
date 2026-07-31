@@ -1,6 +1,12 @@
 # @stetcms/cli
 
-Stet from the command line, for scripting, seeding, and CI.
+[![CI](https://github.com/jamiedavenport/stet/actions/workflows/ci.yml/badge.svg)](https://github.com/jamiedavenport/stet/actions/workflows/ci.yml)
+[![Docs](https://img.shields.io/badge/docs-stetcms.com-black.svg)](https://docs.stetcms.com/reference/cli)
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](./LICENSE)
+
+[Stet](https://stetcms.com) from the command line, for scripting, seeding, and CI.
+
+Stet is the CMS where marketing owns the content model and engineering gets a typed client generated from it.
 
 ## Install
 
@@ -14,7 +20,7 @@ npx @stetcms/cli login
 
 ### `stet generate`
 
-Generate the typed content client from your organization's content model, exactly as [`@stetcms/vite`](https://github.com/jamiedavenport/stet/tree/main/published/vite) does at build time. Use it where there is no Vite: Next.js apps, other bundlers, or CI.
+Generate the typed content client from your organization's content model, exactly as [`@stetcms/vite`](https://docs.stetcms.com/reference/codegen) does at build time. Use it where there is no Vite: Next.js apps, other bundlers, or CI.
 
 ```bash
 STET_API_KEY=stet_... stet generate
@@ -28,13 +34,13 @@ stet generate --key stet_... --url https://stet.example.com --output lib/stet.ge
 | `--output <path>` | Where the generated module goes. Defaults to `src/stet.gen.ts`.      |
 | `--config <path>` | Path to `stet.config.ts`. Auto-detected by default.                  |
 
-Every flag overrides the same key in `stet.config.ts`, which both this CLI and the Vite plugin read (see [`@stetcms/config`](https://github.com/jamiedavenport/stet/tree/main/published/config)).
+`--url`, `--key` and `--output` each override the matching key in `stet.config.ts`; `--config` chooses which file that is. Both this CLI and the Vite plugin read it (see [`@stetcms/config`](https://docs.stetcms.com/reference/configuration)).
 
-The generated file imports [`@stetcms/client`](https://github.com/jamiedavenport/stet/tree/main/published/client), so add that to your app's dependencies. It never contains the key: at runtime the client reads `STET_API_KEY` from the environment again, so the file is safe to commit. It reads `STET_ORIGIN` at runtime too, falling back to the origin it was generated against.
+The generated file imports [`@stetcms/client`](https://docs.stetcms.com/reference/client), so add that to your app's dependencies. It never contains the key: at runtime the client reads `STET_API_KEY` from the environment again, so the file is safe to commit. It reads `STET_ORIGIN` at runtime too, falling back to the origin it was generated against.
 
 ### `stet sync`
 
-Publish your analytics tracking plan, so Stet can chart events your code declares before anyone has fired one. The same job [`@stetcms/vite`](https://github.com/jamiedavenport/stet/tree/main/published/vite) does on dev-server and build start; use this where there is no Vite, or in CI.
+Publish your analytics tracking plan, so Stet can chart events your code declares before anyone has fired one. The same job [`@stetcms/vite`](https://docs.stetcms.com/reference/codegen) does on dev-server and build start; use this where there is no Vite, or in CI.
 
 ```bash
 STET_API_KEY=stet_... stet sync
@@ -81,14 +87,22 @@ stet org --api-key stet_...   # or set STET_API_KEY
 stet org --json
 ```
 
+| Flag              | Description                                                           |
+| ----------------- | --------------------------------------------------------------------- |
+| `--api-key <key>` | Organization API key. Defaults to `$STET_API_KEY`.                    |
+| `--url <origin>`  | Stet server origin. Defaults to `$STET_API_URL`, then the hosted app. |
+| `--json`          | Print the organization as JSON.                                       |
+
 ## Configuration
 
-- `STET_API_URL`: default server origin for `stet login`.
+- `STET_API_URL`: default server origin for the account commands (`login`,
+  `whoami`, `org`). `generate` and `sync` resolve theirs through
+  `stet.config.ts` and `STET_ORIGIN` instead.
 - The session token is stored at `~/.config/stet/auth.json` (`$XDG_CONFIG_HOME/stet/auth.json` when set) with `0600` permissions. Delete the file to log out.
 
 ## Development
 
-This package lives in the [Stet](https://github.com/jamiedavenport/stet) monorepo under `published/cli` and is built with `vp pack` (Vite+). Releases are versioned with Changesets and published from CI.
+This package lives in the [Stet monorepo](https://github.com/jamiedavenport/stet) under `published/cli` and is built with `vp pack` (Vite+). Releases are versioned with Changesets and published from CI.
 
 ```bash
 vp install

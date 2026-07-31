@@ -1,13 +1,22 @@
 # @stetcms/analytics
 
-Product analytics for apps built on Stet: pageviews and your own typed events,
-routed through your backend instead of a third-party endpoint.
+[![CI](https://github.com/jamiedavenport/stet/actions/workflows/ci.yml/badge.svg)](https://github.com/jamiedavenport/stet/actions/workflows/ci.yml)
+[![Docs](https://img.shields.io/badge/docs-stetcms.com-black.svg)](https://docs.stetcms.com/reference/analytics)
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](./LICENSE)
+
+Product analytics for apps built on [Stet](https://stetcms.com), the CMS where
+marketing owns the content model and engineering gets a typed client generated
+from it. Pageviews and your own typed events, routed through your backend
+instead of a third-party endpoint.
 
 - No cookies, so no consent banner.
 - No third-party origin in the page, so nothing for a blocker to match on.
 - Readers' addresses and user agents never leave your infrastructure.
 - One tracking plan types the browser calls, validates the server ones, and
   becomes the event list your content team builds dashboards from.
+
+The [analytics guide](https://docs.stetcms.com/analytics) covers how this fits
+with the dashboards your content team builds on the same events.
 
 ## Install
 
@@ -18,7 +27,10 @@ npm install @stetcms/analytics
 ## 1. Declare the tracking plan
 
 The plan goes in `stet.config.ts` at the project root, the one file
-`@stetcms/vite` and the `stet` CLI read for everything. Props take any
+[`@stetcms/vite`](https://docs.stetcms.com/reference/codegen) and the
+[`stet` CLI](https://docs.stetcms.com/reference/cli) read for everything
+(see [`@stetcms/config`](https://docs.stetcms.com/reference/configuration)).
+Props take any
 [Standard Schema](https://standardschema.dev) validator, so Zod, Valibot and
 ArkType all work.
 
@@ -270,8 +282,10 @@ because a `4xx` only teaches a crawler to retry.
 ### `@stetcms/analytics/sync`
 
 `syncTrackingPlan(options)` publishes the plan to Stet. Called for you by
-`@stetcms/vite` on dev-server start and at the end of a build, and by
-`stet sync`; you rarely call it yourself.
+[`@stetcms/vite`](https://docs.stetcms.com/reference/codegen) on dev-server
+and build start, and by
+[`stet sync`](https://docs.stetcms.com/reference/cli#stet-sync); you rarely
+call it yourself.
 
 ### `@stetcms/analytics/client`
 
@@ -331,4 +345,9 @@ pnpm tc     # Type check
 pnpm build  # vp pack
 ```
 
-`examples/tanstack` runs this package against a local Stet; see its README.
+[`examples/tanstack`](https://github.com/jamiedavenport/stet/tree/main/examples/tanstack)
+runs this package against a local Stet; see its README.
+
+## License
+
+Apache-2.0

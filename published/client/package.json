@@ -1,14 +1,20 @@
 {
   "name": "@stetcms/client",
   "version": "0.1.0",
-  "description": "Typed client for the Stet API, generated from the oRPC contract.",
+  "description": "Typed content and REST client for Stet, the CMS for marketing and engineering.",
   "keywords": [
     "api",
     "client",
-    "orpc",
-    "stet"
+    "cms",
+    "content-api",
+    "headless-cms",
+    "sdk",
+    "stet",
+    "stetcms",
+    "typesafe",
+    "typescript"
   ],
-  "homepage": "https://github.com/jamiedavenport/stet/tree/main/published/client#readme",
+  "homepage": "https://docs.stetcms.com/reference/client",
   "bugs": "https://github.com/jamiedavenport/stet/issues",
   "license": "Apache-2.0",
   "author": "Jamie Davenport (https://jxd.dev)",
@@ -21,6 +27,7 @@
     "dist"
   ],
   "type": "module",
+  "sideEffects": false,
   "exports": {
     ".": "./src/index.ts",
     "./codegen": "./src/codegen.ts"
@@ -56,5 +63,8 @@
     "typescript": "catalog:",
     "vite-plus": "catalog:",
     "vitest": "catalog:"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }

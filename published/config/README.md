@@ -1,10 +1,17 @@
 # @stetcms/config
 
+[![CI](https://github.com/jamiedavenport/stet/actions/workflows/ci.yml/badge.svg)](https://github.com/jamiedavenport/stet/actions/workflows/ci.yml)
+[![Docs](https://img.shields.io/badge/docs-stetcms.com-black.svg)](https://docs.stetcms.com/reference/configuration)
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](./LICENSE)
+
 The shape of `stet.config.ts`: one file describing a project's whole
-[Stet](https://github.com/jamiedavenport/stet) integration, read by
-[`@stetcms/vite`](https://github.com/jamiedavenport/stet/tree/main/published/vite)
-and [`@stetcms/cli`](https://github.com/jamiedavenport/stet/tree/main/published/cli)
+[Stet](https://stetcms.com) integration, read by
+[`@stetcms/vite`](https://docs.stetcms.com/reference/codegen)
+and [`@stetcms/cli`](https://docs.stetcms.com/reference/cli)
 so the two can never disagree about which Stet a project talks to.
+
+Stet is the CMS where marketing owns the content model and engineering gets a
+typed client generated from it.
 
 ## Install
 
@@ -28,13 +35,13 @@ export default defineStet({
 });
 ```
 
-| Key         | Default                           | Description                                               |
-| ----------- | --------------------------------- | --------------------------------------------------------- |
-| `origin`    | `STET_ORIGIN` or the hosted cloud | The Stet deployment to generate from and send to.         |
-| `apiKey`    | `STET_API_KEY`                    | Organization API key. Prefer the environment (see below). |
-| `output`    | `src/stet.gen.ts`                 | Where the generated content client goes.                  |
-| `watch`     | `true`                            | Regenerate while the dev server runs.                     |
-| `analytics` | none                              | The tracking plan, from `defineAnalytics()`.              |
+| Key         | Default                           | Description                                                                                  |
+| ----------- | --------------------------------- | -------------------------------------------------------------------------------------------- |
+| `origin`    | `STET_ORIGIN` or the hosted cloud | The Stet deployment to generate from and send to.                                            |
+| `apiKey`    | `STET_API_KEY`                    | Organization API key. Prefer the environment (see below).                                    |
+| `output`    | `src/stet.gen.ts`                 | Where the generated content client goes.                                                     |
+| `watch`     | `true`                            | Regenerate while the dev server runs.                                                        |
+| `analytics` | none                              | The tracking plan, from [`defineAnalytics()`](https://docs.stetcms.com/reference/analytics). |
 
 A plugin option or a CLI flag beats the config file, which beats the
 environment, which falls back to the default. `resolveStetConfig()` is that
