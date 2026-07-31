@@ -1,17 +1,29 @@
+import { existsSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+
 import { cloudflare } from '@cloudflare/vite-plugin';
-import contentCollections from '@content-collections/vite';
 import { policyStack } from '@policystack/vite';
 import { cronsConfig } from '@repo/crons/config';
 import { workflowsConfig } from '@repo/workflows/config';
 import { createDepScanTransformPlugin } from '@tsrx/core/vite/dep-scan';
 import { compile } from '@tsrx/react';
 import { sentryVitePlugin } from '@sentry/vite-plugin';
+import { stet } from '@stetcms/vite';
 import tailwindcss from '@tailwindcss/vite';
 import { tanstackStart } from '@tanstack/react-start/plugin/vite';
 import tsrxReact from '@tsrx/vite-plugin-react';
 import viteReact from '@vitejs/plugin-react';
 import Sonda from 'sonda/vite';
 import { defineConfig } from 'vite-plus';
+
+// The worker reads STET_API_KEY as a binding, but the Stet plugin generating
+// the content client is plain Node and reads process.env. Loading the same
+// file here means one place to put the key. Node leaves already-set variables
+// alone, so a value from the shell still wins.
+const devVars = fileURLToPath(new URL('.dev.vars', import.meta.url));
+if (existsSync(devVars)) {
+  process.loadEnvFile(devVars);
+}
 
 const analyze = process.env.ANALYZE === '1';
 // An unset repository secret still reaches the job as an empty string, so a
@@ -73,7 +85,10 @@ const config = (command: 'build' | 'serve') =>
       dedupe: ['yjs'],
     },
     plugins: [
-      contentCollections(),
+      // Reads src/stet.config.ts: regenerates src/stet.gen.ts from the content
+      // model and publishes the tracking plan, on every dev-server and build
+      // start. Without a key it warns and leaves the committed client alone.
+      stet(),
       cloudflare({
         viteEnvironment: { name: 'ssr' },
         // Crons and workflows are declared in code (the @repo/crons and

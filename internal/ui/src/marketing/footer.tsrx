@@ -22,7 +22,6 @@ const columns: { title: string; links: FooterLink[] }[] = [
       { label: 'Pricing', to: '/pricing' },
       { label: 'Compare', to: '/compare' },
       { label: 'Book a demo', href: brand.demo },
-      { label: 'Changelog', to: '/changelog' },
     ],
   },
   {

@@ -1,7 +1,7 @@
 import { brand } from '@repo/brand';
 import { createFileRoute } from '@tanstack/react-router';
 
-import { sortedPosts } from '#/marketing/content';
+import { listPosts } from '#/marketing/posts';
 import { siteUrl } from '#/marketing/seo';
 
 function escapeXml(value: string) {
@@ -15,8 +15,8 @@ function escapeXml(value: string) {
 export const Route = createFileRoute('/rss.xml')({
   server: {
     handlers: {
-      GET: () => {
-        const posts = sortedPosts();
+      GET: async () => {
+        const posts = await listPosts();
         const items = posts
           .map(
             (post) => `    <item>

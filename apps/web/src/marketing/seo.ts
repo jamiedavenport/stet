@@ -1,6 +1,6 @@
 import { brand } from '@repo/brand';
 import logoUrl from '@repo/brand/logo.svg?url';
-import type { Post } from 'content-collections';
+import type { PostSummary } from '#/marketing/posts';
 
 /** Absolute origin for canonical URLs, feeds, and social meta. */
 export const siteUrl = brand.url;
@@ -22,7 +22,7 @@ export function organizationJsonLd() {
 }
 
 /** BlogPosting structured data for a blog post page. */
-export function blogPostingJsonLd(post: Post) {
+export function blogPostingJsonLd(post: PostSummary) {
   return jsonLd({
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',

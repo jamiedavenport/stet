@@ -4,10 +4,11 @@ import { Link, createFileRoute } from '@tanstack/react-router';
 import { RailList, RailRow } from '@repo/ui/marketing/lists.tsrx';
 import { PageIntro } from '@repo/ui/marketing/section.tsrx';
 import { DisplayHeading, PostMeta, TagRow } from '@repo/ui/marketing/ui.tsrx';
-import { sortedPosts } from '#/marketing/content';
+import { fetchPosts } from '#/marketing/content';
 import { seo } from '#/marketing/seo';
 
 export const Route = createFileRoute('/_marketing/blog/')({
+  loader: () => fetchPosts(),
   head: () =>
     seo({
       title: `${'Blog'} · ${brand.name}`,
@@ -18,7 +19,7 @@ export const Route = createFileRoute('/_marketing/blog/')({
 });
 
 function BlogIndexPage() {
-  const posts = sortedPosts();
+  const posts = Route.useLoaderData();
 
   return (
     <>

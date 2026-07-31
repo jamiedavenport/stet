@@ -1,7 +1,7 @@
 import { cn } from '../lib/utils';
 import type { ReactNode } from 'react';
 
-/** Section wrapper for the rail-and-body row lists on /blog and /changelog. */
+/** Section wrapper for the rail-and-body row list on /blog. */
 export function RailList({ children }: { children: ReactNode }) @{
   <section className="border-t border-border">
     <div className="mx-auto max-w-7xl px-6 lg:px-8">{children}</div>

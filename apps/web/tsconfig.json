@@ -4,8 +4,7 @@
     "jsx": "react-jsx",
     "lib": ["ES2023", "DOM", "DOM.Iterable"],
     "paths": {
-      "#/*": ["./src/*"],
-      "content-collections": ["./.content-collections/generated"]
+      "#/*": ["./src/*"]
     },
     "types": ["vite/client"],
     "verbatimModuleSyntax": false,

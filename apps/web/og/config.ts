@@ -2,10 +2,23 @@ import { brand } from '@repo/brand';
 import { defineOgConfig, ignore } from '@jxdltd/tanstack/og';
 import type { OgConfigContext } from '@jxdltd/tanstack/og';
 
-import { findPost } from '../src/marketing/content';
+import { listPosts } from '../src/marketing/posts';
+import type { PostSummary } from '../src/marketing/posts';
 import { findFeature } from '../src/marketing/data/features';
 import { findPersona } from '../src/marketing/data/personas';
 import { findRival } from '../src/marketing/data/rivals';
+
+let pending: Promise<PostSummary[]> | undefined;
+
+/**
+ * The blog, fetched from Stet once however many images the run renders. A
+ * build with no `STET_API_KEY` gets an empty list, and every post card is
+ * skipped rather than the build failing.
+ */
+export function ogPosts(): Promise<PostSummary[]> {
+  pending ??= listPosts();
+  return pending;
+}
 
 export default defineOgConfig({
   '/': () => ({
@@ -55,8 +68,8 @@ export default defineOgConfig({
   }),
   // Annotated because this project is checked without the app's generated
   // route tree, so the router's FileRoutesByPath augmentation is absent.
-  '/blog/$slug': ({ params }: OgConfigContext<{ slug: string }>) => {
-    const post = findPost(params.slug);
+  '/blog/$slug': async ({ params }: OgConfigContext<{ slug: string }>) => {
+    const post = (await ogPosts()).find((candidate) => candidate.slug === params.slug);
     if (post === undefined) {
       return ignore;
     }
@@ -68,10 +81,6 @@ export default defineOgConfig({
       tag: 'Blog',
     };
   },
-  '/changelog': () => ({
-    title: 'What shipped, when.',
-    tag: 'Changelog',
-  }),
   '/contact': () => ({
     title: 'One email reaches the engineer.',
     tag: 'Contact',

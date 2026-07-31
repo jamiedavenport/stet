@@ -23,10 +23,6 @@ catalog:
   '@cloudflare/vite-plugin': ^1.45.1
   '@modelcontextprotocol/sdk': ^1.29.0
   '@cloudflare/workers-types': ^5.20260723.1
-  '@content-collections/cli': ^0.1.9
-  '@content-collections/core': ^0.15.2
-  '@content-collections/markdown': ^0.1.4
-  '@content-collections/vite': ^0.3.0
   '@fontsource-variable/geist': ^5.3.0
   '@fontsource-variable/geist-mono': ^5.3.0
   '@nerdfolio/drizzle-d1-helpers': ^0.1.5
@@ -40,7 +36,6 @@ catalog:
   '@react-email/components': ^1.0.12
   '@sentry/cloudflare': ^10.68.0
   '@sentry/vite-plugin': ^5.4.0
-  '@shikijs/rehype': ^4.3.1
   '@size-limit/file': ^12.1.0
   '@standard-schema/spec': ^1.1.0
   '@tailwindcss/vite': ^4.3.3

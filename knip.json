@@ -12,7 +12,7 @@
     "internal/*": {},
     "published/*": {},
     "apps/web": {
-      "entry": ["src/routes/**/*.{ts,tsx,tsrx}", "content-collections.ts", "e2e/**/*.setup.ts"]
+      "entry": ["src/routes/**/*.{ts,tsx,tsrx}", "e2e/**/*.setup.ts"]
     },
     "apps/docs": {
       "entry": ["blume.config.ts", "docs/**/meta.ts", "scripts/*.ts"],

@@ -3,12 +3,12 @@ import { Link, createFileRoute, notFound } from '@tanstack/react-router';
 import { brand } from '@repo/brand';
 import { DisplayHeading, Label, Lede, PostMeta, TagRow } from '@repo/ui/marketing/ui.tsrx';
 import { MarketingCta } from '#/marketing/sections/bands.tsrx';
-import { findPost } from '#/marketing/content';
+import { fetchPost } from '#/marketing/content';
 import { blogPostingJsonLd, seo } from '#/marketing/seo';
 
 export const Route = createFileRoute('/_marketing/blog/$slug')({
-  loader: ({ params }) => {
-    const post = findPost(params.slug);
+  loader: async ({ params }) => {
+    const post = await fetchPost({ data: params.slug });
     if (post === undefined) {
       throw notFound();
     }
