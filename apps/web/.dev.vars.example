@@ -9,9 +9,12 @@
 BETTER_AUTH_SECRET=a19bd96b08be9cb7dd86eb877b65275fd5479e5ed54f0334fc3bc2eafbb56459
 BETTER_AUTH_URL=http://localhost:3000
 
-# Blank overrides the committed production client id so local traffic stays
-# out of the real analytics project; events log as [analytics] lines instead.
-OPENPANEL_CLIENT_ID=
+# Blank means Stet's own analytics record nothing, so local traffic stays out
+# of the real project. To point local dev at your own Stet instead, set both:
+# an organization API key from Developers -> API keys, and the origin it came
+# from (this same dev server, if you want the local dashboard to fill up).
+STET_API_KEY=
+# STET_ORIGIN=http://localhost:3000
 
 # Same reason: blank overrides the committed production DSN so local and CI
 # errors do not report to the real Sentry project. Local failures are already

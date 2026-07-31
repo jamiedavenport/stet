@@ -1,4 +1,4 @@
-import { capture, identifyUser } from '@repo/openpanel/server';
+import { capture } from '@dogfood/analytics/server';
 import { eq, schema } from '@repo/db';
 import type { Database } from '@repo/db';
 import { enqueue } from '@repo/jobs/client';
@@ -11,8 +11,7 @@ export function authDatabaseHooks(database: Database): BetterAuthOptions['databa
       create: {
         // Best-effort: a queue hiccup must never fail the signup request.
         after: async (user) => {
-          identifyUser({ id: user.id, name: user.name, email: user.email });
-          capture('user_signed_up', { userId: user.id });
+          capture({ userId: user.id }, 'signup');
           try {
             await enqueue('send-welcome-email', { userId: user.id });
           } catch (error) {

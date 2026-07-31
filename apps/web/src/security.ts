@@ -17,7 +17,7 @@ const documentCsp = [
   "script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com",
   "style-src 'self' 'unsafe-inline'",
   "font-src 'self' data:",
-  "connect-src 'self' https://api.openpanel.dev https://challenges.cloudflare.com",
+  "connect-src 'self' https://challenges.cloudflare.com",
   'frame-src https://challenges.cloudflare.com',
   "worker-src 'self' blob:",
 ].join('; ');
@@ -78,7 +78,11 @@ export async function enforceAuthRateLimit(request: Request, url: URL): Promise<
 
 /** Analytics, which is metered on events rather than on requests. */
 function isAnalyticsPath(pathname: string): boolean {
-  return pathname === '/api/v1/events' || pathname.startsWith('/api/v1/events/');
+  return (
+    pathname === '/api/analytics' ||
+    pathname === '/api/v1/events' ||
+    pathname.startsWith('/api/v1/events/')
+  );
 }
 
 /**
@@ -86,10 +90,11 @@ function isAnalyticsPath(pathname: string): boolean {
  * probes). This bounds abuse per colo; the billing quota in @repo/billing
  * remains the durable monthly cap.
  *
- * Analytics ingest gets its own, far larger budget: one request per browser
- * batch means a busy site makes orders of magnitude more of them than it makes
- * content reads, and `track()` never throws, so throttling it would show up as
- * silently missing data rather than as an error anyone could act on.
+ * Analytics gets its own, far larger budget, on both the ingest endpoint and
+ * the route this app mounts for its own browser events: one request per
+ * browser batch means a busy site makes orders of magnitude more of them than
+ * it makes content reads, and `track()` never throws, so throttling it would
+ * show up as silently missing data rather than as an error anyone could act on.
  */
 export async function enforceApiRateLimit(request: Request): Promise<Response | null> {
   const key =

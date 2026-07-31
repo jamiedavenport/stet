@@ -3,6 +3,14 @@ import { createLogger as createEvlogLogger } from 'evlog';
 import { initWorkersLogger } from 'evlog/workers';
 
 /**
+ * A standalone tagged line, for the rare thing that belongs to no unit of
+ * work: `log.info('analytics', 'not sent')`. Anything that does belong to one
+ * wants {@link createLogger} instead, so it folds into that event rather than
+ * splitting the story across two lines.
+ */
+export { log } from 'evlog';
+
+/**
  * The field vocabulary shared by every wide event in the repo, so a query like
  * `job.name = "send-welcome-email"` means the same thing wherever the event was
  * emitted. Every field is optional at the call site: evlog makes the shape

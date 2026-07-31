@@ -14,8 +14,7 @@ import { waitForEmailLink } from './mail';
 // https://resend.com/docs/knowledge-base/what-email-addresses-to-use-for-testing
 // The unique label also keys each test's emails in the server log.
 
-// Signed out, with consent pre-accepted so the banner never overlays the
-// auth flows under test.
+// Signed out: these flows are about arriving without a session.
 test.use({ storageState: freshStorageState() });
 
 test('sign up sends a verification email whose link verifies the address', async ({ page }) => {

@@ -203,6 +203,38 @@ export const analytics = createAnalytics<(typeof config)['analytics']>({
 router.subscribe('onResolved', () => analytics.pageview());
 ```
 
+#### Tracking from your server
+
+Some events belong to your backend rather than to a page: a signup, a
+subscription, a webhook from your payment processor. Recorded there, an ad
+blocker or a closed tab cannot lose them.
+
+The same client does this. It guards its listeners and its automatic pageviews
+behind a `window` check, so it runs anywhere `fetch` does — give it an absolute
+URL and post to the route you already mounted, which keeps your key in one
+place:
+
+```ts
+const analytics = createAnalytics<(typeof config)['analytics']>({
+  endpoint: `${process.env.APP_URL}/api/analytics`,
+  context: { userId },
+  autoPageviews: false,
+});
+
+analytics.track('subscription.started', { plan: 'paid' });
+await analytics.flush();
+```
+
+Two things differ from the browser. `context` is fixed when the client is
+built, so build one per unit of work rather than let two concurrent requests
+stamp each other's identity on their events. And nothing here fires `pagehide`,
+so call `flush()` yourself — on Cloudflare Workers, `waitUntil(analytics.flush())`
+sends the batch without holding up the response.
+
+Your handler still reads its own context from the request. A server-sent batch
+carries no session, so the keys it sets are the ones that survive — see
+[Whose context wins](#the-route-handler).
+
 ## The route handler
 
 ### createAnalyticsHandler

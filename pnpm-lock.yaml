@@ -265,12 +265,6 @@ catalogs:
     '@nerdfolio/drizzle-d1-helpers':
       specifier: ^0.1.5
       version: 0.1.5
-    '@openpanel/sdk':
-      specifier: ^1.3.1
-      version: 1.3.1
-    '@openpanel/web':
-      specifier: ^1.4.1
-      version: 1.4.1
     '@orpc/client':
       specifier: ^1.14.8
       version: 1.14.8
@@ -295,9 +289,6 @@ catalogs:
     '@playwright/test':
       specifier: ^1.58.2
       version: 1.61.1
-    '@policystack/core':
-      specifier: ^1.2.0
-      version: 1.2.0
     '@policystack/react':
       specifier: ^1.2.0
       version: 1.2.0
@@ -598,6 +589,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@dogfood/analytics':
+        specifier: workspace:*
+        version: link:../../dogfooding/analytics
       '@jxdltd/tanstack':
         specifier: ^0.1.2
         version: 0.1.2(@tanstack/react-router@1.170.18(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7)
@@ -613,9 +607,6 @@ importers:
       '@phosphor-icons/react':
         specifier: 'catalog:'
         version: 2.1.10(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
-      '@policystack/core':
-        specifier: 'catalog:'
-        version: 1.2.0
       '@policystack/react':
         specifier: 'catalog:'
         version: 1.2.0(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
@@ -667,9 +658,6 @@ importers:
       '@repo/notifications':
         specifier: workspace:*
         version: link:../../internal/notifications
-      '@repo/openpanel':
-        specifier: workspace:*
-        version: link:../../internal/openpanel
       '@repo/realtime':
         specifier: workspace:*
         version: link:../../internal/realtime
@@ -685,6 +673,12 @@ importers:
       '@sentry/cloudflare':
         specifier: 'catalog:'
         version: 10.68.0(@cloudflare/workers-types@5.20260723.1)(supports-color@10.2.2)(wrangler@4.113.0(@cloudflare/workers-types@5.20260723.1))
+      '@stetcms/analytics':
+        specifier: workspace:*
+        version: link:../../published/analytics
+      '@stetcms/config':
+        specifier: workspace:*
+        version: link:../../published/config
       '@tanstack/react-form':
         specifier: 'catalog:'
         version: 1.33.2(@tanstack/react-start@1.168.30(@voidzero-dev/vite-plus-core@0.2.2(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(publint@0.3.21)(tsx@4.23.1)(typescript@5.9.3)(yaml@2.9.0))(esbuild@0.28.1)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(rolldown@1.1.5)(supports-color@10.2.2))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
@@ -851,6 +845,28 @@ importers:
       wrangler:
         specifier: 'catalog:'
         version: 4.113.0(@cloudflare/workers-types@5.20260723.1)
+
+  dogfooding/analytics:
+    dependencies:
+      '@stetcms/analytics':
+        specifier: workspace:*
+        version: link:../../published/analytics
+      zod:
+        specifier: 'catalog:'
+        version: 4.4.3
+    devDependencies:
+      '@cloudflare/workers-types':
+        specifier: 'catalog:'
+        version: 5.20260723.1
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+      vite-plus:
+        specifier: 'catalog:'
+        version: 0.2.2(@opentelemetry/api@1.9.1)(@types/node@26.1.1)(@voidzero-dev/vite-plus-core@0.2.2(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(publint@0.3.21)(tsx@4.23.1)(typescript@5.9.3)(yaml@2.9.0))(esbuild@0.28.1)(happy-dom@20.11.1)(jiti@2.7.0)(publint@0.3.21)(tsx@4.23.1)(typescript@5.9.3)(yaml@2.9.0)
+      vitest:
+        specifier: 'catalog:'
+        version: 4.1.9(@opentelemetry/api@1.9.1)(@types/node@26.1.1)(@vitest/browser-preview@4.1.9)(@voidzero-dev/vite-plus-core@0.2.2(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(publint@0.3.21)(tsx@4.23.1)(typescript@5.9.3)(yaml@2.9.0))(happy-dom@20.11.1)
 
   examples/tanstack:
     dependencies:
@@ -1039,6 +1055,9 @@ importers:
       '@better-auth/stripe':
         specifier: 'catalog:'
         version: 1.6.25(@better-auth/core@1.6.25(@better-auth/utils@0.4.2)(@better-fetch/fetch@1.3.1)(@cloudflare/workers-types@5.20260723.1)(@opentelemetry/api@1.9.1)(better-call@1.3.7(zod@4.4.3))(jose@6.2.3)(kysely@0.29.4)(nanostores@1.4.0))(better-auth@1.6.25(@cloudflare/workers-types@5.20260723.1)(@opentelemetry/api@1.9.1)(@tanstack/react-start@1.168.30(@voidzero-dev/vite-plus-core@0.2.2(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(publint@0.3.21)(tsx@4.23.1)(typescript@5.9.3)(yaml@2.9.0))(esbuild@0.28.1)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(rolldown@1.1.5))(better-sqlite3@12.11.1)(drizzle-kit@0.31.10)(drizzle-orm@0.45.2(@cloudflare/workers-types@5.20260723.1)(@opentelemetry/api@1.9.1)(@types/better-sqlite3@7.6.13)(better-sqlite3@12.11.1)(kysely@0.29.4))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(vitest@4.1.9))(better-call@1.3.7(zod@4.4.3))(stripe@22.3.2(@types/node@26.1.1))
+      '@dogfood/analytics':
+        specifier: workspace:*
+        version: link:../../dogfooding/analytics
       '@repo/billing':
         specifier: workspace:*
         version: link:../billing
@@ -1057,9 +1076,6 @@ importers:
       '@repo/notifications':
         specifier: workspace:*
         version: link:../notifications
-      '@repo/openpanel':
-        specifier: workspace:*
-        version: link:../openpanel
       '@repo/webhooks':
         specifier: workspace:*
         version: link:../webhooks
@@ -1422,37 +1438,6 @@ importers:
       vite-plus:
         specifier: 'catalog:'
         version: 0.2.2(@opentelemetry/api@1.9.1)(@types/node@26.1.1)(@voidzero-dev/vite-plus-core@0.2.2(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(publint@0.3.21)(tsx@4.23.1)(typescript@5.9.3)(yaml@2.9.0))(esbuild@0.28.1)(happy-dom@20.11.1)(jiti@2.7.0)(publint@0.3.21)(tsx@4.23.1)(typescript@5.9.3)(yaml@2.9.0)
-
-  internal/openpanel:
-    dependencies:
-      '@openpanel/sdk':
-        specifier: 'catalog:'
-        version: 1.3.1
-      '@openpanel/web':
-        specifier: 'catalog:'
-        version: 1.4.1
-      '@repo/brand':
-        specifier: workspace:*
-        version: link:../brand
-      zod:
-        specifier: 'catalog:'
-        version: 4.4.3
-    devDependencies:
-      '@cloudflare/workers-types':
-        specifier: 'catalog:'
-        version: 5.20260723.1
-      typescript:
-        specifier: 'catalog:'
-        version: 5.9.3
-      vite:
-        specifier: npm:@voidzero-dev/vite-plus-core@0.2.2
-        version: '@voidzero-dev/vite-plus-core@0.2.2(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(publint@0.3.21)(tsx@4.23.1)(typescript@5.9.3)(yaml@2.9.0)'
-      vite-plus:
-        specifier: 'catalog:'
-        version: 0.2.2(@opentelemetry/api@1.9.1)(@types/node@26.1.1)(@voidzero-dev/vite-plus-core@0.2.2(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(publint@0.3.21)(tsx@4.23.1)(typescript@5.9.3)(yaml@2.9.0))(esbuild@0.28.1)(happy-dom@20.11.1)(jiti@2.7.0)(publint@0.3.21)(tsx@4.23.1)(typescript@5.9.3)(yaml@2.9.0)
-      vitest:
-        specifier: 'catalog:'
-        version: 4.1.9(@opentelemetry/api@1.9.1)(@types/node@26.1.1)(@vitest/browser-preview@4.1.9)(@voidzero-dev/vite-plus-core@0.2.2(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(publint@0.3.21)(tsx@4.23.1)(typescript@5.9.3)(yaml@2.9.0))(happy-dom@20.11.1)
 
   internal/realtime:
     dependencies:
@@ -3588,12 +3573,6 @@ packages:
     resolution: {integrity: sha512-hAX0pT/73190NLqBPPWSdBVGtbY6VOhWYK3qqHqtXQ1gK7kS2yz4+ivsN07hpJ6I3aeMtKP6J6npsEKOAzuTLA==}
     engines: {node: '>=20.0'}
 
-  '@openpanel/sdk@1.3.1':
-    resolution: {integrity: sha512-mQ5xaBUGXnyRg3qYxwnbVaUYyW7w8u+munrWk/ClnqxEeR2j+FYPiA6noHbHMCFC2aZutYD5OoRzEvw3FBNFxw==}
-
-  '@openpanel/web@1.4.1':
-    resolution: {integrity: sha512-DgUWeocZw+b57YiJjefZPg+6sceR7TdOF8x7Ut75lu3CwcwqGi5jZNPXjikNemGL37aNWXCB4buhcoNan2j7RA==}
-
   '@opentelemetry/api@1.9.0':
     resolution: {integrity: sha512-3giAOQvZiH5F9bMlMiv8+GSPMeqg0dbaeo58/0SlA9sxSqZhnUtxzX9/2FzyhS9sWQf5S0GJE0AKBrFqjpeYcg==}
     engines: {node: '>=8.0.0'}
@@ -4882,12 +4861,6 @@ packages:
       rollup:
         optional: true
 
-  '@rrweb/types@2.0.0-alpha.20':
-    resolution: {integrity: sha512-RbnDgKxA/odwB1R4gF7eUUj+rdSrq6ROQJsnMw7MIsGzlbSYvJeZN8YY4XqU0G6sKJvXI6bSzk7w/G94jNwzhw==}
-
-  '@rrweb/utils@2.1.1':
-    resolution: {integrity: sha512-x2SgJAD3YJ9eVcLZ5l6OqWMtczdA3VfS5XqPeqpZdQgV9oh6Id5GK2cDN4bimnkqryOcIJdz8cTvV0yNvqQ+nA==}
-
   '@scalar/astro@0.4.11':
     resolution: {integrity: sha512-iZHZrLb0bx/s9efUkn5JKdZeyawODmfnoJl5hTu1uJxUwjKtAVtx8MFVXo8JkyC3/s8XFXGGs66d+S/Ji8eYJg==}
     engines: {node: '>=22'}
@@ -5805,9 +5778,6 @@ packages:
   '@types/chai@5.2.3':
     resolution: {integrity: sha512-Mw558oeA9fFbv65/y4mHtXDs9bPnFMZAL/jxdPFUpOHHIXX91mcgEHbS5Lahr+pwZFR8A7GQleRWeI6cGFC2UA==}
 
-  '@types/css-font-loading-module@0.0.7':
-    resolution: {integrity: sha512-nl09VhutdjINdWyXxHWN/w9zlNCfr60JUqJbd24YXUuCwgeL0TpFSdElCwb6cxfB6ybE19Gjj4g0jsgkXxKv1Q==}
-
   '@types/d3-array@3.2.2':
     resolution: {integrity: sha512-hOLWVbm7uRza0BYXpIIW5pxfrKe0W+D5lrFiAEYR+pb6w3N2SwSMaJbXdUfSEv+dT4MfHBLtn5js0LAWaO6otw==}
 
@@ -6282,9 +6252,6 @@ packages:
   '@vscode/l10n@0.0.18':
     resolution: {integrity: sha512-KYSIHVmslkaCDyw013pphY+d7x1qV8IZupYfeIfzNA+nsaWHbn5uPuQRvdRFsa9zFzGeudPuoGoZ1Op4jrJXIQ==}
 
-  '@xstate/fsm@1.6.5':
-    resolution: {integrity: sha512-b5o1I6aLNeYlU/3CPlj/Z91ybk1gUsKT+5NAJI+2W4UjvS5KLG28K9v5UvNoFVjHV8PajVZ00RH3vnjyQO7ZAw==}
-
   abbrev@3.0.1:
     resolution: {integrity: sha512-AO2ac6pjRB3SJmGJo+v5/aK6Omggp6fsLrs6wN9bd35ulu4cCwaAU9+7ZhXjeqHVkaHThLuzH0nZr0YpCDhygg==}
     engines: {node: ^18.17.0 || >=20.5.0}
@@ -6516,10 +6483,6 @@ packages:
   balanced-match@4.0.4:
     resolution: {integrity: sha512-BLrgEcRTwX2o6gGxGOCNyMvGSp35YofuYzw9h1IMTRmKqttAZZVU67bdb9Pr2vUHA8+j3i2tJfjO6C6+4myGTA==}
     engines: {node: 18 || 20 || >=22}
-
-  base64-arraybuffer@1.0.2:
-    resolution: {integrity: sha512-I3yl4r9QB5ZRY3XuJVEPfc2XhZO6YweFPI+UovAzn+8/hb3oJ6lnysaFcjVpkCPfVWFUDvoZ8kmVDP7WyRtYtQ==}
-    engines: {node: '>= 0.6.0'}
 
   base64-js@0.0.8:
     resolution: {integrity: sha512-3XSA2cR/h/73EzlXXdU6YNycmYI7+kicTxks4eJg2g39biHR84slg2+des+p7iHYhbRg/udIS4TD53WabcOUkw==}
@@ -8808,9 +8771,6 @@ packages:
     resolution: {integrity: sha512-KZxYo1BUkWD2TVFLr0MQoM8vUUigWD3LlD83a/75BqC+4qE0Hb1Vo5v1FgcfaNXvfXzr+5EhQ6ing/CaBijTlw==}
     engines: {node: '>= 18'}
 
-  mitt@3.0.1:
-    resolution: {integrity: sha512-vKivATfr97l2/QBCYAkXYDbrIWPM2IIKEl7YPhjCvKlG3kE2gm+uBo6nEXK3M5/Ffh/FLpKExzOQ3JJoJGFKBw==}
-
   mkdirp-classic@0.5.3:
     resolution: {integrity: sha512-gKLcREMhtuZRwRAfqP3RFW+TK4JqApVBtOIftVgjuABpAtpxhPGaDcfvbhNvD0B8iD1oUr/txX35NjcaY6Ns/A==}
 
@@ -9616,15 +9576,6 @@ packages:
   router@2.2.0:
     resolution: {integrity: sha512-nLTrUKm2UyiL7rlhapu/Zl45FwNgkZGaCpZbIHajDYgwlJCOzLSk+cIPAnsEqV955GjILJnKbdQC1nVPz+gAYQ==}
     engines: {node: '>= 18'}
-
-  rrdom@2.1.1:
-    resolution: {integrity: sha512-VBkTF3bGNqcZjqnbo/gKi9GVQPIxiG0dofw7CQdAZQFQ2juJdt2YKIf3oS9QudL8HTpGh9bz5TUN+3amBn1Geg==}
-
-  rrweb-snapshot@2.1.1:
-    resolution: {integrity: sha512-al4Kx7Am7YlIn/5Yb2EMr7cdmjGiK+cLhdilJEXqkFXgpnys8t/yMJumXy2Ormgirpg3MBnFha0GTgny+iIL2w==}
-
-  rrweb@2.0.0-alpha.20:
-    resolution: {integrity: sha512-CZKDlm+j1VA50Ko3gnMbpvguCAleljsTNXPnVk9aeNP8o6T6kolRbISHyDZpqZ4G+bdDLlQOignPP3jEsXs8Gg==}
 
   run-applescript@7.1.0:
     resolution: {integrity: sha512-DPe5pVFaAsinSaV6QjQ6gdiedWDcRCbUuiQfQa2wmWV7+xC9bGulGI8+TdRmoFkAPaBXk8CrAbnlY2ISniJ47Q==}
@@ -12614,14 +12565,6 @@ snapshots:
 
   '@oozcitak/util@10.0.0': {}
 
-  '@openpanel/sdk@1.3.1': {}
-
-  '@openpanel/web@1.4.1':
-    dependencies:
-      '@openpanel/sdk': 1.3.1
-      '@rrweb/types': 2.0.0-alpha.20
-      rrweb: 2.0.0-alpha.20
-
   '@opentelemetry/api@1.9.0': {}
 
   '@opentelemetry/api@1.9.1': {}
@@ -13564,10 +13507,6 @@ snapshots:
       '@types/estree': 1.0.9
       estree-walker: 2.0.2
       picomatch: 4.0.5
-
-  '@rrweb/types@2.0.0-alpha.20': {}
-
-  '@rrweb/utils@2.1.1': {}
 
   '@scalar/astro@0.4.11(astro@7.1.6(@astrojs/markdown-remark@7.2.2(supports-color@10.2.2))(@emnapi/core@2.0.0-alpha.3)(@emnapi/runtime@2.0.0-alpha.3)(@types/node@26.1.1)(@vercel/functions@3.7.6(ws@8.21.1))(jiti@2.7.0)(publint@0.3.21)(tsx@4.23.1)(typescript@6.0.3)(yaml@2.9.0))':
     dependencies:
@@ -14734,8 +14673,6 @@ snapshots:
       '@types/deep-eql': 4.0.2
       assertion-error: 2.0.1
 
-  '@types/css-font-loading-module@0.0.7': {}
-
   '@types/d3-array@3.2.2': {}
 
   '@types/d3-axis@3.0.6':
@@ -15202,8 +15139,6 @@ snapshots:
 
   '@vscode/l10n@0.0.18': {}
 
-  '@xstate/fsm@1.6.5': {}
-
   abbrev@3.0.1: {}
 
   abort-controller@3.0.0:
@@ -15505,8 +15440,6 @@ snapshots:
   balanced-match@1.0.2: {}
 
   balanced-match@4.0.4: {}
-
-  base64-arraybuffer@1.0.2: {}
 
   base64-js@0.0.8: {}
 
@@ -18067,8 +18000,6 @@ snapshots:
     dependencies:
       minipass: 7.1.3
 
-  mitt@3.0.1: {}
-
   mkdirp-classic@0.5.3: {}
 
   module-details-from-path@1.0.4: {}
@@ -19069,25 +19000,6 @@ snapshots:
       path-to-regexp: 8.4.2
     transitivePeerDependencies:
       - supports-color
-
-  rrdom@2.1.1:
-    dependencies:
-      rrweb-snapshot: 2.1.1
-
-  rrweb-snapshot@2.1.1:
-    dependencies:
-      postcss: 8.5.19
-
-  rrweb@2.0.0-alpha.20:
-    dependencies:
-      '@rrweb/types': 2.0.0-alpha.20
-      '@rrweb/utils': 2.1.1
-      '@types/css-font-loading-module': 0.0.7
-      '@xstate/fsm': 1.6.5
-      base64-arraybuffer: 1.0.2
-      mitt: 3.0.1
-      rrdom: 2.1.1
-      rrweb-snapshot: 2.1.1
 
   run-applescript@7.1.0: {}
 

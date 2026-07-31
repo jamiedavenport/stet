@@ -44,11 +44,18 @@
     // without STRIPE_SECRET_KEY billing runs against the built-in fake
     // Stripe, which supplies its own price id.
     "STRIPE_PRICE_PAID": "price_1TyHfDIdr8Yx5Wu4S72eWS2I",
-    // OpenPanel client id (public, ships to the browser). Blank (and no
-    // secret) means analytics logs to the console instead; set it once a
-    // Stet OpenPanel project exists, and keep "" in .dev.vars so local
-    // traffic stays out of it.
-    "OPENPANEL_CLIENT_ID": "",
+    // The Stet that Stet's own product analytics go to, which is this same
+    // deployment: events leave the Worker and come back in through the public
+    // API, so the path customers take is the path we run on.
+    "STET_ORIGIN": "https://stetcms.com",
+    // Organization API key for that Stet. Blank means analytics record
+    // nothing, so the app runs with no key at all; production overrides it
+    // with `wrangler secret put STET_API_KEY` (which shadows the var), and
+    // local dev overrides it in .dev.vars. Declared here rather than only in
+    // src/env.d.ts because `secrets.required` below replaces wrangler's
+    // .dev.vars inference: an undeclared name never becomes a binding, so it
+    // would read as unset however it was supplied. See dogfooding/analytics.
+    "STET_API_KEY": "",
     // Sentry error tracking. The DSN is public (it ships in the worker and
     // only accepts event submissions). Blank disables reporting entirely, so
     // the app runs with no Sentry account.
@@ -62,8 +69,7 @@
   },
   // Wrangler refuses to deploy while a listed secret is unset, so only
   // genuinely mandatory secrets belong here. The optional GOOGLE_*/GITHUB_*
-  // social sign-in pairs and OPENPANEL_CLIENT_SECRET (analytics runs
-  // log-only without it) are typed in src/env.d.ts instead.
+  // social sign-in pairs are typed in src/env.d.ts instead.
   "secrets": {
     "required": [
       "ANTHROPIC_API_KEY",

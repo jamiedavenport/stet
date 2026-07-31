@@ -69,6 +69,24 @@ test('rejects events without an organization key', async ({ request }) => {
   expect(response.status()).toBe(401);
 });
 
+// Stet's own analytics run the same path a customer's do, through a route
+// mounted in this app (see dogfooding/analytics). The count is not asserted:
+// CI runs with STET_API_KEY blank, so batches are accepted and dropped rather
+// than forwarded, which is also what keeps this suite's own browsing out of
+// the totals the test above measures. What matters here is that the route is
+// mounted, takes a well-formed batch, and never fails the page that sent it.
+test('accepts a browser batch on the mounted analytics route', async ({ request }) => {
+  const response = await request.post('/api/analytics', {
+    data: {
+      context: {},
+      events: [{ name: '$pageview', props: {}, timestamp: Date.now(), url: '/e2e-mounted' }],
+    },
+  });
+
+  expect(response.status()).toBe(200);
+  expect(await response.json()).toHaveProperty('accepted');
+});
+
 test('publishes a tracking plan and replaces it on the next sync', async ({ request }) => {
   const first = await request.put('/api/v1/events/schema', {
     headers: keyHeader,

@@ -1,5 +1,5 @@
 import type { StripeOptions } from '@better-auth/stripe';
-import { capture } from '@repo/openpanel/server';
+import { capture } from '@dogfood/analytics/server';
 import { and, eq, schema } from '@repo/db';
 import type { Database } from '@repo/db';
 import Stripe from 'stripe';
@@ -52,9 +52,8 @@ export function stripeOptions({
       // checkout and portal changes alike. referenceId is the subscribing
       // organization's id.
       onSubscriptionComplete: async ({ subscription, plan }) => {
-        capture('subscription_started', {
-          organizationId: subscription.referenceId,
-          properties: { plan: plan.name },
+        capture({ organizationId: subscription.referenceId }, 'subscription.started', {
+          plan: plan.name,
         });
         await emitWebhook({
           organizationId: subscription.referenceId,
@@ -63,9 +62,8 @@ export function stripeOptions({
         });
       },
       onSubscriptionCancel: async ({ subscription }) => {
-        capture('subscription_canceled', {
-          organizationId: subscription.referenceId,
-          properties: { plan: subscription.plan },
+        capture({ organizationId: subscription.referenceId }, 'subscription.canceled', {
+          plan: subscription.plan,
         });
         await emitWebhook({
           organizationId: subscription.referenceId,

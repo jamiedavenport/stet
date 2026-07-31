@@ -23,6 +23,7 @@ import { Route as MarketingContactRouteImport } from './routes/_marketing/contac
 import { Route as MarketingCookiesRouteImport } from './routes/_marketing/cookies'
 import { Route as MarketingPricingRouteImport } from './routes/_marketing/pricing'
 import { Route as MarketingPrivacyRouteImport } from './routes/_marketing/privacy'
+import { Route as ApiAnalyticsRouteImport } from './routes/api/analytics'
 import { Route as AppIndexRouteImport } from './routes/app/index'
 import { Route as AppAdminRouteRouteImport } from './routes/app/admin/route'
 import { Route as AppAnalyticsRouteImport } from './routes/app/analytics'
@@ -131,6 +132,11 @@ const MarketingPrivacyRoute = MarketingPrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
   getParentRoute: () => MarketingRoute,
+} as any)
+const ApiAnalyticsRoute = ApiAnalyticsRouteImport.update({
+  id: '/api/analytics',
+  path: '/api/analytics',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AppIndexRoute = AppIndexRouteImport.update({
   id: '/',
@@ -345,6 +351,7 @@ export interface FileRoutesByFullPath {
   '/cookies': typeof MarketingCookiesRoute
   '/pricing': typeof MarketingPricingRoute
   '/privacy': typeof MarketingPrivacyRoute
+  '/api/analytics': typeof ApiAnalyticsRoute
   '/app/analytics': typeof AppAnalyticsRoute
   '/app/audit': typeof AppAuditRoute
   '/app/import': typeof AppImportRoute
@@ -396,6 +403,7 @@ export interface FileRoutesByTo {
   '/cookies': typeof MarketingCookiesRoute
   '/pricing': typeof MarketingPricingRoute
   '/privacy': typeof MarketingPrivacyRoute
+  '/api/analytics': typeof ApiAnalyticsRoute
   '/app/analytics': typeof AppAnalyticsRoute
   '/app/audit': typeof AppAuditRoute
   '/app/import': typeof AppImportRoute
@@ -452,6 +460,7 @@ export interface FileRoutesById {
   '/_marketing/cookies': typeof MarketingCookiesRoute
   '/_marketing/pricing': typeof MarketingPricingRoute
   '/_marketing/privacy': typeof MarketingPrivacyRoute
+  '/api/analytics': typeof ApiAnalyticsRoute
   '/app/analytics': typeof AppAnalyticsRoute
   '/app/audit': typeof AppAuditRoute
   '/app/import': typeof AppImportRoute
@@ -509,6 +518,7 @@ export interface FileRouteTypes {
     | '/cookies'
     | '/pricing'
     | '/privacy'
+    | '/api/analytics'
     | '/app/analytics'
     | '/app/audit'
     | '/app/import'
@@ -560,6 +570,7 @@ export interface FileRouteTypes {
     | '/cookies'
     | '/pricing'
     | '/privacy'
+    | '/api/analytics'
     | '/app/analytics'
     | '/app/audit'
     | '/app/import'
@@ -615,6 +626,7 @@ export interface FileRouteTypes {
     | '/_marketing/cookies'
     | '/_marketing/pricing'
     | '/_marketing/privacy'
+    | '/api/analytics'
     | '/app/analytics'
     | '/app/audit'
     | '/app/import'
@@ -665,6 +677,7 @@ export interface RootRouteChildren {
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   RssDotxmlRoute: typeof RssDotxmlRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  ApiAnalyticsRoute: typeof ApiAnalyticsRoute
   AssetsIdRoute: typeof AssetsIdRoute
   InviteIdRoute: typeof InviteIdRoute
   MailUnsubscribeRoute: typeof MailUnsubscribeRoute
@@ -773,6 +786,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/privacy'
       preLoaderRoute: typeof MarketingPrivacyRouteImport
       parentRoute: typeof MarketingRoute
+    }
+    '/api/analytics': {
+      id: '/api/analytics'
+      path: '/api/analytics'
+      fullPath: '/api/analytics'
+      preLoaderRoute: typeof ApiAnalyticsRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/app/': {
       id: '/app/'
@@ -1175,6 +1195,7 @@ const rootRouteChildren: RootRouteChildren = {
   RobotsDottxtRoute: RobotsDottxtRoute,
   RssDotxmlRoute: RssDotxmlRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  ApiAnalyticsRoute: ApiAnalyticsRoute,
   AssetsIdRoute: AssetsIdRoute,
   InviteIdRoute: InviteIdRoute,
   MailUnsubscribeRoute: MailUnsubscribeRoute,

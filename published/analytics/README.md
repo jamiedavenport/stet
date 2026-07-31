@@ -80,6 +80,31 @@ type fails the build. It never throws and never rejects, so a tracking mistake
 cannot break the page. Events batch and flush every two seconds, when twenty
 are queued, and when the page is hidden or unloaded.
 
+## 4. Track from your server too
+
+A signup or a subscription belongs to your backend, and recording it there is
+what stops an ad blocker or a closed tab losing it. The same client does this:
+it guards its listeners behind a `window` check, so it runs anywhere `fetch`
+does. Point it at an absolute URL and it posts to the route you already
+mounted, which keeps your key in one place.
+
+```ts
+const analytics = createAnalytics<(typeof config)['analytics']>({
+  endpoint: `${process.env.APP_URL}/api/analytics`,
+  context: { userId },
+  autoPageviews: false,
+});
+
+analytics.track('subscription.started', { plan: 'paid' });
+await analytics.flush();
+```
+
+`context` is fixed when the client is built, so build one per unit of work
+rather than let two concurrent requests stamp each other's identity on their
+events. Nothing on a server fires `pagehide`, so call `flush()` yourself; on
+Cloudflare Workers, `waitUntil(analytics.flush())` sends it without holding up
+the response.
+
 ## Pageviews
 
 On a site where every navigation is a real page load — plain HTML, Astro
