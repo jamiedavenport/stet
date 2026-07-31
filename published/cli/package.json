@@ -1,14 +1,18 @@
 {
   "name": "@stetcms/cli",
   "version": "0.1.0",
-  "description": "Command line interface for Stet.",
+  "description": "Command line interface for Stet, the CMS for marketing and engineering: generate a typed content client and publish your tracking plan.",
   "keywords": [
-    "auth",
     "cli",
-    "device-flow",
-    "stet"
+    "cms",
+    "codegen",
+    "content",
+    "headless-cms",
+    "stet",
+    "stetcms",
+    "typescript"
   ],
-  "homepage": "https://github.com/jamiedavenport/stet/tree/main/published/cli#readme",
+  "homepage": "https://docs.stetcms.com/reference/cli",
   "bugs": "https://github.com/jamiedavenport/stet/issues",
   "license": "Apache-2.0",
   "author": "Jamie Davenport (https://jxd.dev)",

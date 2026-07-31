@@ -1,14 +1,21 @@
 {
   "name": "@stetcms/vite",
   "version": "0.1.0",
-  "description": "Vite plugin for products built on Stet: typed options, a virtual config module, and a build-time codegen hook.",
+  "description": "Vite plugin for Stet, the CMS for marketing and engineering: generates a typed content client and publishes your tracking plan.",
   "keywords": [
+    "cms",
+    "codegen",
+    "content",
+    "headless-cms",
     "plugin",
     "stet",
+    "stetcms",
+    "typegen",
+    "typescript",
     "vite",
     "vite-plugin"
   ],
-  "homepage": "https://github.com/jamiedavenport/stet/tree/main/published/vite#readme",
+  "homepage": "https://docs.stetcms.com/reference/codegen",
   "bugs": "https://github.com/jamiedavenport/stet/issues",
   "license": "Apache-2.0",
   "author": "Jamie Davenport (https://jxd.dev)",

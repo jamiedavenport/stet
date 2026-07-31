@@ -1,8 +1,12 @@
 # @stetcms/client
 
-Typed client for the [Stet](https://github.com/jamiedavenport/stet) API. The types come straight from the oRPC contract the server implements, so calls and responses are fully typed end to end.
+[![CI](https://github.com/jamiedavenport/stet/actions/workflows/ci.yml/badge.svg)](https://github.com/jamiedavenport/stet/actions/workflows/ci.yml)
+[![Docs](https://img.shields.io/badge/docs-stetcms.com-black.svg)](https://docs.stetcms.com/reference/client)
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](./LICENSE)
 
-It also carries the content client runtime that [`@stetcms/vite`](https://github.com/jamiedavenport/stet/tree/main/published/vite)'s generated `stet.gen.ts` instantiates:
+Typed client for the API of [Stet](https://stetcms.com), the CMS where marketing owns the content model and engineering gets a typed client generated from it. The types come straight from the contract the server implements, so calls and responses are fully typed end to end.
+
+It also carries the content client runtime that [`@stetcms/vite`](https://docs.stetcms.com/reference/codegen)'s generated `stet.gen.ts` instantiates:
 
 ```ts
 import { createContentClient } from '@stetcms/client';
@@ -55,14 +59,14 @@ Options:
 - `apiKey`: organization API key sent as `x-api-key`.
 - `fetch`: custom fetch implementation.
 
-The API itself is plain REST under `/api/v1`, described by the OpenAPI document generated from the same contract.
-
-## License
-
-Apache-2.0
+The API itself is plain REST under `/api/v1`, described by the [OpenAPI document](https://docs.stetcms.com/api) generated from the same contract. [Authentication](https://docs.stetcms.com/api/authentication) covers how keys are scoped.
 
 ## Asset URLs
 
 The API returns asset paths relative to itself; the client joins them to the `origin` it was created with, so what you get is ready for an `img` tag on your own origin. That covers an asset field's `url` and assets embedded or linked inside rich-text markdown and HTML.
 
 Calling the REST API directly instead? `assetUrl(url, origin)` joins one value and `resolveAssetPaths(text, origin)` joins the ones inside rich-text markdown or HTML.
+
+## License
+
+Apache-2.0

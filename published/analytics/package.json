@@ -1,15 +1,22 @@
 {
   "name": "@stetcms/analytics",
   "version": "0.1.0",
-  "description": "Type-safe, cookieless product analytics for Stet, routed through your own backend.",
+  "description": "Cookieless, type-safe product analytics routed through your own backend. Part of Stet, the CMS for marketing and engineering.",
   "keywords": [
     "analytics",
+    "cms",
     "cookieless",
+    "first-party",
+    "headless-cms",
     "pageviews",
+    "privacy",
+    "product-analytics",
     "stet",
-    "tracking"
+    "stetcms",
+    "tracking",
+    "typescript"
   ],
-  "homepage": "https://github.com/jamiedavenport/stet/tree/main/published/analytics#readme",
+  "homepage": "https://docs.stetcms.com/reference/analytics",
   "bugs": "https://github.com/jamiedavenport/stet/issues",
   "license": "Apache-2.0",
   "author": "Jamie Davenport (https://jxd.dev)",
@@ -22,6 +29,7 @@
     "dist"
   ],
   "type": "module",
+  "sideEffects": false,
   "exports": {
     ".": "./src/index.ts",
     "./client": "./src/client.ts",

@@ -1,11 +1,17 @@
 # @stetcms/vite
 
-Vite plugin for products built on [Stet](https://github.com/jamiedavenport/stet). It does two jobs from one config file:
+[![CI](https://github.com/jamiedavenport/stet/actions/workflows/ci.yml/badge.svg)](https://github.com/jamiedavenport/stet/actions/workflows/ci.yml)
+[![Docs](https://img.shields.io/badge/docs-stetcms.com-black.svg)](https://docs.stetcms.com/reference/codegen)
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](./LICENSE)
+
+Vite plugin for products built on [Stet](https://stetcms.com), the CMS where marketing owns the content model and engineering gets a typed client generated from it. It does two jobs from one config file:
 
 - **Generates a typed content client** before every build and dev-server start: the collections and maps your content team shapes in the Stet UI become `stet.<slug>.list()` / `.get()` calls your editor autocompletes. While the dev server runs it keeps watching, so a field added in the Stet UI reaches your types moments later without a restart.
 - **Publishes your analytics tracking plan**, so the events your code declares can be charted in Stet before anyone has fired one.
 
-Building without Vite? [`stet generate`](https://github.com/jamiedavenport/stet/tree/main/published/cli#stet-generate) and [`stet sync`](https://github.com/jamiedavenport/stet/tree/main/published/cli#stet-sync) run the same two jobs from the command line, for Next.js apps and CI.
+Building without Vite? [`stet generate`](https://docs.stetcms.com/reference/cli#stet-generate) and [`stet sync`](https://docs.stetcms.com/reference/cli#stet-sync) run the same two jobs from the command line, for Next.js apps and CI.
+
+New here? The [quickstart](https://docs.stetcms.com/quickstart) goes from an empty project to a typed content client in four steps.
 
 ## Install
 
@@ -26,7 +32,7 @@ export default defineConfig({
 });
 ```
 
-Everything is configured in `stet.config.ts` (see [`@stetcms/config`](https://github.com/jamiedavenport/stet/tree/main/published/config)), which the CLI reads too:
+Everything is configured in `stet.config.ts` (see [`@stetcms/config`](https://docs.stetcms.com/reference/configuration)), which the CLI reads too:
 
 ```ts
 // stet.config.ts
@@ -52,7 +58,7 @@ Neither job can fail your build. Without a key, or with the API unreachable, the
 
 ## Analytics
 
-A config that declares `analytics` has its tracking plan published on every dev-server and build start, so the dashboard can offer an event before it has ever been recorded. Dropping an event from your code drops it from that list on the next sync, while anything already recorded under that name keeps its history. See [`@stetcms/analytics`](https://github.com/jamiedavenport/stet/tree/main/published/analytics) for the plan itself and the route it feeds.
+A config that declares `analytics` has its tracking plan published on every dev-server and build start, so the dashboard can offer an event before it has ever been recorded. Dropping an event from your code drops it from that list on the next sync, while anything already recorded under that name keeps its history. See [`@stetcms/analytics`](https://docs.stetcms.com/reference/analytics) for the plan itself and the route it feeds.
 
 ## Options
 
