@@ -2,7 +2,12 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "stet-web",
   "compatibility_date": "2026-07-19",
-  "compatibility_flags": ["nodejs_compat"],
+  // global_fetch_strictly_public: without it, a fetch() to our own zone skips
+  // Workers routing and dials the zone's origin server, which does not exist
+  // on a Workers-only zone, so it fails as a 522. The analytics route forwards
+  // to STET_ORIGIN, which is this same worker, and needs the request to reach
+  // Cloudflare's front door and come back in.
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   "observability": {
     "enabled": true,
     // OpenTelemetry spans for every fetch and binding call, so a slow request
