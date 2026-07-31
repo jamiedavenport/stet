@@ -60,15 +60,6 @@ That is the whole idea. Changes cross the gap between the two teams as informati
 - **No draft/publish toggle.** Publishing states differ at every company, and a fixed one is always wrong for somebody. Model it as a field and branch on it in your app, and the workflow is the one your team actually uses.
 - **No hosting.** Stet serves content through its API and clients. Where your site runs is your decision.
 
-## Not built yet
-
-Stet is pre-launch. These are on the roadmap and are not in the product today:
-
-- Comments on content ([#8](https://github.com/jamiedavenport/stet/issues/8)).
-- Localization: per-locale entries and translation.
-- Per-collection publish permissions. Roles today are organization-wide.
-- Media migration on import: imported bodies still point at the original host ([#20](https://github.com/jamiedavenport/stet/issues/20)).
-
 ## Getting started
 
 ```bash
