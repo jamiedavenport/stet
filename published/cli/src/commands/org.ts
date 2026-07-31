@@ -12,8 +12,7 @@ export const orgCommand = new Command('org')
   .action(async (options: { apiKey?: string; url?: string; json?: boolean }) => {
     const apiKey = options.apiKey ?? process.env.STET_API_KEY;
     if (apiKey === undefined || apiKey === '') {
-      console.error('No API key. Pass --api-key or set STET_API_KEY.');
-      process.exit(1);
+      ui.fail('No API key. Pass --api-key or set STET_API_KEY.');
     }
 
     const origin = resolveOrigin(options.url);
@@ -21,12 +20,10 @@ export const orgCommand = new Command('org')
     const { data, error, isDefined } = await safe(client.org.current());
 
     if (isDefined && error.code === 'UNAUTHORIZED') {
-      console.error('Invalid or revoked API key.');
-      process.exit(1);
+      ui.fail('Invalid or revoked API key.');
     }
     if (error !== null) {
-      console.error(error.message !== '' ? error.message : `Could not reach ${origin}.`);
-      process.exit(1);
+      ui.fail(error.message !== '' ? error.message : `Could not reach ${origin}.`);
     }
 
     if (options.json === true) {

@@ -78,6 +78,14 @@ stet whoami --json
 
 `--json` prints the user, session, and active organization as JSON for scripting. The session token is never included in the output.
 
+### `stet logout`
+
+Clear the session stored on this machine. Running the command when already logged out also succeeds.
+
+```bash
+stet logout
+```
+
 ### `stet org`
 
 Show the organization an API key is scoped to, including its billing plan.
@@ -98,7 +106,7 @@ stet org --json
 - `STET_API_URL`: default server origin for the account commands (`login`,
   `whoami`, `org`). `generate` and `sync` resolve theirs through
   `stet.config.ts` and `STET_ORIGIN` instead.
-- The session token is stored at `~/.config/stet/auth.json` (`$XDG_CONFIG_HOME/stet/auth.json` when set) with `0600` permissions. Delete the file to log out.
+- The session token is stored at `~/.config/stet/auth.json` (`$XDG_CONFIG_HOME/stet/auth.json` when set) with `0600` permissions. Run `stet logout` to remove it.
 
 ## Development
 

@@ -10,8 +10,7 @@ export const whoamiCommand = new Command('whoami')
   .action(async (options: { json?: boolean }) => {
     const stored = loadAuth();
     if (stored === null) {
-      console.error('Not logged in. Run `stet login` first.');
-      process.exit(1);
+      ui.fail('Not logged in. Run `stet login` first.');
     }
 
     const client = createClient(stored.origin);
@@ -19,12 +18,10 @@ export const whoamiCommand = new Command('whoami')
 
     const { data: session, error } = await client.getSession({ fetchOptions });
     if (error !== null) {
-      console.error(error.message ?? `Could not reach ${stored.origin}.`);
-      process.exit(1);
+      ui.fail(error.message ?? `Could not reach ${stored.origin}.`);
     }
     if (session === null) {
-      console.error('Your session has expired. Run `stet login` again.');
-      process.exit(1);
+      ui.fail('Your session has expired. Run `stet login` again.');
     }
 
     const { data: organizations } = await client.organization.list({ fetchOptions });
