@@ -1,0 +1,192 @@
+---
+title: MCP server
+description: Connect Claude, Cursor, or anything else that speaks the Model Context Protocol to your content model, over one OAuth-authenticated endpoint.
+icon: bot
+---
+
+The assistant inside Stet works through a set of tools over your content: it
+reads the model, searches entries, and writes fields and bodies. The MCP server
+hands that same set to any client that speaks the
+[Model Context Protocol](https://modelcontextprotocol.io), so the agent you
+already work in can shape your content model and fill it.
+
+There is nothing to install and no key to create. One URL:
+
+```
+https://stetcms.com/mcp
+```
+
+## Connect a client
+
+<CodeGroup>
+
+```bash Claude
+claude mcp add --transport http stet https://stetcms.com/mcp
+```
+
+```json Cursor
+{
+  "mcpServers": {
+    "stet": {
+      "url": "https://stetcms.com/mcp"
+    }
+  }
+}
+```
+
+```json Other
+{
+  "mcpServers": {
+    "stet": {
+      "type": "http",
+      "url": "https://stetcms.com/mcp"
+    }
+  }
+}
+```
+
+</CodeGroup>
+
+That first command is Claude Code's. Cursor reads `.cursor/mcp.json` in a
+project, or `~/.cursor/mcp.json` for every project. Clients that offer a
+"connectors" or "add server" screen instead of a config file, Claude's desktop
+and web apps among them, want the same URL typed into it.
+
+The endpoint speaks streamable HTTP, and answers older SSE-only clients on the
+same URL, so a client that predates the current transport still connects.
+
+## Signing in
+
+Stet uses OAuth, not an API key. Your first request is answered with a `401`
+and a pointer to the metadata describing how to authenticate, which is the
+handshake the protocol defines:
+
+```http
+WWW-Authenticate: Bearer resource_metadata="https://stetcms.com/.well-known/oauth-protected-resource"
+```
+
+Your client follows that on its own. It reads the metadata, registers itself
+(registration is dynamic, so there is no app to create first), and opens a
+browser at Stet's sign-in page. Approve it there and the client holds an access
+token and a refresh token from then on.
+
+In Claude Code, that browser window opens when you run `/mcp` and pick the
+server. Most other clients open it the first time a tool is called.
+
+:::note[Tokens belong to you, not your organization]
+An MCP token authenticates **a person**, so the server sees your account and
+your permissions. An API key is the opposite: it belongs to an organization and
+is meant for a server. The two are not interchangeable, and neither works in
+place of the other. See [authentication](/api/authentication) for the API key
+side.
+:::
+
+## Choosing an organization
+
+Because the token is yours rather than an organization's, the server has to
+work out which organization the tools should act on.
+
+If you belong to one, that is the one. If you belong to several, name it with
+`organization` on the URL, using the slug from the address bar in the app:
+
+```
+https://stetcms.com/mcp?organization=acme
+```
+
+Without it, a request from a multi-organization account is refused with a
+message listing the slugs you can choose from. To work across two
+organizations, add the server twice under different names, one URL each.
+
+## What it can do
+
+Thirteen tools, the same ones the in-app assistant runs.
+
+### Reading
+
+| Tool              | What it returns                                                                                    |
+| ----------------- | -------------------------------------------------------------------------------------------------- |
+| `getContentModel` | Every collection and map with its fields: ids, keys, types, select options, and entry counts.      |
+| `listEntries`     | The entries of one collection or map, up to 100, as titles and ids.                                |
+| `getEntry`        | One entry in full: every field value, plus every rich text body as markdown.                       |
+| `searchContent`   | Full-text search over titles, field values and bodies across the organization, best matches first. |
+
+### Writing
+
+| Tool                | What it does                                                                                                                   |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `createContentType` | Creates a collection or map, optionally with its fields in one call. Slugs and keys are derived from the names.                |
+| `updateContentType` | Renames a collection or map, or changes its slug.                                                                              |
+| `deleteContentType` | Deletes a collection or map and every entry in it. Irreversible.                                                               |
+| `addField`          | Adds a field to a collection or map.                                                                                           |
+| `deleteField`       | Deletes a field. Values under it are dropped, and generated clients see the key [deprecated](/reference/codegen), not removed. |
+| `createEntry`       | Creates an entry in a collection, with a title and optionally field values.                                                    |
+| `updateEntry`       | Changes an entry's title, slug, or field values. Values merge key by key.                                                      |
+| `deleteEntry`       | Deletes an entry and its rich text bodies. Irreversible.                                                                       |
+| `writeBody`         | Writes a rich text body from markdown, replacing it or appending to it.                                                        |
+
+`writeBody` goes through the same live document as the editor, so anyone with
+that entry open watches the text arrive rather than finding it later.
+
+## Approval is your client's job
+
+Inside Stet, every write stops on an approval card and waits for a human. Over
+MCP it cannot: the connecting client owns that conversation, so Stet verifies
+your token, your organization and your plan, and then runs the tool.
+
+In practice your client is the one asking. Claude Code and Claude Desktop both
+prompt before each tool call unless you have told them not to, and that prompt
+is the only thing standing between an agent and `deleteContentType`.
+
+:::warning[Check what you have allowed]
+If you have allowlisted a server's tools, or run an agent unattended, the write
+tools run unattended too. Nothing in Stet asks a second time. Grant this server
+the same trust you would grant a database connection.
+:::
+
+The safety net is [version history](/content-model), not the protocol: every
+change is snapshotted as it is made and any version can be restored.
+
+## Who the changes belong to
+
+Writes are attributed to you, through the assistant. They carry your name in
+the audit log and in an entry's history, marked as made by AI on your behalf,
+so a change made by an agent at 4am is never anonymous.
+
+## Availability
+
+The MCP server is part of the AI assistant, which the **Paid** plan includes.
+The check sits in front of the whole endpoint rather than in front of each
+tool, so on the Free plan your token is accepted and the request is then
+refused with a message naming the plan required. A client shows that as a
+failure to connect, not as a tool that misbehaved. See
+[pricing](https://stetcms.com/pricing).
+
+## Self-hosting
+
+Your own deployment serves all of this at your own origin, with no extra
+configuration: the OAuth endpoints and the MCP endpoint come up with the Worker.
+
+```
+https://stet.example.com/mcp
+```
+
+It needs no model key of its own. The in-app assistant calls Anthropic and so
+wants `ANTHROPIC_API_KEY`, but over MCP the model is your client's and Stet is
+only serving the tools, so a deployment with no AI credentials still serves
+this endpoint.
+
+The plan gate is the same code on your infrastructure as on ours, and an
+organization with no subscription row reads as Free. Give the organization a
+plan that includes AI, or the tools answer with the same refusal they would
+here.
+
+## Next
+
+<CardGroup cols={2}>
+  <Card title="Content model" href="/content-model" icon="table">
+    The collections, maps and field types the tools operate on.
+  </Card>
+  <Card title="Authentication" href="/api/authentication" icon="key">
+    API keys, for the REST API and the generated client.
+  </Card>
+</CardGroup>

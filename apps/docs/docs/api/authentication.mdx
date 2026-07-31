@@ -40,6 +40,12 @@ page lists what is left of it afterwards, and revokes it when you are done.
 STET_API_KEY=... npx stet org
 ```
 
+## Not for the MCP server
+
+The [MCP server](/mcp) is the exception. It authenticates a person over OAuth
+rather than an organization over an API key, so a key sent to it is not
+recognised, and an MCP token does not open the REST API. Keep the two apart.
+
 ## Rate limits
 
 The public API and analytics ingest have separate budgets. Ingest is far
