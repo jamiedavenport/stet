@@ -7,7 +7,7 @@ export type SocialProvider = 'google' | 'github';
 export type SignConfig = {
   providers: SocialProvider[];
   // Public Turnstile site key, or null when bot protection is off. The
-  // matching secret gates the server-side check (private/auth).
+  // matching secret gates the server-side check (internal/auth).
   turnstileSiteKey: string | null;
 };
 

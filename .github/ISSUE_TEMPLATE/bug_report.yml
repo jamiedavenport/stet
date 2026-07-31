@@ -1,0 +1,57 @@
+name: Bug report
+description: Something in Stet does not behave the way it should.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Do not report anything exploitable here. Security issues go to
+        [hello@jxd.dev](mailto:hello@jxd.dev); see [SECURITY.md](../../SECURITY.md).
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What you saw, and what you expected instead.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: The smallest sequence that shows the problem.
+      placeholder: |
+        1. Sign in as ...
+        2. Open ...
+        3. ...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Where
+      options:
+        - The app (apps/web)
+        - The generated client or Vite plugin (published/*)
+        - The CLI
+        - The public API or webhooks
+        - Analytics
+        - Docs
+        - Something else
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit
+      description: The commit you are on, or the published package version.
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or errors
+      description: Paste anything relevant. This is formatted as code automatically.
+      render: shell

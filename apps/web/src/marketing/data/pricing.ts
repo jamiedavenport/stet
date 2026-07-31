@@ -15,11 +15,11 @@ export type Plan = {
 
 const everything = [
   'Collections, maps and all twelve field types',
-  'Realtime editing, comments and version history',
+  'Realtime editing, version history and rollback',
   'The generated typed client and Vite plugin',
-  'REST API, SDKs, CLI and webhooks',
+  'REST API, CLI, MCP server and webhooks',
   'First-party cookieless analytics',
-  'AI drafting, suggestions and delegated tasks',
+  'AI drafting and delegated tasks',
 ];
 
 export const plans: Plan[] = [
@@ -56,8 +56,8 @@ export const plans: Plan[] = [
     description: 'For organisations that need contracts, review and a person to call.',
     includes: [
       'Everything in Cloud or self-hosted',
-      'Roles and per-collection publish permissions',
-      'Audit log and data residency review',
+      'Organization roles and an audit log',
+      'Data residency review',
       'Security review and a signed agreement',
       'Onboarding and migration help',
       'A named contact and an SLA',

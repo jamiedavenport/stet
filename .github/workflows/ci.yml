@@ -63,7 +63,10 @@ jobs:
           retention-days: 7
 
   deploy:
-    if: github.event_name == 'push'
+    # Never from a fork: a fork's own push to main runs this workflow in the
+    # fork, where the Cloudflare secrets are absent and the deploy would fail
+    # noisily for someone who only wanted to try the tests.
+    if: github.event_name == 'push' && github.repository == 'jamiedavenport/stet'
     needs: [verify, e2e]
     runs-on: ubuntu-latest
     env:
@@ -83,10 +86,10 @@ jobs:
           cache: true
       - run: vp install --frozen-lockfile
       # Applies committed migrations once the repo switches off push-based
-      # schema changes (private/db/README.md). Guarded because wrangler
+      # schema changes (internal/db/README.md). Guarded because wrangler
       # errors on a missing migrations directory rather than no-opping.
       - run: |
-          if [ -d private/db/migrations ]; then
+          if [ -d internal/db/migrations ]; then
             vp run web#migrate:remote
           else
             echo "No migrations directory; skipping"

@@ -1,0 +1,35 @@
+name: Feature request
+description: Something Stet should do and does not.
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        The README's "Not built yet" section lists what is already known to be
+        missing. Check there first, and add to the existing issue if one fits.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: What are you trying to do, and what stops you? Describe the situation rather than the solution.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What you have in mind
+      description: Optional. If you have a shape in mind, describe it.
+
+  - type: dropdown
+    id: who
+    attributes:
+      label: Who is this for
+      options:
+        - Content teams working in the app
+        - Engineers building against the API or client
+        - People self-hosting Stet
+        - Everyone
+    validations:
+      required: true

@@ -27,8 +27,8 @@ export default defineConfig({
   openapi: {
     enabled: true,
     // Generated from the oRPC contract by `pnpm generate:openapi` in
-    // private/api, so the reference always matches the deployed contract.
-    sources: [{ spec: '../../private/api/openapi.json', label: 'API', route: '/api' }],
+    // internal/api, so the reference always matches the deployed contract.
+    sources: [{ spec: '../../internal/api/openapi.json', label: 'API', route: '/api' }],
     codeSamples: ['curl', 'js'],
   },
 });

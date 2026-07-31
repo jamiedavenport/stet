@@ -5,7 +5,7 @@ description: Reset local data to the demo state described in notes/demo-script.m
 
 # Demo reset
 
-Four steps. The dev servers are the user's to run; this only sorts out the data.
+Three steps. The dev servers are the user's to run; this only sorts out the data.
 
 1. Stop `vp dev` if it is running, then clear the local Cloudflare state:
 
@@ -13,16 +13,13 @@ Four steps. The dev servers are the user's to run; this only sorts out the data.
    rm -rf apps/web/.wrangler/state
    ```
 
-2. Start the app once (`vp dev apps/web`) and load `http://localhost:3000` so
-   miniflare recreates the D1 file, then stop it again.
-
-3. Seed:
+2. Seed. This recreates the D1 file and pushes the schema before it writes:
 
    ```bash
    pnpm seed
    ```
 
-4. Start the app again, then backfill traffic so `/app/analytics` is not an
+3. Start the app, then backfill traffic so `/app/analytics` is not an
    empty state:
 
    ```bash

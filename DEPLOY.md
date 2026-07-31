@@ -28,7 +28,7 @@ organization, holding its product analytics), `PAGE_PRESENCE`, `CHAT_AGENT`,
 single webhook), and `NOTIFICATION_HUB` are all declared in `wrangler.jsonc`
 and provisioned by the deploy. The analytics store applies its own schema on
 wake, so there is no migration step for it; see
-[private/analytics](private/analytics).
+[internal/analytics](internal/analytics).
 
 The `IMAGES` binding, which `/api/files/$id` uses to resize and re-encode
 uploads, needs nothing created. Transformations are billed per unique
@@ -112,10 +112,10 @@ A status page is separate again, and neither Cloudflare nor Sentry provides one.
 Push the Drizzle schema to production D1 (requires `CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_D1_TOKEN`):
 
 ```bash
-cd private/db && pnpm push:remote
+cd internal/db && pnpm push:remote
 ```
 
-Pushing is the pre-release workflow. Once other people deploy and upgrade their own instances of your product, switch to committed migrations: see "Switching to migrations" in [private/db](private/db).
+Pushing is the pre-release workflow. Once other people deploy and upgrade their own instances of your product, switch to committed migrations: see "Switching to migrations" in [internal/db](internal/db).
 
 ## Deploy
 
@@ -124,7 +124,7 @@ Pushes to `main` deploy automatically: once every CI check passes, the `deploy` 
 - `CLOUDFLARE_API_TOKEN`: an API token created from the "Edit Cloudflare Workers" template.
 - `CLOUDFLARE_ACCOUNT_ID`: the target account id (shown by `wrangler whoami`).
 
-CI never pushes the schema: `drizzle-kit push` prompts before destructive statements, so it cannot run unattended. Push the schema (above) before merging changes that depend on it. The deploy job runs `wrangler d1 migrations apply` first, skipped while no migrations directory exists; once you switch to committed migrations (see "Switching to migrations" in [private/db](private/db)), add Account > D1 > Edit to the API token, which the Workers template does not include.
+CI never pushes the schema: `drizzle-kit push` prompts before destructive statements, so it cannot run unattended. Push the schema (above) before merging changes that depend on it. The deploy job runs `wrangler d1 migrations apply` first, skipped while no migrations directory exists; once you switch to committed migrations (see "Switching to migrations" in [internal/db](internal/db)), add Account > D1 > Edit to the API token, which the Workers template does not include.
 
 To deploy by hand:
 

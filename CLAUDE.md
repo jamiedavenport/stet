@@ -6,11 +6,11 @@ Each app and package has its own README with the details for that area.
 
 # Stet is pre-launch
 
-Stet grew out of the Onyx starter kit: the platform plumbing (auth, organizations, billing, jobs, realtime, webhooks) is inherited and solid; the product in the README is being prototyped on top of it. There are no users and no installed base yet.
+The platform plumbing (auth, organizations, billing, jobs, realtime, webhooks) is inherited from a starter kit and is solid; the product is being built on top of it. There are no users and no installed base yet.
 
 So there is no backwards compatibility to keep. Don't add redirects for moved routes, deprecation shims, migration paths, or aliases kept "just in case" — pick the shape the code should have and change it everywhere. Note the breaking change in the commit or PR body and move on. (Deprecation-over-breakage is Stet's promise to its future customers, not a constraint on this repo today.)
 
-Marketing copy and docs describe the product Stet is becoming; keep them aligned with README.md and don't write tests that assert on their wording.
+README.md is the accurate statement of what exists, including a "Not built yet" section. The repository is public, so marketing copy and docs must not claim past it: adding a feature to the site means the feature is built, or the claim is a lie a reader can check. Don't write tests that assert on their wording.
 
 # Git
 

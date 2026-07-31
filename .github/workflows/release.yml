@@ -13,6 +13,8 @@ permissions:
 
 jobs:
   release:
+    # Publishing is this repository's alone; a fork has no NPM_TOKEN.
+    if: github.repository == 'jamiedavenport/stet'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7

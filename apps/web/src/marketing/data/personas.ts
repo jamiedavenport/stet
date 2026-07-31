@@ -40,7 +40,7 @@ export const personas: Persona[] = [
       {
         term: 'One place, not four',
         detail:
-          'Writing, comments, review and performance all live on the content itself, instead of being spread across a CMS, a doc, a chat thread and an analytics tab.',
+          'Writing, history and performance all live on the content itself, instead of being spread across a CMS, a doc and an analytics tab.',
       },
       {
         term: 'You keep the numbers',
@@ -107,7 +107,7 @@ export const personas: Persona[] = [
     nav: 'Publishers',
     tagline: 'A room full of writers, and one place the work happens.',
     title: 'A newsroom pace, without a newsroom of tools.',
-    lede: 'Editorial teams write more, together, and under more pressure than anyone else using a CMS. Drafting, editing, review and the numbers that follow all sit on the piece itself.',
+    lede: 'Editorial teams write more, together, and under more pressure than anyone else using a CMS. The writing, its history and the numbers that follow all sit on the piece itself.',
     points: [
       {
         term: 'Everyone in the same document',
@@ -115,9 +115,9 @@ export const personas: Persona[] = [
           'Live cursors in the body and in the table, so a writer and a sub-editor work on the same piece at once instead of passing versions back and forth.',
       },
       {
-        term: 'The edit is attached to the sentence',
+        term: 'Every version is recoverable',
         detail:
-          'Comments hang off the words they are about. The note and the line it refers to cannot drift apart, which is what happens the moment feedback moves into chat.',
+          'Each change is snapshotted as it happens, so a piece can be read back through its edits and any version restored. Nobody keeps a copy just in case.',
       },
       {
         term: 'A desk you can see',
@@ -132,7 +132,7 @@ export const personas: Persona[] = [
       {
         term: 'AI as a sub, not a byline',
         detail:
-          'Editorial suggestions arrive as marked changes to accept or reject, and anything that would alter the piece stops for a human first.',
+          'It drafts, rewrites and researches alongside you, and anything that would alter the piece stops on an approval card for a human first.',
       },
     ],
     features: ['content', 'ai', 'analytics'],
@@ -168,7 +168,7 @@ export const personas: Persona[] = [
       {
         term: 'Cost you can quote',
         detail:
-          'Ten dollars per person per month, with no per-project fee and no jump to enterprise pricing the moment a client needs a second locale.',
+          'Ten dollars per person per month, with no per-project fee and no jump to enterprise pricing the moment you take on another client site.',
       },
     ],
     features: ['content', 'code-generation', 'analytics'],
@@ -208,9 +208,9 @@ export const personas: Persona[] = [
     slug: 'enterprise',
     name: 'enterprises',
     nav: 'Enterprise',
-    tagline: 'Self-host it, with roles, permissions and an audit log.',
+    tagline: 'Self-host it, with roles and an audit log.',
     title: 'Run it yourself, on infrastructure you control.',
-    lede: 'Open source and self-hostable on your own Cloudflare account, with roles, per-collection publish permissions and an audit log. Your content and your analytics never have to leave.',
+    lede: 'Open source and self-hostable on your own Cloudflare account, with organization roles and an audit log. Your content and your analytics never have to leave.',
     points: [
       {
         term: 'Self-hosted or hosted',
@@ -218,9 +218,9 @@ export const personas: Persona[] = [
           'The same product either way. Deploy it to your own account as a Worker with your own database and storage, or let us run it and keep the option open.',
       },
       {
-        term: 'Roles and publish permissions',
+        term: 'Roles that decide who administers',
         detail:
-          'Permissions are set per collection, so the people who can change the pricing page are not necessarily the people who can change the blog.',
+          'Owners and admins manage members, API keys, webhooks and billing; members write. Every entry point checks the membership row on the server rather than trusting the session.',
       },
       {
         term: 'An audit log',

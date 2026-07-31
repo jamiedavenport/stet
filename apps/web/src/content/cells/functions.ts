@@ -30,8 +30,6 @@ const getReferenceCandidates = createServerFn({ method: 'GET' })
     return rows;
   });
 
-export type ReferenceCandidate = Awaited<ReturnType<typeof getReferenceCandidates>>[number];
-
 export const referenceCandidatesQuery = (organizationId: string, typeId: string, search: string) =>
   queryOptions({
     queryKey: ['reference-candidates', organizationId, typeId, search],

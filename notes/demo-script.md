@@ -266,7 +266,7 @@ Then stop talking.
 
 Read this section before you walk in. The marketing site and README describe the product Stet is becoming; some of it isn't built, and their setup is precisely the one the biggest claim is about. If their developer or contractor pokes at it afterwards and finds the gap, you lose the room retrospectively — and for a design-partner relationship, credibility _is_ the product.
 
-**Deprecations — built, so say it plainly.** Both halves the site claims are true now: `deleteField` in [fields.ts](private/content/src/fields.ts) tombstones the field and leaves every value in place, the model route serves it flagged `deprecated`, and [codegen.ts](published/client/src/codegen.ts) emits an `@deprecated` naming who deleted it and when. Erasing a key for good is a separate, deliberate step under Developers → Danger zone. Sync still can never fail their build ([vite plugin](published/vite/README.md:51) keeps the last generated file and warns).
+**Deprecations — built, so say it plainly.** Both halves the site claims are true now: `deleteField` in [fields.ts](internal/content/src/fields.ts) tombstones the field and leaves every value in place, the model route serves it flagged `deprecated`, and [codegen.ts](published/client/src/codegen.ts) emits an `@deprecated` naming who deleted it and when. Erasing a key for good is a separate, deliberate step under Developers → Danger zone. Sync still can never fail their build ([vite plugin](published/vite/README.md:51) keeps the last generated file and warns).
 
 **Comments — not built.** README and the marketing site promise realtime comments on content. There's no comment table in the schema and no UI. Don't open the collaboration story with it. Presence and co-editing _are_ real; demo those.
 

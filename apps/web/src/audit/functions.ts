@@ -19,7 +19,7 @@ const getAudit = createServerFn({ method: 'GET' })
     }),
   );
 
-export type AuditData = Awaited<ReturnType<typeof getAudit>>;
+type AuditData = Awaited<ReturnType<typeof getAudit>>;
 export type AuditRow = AuditData['entries'][number];
 
 export const auditQuery = (organizationId: string, page: number) =>

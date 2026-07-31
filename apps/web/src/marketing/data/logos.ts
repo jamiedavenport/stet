@@ -10,11 +10,8 @@ const DEFAULT_TOKEN = 'pk_BqdEKAWHSTeXXKuiH4dxAw';
 
 const token = import.meta.env.VITE_LOGO_DEV_TOKEN ?? DEFAULT_TOKEN;
 
-/** Where the attribution link the free tier asks for has to point. */
-export const logoAttribution = 'https://logo.dev';
-
 /** Whether competitor marks can be rendered at all. */
-export const logosEnabled = typeof token === 'string' && token.length > 0;
+const logosEnabled = typeof token === 'string' && token.length > 0;
 
 /**
  * A square mark for a company domain, or undefined when no token is set.

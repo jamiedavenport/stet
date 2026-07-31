@@ -9,7 +9,7 @@
     "examples/*": {
       "ignore": ["src/stet.gen.ts"]
     },
-    "private/*": {},
+    "internal/*": {},
     "published/*": {},
     "apps/web": {
       "entry": ["src/routes/**/*.{ts,tsx,tsrx}", "content-collections.ts", "e2e/**/*.setup.ts"]
@@ -20,11 +20,11 @@
       // dependency is what orders the build behind the package that writes it.
       "ignoreDependencies": ["@repo/api"]
     },
-    "private/db": {
+    "internal/db": {
       "drizzle": false,
       "ignore": ["drizzle.config.ts"]
     },
-    "private/ui": {
+    "internal/ui": {
       "includeEntryExports": true
     },
     "published/client": {

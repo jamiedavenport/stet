@@ -2,81 +2,106 @@
 
 **Both teams at full speed. Neither waits, nothing breaks.**
 
-Every CMS makes one side compromise. Developer-first tools bury content teams in JSON and Git. Marketer-first tools hand developers an untyped API and a prayer. Stet refuses the trade-off.
+[![CI](https://github.com/jamiedavenport/stet/actions/workflows/ci.yml/badge.svg)](https://github.com/jamiedavenport/stet/actions/workflows/ci.yml)
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+[![Docs](https://img.shields.io/badge/docs-stetcms.com-black.svg)](https://docs.stetcms.com)
 
-## Benefits
+Stet is a CMS where marketing owns the content model and engineering gets a typed contract for it. Marketing adds a field in the UI and the developer's editor autocompletes it seconds later. Marketing deletes one and the developer's build stays green while the page keeps rendering.
 
-The gap between marketing and engineering is Stet's whole job. Every benefit comes from closing it:
+Developer-first tools keep the model in the repository, so every new field is a ticket, a pull request and a deploy. Marketer-first tools keep it in a UI and hand developers an untyped API, so the first sign of a change is a broken page. Stet keeps the model in the UI and generates the contract from it.
 
-- **Marketing owns the model.** New collections, maps, and fields without a ticket or a wait.
-- **Engineering gets a contract.** The generated client autocompletes the model marketing built and checks it at build time.
-- **Nothing breaks across the gap.** Changes cross it as information, never as breakage: a deleted field becomes a deprecation in the client, not a failed build or a broken page, and each team migrates on its own schedule.
-- **One shared workspace.** Writing, comments, reviews, and performance numbers live on the content itself instead of being spread across four tools.
-- **Analytics included.** First-party, cookieless, and routed through your own infrastructure. No consent banner, no blocked pixel, no data silo.
-- **AI that does the work.** Drafting, editorial suggestions, translations, and whole delegated tasks, in the same realtime session as the humans.
-- **Yours to run.** Open source, as a hosted cloud or self-hosted on your own infrastructure.
+## The contract
+
+`stet.gen.ts` is written by the Vite plugin from your live content model, and regenerated whenever that model changes:
+
+```ts
+import { stet } from './stet.gen';
+
+const posts = await stet.posts.list(); // a collection
+const post = await stet.posts.get('hello-world'); // one entry
+const landing = await stet.landing.get(); // a map
+```
+
+Every field, its type and its options come from what marketing built. When someone deletes a field, it does not vanish from the contract:
+
+```ts
+/** @deprecated Deleted from the content model on 2026-07-31 by Ada Lovelace; entries still return the last value it held, until it is purged. */
+cover?: ContentAsset | null;
+```
+
+The key stays, the editor strikes it through, and entries keep returning the last value the field held until someone deliberately purges it under Developers → Danger zone. Generation cannot fail your build either: if it cannot reach Stet, it keeps the last file and warns.
+
+That is the whole idea. Changes cross the gap between the two teams as information, never as breakage, and each side migrates on its own schedule.
 
 ## Features
 
 ### For content teams
 
-- Model your content in the UI, the way you think about it: collections and maps, with fields, bodies, and validation rules, as intuitive as Notion.
-- Realtime collaboration: write together with live cursors, and discuss in realtime comments on any piece of content.
-- Drafts, scheduled publishing, version history, and rollback: publish when it is ready, and undo it when it is not.
-- Localized content built in: per-locale entries, translation status, and AI translation into every locale you serve.
-- Roles and publish permissions per collection, so the right people review before anything ships.
-- AI everywhere you work: draft and rewrite copy, get editorial suggestions you accept or reject, or delegate a whole task to an agent in the session.
-- Analytics next to the content: see how every page performs, annotated with the context that explains why. Cookieless and privacy-first, so there is no consent banner between you and your readers.
-- A fast, beautiful editor you actually want to write in.
+- **Model content in the UI.** Collections and maps, with typed fields, options and validation. No ticket, no deploy.
+- **Write together.** Live cursors and presence on the same entry, backed by CRDTs rather than a lock.
+- **History and rollback.** Every change is snapshotted, and any version can be restored.
+- **Bring an existing site.** Point the importer at a URL: it reads the sitemap, groups the pages, proposes a content model from what it finds, and extracts the entries.
+- **Analytics on the page you just wrote.** First-party, cookieless, and routed through your own infrastructure, so there is no consent banner and nothing for an ad blocker to catch.
+- **An assistant that asks first.** It reads the model, drafts and rewrites, and can take a whole task. Every write it wants to make stops for a human.
+- **Search, files, roles and an audit log.** Full-text search across entries, image handling on upload, organization roles, and a record of who changed what.
 
 ### For engineers
 
-The content model marketing designs becomes an API your editor autocompletes.
+- **A typed client, generated.** The Vite plugin keeps `stet.gen.ts` current as the model evolves; `stet generate` and `stet sync` do the same from the CLI.
+- **A REST API with an OpenAPI spec.** The client is a thin wrapper over it. Content comes out as markdown and JSON.
+- **Analytics you define in code.** A typed tracking plan, sent through your own backend and enriched server-side. Marketing builds dashboards on the same events.
+- **Signed webhooks.** Standard Webhooks signatures, batched per organization so an editing session triggers one rebuild rather than one per keystroke.
+- **An MCP server.** The assistant's tools are available to Claude, Cursor, or anything else that speaks MCP.
+- **Self-hostable.** The whole thing deploys as two Cloudflare Workers on your own account.
 
-```ts
-import { stet } from '@stetcms/client';
+## Deliberately not in Stet
 
-const posts = await stet.posts.list(); // a collection
-const post = await stet.posts.get('hello-world'); // one entry
-const landing = await stet.landing.get(); // a map
-// all fully typed from the model marketing built
+- **No hosted preview, and no page builder.** Your application renders your content, so a preview is your own app reading through the same client. Stet manages content; building and serving the site is yours.
+- **No draft/publish toggle.** Publishing states differ at every company, and a fixed one is always wrong for somebody. Model it as a field and branch on it in your app, and the workflow is the one your team actually uses.
+- **No hosting.** Stet serves content through its API and clients. Where your site runs is your decision.
+
+## Not built yet
+
+Stet is pre-launch. These are on the roadmap and are not in the product today:
+
+- Comments on content ([#8](https://github.com/jamiedavenport/stet/issues/8)).
+- Localization: per-locale entries and translation.
+- Per-collection publish permissions. Roles today are organization-wide.
+- Media migration on import: imported bodies still point at the original host ([#20](https://github.com/jamiedavenport/stet/issues/20)).
+
+## Getting started
+
+```bash
+vp install
+pnpm seed     # a workspace to look at, and accounts to sign in as
+vp run dev    # http://localhost:3000
 ```
 
-- A Vite plugin that generates a typed client from your project's content model and keeps it current as the model evolves.
-- Drafts and published entries are separate, typed views, so previews are yours to build in your own app with the same client.
-- A REST API, SDKs, and drop-in components when you want them.
-- A CLI for scripting, seeding, and CI.
-- Content served through the client reports its own performance, so every entry has analytics from the moment its page exists, with no instrumentation written.
-- Type-safe analytics events, routed through your own infrastructure: cookieless, enriched server-side, immune to ad-blockers, and compliant by design. Marketing builds dashboards on the same events in the UI.
-- Webhooks on content events to trigger rebuilds and syncs.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the full setup and workflow, and [DEPLOY.md](DEPLOY.md) for deploying to Cloudflare. Product documentation lives at [docs.stetcms.com](https://docs.stetcms.com).
+
+## Repository layout
+
+| Path         | What it holds                                                      |
+| ------------ | ------------------------------------------------------------------ |
+| `apps/web`   | The application and marketing site, as one Cloudflare Worker       |
+| `apps/docs`  | The documentation site                                             |
+| `published/` | The packages published to npm: client, Vite plugin, analytics, CLI |
+| `internal/`  | Workspace packages the app is built from, not published            |
+| `examples/`  | A TanStack Start blog that consumes the generated client           |
 
 ## Principles
 
-These hold everywhere, in the product and in this codebase:
-
-- Stet owns no customer-facing UI. Rendering, previews, and draft views are built by developers in their own app with the client. Never pitch or build hosted previews.
-- Not a page builder, and not a host. Stet manages content; building and serving the site is the developer's job.
-- The experience is the product: superhuman UX for editors, fluent DX for engineers. If either feels ordinary, it is not done.
+- The experience is the product: superhuman UX for editors, fluent DX for engineers.
 - Never break the customer's build or runtime. Sync cannot fail a build, tracking never throws, and schema changes surface as deprecations, never as errors.
-- Analytics routes through the customer's infrastructure. Content delivery does not; it is served through Stet's API and clients.
+- Analytics routes through the customer's infrastructure. Content delivery does not.
 - The server is the trusted side. Server-provided context wins over anything the browser sends.
 - The platform learns the schema from sync, not by inferring it from incoming data.
 - Calm by default: light, spacious, unhurried, in both the UI and the brand.
 
-## Open questions
+## Contributing
 
-Decisions not yet made. Do not assume a shape for these in code or copy:
+Issues and pull requests are welcome. [CONTRIBUTING.md](CONTRIBUTING.md) covers the setup, the checks CI runs, and the conventions. Security reports go to [hello@jxd.dev](mailto:hello@jxd.dev) rather than a public issue: see [SECURITY.md](SECURITY.md).
 
-- Localization: per-locale entries is the goal, but the shape (in the model, the UI, and the client API) is undecided.
-- Entry bodies: probably markdown, and not always exactly one per entry (a post might carry two bodies, a map might carry none). Shape undecided.
-- Pricing: current thinking is simple $10/user on the cloud version. Not committed.
-- License: "open source" is the intent; the repo still carries the Onyx FSL license.
+## License
 
-## Development
-
-```bash
-vp install
-vp run dev   # http://localhost:3000
-```
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for the workflow and [DEPLOY.md](DEPLOY.md) for shipping to Cloudflare.
+[Apache-2.0](LICENSE).

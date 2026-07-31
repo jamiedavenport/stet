@@ -20,7 +20,7 @@ export const stetAnswers: Record<AxisId, string> = {
   types: 'A typed client generated from the live model by a Vite plugin.',
   change: 'A removed field becomes a deprecation in the types. The build stays green.',
   analytics: 'Included. First-party and cookieless, through your own infrastructure.',
-  ai: 'Included. Drafting, suggestions and delegated tasks, approving every write.',
+  ai: 'Included. Drafting, rewriting and delegated tasks, approving every write.',
   hosting: 'Hosted cloud or self-hosted. Open source.',
   pricing: '$10 per user per month. Free to self-host.',
 };

@@ -128,7 +128,7 @@
       "binding": "DB",
       "database_name": "stet-db",
       "database_id": "769a63d7-c262-4812-a477-adb661d2c05f",
-      "migrations_dir": "../../private/db/migrations",
+      "migrations_dir": "../../internal/db/migrations",
     },
   ],
   "r2_buckets": [

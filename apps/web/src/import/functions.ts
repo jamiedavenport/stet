@@ -24,8 +24,7 @@ import { z } from 'zod';
 import { organizationMiddleware } from '#/session';
 
 export type { DiscoveredGroup, Discovery } from '@repo/import/discover';
-export type { ImportItem, ImportPlan, PlannedField, PlannedType } from '@repo/import/plan';
-export type { ExtractedEntry } from '@repo/import/extract';
+export type { PlannedField, PlannedType } from '@repo/import/plan';
 
 /** Pages per run, a demo-sized ceiling; raise it when imports earn a ledger. */
 const importPageCap = 150;
@@ -153,8 +152,6 @@ const getImportRun = createServerFn({ method: 'GET' })
       error: row.error,
     };
   });
-
-export type ImportRun = Awaited<ReturnType<typeof getImportRun>>;
 
 export const importRunQuery = (organizationId: string, runId: string) =>
   queryOptions({

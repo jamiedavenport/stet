@@ -12,7 +12,7 @@ export type AssetScope = 'organization' | 'user';
  * session, on the unguessable id alone. `private` kinds serve only to people
  * who pass `canReadAsset`.
  */
-export type AssetDelivery = 'public' | 'private';
+type AssetDelivery = 'public' | 'private';
 
 type AssetKindConfig = {
   scope: AssetScope;

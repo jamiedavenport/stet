@@ -9,7 +9,7 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const here = dirname(fileURLToPath(import.meta.url));
-const brand = resolve(here, '../../../private/brand/src/assets');
+const brand = resolve(here, '../../../internal/brand/src/assets');
 const output = resolve(here, '../public');
 
 await mkdir(output, { recursive: true });

@@ -37,9 +37,9 @@ Three tabs divide the site, each scoped to a route prefix:
 
 - **Guides** (`/`): the loose pages at the top level.
 - **Reference** (`/reference`): one page per published package, plus the CLI.
-- **API** (`/api`): generated at build time from `private/api/openapi.json`,
+- **API** (`/api`): generated at build time from `internal/api/openapi.json`,
   which is itself generated from the oRPC contract. Regenerate it with
-  `pnpm generate:openapi` in `private/api` after changing the contract.
+  `pnpm generate:openapi` in `internal/api` after changing the contract.
   `docs/api/authentication.mdx` is hand-written and merges into the same tab.
 
 Pages are MDX so they can use directives (`:::note`) and the built-in

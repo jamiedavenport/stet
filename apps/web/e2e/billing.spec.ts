@@ -5,7 +5,7 @@ import { freshStorageState, gotoHydrated } from './helpers';
 // Plan state and the guards are driven by the subscription table, so they
 // are fully testable without Stripe credentials. Checkout itself talks to
 // real Stripe and is exercised locally with the Stripe CLI in sandbox mode
-// (see private/billing/README.md), not in CI.
+// (see internal/billing/README.md), not in CI.
 
 // The seed org (used by the shared signed-in state) is on the paid plan; its
 // member limit gives the specs that invite members headroom. Only stable

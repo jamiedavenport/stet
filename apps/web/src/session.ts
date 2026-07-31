@@ -70,7 +70,7 @@ export const organizationAdminMiddleware = createMiddleware({ type: 'function' }
   });
 
 // Served from Better Auth's cookie cache (session.cookieCache in
-// private/auth/src/server.ts), not a D1 query, so root can run it per-request.
+// internal/auth/src/server.ts), not a D1 query, so root can run it per-request.
 const getSession = createServerFn({ method: 'GET' })
   .middleware([sessionMiddleware])
   .handler(({ context }) => context.session);

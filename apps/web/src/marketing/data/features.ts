@@ -42,9 +42,9 @@ export const features: Feature[] = [
           'Live cursors in the table and in the body. Two people on the same entry see each other rather than overwrite each other, and every change is saved as it is made.',
       },
       {
-        term: 'Comments on the words',
+        term: 'Every version kept',
         detail:
-          'Discussion is attached to the sentence it is about, not filed in a separate tool where it loses its subject.',
+          'Each change is snapshotted as it is made, so an entry can be read back through its edits and any version restored without anyone keeping a copy elsewhere.',
       },
       {
         term: 'Publishing is yours to shape',
@@ -83,7 +83,7 @@ export const features: Feature[] = [
       {
         term: 'More than the client',
         detail:
-          'A REST API and SDKs when the plugin is not the right fit, a CLI for scripting, seeding and CI, and webhooks on content events to trigger rebuilds and syncs.',
+          'A REST API when the plugin is not the right fit, a CLI for scripting, seeding and CI, and webhooks on content events to trigger rebuilds and syncs.',
       },
       {
         term: 'Rendering stays yours',
@@ -144,9 +144,9 @@ export const features: Feature[] = [
           'Reading the model, listing entries and searching happen freely. Creating a collection, adding a field or changing an entry stops on a card showing the exact change, and waits for you to allow it.',
       },
       {
-        term: 'Suggestions you accept or reject',
+        term: 'It works in the open',
         detail:
-          'Editorial help arrives in the editor as marked changes to take or leave, not as a wall of replacement prose you have to diff by eye.',
+          'Every change it proposes is shown as the exact write it wants to make, on the entry and field it affects, so there is nothing to diff by eye after the fact.',
       },
       {
         term: 'It knows your content',
