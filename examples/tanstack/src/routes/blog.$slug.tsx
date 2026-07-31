@@ -27,6 +27,7 @@ function Post() {
       </p>
       <h1>{post.title}</h1>
       <p className="muted">Updated {new Date(post.updatedAt).toLocaleDateString('en-GB')}</p>
+      {post.fields.cover && <img src={post.fields.cover.url} />}
       {post.fields.body == null ? (
         <p className="muted">This post has no body yet.</p>
       ) : (
