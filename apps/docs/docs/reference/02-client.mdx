@@ -145,8 +145,9 @@ Two field types arrive as objects rather than scalars:
 
 The API returns asset URLs relative to itself, since the same bytes serve
 whichever origin you reach them through. The client joins them to the `origin`
-it was configured with — including the ones an editor dropped inside a rich
-text body — so what you get is ready to use on your own site.
+it was configured with, including assets embedded or linked inside either
+representation of a rich text body, so what you get is ready to use on your
+own site.
 
 If you call the REST API directly rather than through the client, do that join
 yourself:
@@ -160,7 +161,7 @@ yourself:
     'resolveAssetPaths(text, origin)': {
       type: 'string',
       description:
-        "The same join applied inside a body's markdown: link and image destinations, and the src of any raw HTML.",
+        'The same join applied inside rich-text markdown or HTML: markdown destinations and HTML src or href attributes.',
     },
   }}
 />
@@ -210,7 +211,7 @@ network, which is what makes `error.code` safe to switch on.
     assetUrl: { type: 'function', description: 'Join an asset path to an origin.' },
     resolveAssetPaths: {
       type: 'function',
-      description: "Join every asset path inside a body's markdown.",
+      description: 'Join every asset path inside rich-text markdown or HTML.',
     },
     safe: {
       type: 'function',
@@ -234,6 +235,10 @@ network, which is what makes `error.code` safe to switch on.
     },
     ContentEntryBase: { type: 'type', description: 'The fields every entry carries.' },
     ContentAsset: { type: 'type', description: "An asset field's value." },
+    ContentRichText: {
+      type: 'type',
+      description: 'A rich text field as sanitised HTML and markdown.',
+    },
     ContentReference: { type: 'type', description: "A reference field's value." },
     CollectionClient: { type: 'type', description: 'list() and get(slug).' },
     MapClient: { type: 'type', description: 'get().' },

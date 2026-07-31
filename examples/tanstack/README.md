@@ -7,7 +7,7 @@ that content performs.
 
 - `/` renders the **Landing** map.
 - `/blog` lists the **Posts** collection; `/blog/$slug` renders one post's
-  rich text body as markdown.
+  rich text body from the sanitised HTML returned by Stet.
 - `stet.config.ts` configures the whole integration: where Stet is, where the
   generated client goes, and the analytics tracking plan.
 - `src/stet.gen.ts` is the generated client. `@stetcms/vite` regenerates it
@@ -39,7 +39,7 @@ that content performs.
 
 3. Sign in at `http://localhost:3000` as `seed@example.com` /
    `seed-password-123` and edit content; write a body in the entry editor
-   and it appears on the blog as markdown a few seconds later.
+   and it appears on the blog a few seconds later.
 
 Any other organization works too: mint a key under Developers → API keys in the
 Stet app, copy it while it is shown, and pass it as `STET_API_KEY`.

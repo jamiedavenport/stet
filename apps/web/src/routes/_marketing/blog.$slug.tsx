@@ -59,7 +59,7 @@ function BlogPostPage() {
           <TagRow tags={post.fields.tags ?? []} className="mt-6" />
           <div
             className="prose mt-12 max-w-[65ch]"
-            dangerouslySetInnerHTML={{ __html: post.html }}
+            dangerouslySetInnerHTML={{ __html: post.fields.body?.html ?? '' }}
           />
         </div>
       </article>

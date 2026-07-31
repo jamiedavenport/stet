@@ -76,7 +76,9 @@ function fieldTsType(field: ModelField): string {
       return 'ContentReference';
     case 'multi_reference':
       return 'ContentReference[]';
-    // text, rich_text (markdown), date, and link all travel as strings.
+    case 'rich_text':
+      return 'ContentRichText';
+    // text, date, and link all travel as strings.
     default:
       return 'string';
   }
@@ -144,6 +146,9 @@ export function renderContentModule(model: ContentModel, origin: string): string
   }
   if (fields.some((field) => field.type === 'reference' || field.type === 'multi_reference')) {
     imported.push('ContentReference');
+  }
+  if (fields.some((field) => field.type === 'rich_text')) {
+    imported.push('ContentRichText');
   }
 
   const lines: string[] = [

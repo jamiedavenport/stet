@@ -5,9 +5,15 @@ import Image from '@tiptap/extension-image';
 import { TableKit } from '@tiptap/extension-table';
 import Typography from '@tiptap/extension-typography';
 import { DOMParser as ProseMirrorDOMParser } from '@tiptap/pm/model';
+import type { Node as ProseMirrorNode } from '@tiptap/pm/model';
+import { renderToHTMLString } from '@tiptap/static-renderer/pm/html-string';
 import { renderToMarkdown } from '@tiptap/static-renderer/pm/markdown';
 import StarterKit from '@tiptap/starter-kit';
 import { prosemirrorJSONToYXmlFragment, yXmlFragmentToProseMirrorRootNode } from '@tiptap/y-tiptap';
+import { fromHtml } from 'hast-util-from-html';
+import { defaultSchema, sanitize } from 'hast-util-sanitize';
+import type { Schema } from 'hast-util-sanitize';
+import { toHtml } from 'hast-util-to-html';
 import { marked } from 'marked';
 import { parseHTML } from 'zeed-dom';
 import type { Doc } from 'yjs';
@@ -15,11 +21,11 @@ import type { Doc } from 'yjs';
 import './zeed-dom';
 
 /**
- * The schema a rich text body speaks: everything here has a markdown
- * rendering. The API serializes bodies with exactly this list, so an
- * extension the renderer does not know (task lists, mentions) would reach
- * customers as raw HTML embedded in their markdown, and must not be added
- * without teaching `renderToMarkdown` about it first.
+ * The schema a rich text body speaks: everything here has safe markdown and
+ * HTML renderings. The API serializes bodies with exactly this list, so an
+ * extension the renderers or HTML allowlist do not know (task lists,
+ * mentions) would be lost or reach customers as raw HTML embedded in their
+ * markdown. Additions must teach both output paths about the extension.
  *
  * Editor-only extensions live in the app's `editor-extensions.ts` instead:
  * this module is loaded by the worker to serialize bodies, so it stays free
@@ -40,8 +46,49 @@ export function bodySchemaExtensions(): Extensions {
 
 const extensions = bodySchemaExtensions();
 
+const bodyHtmlSchema: Schema = {
+  ...defaultSchema,
+  tagNames: [...(defaultSchema.tagNames ?? []), 'col', 'colgroup', 'u'],
+  attributes: {
+    ...defaultSchema.attributes,
+    a: [
+      'href',
+      ['className', 'body-link'],
+      ['rel', 'nofollow', 'noopener', 'noreferrer'],
+      'target',
+    ],
+    col: ['style'],
+    img: [...(defaultSchema.attributes?.img ?? []), ['className', 'body-image']],
+    table: [...(defaultSchema.attributes?.table ?? []), 'style'],
+    td: ['colSpan', 'rowSpan', 'colwidth', 'style'],
+    th: ['colSpan', 'rowSpan', 'colwidth', 'style'],
+  },
+  protocols: {
+    ...defaultSchema.protocols,
+    href: ['http', 'https', 'mailto', 'tel'],
+    src: ['http', 'https'],
+  },
+  required: {
+    ...defaultSchema.required,
+    a: { rel: 'noopener noreferrer nofollow' },
+  },
+};
+
+export type BodyContent = {
+  markdown: string;
+  html: string;
+};
+
 /** The ProseMirror schema of the extension list, for Yjs conversions. */
 export const bodySchema = getSchema(extensions);
+
+function bodyNode(doc: Doc, fieldKey: string): ProseMirrorNode | null {
+  const fragment = bodyFragment(doc, fieldKey);
+  if (fragment.length === 0) {
+    return null;
+  }
+  return yXmlFragmentToProseMirrorRootNode(fragment, bodySchema);
+}
 
 /**
  * A body's markdown as last saved by the realtime room, or null if it was
@@ -49,12 +96,24 @@ export const bodySchema = getSchema(extensions);
  * the schema always matches what was typed.
  */
 export function bodyMarkdown(doc: Doc, fieldKey: string): string | null {
-  const fragment = bodyFragment(doc, fieldKey);
-  if (fragment.length === 0) {
+  const node = bodyNode(doc, fieldKey);
+  if (node === null) {
     return null;
   }
-  const node = yXmlFragmentToProseMirrorRootNode(fragment, bodySchema);
   return renderToMarkdown({ extensions, content: node });
+}
+
+/** A body's two public representations, rendered from the same document. */
+export function bodyContent(doc: Doc, fieldKey: string): BodyContent | null {
+  const node = bodyNode(doc, fieldKey);
+  if (node === null) {
+    return null;
+  }
+  const renderedHtml = renderToHTMLString({ extensions, content: node });
+  return {
+    markdown: renderToMarkdown({ extensions, content: node }),
+    html: toHtml(sanitize(fromHtml(renderedHtml, { fragment: true }), bodyHtmlSchema)),
+  };
 }
 
 /**

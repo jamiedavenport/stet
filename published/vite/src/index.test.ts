@@ -65,7 +65,7 @@ describe('renderContentModule', () => {
 
   it('maps field types to TypeScript', () => {
     expect(code).toContain('"summary"?: string | null;');
-    expect(code).toContain('"body"?: string | null;');
+    expect(code).toContain('"body"?: ContentRichText | null;');
     expect(code).toContain('"reading_time"?: number | null;');
     expect(code).toContain('"featured"?: boolean | null;');
     expect(code).toContain('"author"?: { id: string; name: string } | null;');
@@ -83,7 +83,7 @@ describe('renderContentModule', () => {
 
   it('imports only the value types the model uses', () => {
     expect(code).toContain(
-      "import type { ContentEntryBase, ContentAsset, ContentReference } from '@stetcms/client';",
+      "import type { ContentEntryBase, ContentAsset, ContentReference, ContentRichText } from '@stetcms/client';",
     );
     const plain = renderContentModule(
       { types: [{ slug: 'notes', name: 'Notes', kind: 'collection', fields: [] }] },

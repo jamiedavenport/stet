@@ -63,6 +63,6 @@ Apache-2.0
 
 ## Asset URLs
 
-The API returns asset paths relative to itself; the client joins them to the `origin` it was created with, so what you get is ready for an `img` tag on your own origin. That covers both an asset field's `url` and the images inside a rich text body, so a body renders as it stands.
+The API returns asset paths relative to itself; the client joins them to the `origin` it was created with, so what you get is ready for an `img` tag on your own origin. That covers an asset field's `url` and assets embedded or linked inside rich-text markdown and HTML.
 
-Calling the REST API directly instead? `assetUrl(url, origin)` joins one value and `resolveAssetPaths(markdown, origin)` joins the ones inside a body.
+Calling the REST API directly instead? `assetUrl(url, origin)` joins one value and `resolveAssetPaths(text, origin)` joins the ones inside rich-text markdown or HTML.

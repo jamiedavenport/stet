@@ -70,7 +70,8 @@ const posts = await stet.posts.list();
 const post = await stet.posts.get('hello-world');
 
 post.title;
-post.fields.body; // markdown
+post.fields.body?.html; // sanitised HTML
+post.fields.body?.markdown; // useful for LLMs, feeds and custom renderers
 post.fields.cover?.url; // a whole, public URL
 ```
 

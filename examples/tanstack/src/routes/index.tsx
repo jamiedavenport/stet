@@ -1,5 +1,4 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
-import Markdown from 'react-markdown';
 
 import { fetchLanding } from '../content';
 
@@ -14,7 +13,9 @@ function Home() {
   return (
     <main>
       <h1>{landing.fields.headline ?? landing.title}</h1>
-      {landing.fields.pitch == null ? null : <Markdown>{landing.fields.pitch}</Markdown>}
+      {landing.fields.pitch == null ? null : (
+        <div dangerouslySetInnerHTML={{ __html: landing.fields.pitch.html }} />
+      )}
       <p>
         <Link to="/blog">Read the blog →</Link>
       </p>

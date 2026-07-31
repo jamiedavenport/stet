@@ -40,6 +40,12 @@ export type ContentAsset = {
   size: number;
 };
 
+/** A rich text field rendered canonically by Stet from its editor document. */
+export type ContentRichText = {
+  markdown: string;
+  html: string;
+};
+
 /**
  * The shape `@stetcms/vite` generates from the organization's content model:
  * one key per collection or map, carrying its kind and full entry type.
@@ -88,13 +94,14 @@ export function assetUrl(url: string, origin: string): string {
   return url.startsWith(assetPath) ? `${origin}${url}` : url;
 }
 
-// Asset paths inside a rich text body: markdown link and image destinations
-// (`![alt](/assets/id)`), and the `src` of any raw HTML a body carries.
-const assetPathInText = /(\]\(|src=["'])(\/assets\/)/g;
+// Asset paths inside rich text: markdown destinations and HTML sources or
+// links. Only Stet asset paths are joined; other relative links stay local to
+// the customer's site.
+const assetPathInText = /(\]\(|\s(?:src|href)=["'])(\/assets\/)/g;
 
 /**
- * The same join applied inside a body's markdown, so an image an editor
- * dropped into a body renders on your site as readily as an asset field does.
+ * The same join applied inside a body's markdown or HTML, so an asset an
+ * editor embedded or linked renders on your site as readily as an asset field.
  */
 export function resolveAssetPaths(text: string, origin: string): string {
   return text.replace(

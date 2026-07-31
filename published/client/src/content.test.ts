@@ -120,17 +120,29 @@ describe('createContentClient asset resolution', () => {
     expect(await stet.posts.get('hello-world')).toEqual(payload);
   });
 
-  it('resolves images embedded in a rich text body', async () => {
+  it('resolves assets in both representations of a rich text body', async () => {
     const stet = createContentClient<Model>({
       origin,
-      fetch: stubFetch(entry({ body: 'Intro\n\n![A cover](/assets/asset-1)\n\nOutro' })),
+      fetch: stubFetch(
+        entry({
+          body: {
+            markdown: '![A cover](/assets/asset-1)\n\n[Report](/assets/asset-2)',
+            html: '<img src="/assets/asset-1"><a href="/assets/asset-2">Report</a>',
+          },
+        }),
+      ),
     });
 
     const post = (await stet.posts.get('hello-world')) as unknown as {
-      fields: { body: string };
+      fields: { body: { markdown: string; html: string } };
     };
-    expect(post.fields.body).toBe(
-      'Intro\n\n![A cover](https://stet.example.com/assets/asset-1)\n\nOutro',
+    expect(post.fields.body.markdown).toBe(
+      '![A cover](https://stet.example.com/assets/asset-1)\n\n' +
+        '[Report](https://stet.example.com/assets/asset-2)',
+    );
+    expect(post.fields.body.html).toBe(
+      '<img src="https://stet.example.com/assets/asset-1">' +
+        '<a href="https://stet.example.com/assets/asset-2">Report</a>',
     );
   });
 
