@@ -283,7 +283,7 @@ because a `4xx` only teaches a crawler to retry.
 
 `syncTrackingPlan(options)` publishes the plan to Stet. Called for you by
 [`@stetcms/vite`](https://docs.stetcms.com/reference/codegen) on dev-server
-start and at the end of a build, and by
+and build start, and by
 [`stet sync`](https://docs.stetcms.com/reference/cli#stet-sync); you rarely
 call it yourself.
 

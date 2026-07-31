@@ -34,7 +34,7 @@ stet generate --key stet_... --url https://stet.example.com --output lib/stet.ge
 | `--output <path>` | Where the generated module goes. Defaults to `src/stet.gen.ts`.      |
 | `--config <path>` | Path to `stet.config.ts`. Auto-detected by default.                  |
 
-Every flag overrides the same key in `stet.config.ts`, which both this CLI and the Vite plugin read (see [`@stetcms/config`](https://docs.stetcms.com/reference/configuration)).
+`--url`, `--key` and `--output` each override the matching key in `stet.config.ts`; `--config` chooses which file that is. Both this CLI and the Vite plugin read it (see [`@stetcms/config`](https://docs.stetcms.com/reference/configuration)).
 
 The generated file imports [`@stetcms/client`](https://docs.stetcms.com/reference/client), so add that to your app's dependencies. It never contains the key: at runtime the client reads `STET_API_KEY` from the environment again, so the file is safe to commit. It reads `STET_ORIGIN` at runtime too, falling back to the origin it was generated against.
 
