@@ -36,7 +36,9 @@ test('client-side navigations do not refetch the session context', async ({ page
   // First visits compile these routes on demand in the dev server, which can
   // outlast the default expect timeout on a cold run.
   await page.getByRole('link', { name: 'Analytics' }).click();
-  await expect(page.getByText('How every entry performs')).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByRole('heading', { level: 1, name: 'Analytics' })).toBeVisible({
+    timeout: 15_000,
+  });
   await page.getByRole('link', { name: 'Webhooks' }).click();
   await expect(page.getByText('Recent deliveries')).toBeVisible();
   await page.getByRole('link', { name: 'Home' }).click();

@@ -7,6 +7,20 @@ import policystack, { consentCookie } from '../src/policystack';
 // without keys the header is ignored.
 export const captchaTestHeader = { 'x-captcha-response': 'e2e-test-token' };
 
+/**
+ * Gives a direct auth POST its own credential-limiter bucket.
+ *
+ * The limiter keys on cf-connecting-ip, which nothing sets locally, so the
+ * account-creating POSTs across the auth specs otherwise share one budget and
+ * throttle each other under a parallel run. Pass a distinct address per call
+ * site. Set it on the request, never context-wide through extraHTTPHeaders:
+ * that reaches the Turnstile widget's cross-origin loads too, and the auth
+ * forms then never receive a token.
+ */
+export function ownRateLimitBucket(address: string) {
+  return { 'cf-connecting-ip': address };
+}
+
 // Navigate and wait for hydration before interacting. Filling the SSR'd form
 // before React hydrates loses the values (hydration resets the controlled
 // inputs) and lets the click fall through to a native form submit.
@@ -15,19 +29,36 @@ export async function gotoHydrated(page: Page, url: string) {
   await settled(page);
 }
 
-// Network idle is the usual hydration proxy, but the Turnstile widget (when
-// configured) holds a request open for its lifetime, so pages carrying it
-// never go idle. Its hidden token input is the equivalent signal there: the
-// widget mounts from an effect, so the input only appears once React has
-// hydrated, and it exists nowhere else. Bounded so neither branch can hang.
-async function settled(page: Page, timeout = 10_000) {
-  const idle = page.waitForLoadState('networkidle', { timeout }).catch(() => undefined);
-  const widget = page
-    .locator('input[name="cf-turnstile-response"]')
-    .first()
-    .waitFor({ state: 'attached', timeout })
-    .catch(() => undefined);
-  await Promise.race([idle, widget]);
+// React attaches its fiber to every DOM node it owns, so the key appearing on
+// document.body is hydration itself rather than a proxy for it. Network idle
+// lands 200-250ms earlier, which is enough for a keystroke or a click to hit a
+// page whose listeners are not bound yet, and pages carrying the Turnstile
+// widget never go idle at all because it holds a request open for its lifetime.
+async function settled(page: Page, timeout = 15_000) {
+  await page.waitForFunction(
+    () => Object.keys(document.body).some((key) => key.startsWith('__reactFiber')),
+    { timeout },
+  );
+}
+
+/**
+ * Presses a keyboard shortcut until it takes effect.
+ *
+ * Hydration commits the tree, but the shortcuts here bind their listeners to
+ * `document` from an effect, which React runs afterwards. A single press can
+ * land in that window and be swallowed with the page looking entirely ready,
+ * so the press is the thing to retry rather than something to wait out first.
+ * `expect` still fails the test if the shortcut never works.
+ */
+export async function pressUntil(
+  page: Page,
+  shortcut: string,
+  landed: () => Promise<unknown>,
+): Promise<void> {
+  await expect(async () => {
+    await page.keyboard.press(shortcut);
+    await landed();
+  }).toPass({ timeout: 15_000, intervals: [100, 250, 500, 1000] });
 }
 
 /** The sidebar footer's user menu, which holds account settings and sign out. */

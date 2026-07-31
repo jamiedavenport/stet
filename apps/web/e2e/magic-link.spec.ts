@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-import { captchaTestHeader, freshStorageState, gotoHydrated } from './helpers';
+import { captchaTestHeader, freshStorageState, gotoHydrated, ownRateLimitBucket } from './helpers';
 import { waitForEmailLink } from './mail';
 
 const origin = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
@@ -15,7 +15,7 @@ test('an emailed magic link signs in an existing account', async ({ page, reques
   // /sign routes redirect authenticated visitors).
   const signUp = await request.post('/api/auth/sign-up/email', {
     data: { name: 'Magic Link Test', email, password: 'a-strong-password' },
-    headers: { origin, ...captchaTestHeader },
+    headers: { origin, ...captchaTestHeader, ...ownRateLimitBucket('203.0.113.23') },
   });
   expect(signUp.ok()).toBe(true);
 

@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-import { gotoHydrated } from './helpers';
+import { gotoHydrated, pressUntil } from './helpers';
 
 // Runs in the "app" project, already signed in. The seeded organization is on
 // the paid plan, so the panel opens straight into the chat; sending a message
@@ -38,8 +38,10 @@ test('the assistant panel toggles from the header and Cmd+I', async ({ page }) =
 test('the command menu offers the assistant', async ({ page }) => {
   await gotoHydrated(page, '/app');
 
-  await page.keyboard.press('ControlOrMeta+k');
   const menu = page.getByRole('dialog', { name: 'Command menu' });
+  await pressUntil(page, 'ControlOrMeta+k', async () => {
+    await expect(menu).toBeVisible({ timeout: 1000 });
+  });
   await menu.getByRole('option', { name: 'Ask the assistant' }).click();
 
   await expect(menu).toBeHidden();

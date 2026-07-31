@@ -21,7 +21,7 @@ test('presence survives client-side navigation', async ({ page }) => {
   await expect(presence.getByText('SU')).toBeVisible();
 
   await page.getByRole('link', { name: 'Analytics' }).click();
-  await expect(page.getByText('How every entry performs')).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: 'Analytics' })).toBeVisible();
   await expect(presence.getByText('SU')).toBeVisible();
 });
 
@@ -31,10 +31,14 @@ test('presence survives client-side navigation', async ({ page }) => {
 // your own table, in as many places as you have tabs.
 test('the table never marks you as another person', async ({ page, context }) => {
   await gotoHydrated(page, '/app/c/posts');
-  await expect(page.getByRole('row').filter({ hasText: 'Hello World' })).toBeVisible();
+  // Whichever entry the demo seed happens to put first: naming one couples
+  // this to seed content that exists to be rewritten.
+  const firstEntry = page.getByRole('link', { name: /^Open / }).first();
+  await expect(firstEntry).toBeVisible();
+  const entryHref = await firstEntry.getAttribute('href');
 
   const other = await context.newPage();
-  await gotoHydrated(other, '/app/c/posts/seed-entry-hello/body');
+  await gotoHydrated(other, `${entryHref}/body`);
   await expect(other.getByLabel('Body body')).toBeVisible();
   // Presence arrives over the room's socket, so give it time to be wrong.
   await page.waitForTimeout(3000);

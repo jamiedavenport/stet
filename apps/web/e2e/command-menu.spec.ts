@@ -2,7 +2,7 @@ import { seedAsset, seedOrganization, seedUser } from '@repo/db/seed-data';
 import { expect, test } from '@playwright/test';
 import type { Page } from '@playwright/test';
 
-import { gotoHydrated } from './helpers';
+import { gotoHydrated, pressUntil } from './helpers';
 
 // Runs in the "app" project, already signed in as seedUser in seedOrganization.
 
@@ -28,8 +28,9 @@ async function openMenu(page: Page) {
 test('Cmd+K opens the menu and Escape closes it', async ({ page }) => {
   await gotoHydrated(page, '/app');
 
-  await page.keyboard.press('ControlOrMeta+k');
-  await expect(menu(page)).toBeVisible();
+  await pressUntil(page, 'ControlOrMeta+k', async () => {
+    await expect(menu(page)).toBeVisible({ timeout: 1000 });
+  });
   await expect(input(page)).toBeFocused();
 
   await page.keyboard.press('Escape');
@@ -130,8 +131,10 @@ test('search does not reach outside the active organization', async ({ page }) =
 test('G then A jumps to a page without the menu', async ({ page }) => {
   await gotoHydrated(page, '/app');
 
-  await page.keyboard.press('g');
-  await page.keyboard.press('a');
-
-  await expect(page).toHaveURL(/\/app\/analytics$/);
+  // The whole sequence retries: a leader key swallowed before the listener
+  // binds leaves the follow-up as a stray keystroke rather than a jump.
+  await pressUntil(page, 'g', async () => {
+    await page.keyboard.press('a');
+    await expect(page).toHaveURL(/\/app\/analytics$/, { timeout: 1000 });
+  });
 });

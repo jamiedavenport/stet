@@ -1,4 +1,4 @@
-import { OpenPanel } from '@openpanel/web';
+import type { OpenPanel } from '@openpanel/web';
 
 import type { EventName, EventProperties } from './events';
 import { toProfileName } from './profile';
@@ -7,6 +7,10 @@ import { toProfileName } from './profile';
 // during SSR and when no client id is configured; every function below then
 // logs to the console instead, which is also the local-dev default.
 let client: OpenPanel | null = null;
+
+// Set the moment initAnalytics commits to loading, because the import that
+// follows is async and a second call would otherwise start a second client.
+let starting = false;
 
 // Whether identifyUser has attached a profile. Guards clearAnalyticsIdentity
 // so signed-out visitors never lose their anonymous device session.
@@ -18,19 +22,32 @@ let identified = false;
  * dev without OPENPANEL_CLIENT_ID falls back to console logging.
  */
 export function initAnalytics(options: { clientId: string | null }): void {
-  if (client !== null || typeof document === 'undefined') {
+  // Vite replaces this literally, so the server build drops everything below
+  // it, including the import: @openpanel/web depends on rrweb for session
+  // replay, which Stet never turns on, and importing it statically ships all
+  // of it in the worker bundle where it can never run.
+  if (import.meta.env.SSR) {
+    return;
+  }
+  if (client !== null || starting || typeof document === 'undefined') {
     return;
   }
   if (options.clientId === null || options.clientId === '') {
     return;
   }
-  client = new OpenPanel({
-    clientId: options.clientId,
-    trackScreenViews: true,
-    trackOutgoingLinks: true,
-    // Off so the typed registry stays the only way to record events;
-    // data-track attributes would bypass it with untyped names.
-    trackAttributes: false,
+  const { clientId } = options;
+  starting = true;
+  // Events fired before the import lands take the console branch below, the
+  // same fallback as an unconfigured client id.
+  void import('@openpanel/web').then(({ OpenPanel }) => {
+    client = new OpenPanel({
+      clientId,
+      trackScreenViews: true,
+      trackOutgoingLinks: true,
+      // Off so the typed registry stays the only way to record events;
+      // data-track attributes would bypass it with untyped names.
+      trackAttributes: false,
+    });
   });
 }
 

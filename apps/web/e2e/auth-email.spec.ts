@@ -1,6 +1,12 @@
 import { expect, test } from '@playwright/test';
 
-import { captchaTestHeader, freshStorageState, gotoHydrated, signIn } from './helpers';
+import {
+  captchaTestHeader,
+  freshStorageState,
+  gotoHydrated,
+  ownRateLimitBucket,
+  signIn,
+} from './helpers';
 import { waitForEmailLink } from './mail';
 
 // Recipients use Resend's test addresses (delivered@resend.dev plus a label),
@@ -42,7 +48,11 @@ test('password reset flow replaces the password', async ({ page, request }) => {
   // /sign routes redirect authenticated visitors).
   const signUp = await request.post('/api/auth/sign-up/email', {
     data: { name: 'Reset Flow Test', email, password: 'old-password-123' },
-    headers: { origin: process.env.E2E_BASE_URL ?? 'http://localhost:3000', ...captchaTestHeader },
+    headers: {
+      origin: process.env.E2E_BASE_URL ?? 'http://localhost:3000',
+      ...captchaTestHeader,
+      ...ownRateLimitBucket('203.0.113.21'),
+    },
   });
   expect(signUp.ok()).toBe(true);
 
