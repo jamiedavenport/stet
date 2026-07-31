@@ -1,6 +1,6 @@
 {
   "name": "@stetcms/client",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Typed client for the Stet API, generated from the oRPC contract.",
   "keywords": [
     "api",
