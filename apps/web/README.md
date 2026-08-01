@@ -34,29 +34,13 @@ The primary web application: a TanStack Start (React) app served by the `stet-we
 
 Local secrets go in `.dev.vars` (see [CONTRIBUTING.md](../../CONTRIBUTING.md)). Production setup is covered in [DEPLOY.md](../../DEPLOY.md).
 
-## Upstream workarounds
+## Upstream notes
 
-`vite.config.ts` carries fixes for bugs that belong to our dependencies. Each one should be deleted when its upstream lands.
+The ssr dep-scan workaround that used to live in `vite.config.ts` (rebuilding TSRX's `.tsrx` scan config against the ssr environment, plus the `tsrx-core.d.ts` types bridge) was deleted when `@tsrx/vite-plugin-react@0.0.89` moved its dep-scan registration from `config()` to `configEnvironment()`, which reaches every environment that discovers dependencies.
 
-### The ssr dep scan (`environments.ssr.optimizeDeps`)
+Verify a change in this area by clearing `node_modules/.vite`, starting the dev server, recording `deps_ssr/_metadata.json`, then requesting every marketing route. The entry count and the `hash` must both be unchanged, and the log must contain no `optimized dependencies changed` line. The failure mode is the dev server dying within minutes on `The file does not exist at ".../deps_ssr/<chunk>.js"`: a dep discovered at request time re-optimizes `deps_ssr`, which renames shared chunks workerd is mid-import on.
 
-Symptom: the dev server dies within minutes, repeating `The file does not exist at ".../deps_ssr/<chunk>.js" which is in the optimize deps directory`, then exiting on a `SyntaxError` from `JSON.parse`.
-
-Cause: `@tsrx/vite-plugin-react` registers its `.tsrx` dep scan through the `config()` hook, which Vite applies to the client environment only. The ssr scanner therefore externalizes every component and never crawls what they import, so those deps are discovered at request time instead. Each discovery re-optimizes `deps_ssr`, and re-optimizing renames shared chunks by content hash and deletes the old files while workerd still holds the old names. Adding one dep renamed four unrelated chunks in testing.
-
-Fix: rebuild TSRX's scan config against the ssr environment, which is why `@tsrx/core` is a direct dependency here despite nothing importing it at runtime. Both keys are one unit: `extensions` makes the scanner read `.tsrx`, the scan plugin makes it parse. Setting `extensions` alone is worse than neither, because the scanner then parses components as plain JS, fails, and skips pre-bundling for the whole project.
-
-Upstream: `@tsrx/vite-plugin-react` should move that block from `config()` to `configEnvironment()`. `@tanstack/react-start` already does exactly this in `dist/esm/plugin/vite.js` and is the model to point at.
-
-### `@tsrx/core` dep-scan types (`tsrx-core.d.ts`)
-
-A second, smaller bug in the same package. The `./vite/dep-scan` subpath maps its `types` condition at `src/vite/dep-scan.js`, so under `moduleResolution: bundler` TypeScript cannot read it and the import is `any` (TS7016). The real declarations ship at `types/vite/dep-scan.d.ts`, exposed only under the separate `./types/vite/dep-scan` subpath. `tsrx-core.d.ts` bridges the two for the one factory we call.
-
-Upstream: point the `types` condition at the `.d.ts` the package already publishes.
-
-Verify a change to this block by clearing `node_modules/.vite`, starting the dev server, recording `deps_ssr/_metadata.json`, then requesting every marketing route. The entry count and the `hash` must both be unchanged, and the log must contain no `optimized dependencies changed` line.
-
-### Two amplifiers, not worked around here
+Two upstream amplifiers still exist:
 
 - `@cloudflare/vite-plugin`'s `__VITE_INVOKE_MODULE__` handler awaits `request.json()` with no error handling, so any malformed loopback reply becomes an unhandled rejection and Node exits. This is what turns a recoverable dep error into a dead dev server.
 - Vite's optimizer deletes superseded chunk files immediately. The browser survives this via `browserHash` and a forced reload; the ssr runtime has no equivalent grace period.
