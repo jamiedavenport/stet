@@ -7,7 +7,7 @@
     },
     "apps/*": {},
     "examples/*": {
-      "ignore": ["src/stet.gen.ts"]
+      "ignore": ["src/**/stet.gen.ts"]
     },
     "examples/astro": {
       // `@stetcms/vite` loads it by path; no module imports it.

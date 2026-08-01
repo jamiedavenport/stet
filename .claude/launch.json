@@ -19,6 +19,12 @@
       "runtimeExecutable": "pnpm",
       "runtimeArgs": ["--filter", "@examples/astro", "dev"],
       "port": 3004
+    },
+    {
+      "name": "sveltekit-example",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "@examples/sveltekit", "dev"],
+      "port": 3003
     }
   ]
 }
