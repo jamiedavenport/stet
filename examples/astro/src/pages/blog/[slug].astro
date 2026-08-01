@@ -1,6 +1,6 @@
 ---
-import Layout from '../../layouts/Layout.astro';
-import { stet } from '../../stet.gen';
+import Layout from '@/layouts/Layout.astro';
+import { stet } from '@/stet.gen';
 
 const { slug } = Astro.params;
 if (slug === undefined) {
@@ -11,7 +11,7 @@ const post = await stet.posts.get(slug);
 ---
 
 <Layout title={`${post.title} · Stet example`}>
-  <main data-slug={post.slug}>
+  <main>
     <p>
       <a href="/blog">← Blog</a>
     </p>
@@ -27,17 +27,3 @@ const post = await stet.posts.get(slug);
     }
   </main>
 </Layout>
-
-<!-- The pageview is automatic; this is the custom event on top of it. The
-     slug crosses to the browser as a data attribute because this script is
-     bundled once for every post rather than inlined per page. `slug` is
-     checked against the plan, so renaming the prop fails the type check
-     rather than quietly producing a column of nulls in the dashboard. -->
-<script>
-  import { analytics } from '../../analytics';
-
-  const slug = document.querySelector<HTMLElement>('main[data-slug]')?.dataset.slug;
-  if (slug !== undefined) {
-    analytics.track('post.read', { slug });
-  }
-</script>

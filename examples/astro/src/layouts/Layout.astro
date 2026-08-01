@@ -1,5 +1,5 @@
 ---
-import '../styles.css';
+import '@/styles.css';
 
 type Props = {
   title: string;
@@ -20,10 +20,5 @@ const { title } = Astro.props;
       <a href="/blog">Blog</a>
     </nav>
     <slot />
-    <!-- In the layout, so every page is counted. Loading the client records
-         the pageview: each Astro navigation is a real page load. -->
-    <script>
-      import '../analytics';
-    </script>
   </body>
 </html>

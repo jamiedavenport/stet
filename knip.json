@@ -9,6 +9,11 @@
     "examples/*": {
       "ignore": ["src/stet.gen.ts"]
     },
+    "examples/astro": {
+      // `@stetcms/vite` loads it by path; no module imports it.
+      "entry": ["stet.config.ts"],
+      "ignore": ["src/stet.gen.ts"]
+    },
     "examples/nextjs": {
       // `stet generate` loads it; no module imports it.
       "entry": ["stet.config.ts"],

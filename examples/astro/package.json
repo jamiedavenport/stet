@@ -10,11 +10,9 @@
   },
   "dependencies": {
     "@astrojs/node": "catalog:",
-    "@stetcms/analytics": "workspace:*",
     "@stetcms/client": "workspace:*",
     "@stetcms/config": "workspace:*",
-    "astro": "catalog:",
-    "zod": "catalog:"
+    "astro": "catalog:"
   },
   "devDependencies": {
     "@astrojs/check": "catalog:",
