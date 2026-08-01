@@ -17,7 +17,7 @@ const post = await stet.posts.get(slug);
     </p>
     <h1>{post.title}</h1>
     <p class="muted">Updated {new Date(post.updatedAt).toLocaleDateString('en-GB')}</p>
-    {post.fields.cover && <img src={post.fields.cover.url} />}
+    {post.fields.cover && <img src={post.fields.cover.url} alt="" />}
     {
       post.fields.body == null ? (
         <p class="muted">This post has no body yet.</p>

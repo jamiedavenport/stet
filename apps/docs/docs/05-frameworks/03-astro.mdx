@@ -43,7 +43,9 @@ export default defineConfig({
 Stet content is live-only: what an editor saves is what the API serves.
 `output: 'server'` renders every page on request rather than at build time, so
 edits appear on the next refresh and prerendering never fetches content during
-`astro build`. Codegen stays the one build-time contact with Stet.
+`astro build`. Codegen (plus the [tracking-plan publish](/reference/analytics),
+if the config declares one) stays the only build-time contact with Stet;
+content itself is never fetched.
 
 </Step>
 
