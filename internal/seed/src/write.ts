@@ -71,13 +71,18 @@ function writeModel(db: Db, organizationId: string, now: Date): void {
     ...fieldRows(seedContent.landing.id, landingFields, now),
   ];
   db.insert(schema.contentField).values(rows).run();
+  db.insert(schema.contentFieldKey)
+    .values([
+      ...fieldKeyRows(seedContent.posts.id, postFields, now),
+      ...fieldKeyRows(seedContent.landing.id, landingFields, now),
+    ])
+    .run();
 }
 
 function fieldRows(typeId: string, fields: SeedField[], now: Date) {
   return fields.map((field, position) => ({
     id: field.id,
     typeId,
-    key: field.key,
     name: field.name,
     type: field.type,
     config: JSON.stringify(field.config ?? {}),
@@ -86,22 +91,37 @@ function fieldRows(typeId: string, fields: SeedField[], now: Date) {
   }));
 }
 
+function fieldKeyRows(typeId: string, fields: SeedField[], now: Date) {
+  return fields.map((field) => ({
+    id: `seed-key-${field.id}`,
+    fieldId: field.id,
+    typeId,
+    key: field.key,
+    status: 'canonical',
+    createdAt: now,
+  }));
+}
+
+const fieldIds = Object.fromEntries(
+  [...postFields, ...landingFields].map((field) => [field.key, field.id]),
+) as Record<string, string>;
+
 function writePost(db: Db, organizationId: string, post: (typeof posts)[number], now: Date): void {
   const publishedAt = new Date(now.getTime() - post.daysAgo * day);
   const updatedAt = new Date(publishedAt.getTime() + 2 * hour);
   const id = entryId(post.slug);
   const values: EntryValues = {
-    summary: post.summary,
-    author: post.authorId,
-    cover: post.coverId,
-    topic: post.topicId,
-    tags: post.tagIds,
-    published: dayValue(publishedAt),
-    featured: post.featured,
-    related: post.related.map(entryId),
+    [fieldIds.summary]: post.summary,
+    [fieldIds.author]: post.authorId,
+    [fieldIds.cover]: post.coverId,
+    [fieldIds.topic]: post.topicId,
+    [fieldIds.tags]: post.tagIds,
+    [fieldIds.published]: dayValue(publishedAt),
+    [fieldIds.featured]: post.featured,
+    [fieldIds.related]: post.related.map(entryId),
   };
   const markdown = body(post.slug);
-  const doc = documentWithBody('body', markdown);
+  const doc = documentWithBody(fieldIds.body, markdown);
 
   db.insert(schema.contentEntry)
     .values({
@@ -128,8 +148,8 @@ function writePost(db: Db, organizationId: string, post: (typeof posts)[number],
       suffix: 'draft',
       title: post.title,
       slug: post.slug,
-      values: { author: post.authorId, topic: post.topicId },
-      bodies: { body: draft },
+      values: { [fieldIds.author]: post.authorId, [fieldIds.topic]: post.topicId },
+      bodies: { [fieldIds.body]: draft },
       authorId: post.authorId,
       via: 'editor',
       createdAt: new Date(publishedAt.getTime() - day),
@@ -139,7 +159,7 @@ function writePost(db: Db, organizationId: string, post: (typeof posts)[number],
       title: post.title,
       slug: post.slug,
       values,
-      bodies: { body: markdown },
+      bodies: { [fieldIds.body]: markdown },
       authorId: post.authorId,
       via: 'app',
       createdAt: updatedAt,
@@ -149,9 +169,9 @@ function writePost(db: Db, organizationId: string, post: (typeof posts)[number],
 
 function writeLanding(db: Db, organizationId: string, now: Date): void {
   const id = 'seed-entry-landing';
-  const values: EntryValues = { headline: landing.headline };
+  const values: EntryValues = { [fieldIds.headline]: landing.headline };
   const markdown = body(landing.pitch);
-  const doc = documentWithBody('pitch', markdown);
+  const doc = documentWithBody(fieldIds.pitch, markdown);
 
   db.insert(schema.contentEntry)
     .values({
@@ -174,7 +194,7 @@ function writeLanding(db: Db, organizationId: string, now: Date): void {
       title: seedContent.landing.name,
       slug: 'default',
       values,
-      bodies: { pitch: markdown },
+      bodies: { [fieldIds.pitch]: markdown },
       authorId: null,
       via: 'app',
       createdAt: now,

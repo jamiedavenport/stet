@@ -25,9 +25,8 @@ const typeChangeSchema = z.object({
 const fieldChangeSchema = z.object({
   subject: z.literal('field'),
   /**
-   * `deleted` retires the key: the client deprecates it and entries keep the
-   * last value they held. `purged` is the later, deliberate erasure of both,
-   * and the one that takes the key out of a regenerated client.
+   * `deleted` retires the key. `purged` completes a field Action, removing a
+   * rename alias or permanently erasing a deleted field.
    */
   action: z.enum(['created', 'updated', 'deleted', 'purged']),
   id: z.string(),

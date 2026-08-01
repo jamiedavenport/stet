@@ -4,7 +4,7 @@ import { and, database, eq, schema } from '@repo/db';
 import { entryPage } from '@repo/realtime/entry';
 import { recordContentChange } from '@repo/webhooks/content';
 
-import { requireContentType, requireEntry } from './access';
+import { liveFields, requireContentType, requireEntry } from './access';
 import { broadcastContentChange } from './broadcast';
 import { recordEntryRevision } from './revisions';
 import { parseValues, valuesText } from './schema';
@@ -29,7 +29,7 @@ export async function createEntry(
     throw new Error('A map has exactly one entry');
   }
   const title = input.title === undefined || input.title === '' ? 'Untitled' : input.title;
-  const values = input.values ?? {};
+  const values = await storedValues(type.id, input.values ?? {});
   const siblings = await db.query.contentEntry.findMany({
     where: eq(schema.contentEntry.typeId, type.id),
     columns: { slug: true },
@@ -97,10 +97,10 @@ export async function updateEntry(
     taken.delete(entry.slug);
     slug = uniqueSlug(slugify(chosen ? (input.slug ?? '') : (input.title ?? '')), taken);
   }
-  const values =
-    input.values === undefined
-      ? parseValues(entry.values)
-      : { ...parseValues(entry.values), ...input.values };
+  let values = parseValues(entry.values);
+  if (input.values !== undefined) {
+    values = { ...values, ...(await storedValues(entry.typeId, input.values)) };
+  }
   await db
     .update(schema.contentEntry)
     .set({
@@ -129,6 +129,21 @@ export async function updateEntry(
   });
   await broadcastContentChange(organizationId, type);
   return { slug };
+}
+
+/** Converts the public keys editors and tools use to stable storage ids. */
+async function storedValues(typeId: string, values: EntryValues): Promise<EntryValues> {
+  const fields = await liveFields(typeId);
+  const ids = new Map(fields.map((field) => [field.key, field.id]));
+  const stored: EntryValues = {};
+  for (const [key, value] of Object.entries(values)) {
+    const id = ids.get(key);
+    if (id === undefined) {
+      throw new Error(`Unknown field key: ${key}`);
+    }
+    stored[id] = value;
+  }
+  return stored;
 }
 
 export async function deleteEntry(organizationId: string, id: string, actor: Actor): Promise<void> {

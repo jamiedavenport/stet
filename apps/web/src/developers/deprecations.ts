@@ -1,31 +1,45 @@
-import { listDeprecatedFields, purgeField } from '@repo/content/deprecations';
+import {
+  completeFieldAction,
+  countFieldActions,
+  listFieldActions,
+} from '@repo/content/deprecations';
 import { queryOptions } from '@tanstack/react-query';
 import { createServerFn } from '@tanstack/react-start';
 import { z } from 'zod';
 
 import { appActor } from '#/content/actor';
-import { organizationAdminMiddleware } from '#/session';
+import { organizationMiddleware } from '#/session';
 
-// The Danger Zone's data: the deleted fields whose keys and values the API is
-// still serving, and the purge that ends that. Admin-only, like the rest of
-// the developer pages.
+// Downstream field migrations and the completion that removes a retired key.
+// Every organization member can act while the MVP has no narrower role.
 
-const getDeprecations = createServerFn({ method: 'GET' })
-  .middleware([organizationAdminMiddleware])
-  .handler(async ({ context }) => listDeprecatedFields(context.organizationId));
+const getActions = createServerFn({ method: 'GET' })
+  .middleware([organizationMiddleware])
+  .handler(async ({ context }) => listFieldActions(context.organizationId));
 
-export type DeprecationsData = Awaited<ReturnType<typeof getDeprecations>>;
+const getActionCount = createServerFn({ method: 'GET' })
+  .middleware([organizationMiddleware])
+  .handler(async ({ context }) => countFieldActions(context.organizationId));
 
-export const purgeDeprecatedField = createServerFn({ method: 'POST' })
-  .middleware([organizationAdminMiddleware])
+export type ActionsData = Awaited<ReturnType<typeof getActions>>;
+
+export const completeAction = createServerFn({ method: 'POST' })
+  .middleware([organizationMiddleware])
   .validator(z.object({ id: z.string() }))
   .handler(async ({ data, context }) =>
-    purgeField(context.organizationId, data.id, appActor(context.session.user.id)),
+    completeFieldAction(context.organizationId, data.id, appActor(context.session.user.id)),
   );
 
-export const deprecationsQuery = (organizationId: string) =>
+export const actionsQuery = (organizationId: string) =>
   queryOptions({
-    queryKey: ['deprecations', organizationId],
-    queryFn: () => getDeprecations(),
+    queryKey: ['field-actions', organizationId],
+    queryFn: () => getActions(),
+    staleTime: 30_000,
+  });
+
+export const actionCountQuery = (organizationId: string) =>
+  queryOptions({
+    queryKey: ['field-action-count', organizationId],
+    queryFn: () => getActionCount(),
     staleTime: 30_000,
   });

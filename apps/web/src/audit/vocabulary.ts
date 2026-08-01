@@ -13,7 +13,7 @@ const actionPhrases: Record<AuditAction, string> = {
   'field.create': 'added the field',
   'field.update': 'changed the field',
   'field.delete': 'deleted the field',
-  'field.purge': 'permanently erased the field',
+  'field.action.complete': 'completed the migration for',
   'entry.create': 'created',
   'entry.update': 'edited',
   'entry.delete': 'deleted',

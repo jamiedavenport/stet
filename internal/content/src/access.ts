@@ -12,10 +12,19 @@ import { and, asc, database, eq, isNull, schema } from '@repo/db';
  */
 export async function liveFields(typeId: string) {
   const db = await database();
-  return db.query.contentField.findMany({
-    where: and(eq(schema.contentField.typeId, typeId), isNull(schema.contentField.deletedAt)),
-    orderBy: asc(schema.contentField.position),
-  });
+  const rows = await db
+    .select({ field: schema.contentField, key: schema.contentFieldKey.key })
+    .from(schema.contentField)
+    .innerJoin(
+      schema.contentFieldKey,
+      and(
+        eq(schema.contentFieldKey.fieldId, schema.contentField.id),
+        eq(schema.contentFieldKey.status, 'canonical'),
+      ),
+    )
+    .where(and(eq(schema.contentField.typeId, typeId), isNull(schema.contentField.deletedAt)))
+    .orderBy(asc(schema.contentField.position));
+  return rows.map(({ field, key }) => ({ ...field, key }));
 }
 
 export async function requireContentType(organizationId: string, id: string) {
@@ -34,12 +43,23 @@ export async function requireContentType(organizationId: string, id: string) {
 
 export async function requireField(organizationId: string, id: string) {
   const db = await database();
-  const field = await db.query.contentField.findFirst({
-    where: and(eq(schema.contentField.id, id), isNull(schema.contentField.deletedAt)),
-  });
-  if (field === undefined) {
+  const rows = await db
+    .select({ field: schema.contentField, key: schema.contentFieldKey.key })
+    .from(schema.contentField)
+    .innerJoin(
+      schema.contentFieldKey,
+      and(
+        eq(schema.contentFieldKey.fieldId, schema.contentField.id),
+        eq(schema.contentFieldKey.status, 'canonical'),
+      ),
+    )
+    .where(and(eq(schema.contentField.id, id), isNull(schema.contentField.deletedAt)))
+    .limit(1);
+  const row = rows[0];
+  if (row === undefined) {
     throw new Error('Field not found');
   }
+  const field = { ...row.field, key: row.key };
   await requireContentType(organizationId, field.typeId);
   return field;
 }

@@ -10,13 +10,15 @@ import type { FieldValue } from '@repo/content/schema';
 import { bodyContent } from '@repo/content/body';
 
 type Deprecation = {
-  /** When the field was deleted. */
+  reason: 'deleted' | 'renamed';
   at: string;
-  /** Who deleted it; absent when no signed-in user did, or the account is gone. */
   by?: string;
+  note?: string;
+  renamedTo?: string;
 };
 
 type Field = {
+  id: string;
   key: string;
   name: string;
   type: ReturnType<typeof fieldTypeSchema.parse>;
@@ -58,12 +60,28 @@ async function loadType(organizationId: string, slug: string) {
   return { ...type, fields: await loadModelFields(type.id) };
 }
 
-function toField(row: typeof schema.contentField.$inferSelect, deprecated?: Deprecation): Field {
-  const config = parseConfig(row.config);
+function toField(
+  field: typeof schema.contentField.$inferSelect,
+  key: typeof schema.contentFieldKey.$inferSelect,
+  by: string | null,
+  renamedTo: string | undefined,
+): Field {
+  const config = parseConfig(field.config);
+  const deprecated =
+    key.status === 'canonical'
+      ? undefined
+      : {
+          reason: key.kind === 'renamed' ? ('renamed' as const) : ('deleted' as const),
+          at: (key.deprecatedAt ?? new Date(0)).toISOString(),
+          by: by ?? undefined,
+          note: key.note ?? undefined,
+          renamedTo: key.kind === 'renamed' ? renamedTo : undefined,
+        };
   return {
-    key: row.key,
-    name: row.name,
-    type: fieldTypeSchema.parse(row.type),
+    id: field.id,
+    key: key.key,
+    name: key.oldName ?? field.name,
+    type: fieldTypeSchema.parse(field.type),
     options: config.options ?? [],
     targetTypeId: config.typeId,
     deprecated,
@@ -79,23 +97,29 @@ function toField(row: typeof schema.contentField.$inferSelect, deprecated?: Depr
  *
  * Both the model and the entry routes read through here, which is what makes
  * a deletion cost a customer's running pages nothing: the key goes on
- * resolving until someone purges it in the Danger Zone.
+ * resolving until someone completes it under Developers → Actions.
  */
 async function loadModelFields(typeId: string): Promise<Field[]> {
   const db = await database();
   const rows = await db
-    .select({ field: schema.contentField, deletedByName: schema.user.name })
+    .select({
+      field: schema.contentField,
+      key: schema.contentFieldKey,
+      deprecatedByName: schema.user.name,
+    })
     .from(schema.contentField)
-    .leftJoin(schema.user, eq(schema.user.id, schema.contentField.deletedBy))
+    .innerJoin(schema.contentFieldKey, eq(schema.contentFieldKey.fieldId, schema.contentField.id))
+    .leftJoin(schema.user, eq(schema.user.id, schema.contentFieldKey.deprecatedBy))
     .where(eq(schema.contentField.typeId, typeId))
     .orderBy(asc(schema.contentField.position));
-  return rows.map(({ field, deletedByName }) =>
-    toField(
-      field,
-      field.deletedAt === null
-        ? undefined
-        : { at: field.deletedAt.toISOString(), by: deletedByName ?? undefined },
-    ),
+  const targets = new Map<string, string>();
+  for (const row of rows) {
+    if (row.key.status === 'canonical' || row.key.kind === 'deleted') {
+      targets.set(row.field.id, row.key.key);
+    }
+  }
+  return rows.map(({ field, key, deprecatedByName }) =>
+    toField(field, key, deprecatedByName, targets.get(field.id)),
   );
 }
 
@@ -165,7 +189,7 @@ async function loadTargets(
   for (const row of rows) {
     const values = parseValues(row.values);
     for (const field of fields) {
-      const value = values[field.key];
+      const value = values[field.id];
       if (field.type === 'person' && typeof value === 'string') {
         people.add(value);
       }
@@ -255,9 +279,9 @@ async function toApiEntry(
 
   const resolved: Record<string, unknown> = {};
   for (const field of fields) {
-    const value = resolveValue(field, values[field.key], targets);
+    const value = resolveValue(field, values[field.id], targets);
     if (field.type === 'rich_text') {
-      resolved[field.key] = saved === null ? null : bodyContent(saved.doc, field.key);
+      resolved[field.key] = saved === null ? null : bodyContent(saved.doc, field.id);
     } else if (value !== undefined) {
       resolved[field.key] = value;
     }

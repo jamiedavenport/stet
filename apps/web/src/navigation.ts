@@ -8,9 +8,9 @@ import {
   DownloadSimpleIcon,
   HouseIcon,
   KeyIcon,
+  ListChecksIcon,
   GearIcon,
   ShieldIcon,
-  WarningIcon,
   WebhooksLogoIcon,
 } from '@phosphor-icons/react';
 import type { Icon } from '@phosphor-icons/react';
@@ -50,11 +50,17 @@ const marketingItems = [
   { label: 'Import', to: '/app/import', icon: DownloadSimpleIcon, key: 'i' },
 ] as const satisfies readonly NavItem[];
 
-const developerItems = [
+const actionItem = {
+  label: 'Actions',
+  to: '/app/developers/actions',
+  icon: ListChecksIcon,
+  key: 'd',
+} as const satisfies NavItem;
+
+const managedDeveloperItems = [
   { label: 'API keys', to: '/app/developers/keys', icon: KeyIcon, key: 'k' },
   { label: 'Webhooks', to: '/app/developers/webhooks', icon: WebhooksLogoIcon, key: 'w' },
   { label: 'Audit log', to: '/app/audit', icon: ClockCounterClockwiseIcon, key: 'l' },
-  { label: 'Danger zone', to: '/app/developers/danger', icon: WarningIcon, key: 'd' },
 ] as const satisfies readonly NavItem[];
 
 const settingsItem = {
@@ -113,14 +119,16 @@ export function sidebarNavigation(options: {
   memberRole: OrganizationRole;
   content: readonly NavContentType[];
 }): readonly NavGroup[] {
-  return [
+  const groups: NavGroup[] = [
     { id: 'home', items: [home] },
     { id: 'content', label: 'Content', items: contentItems(options.content) },
     { id: 'marketing', label: 'Marketing', items: marketingItems },
-    ...(canManageOrganization(options.memberRole)
-      ? [{ id: 'developers', label: 'Developers', items: developerItems }]
-      : []),
   ];
+  const developerItems: readonly NavItem[] = canManageOrganization(options.memberRole)
+    ? [actionItem, ...managedDeveloperItems]
+    : [actionItem];
+  groups.push({ id: 'developers', label: 'Developers', items: developerItems });
+  return groups;
 }
 
 /** The pages the footer's user menu offers, about this person rather than the work. */

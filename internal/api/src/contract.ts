@@ -258,10 +258,12 @@ export const contentFieldTypeSchema = z.enum([
 export type ContentFieldType = z.infer<typeof contentFieldTypeSchema>;
 
 const contentDeprecationSchema = z.object({
-  /** When the field was deleted from the model. */
+  reason: z.enum(['deleted', 'renamed']),
   at: z.iso.datetime(),
-  /** Who deleted it; absent when no signed-in user did, or the account is gone. */
   by: z.string().optional(),
+  note: z.string().optional(),
+  /** Current canonical key, present for a rename. */
+  renamedTo: z.string().optional(),
 });
 
 export const contentFieldSchema = z.object({
@@ -273,14 +275,8 @@ export const contentFieldSchema = z.object({
   /** Slug of the collection a reference or multi-reference field points at. */
   collection: z.string().optional(),
   /**
-   * Present once the field has been deleted from the model, naming when and
-   * by whom so a stale key can be traced back to the change that retired it.
-   * Editors stop seeing the field, but entries keep the last value it held
-   * and go on returning it, so a deletion costs a running site nothing. A
-   * generated client turns it into a deprecation rather than dropping the
-   * key, so code reading it keeps compiling. The key and its values go for
-   * good only when a developer purges the field from the Danger Zone, after
-   * which it leaves this list.
+   * Present for deleted fields and old rename aliases. Entries keep returning
+   * the value through this key until its Action is completed.
    */
   deprecated: contentDeprecationSchema.optional(),
 });
@@ -301,7 +297,8 @@ export type ContentType = z.infer<typeof contentTypeSchema>;
 // url, name, contentType, size }, reference is { id, slug, title } (an array
 // for multi-reference, with deleted targets dropped). Absent means the field
 // was never set; a deleted single-reference or asset target reads as null. A
-// deprecated key is here too, frozen at the last value it was given.
+// Deprecated keys are here too. Rename aliases resolve the canonical field's
+// current value; deleted keys keep returning their final value.
 export const contentEntrySchema = z.object({
   id: z.string(),
   slug: z.string(),
@@ -325,9 +322,8 @@ const getContentModel = oc
     summary: 'Content model',
     description:
       'Every collection and map in the organization with its fields. The generated client is ' +
-      'typed from this. Deleted fields are still listed, carrying a `deprecated` record of when ' +
-      'and by whom, so a client regenerated after a deletion marks the key instead of dropping ' +
-      'it and entries go on returning the last value it held.',
+      'typed from this. Deleted fields and old rename aliases carry a `deprecated` record so ' +
+      'regeneration keeps downstream clients compiling until the matching Action is completed.',
     tags: ['Content'],
   })
   .output(z.object({ types: z.array(contentTypeSchema) }));

@@ -54,7 +54,7 @@ const landing = await stet.landing.get(); // a map
 
 The generated file never contains the key: at runtime the client reads `STET_API_KEY` from the environment again, so the file is safe to commit — and committing it keeps type checks working without a running Stet. It reads `STET_ORIGIN` at runtime too, falling back to the origin it was generated against, so one committed file works in every environment rather than pinning your deployment to whatever origin last regenerated it.
 
-Neither job can fail your build. Without a key, or with the API unreachable, the plugin warns and leaves the previous generated file in place, writing an empty model only when no file exists yet. A field deleted in the Stet UI keeps its key in the generated types, marked `@deprecated`: your editor strikes it through wherever you read it, and your build keeps passing while you migrate.
+Neither job can fail your build. Without a key, or with the API unreachable, the plugin warns and leaves the previous generated file in place, writing an empty model only when no file exists yet. A field deleted or renamed in the Stet UI keeps its retired key in the generated types, marked `@deprecated`: your editor strikes it through wherever you read it, and your build keeps passing while you migrate.
 
 ## Analytics
 

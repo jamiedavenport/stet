@@ -32,9 +32,10 @@ has not filled in is absent, so your code decides what an empty one means.
 
 A field's key is its name in API form — `Published date` becomes
 `published_date` — and it is what your code reads: `post.fields.published_date`.
-Renaming a field renames its key with it, and the entries and bodies stored
-under the old key move across, so the model never carries a name it has
-outgrown. Your client picks the new key up the next time it is generated.
+Renaming a field gives it a new canonical key. The old key stays in the API
+and generated client as a deprecated alias, returning the same current value,
+so downstream code keeps working while engineering migrates. Key-changing
+renames appear under **Developers → Actions**; display-only changes do not.
 
 ## Deleting a field
 
@@ -53,16 +54,14 @@ caused.
 A deleted key is never handed back. Creating a field with the same name again
 gives it a new key, so nothing inherits the values entries still hold.
 
-## Purging a field
+## Completing a field action
 
-A deprecated key stays until someone takes it away deliberately, from
-**Developers → Danger zone** in the app. Purging one erases the key and
-everything written under it: the values entries were still returning, any rich
-text bodies, and the copies held in version history. The field leaves the
-model, so the next generated client drops the key instead of deprecating it,
-and its name becomes available again.
+A deprecated key stays until someone completes its migration deliberately,
+from **Developers → Actions** in the app. Completing a rename removes only the
+old alias. Completing a deletion erases the field and everything written under
+it: values, rich-text bodies, revision history, and every remaining alias.
 
-This is the one content change that can break a build, which is why nothing
+Completion is the one content change that can break a build, which is why nothing
 does it on the model's behalf: it is a developer's call, made once the code
 reading the key has moved on.
 

@@ -15,6 +15,7 @@
     "push:remote": "DRIZZLE_REMOTE=1 drizzle-kit push && DRIZZLE_REMOTE=1 node scripts/push-fts.ts",
     "push:fts": "node scripts/push-fts.ts",
     "push:force": "node scripts/ensure-local-db.ts && drizzle-kit push --force && node scripts/push-fts.ts",
+    "migrate:field-actions": "DRIZZLE_REMOTE=1 node scripts/migrate-field-actions.ts",
     "tc": "tsc --noEmit",
     "test": "vp test run"
   },
@@ -30,6 +31,7 @@
     "drizzle-kit": "catalog:",
     "typescript": "catalog:",
     "vite-plus": "catalog:",
-    "vitest": "catalog:"
+    "vitest": "catalog:",
+    "yjs": "catalog:"
   }
 }

@@ -18,7 +18,7 @@ export type WriteBodyMode = 'replace' | 'append';
 export async function writeEntryBody(options: {
   organizationId: string;
   entryId: string;
-  fieldKey: string;
+  fieldId: string;
   markdown: string;
   mode?: WriteBodyMode;
 }): Promise<void> {
@@ -26,12 +26,12 @@ export async function writeEntryBody(options: {
   await updateDocument(room, (doc) => {
     let markdown = options.markdown;
     if (options.mode === 'append') {
-      const existing = bodyMarkdown(doc, options.fieldKey);
+      const existing = bodyMarkdown(doc, options.fieldId);
       if (existing !== null && existing.trim().length > 0) {
         markdown = `${existing.trimEnd()}\n\n${options.markdown}`;
       }
     }
-    setBodyMarkdown(doc, options.fieldKey, markdown);
+    setBodyMarkdown(doc, options.fieldId, markdown);
   });
 }
 

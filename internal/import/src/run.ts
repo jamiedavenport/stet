@@ -136,7 +136,7 @@ export async function importPage(
       }
       const markdown = extracted.bodies[field.name];
       if (typeof markdown === 'string' && markdown.trim() !== '') {
-        await writeEntryBody({ organizationId, entryId, fieldKey: field.key, markdown });
+        await writeEntryBody({ organizationId, entryId, fieldId: field.id, markdown });
       }
     }
 

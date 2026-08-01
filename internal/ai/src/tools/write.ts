@@ -269,7 +269,7 @@ export function contentWriteTools(organizationId: string, actor: Actor): ToolSet
           };
         }
         try {
-          await writeEntryBody({ organizationId, entryId, fieldKey, markdown, mode });
+          await writeEntryBody({ organizationId, entryId, fieldId: field.id, markdown, mode });
         } catch (error) {
           // Returned rather than thrown so the model sees what failed (the
           // stream would mask a thrown error) and can tell the user.

@@ -1,4 +1,5 @@
 import { index, integer, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core';
+import { sql } from 'drizzle-orm';
 
 import { user } from './auth.ts';
 import { organization } from './organizations.ts';
@@ -31,8 +32,6 @@ export const contentField = sqliteTable(
     typeId: text('type_id')
       .notNull()
       .references(() => contentType.id, { onDelete: 'cascade' }),
-    /** The key entry values and the generated client are addressed by. */
-    key: text('key').notNull(),
     name: text('name').notNull(),
     type: text('type').notNull(),
     /** JSON per-type configuration, e.g. the options of a select. */
@@ -40,22 +39,46 @@ export const contentField = sqliteTable(
     position: integer('position').notNull(),
     createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
     /**
-     * Set when the field is deleted. The row stays behind as a tombstone so
-     * the generated client can deprecate the key instead of dropping it, and
-     * so nothing new can take the key back and inherit the values stored
-     * under it.
+     * Set when the field is deleted. The row stays behind as a tombstone while
+     * its key rows keep downstream clients working until completion.
      */
     deletedAt: integer('deleted_at', { mode: 'timestamp' }),
-    /**
-     * Who deleted it, so the deprecation the generated client emits can name
-     * them and a developer can ask. Null when no signed-in user did it, or
-     * once that account is gone.
-     */
-    deletedBy: text('deleted_by').references(() => user.id, { onDelete: 'set null' }),
+  },
+  (table) => [index('content_field_type_idx').on(table.typeId)],
+);
+
+// Every public key a field has held. Keeping canonical and deprecated keys in
+// one table lets SQLite enforce that an old key cannot be reclaimed while
+// downstream code may still read it.
+export const contentFieldKey = sqliteTable(
+  'content_field_key',
+  {
+    id: text('id').primaryKey(),
+    fieldId: text('field_id')
+      .notNull()
+      .references(() => contentField.id, { onDelete: 'cascade' }),
+    typeId: text('type_id')
+      .notNull()
+      .references(() => contentType.id, { onDelete: 'cascade' }),
+    key: text('key').notNull(),
+    /** `canonical` is the current API key; every other row is an Action. */
+    status: text('status').notNull(),
+    /** Null for a canonical key; `renamed` or `deleted` once deprecated. */
+    kind: text('kind'),
+    /** Display name at the moment this key was deprecated. */
+    oldName: text('old_name'),
+    note: text('note'),
+    createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
+    deprecatedAt: integer('deprecated_at', { mode: 'timestamp' }),
+    deprecatedBy: text('deprecated_by').references(() => user.id, { onDelete: 'set null' }),
   },
   (table) => [
-    uniqueIndex('content_field_key_idx').on(table.typeId, table.key),
-    index('content_field_type_idx').on(table.typeId),
+    uniqueIndex('content_field_key_unique_idx').on(table.typeId, table.key),
+    uniqueIndex('content_field_canonical_idx')
+      .on(table.fieldId)
+      .where(sql`${table.status} = 'canonical'`),
+    index('content_field_key_field_idx').on(table.fieldId),
+    index('content_field_key_type_idx').on(table.typeId),
   ],
 );
 
@@ -66,13 +89,13 @@ export const contentEntry = sqliteTable(
     typeId: text('type_id')
       .notNull()
       .references(() => contentType.id, { onDelete: 'cascade' }),
-    // Denormalized so the public API can scope by key without a join.
+    // Denormalized so the public API can scope entries without a type join.
     organizationId: text('organization_id')
       .notNull()
       .references(() => organization.id, { onDelete: 'cascade' }),
     slug: text('slug').notNull(),
     title: text('title').notNull(),
-    /** JSON object of field key to value; keys absent until first set. */
+    /** JSON object of stable field id to value; keys absent until first set. */
     values: text('values').notNull(),
     // Derived plain text for the FTS index (see ../search/indexes.ts): entry
     // writes maintain fieldText from `values`, the document mirror in
@@ -104,9 +127,9 @@ export const contentRevision = sqliteTable(
       .references(() => organization.id, { onDelete: 'cascade' }),
     title: text('title').notNull(),
     slug: text('slug').notNull(),
-    /** JSON object of field key to value, as `contentEntry.values`. */
+    /** JSON object of stable field id to value, as `contentEntry.values`. */
     values: text('values').notNull(),
-    /** JSON object of rich text field key to markdown; keys absent when never written. */
+    /** JSON object of rich text field id to markdown; keys absent when never written. */
     bodies: text('bodies').notNull(),
     /** Null when the change has no signed-in author (body flushes, system work). */
     authorId: text('author_id').references(() => user.id, { onDelete: 'set null' }),
