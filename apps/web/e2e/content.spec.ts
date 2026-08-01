@@ -29,7 +29,9 @@ async function addField(page: import('@playwright/test').Page, type: string, nam
   await page.getByRole('button', { name: 'Untitled', exact: true }).click();
   await page.getByLabel('Field name').fill(name);
   await page.keyboard.press('Enter');
-  await page.keyboard.press('Escape');
+  const renameDialog = page.getByRole('alertdialog');
+  await expect(renameDialog).toBeVisible();
+  await renameDialog.getByRole('button', { name: 'Rename field' }).click();
   await expect(page.getByRole('button', { name, exact: true })).toBeVisible();
 }
 
@@ -192,13 +194,34 @@ test('the public API serves modelled content with rich text representations', as
   const model = await request.get('/api/v1/model', { headers });
   expect(model.status()).toBe(200);
   const { types } = (await model.json()) as {
-    types: { slug: string; name: string; fields: { key: string; type: string }[] }[];
+    types: {
+      slug: string;
+      name: string;
+      fields: {
+        key: string;
+        type: string;
+        deprecated?: { reason: string; renamedTo?: string };
+      }[];
+    }[];
   };
   const type = types.find((candidate) => candidate.name === name);
   expect(type).toBeDefined();
-  expect(type!.fields.map((field) => [field.key, field.type])).toEqual([
+  const currentFields = type!.fields.filter((field) => field.deprecated === undefined);
+  expect(currentFields.map((field) => [field.key, field.type])).toEqual([
     ['summary', 'text'],
     ['body', 'rich_text'],
+  ]);
+  const aliases = type!.fields.filter((field) => field.deprecated !== undefined);
+  expect(
+    aliases.map((field) => [
+      field.key,
+      field.type,
+      field.deprecated?.reason,
+      field.deprecated?.renamedTo,
+    ]),
+  ).toEqual([
+    ['untitled', 'text', 'renamed', 'summary'],
+    ['untitled_2', 'rich_text', 'renamed', 'body'],
   ]);
 
   // The body reaches the API through the room's D1 mirror, which trails live
