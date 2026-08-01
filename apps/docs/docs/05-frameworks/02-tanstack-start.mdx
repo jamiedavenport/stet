@@ -30,7 +30,7 @@ import { tanstackStart } from '@tanstack/react-start/plugin/vite';
 import viteReact from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 
-const hasStetApiKey = process.env.STET_API_KEY !== undefined;
+const hasStetApiKey = process.env.STET_API_KEY !== undefined && process.env.STET_API_KEY !== '';
 
 export default defineConfig({
   plugins: [

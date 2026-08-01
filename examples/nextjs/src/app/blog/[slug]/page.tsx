@@ -1,11 +1,14 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
-import { getPost, listPosts } from '@/lib/content';
+import { getPost, hasStetApiKey, listPosts } from '@/lib/content';
 
-export const dynamicParams = false;
+export const dynamicParams = true;
 
 export async function generateStaticParams() {
+  if (!hasStetApiKey()) {
+    return [];
+  }
   const posts = await listPosts();
   return posts.map((post) => ({ slug: post.slug }));
 }

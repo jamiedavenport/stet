@@ -95,24 +95,30 @@ const config = (command: 'build' | 'serve') =>
         // @repo/workflows registries) and merged into the worker config here.
         // The resolved config reaches production too: `wrangler deploy` reads
         // the build output config, not wrangler.jsonc directly.
-        config: () => ({
-          triggers: { crons: cronsConfig() },
-          workflows: workflowsConfig(),
-          ...(stetOrigin === undefined ? {} : { vars: { STET_ORIGIN: stetOrigin } }),
+        config: () => {
+          let vars: { STET_ORIGIN: string } | undefined;
+          if (stetOrigin !== undefined) {
+            vars = { STET_ORIGIN: stetOrigin };
+          }
+
+          let secrets: { required: string[] } | undefined;
           // STET_API_KEY is optional for a new self-hosted instance, but when
           // one is present the preview Worker needs it while TanStack Start
           // prerenders the blog. Programmatic config is applied after
           // wrangler.jsonc, so preserve its required secrets and add this one
           // only for builds that can actually use it.
-          ...(hasStetApiKey
-            ? {
-                secrets: {
-                  // Config arrays merge with the values from wrangler.jsonc.
-                  required: ['STET_API_KEY'],
-                },
-              }
-            : {}),
-        }),
+          if (hasStetApiKey) {
+            // Config arrays merge with the values from wrangler.jsonc.
+            secrets = { required: ['STET_API_KEY'] };
+          }
+
+          return {
+            triggers: { crons: cronsConfig() },
+            workflows: workflowsConfig(),
+            vars,
+            secrets,
+          };
+        },
       }),
       tailwindcss(),
       // Scans src for cookie/vendor usage and generates src/policystack.gen.ts,
@@ -132,7 +138,7 @@ const config = (command: 'build' | 'serve') =>
         }),
       tanstackStart({
         prerender: {
-          enabled: true,
+          enabled: hasStetApiKey,
           crawlLinks: true,
           // The root is the crawler entry point and links to /blog. Keep the
           // signed-in product and authentication surfaces in the Worker.
@@ -144,7 +150,7 @@ const config = (command: 'build' | 'serve') =>
         },
         pages: machineReadableContentPaths.map((path) => ({
           path,
-          prerender: { enabled: true },
+          prerender: { enabled: hasStetApiKey },
         })),
       }),
       tsrxReact(),

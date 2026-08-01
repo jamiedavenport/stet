@@ -20,6 +20,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - uses: voidzero-dev/setup-vp@v1
         with:
           node-version: '24'
@@ -42,6 +44,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       # The e2e setup shells out to pnpm (seed script), so put it on PATH.
       - uses: pnpm/action-setup@v6
       - uses: voidzero-dev/setup-vp@v1
@@ -85,6 +89,8 @@ jobs:
       STET_API_KEY: ${{ secrets.STET_API_KEY }}
     steps:
       - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - uses: voidzero-dev/setup-vp@v1
         with:
           node-version: '24'

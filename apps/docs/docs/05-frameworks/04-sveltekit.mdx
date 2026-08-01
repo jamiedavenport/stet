@@ -85,7 +85,7 @@ Enable prerendering from a server layout, then provide every dynamic route
 parameter with an entry generator:
 
 ```ts src/routes/+layout.server.ts
-export const prerender = process.env.STET_API_KEY !== undefined;
+export const prerender = process.env.STET_API_KEY !== undefined && process.env.STET_API_KEY !== '';
 ```
 
 ```ts src/routes/blog/[slug]/+page.server.ts
@@ -94,6 +94,9 @@ import { stet } from '$lib/server/stet.gen';
 import type { EntryGenerator } from './$types';
 
 export const entries: EntryGenerator = async () => {
+  if (process.env.STET_API_KEY === undefined || process.env.STET_API_KEY === '') {
+    return [];
+  }
   const posts = await stet.posts.list();
   return posts.map((post) => ({ slug: post.slug }));
 };

@@ -72,8 +72,8 @@ In your own project, where CI has `STET_API_KEY`, plain
 `stet generate && next build` is all you need: every build starts from the
 current content model and `generateStaticParams` emits every post. `--if-key`
 makes the same script pass where no key exists, by keeping the committed
-client and producing an empty fallback. Configured content failures fail the
-build.
+client and keeping the routes request-rendered. Configured content failures
+fail the build.
 
 ## Point it somewhere else
 

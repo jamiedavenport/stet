@@ -10,12 +10,20 @@ key in `STET_API_KEY`; the [quickstart](/quickstart) covers creating one.
 
 <Steps>
 
+<Step title="Install">
+
+```package-install
+@stetcms/vite @stetcms/client
+```
+
+</Step>
+
 <Step title="Add the plugin">
 
 ```ts nuxt.config.ts
 import { stet } from '@stetcms/vite';
 
-const hasStetApiKey = process.env.STET_API_KEY !== undefined;
+const hasStetApiKey = process.env.STET_API_KEY !== undefined && process.env.STET_API_KEY !== '';
 
 export default defineNuxtConfig({
   vite: { plugins: [stet()] },

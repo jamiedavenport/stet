@@ -76,6 +76,9 @@ import { stet } from '../../stet.gen';
 export const prerender = true;
 
 export async function getStaticPaths() {
+  if (process.env.STET_API_KEY === undefined || process.env.STET_API_KEY === '') {
+    return [];
+  }
   const posts = await stet.posts.list();
   return posts.map((post) => ({ params: { slug: post.slug }, props: { post } }));
 }
