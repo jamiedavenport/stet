@@ -80,7 +80,9 @@ export function QuickActions() @{
     >
       <MagnifyingGlassIcon aria-hidden />
       {"Search"}
-      <kbd className="pointer-events-none font-sans text-xs text-muted-foreground">{"⌘K"}</kbd>
+      <kbd aria-hidden className="pointer-events-none font-sans text-xs text-muted-foreground">
+        {"⌘K"}
+      </kbd>
     </Button>
     </div>
     @if (error !== null) {
