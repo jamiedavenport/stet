@@ -870,6 +870,9 @@ importers:
 
   examples/nextjs:
     dependencies:
+      '@stetcms/cli':
+        specifier: workspace:*
+        version: link:../../published/cli
       '@stetcms/client':
         specifier: workspace:*
         version: link:../../published/client
@@ -886,9 +889,6 @@ importers:
         specifier: 'catalog:'
         version: 0.0.1
     devDependencies:
-      '@stetcms/cli':
-        specifier: workspace:*
-        version: link:../../published/cli
       '@stetcms/config':
         specifier: workspace:*
         version: link:../../published/config

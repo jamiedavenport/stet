@@ -11,6 +11,7 @@
     "tc": "next typegen && tsc --noEmit"
   },
   "dependencies": {
+    "@stetcms/cli": "workspace:*",
     "@stetcms/client": "workspace:*",
     "next": "catalog:",
     "react": "catalog:",
@@ -18,7 +19,6 @@
     "server-only": "catalog:"
   },
   "devDependencies": {
-    "@stetcms/cli": "workspace:*",
     "@stetcms/config": "workspace:*",
     "@types/node": "catalog:",
     "@types/react": "catalog:",
