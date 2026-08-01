@@ -39,6 +39,7 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
   --color-chart-grid: var(--chart-grid);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
@@ -77,11 +78,11 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.145 0 0 / 8%);
   --sidebar-ring: oklch(0.708 0 0);
-  /* The one place the UI is allowed a hue. Everything else here is neutral so
-     the interface recedes; data is the exception, because a chart drawn in the
-     same ink as its own axis labels reads as furniture. Validated for the
-     lightness band, chroma floor and 3:1 against the card. */
+  /* Data is the one place the UI is allowed hue. Everything else is neutral so
+     the interface recedes. The chart colours are validated for the lightness
+     band, chroma floor and 3:1 against the card. */
   --chart-1: oklch(0.56 0.165 262);
+  --chart-2: oklch(0.55 0.14 165);
   --chart-grid: oklch(0.145 0 0 / 8%);
 }
 
@@ -115,6 +116,7 @@
   /* Stepped up for the dark card rather than flipped from the light value:
      the light step fails the band against this surface. */
   --chart-1: oklch(0.656 0.125 262);
+  --chart-2: oklch(0.72 0.12 165);
   --chart-grid: oklch(1 0 0 / 10%);
 }
 

@@ -1,10 +1,13 @@
 import type { BreakdownRow } from '@repo/analytics';
 import { Card, CardContent } from '@repo/ui/components/card';
 
+import { BreakdownRowIcon } from '#/analytics/breakdown-row-icon';
+
 type BreakdownCardProps = {
   title: string;
   rows: readonly BreakdownRow[];
   empty: string;
+  icon?: 'country' | 'device';
 };
 
 /**
@@ -31,7 +34,10 @@ export function BreakdownCard(props: BreakdownCardProps) @{
                 className="absolute inset-y-0 left-0 rounded-sm bg-chart-1/12"
                 style={{ width: `${largest === 0 ? 0 : (row.count / largest) * 100}%` }}
               />
-              <span className="relative truncate" title={row.key}>{row.key}</span>
+              <span className="relative flex min-w-0 items-center gap-2" title={row.key}>
+                <BreakdownRowIcon kind={props.icon} value={row.key} />
+                <span className="truncate">{row.key}</span>
+              </span>
               <span className="relative font-mono text-xs tabular-nums text-muted-foreground">
                 {row.count.toLocaleString('en-GB')}
               </span>

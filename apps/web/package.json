@@ -68,6 +68,7 @@
     "@tsrx/react": "catalog:",
     "agents": "catalog:",
     "ai": "catalog:",
+    "country-flag-icons": "catalog:",
     "partyserver": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",

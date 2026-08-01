@@ -61,7 +61,7 @@ export function AnalyticsDashboard() @{
 
       <Card className="gap-3">
         <CardContent className="flex flex-wrap items-baseline justify-between gap-2">
-          <h2 className="text-sm font-medium">{"Views over time"}</h2>
+          <h2 className="text-sm font-medium">{"Traffic over time"}</h2>
           <p className="text-xs text-muted-foreground">{ranges[range].label}</p>
         </CardContent>
         <CardContent>
@@ -85,6 +85,7 @@ export function AnalyticsDashboard() @{
             title={panel.title}
             rows={data === undefined ? [] : data.breakdowns[panel.dimension]}
             empty={data === undefined ? 'Loading…' : panel.empty}
+            icon={panel.icon}
           />
         }
       </div>

@@ -82,13 +82,12 @@ export const breakdownPanels = [
   { dimension: 'path', title: 'Top pages', empty: 'No pages yet.' },
   { dimension: 'referrer', title: 'Referrers', empty: 'No referrers yet.' },
   { dimension: 'event', title: 'Events', empty: 'No events yet.' },
-  { dimension: 'country', title: 'Countries', empty: 'No countries yet.' },
-  { dimension: 'region', title: 'Regions', empty: 'No regions yet.' },
-  { dimension: 'city', title: 'Cities', empty: 'No cities yet.' },
+  { dimension: 'country', title: 'Countries', empty: 'No countries yet.', icon: 'country' },
   { dimension: 'browser', title: 'Browsers', empty: 'No browsers yet.' },
-  { dimension: 'device', title: 'Devices', empty: 'No devices yet.' },
-] as const satisfies readonly {
+  { dimension: 'device', title: 'Devices', empty: 'No devices yet.', icon: 'device' },
+] satisfies readonly {
   dimension: Dimension;
   title: string;
   empty: string;
+  icon?: 'country' | 'device';
 }[];
