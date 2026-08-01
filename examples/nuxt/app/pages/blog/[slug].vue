@@ -1,23 +1,6 @@
 <script setup lang="ts">
-import { analytics } from '../../analytics';
-
 const route = useRoute();
 const { data: post } = await useFetch(() => `/api/posts/${String(route.params.slug)}`);
-
-// The pageview is automatic; this is the custom event on top of it. `slug`
-// is checked against the plan, so renaming the prop fails the build here
-// rather than quietly producing a column of nulls in the dashboard.
-// Watching the loaded post rather than using onMounted, so navigating from
-// one post to another (which reuses this component) is counted too.
-watch(
-  () => post.value?.slug,
-  (slug) => {
-    if (import.meta.client && slug !== undefined) {
-      analytics.track('post.read', { slug });
-    }
-  },
-  { immediate: true },
-);
 </script>
 
 <template>

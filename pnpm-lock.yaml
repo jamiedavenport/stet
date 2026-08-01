@@ -959,9 +959,6 @@ importers:
 
   examples/nuxt:
     dependencies:
-      '@stetcms/analytics':
-        specifier: workspace:*
-        version: link:../../published/analytics
       '@stetcms/client':
         specifier: workspace:*
         version: link:../../published/client
@@ -974,9 +971,6 @@ importers:
       vue:
         specifier: 'catalog:'
         version: 3.5.40(typescript@5.9.3)
-      zod:
-        specifier: 'catalog:'
-        version: 4.4.3
     devDependencies:
       '@stetcms/vite':
         specifier: workspace:*

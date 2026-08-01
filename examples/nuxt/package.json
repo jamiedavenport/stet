@@ -10,12 +10,10 @@
     "tc": "nuxt typecheck"
   },
   "dependencies": {
-    "@stetcms/analytics": "workspace:*",
     "@stetcms/client": "workspace:*",
     "@stetcms/config": "workspace:*",
     "nuxt": "catalog:",
-    "vue": "catalog:",
-    "zod": "catalog:"
+    "vue": "catalog:"
   },
   "devDependencies": {
     "@stetcms/vite": "workspace:*",
