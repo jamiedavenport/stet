@@ -1,4 +1,4 @@
-# @repo/web
+# web
 
 The primary web application: a TanStack Start (React) app served by the `stet-web` Cloudflare Worker. This is where the shared packages meet.
 
