@@ -5,7 +5,6 @@
   "type": "module",
   "scripts": {
     "dev": "STET_API_KEY=stet_seed_key_for_local_development_only astro dev --port 3004",
-    "build": "astro build",
     "tc": "astro check"
   },
   "dependencies": {

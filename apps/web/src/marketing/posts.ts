@@ -30,15 +30,18 @@ export function postDate(post: PostsEntry): string {
 }
 
 /**
- * Reading content must not take a page down, and a deployment with no
- * `STET_API_KEY` is the documented local and CI default rather than a fault,
- * so both read as an empty blog.
+ * A deployment with no `STET_API_KEY` is the documented local default, so it
+ * reads as an empty blog. Once a key is configured, failures propagate so a
+ * production prerender cannot silently publish an empty blog.
  */
 async function orEmpty<T>(read: () => Promise<T>, empty: T): Promise<T> {
   try {
     return await read();
   } catch (error) {
     log.warn('content', `Stet returned no posts: ${String(error)}`);
+    if (process.env.STET_API_KEY !== undefined && process.env.STET_API_KEY !== '') {
+      throw error;
+    }
     return empty;
   }
 }

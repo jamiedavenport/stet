@@ -1,6 +1,6 @@
 ---
 title: Next.js
-description: Generate the typed client with the CLI, read content in server components, and wire codegen into next build.
+description: Generate the typed client with the CLI and prerender Stet content with the App Router.
 icon: app-window
 ---
 
@@ -67,13 +67,24 @@ export default async function Blog() {
 Importing the client from a client component is now a build error instead of
 an API key in the browser bundle.
 
-Stet content is live-only: what an editor saves is what the API serves. Render
-on request rather than at build time, so edits appear on the next refresh and
-prerendering never fetches content during `next build`. Codegen is the one
-build-time contact with Stet, and step 4 makes it explicit:
+List collection entries with `generateStaticParams` to prerender every content
+page during `next build`:
 
-```ts src/app/layout.tsx
-export const dynamic = 'force-dynamic';
+```tsx src/app/blog/[slug]/page.tsx
+import { stet } from '@/lib/stet';
+
+export const dynamicParams = false;
+
+export async function generateStaticParams() {
+  const posts = await stet.posts.list();
+  return posts.map((post) => ({ slug: post.slug }));
+}
+
+export default async function Post({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const post = await stet.posts.get(slug);
+  return <h1>{post.title}</h1>;
+}
 ```
 
 </Step>
@@ -90,7 +101,8 @@ export const dynamic = 'force-dynamic';
 
 Every build now starts from the current content model. For environments that
 build without a key, [`--if-key`](/reference/cli#stet-generate) succeeds and
-keeps the committed client instead of failing.
+keeps the committed client instead of failing. When the key is configured,
+content failures fail the build rather than publishing missing pages.
 
 </Step>
 

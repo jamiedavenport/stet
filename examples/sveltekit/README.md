@@ -15,6 +15,8 @@ marketing builds in the UI, and the app loads content through it.
   running server. It lives under `$lib/server`, so content can only be loaded
   from `+page.server.ts` files and the API key never reaches the browser —
   SvelteKit fails the build if client code tries to import it.
+- The server layout enables prerendering when a key exists, and the dynamic
+  route's `entries` function returns every post slug.
 
 ## Run it against a local Stet
 
@@ -48,6 +50,12 @@ dev server runs and regenerates the client within a few seconds. The retired
 key stays as a `@deprecated` alias that still returns the value, so stale
 reads are struck through in your editor rather than breaking the page, and
 the type check fails only once the migration is completed in Stet.
+
+## Prerendering
+
+Run `vp run build` with `STET_API_KEY` to prerender the landing page, blog,
+and every post. A configured content request that fails also fails the build.
+Without a key, the example keeps its request-rendered fallback.
 
 ## Point it somewhere else
 

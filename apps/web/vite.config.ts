@@ -29,6 +29,9 @@ const analyze = process.env.ANALYZE === '1';
 // deploy.
 const sentryAuthToken = process.env.SENTRY_AUTH_TOKEN;
 const uploadSourceMaps = sentryAuthToken !== undefined && sentryAuthToken !== '';
+const hasStetApiKey = process.env.STET_API_KEY !== undefined && process.env.STET_API_KEY !== '';
+const stetOrigin = process.env.STET_ORIGIN;
+const machineReadableContentPaths = ['/llms.txt', '/rss.xml', '/sitemap.xml'];
 
 // The raw-served router imports these two; when the optimizer misses them the
 // CJS use-sync-external-store shim reaches the browser unbundled and its named
@@ -37,6 +40,21 @@ const routerDeps = ['@tanstack/react-store', 'use-sync-external-store/shim/with-
 
 const config = (command: 'build' | 'serve') =>
   defineConfig({
+    run: {
+      tasks: {
+        build: {
+          command: [
+            'tsx --env-file-if-exists=.dev.vars --tsconfig og/tsconfig.json og/generate.ts',
+            'vp build',
+          ],
+          env: ['STET_API_KEY', 'STET_ORIGIN'],
+        },
+        deploy: {
+          command: ['vp build', 'tsx scripts/verify-prerender.ts', 'wrangler deploy'],
+          cache: false,
+        },
+      },
+    },
     optimizeDeps: { include: routerDeps },
     environments: {
       // Top-level optimizeDeps only reaches the client environment, so the
@@ -77,10 +95,24 @@ const config = (command: 'build' | 'serve') =>
         // @repo/workflows registries) and merged into the worker config here.
         // The resolved config reaches production too: `wrangler deploy` reads
         // the build output config, not wrangler.jsonc directly.
-        config: {
+        config: () => ({
           triggers: { crons: cronsConfig() },
           workflows: workflowsConfig(),
-        },
+          ...(stetOrigin === undefined ? {} : { vars: { STET_ORIGIN: stetOrigin } }),
+          // STET_API_KEY is optional for a new self-hosted instance, but when
+          // one is present the preview Worker needs it while TanStack Start
+          // prerenders the blog. Programmatic config is applied after
+          // wrangler.jsonc, so preserve its required secrets and add this one
+          // only for builds that can actually use it.
+          ...(hasStetApiKey
+            ? {
+                secrets: {
+                  // Config arrays merge with the values from wrangler.jsonc.
+                  required: ['STET_API_KEY'],
+                },
+              }
+            : {}),
+        }),
       }),
       tailwindcss(),
       // Scans src for cookie/vendor usage and generates src/policystack.gen.ts,
@@ -98,7 +130,23 @@ const config = (command: 'build' | 'serve') =>
           // config has no support phone number.
           suppress: ['vendor-declared-not-used', 'company-contact-phone-recommended'],
         }),
-      tanstackStart(),
+      tanstackStart({
+        prerender: {
+          enabled: true,
+          crawlLinks: true,
+          // The root is the crawler entry point and links to /blog. Keep the
+          // signed-in product and authentication surfaces in the Worker.
+          filter: ({ path }) =>
+            path === '/' ||
+            path === '/blog' ||
+            path.startsWith('/blog/') ||
+            machineReadableContentPaths.includes(path),
+        },
+        pages: machineReadableContentPaths.map((path) => ({
+          path,
+          prerender: { enabled: true },
+        })),
+      }),
       tsrxReact(),
       viteReact(),
       ...(analyze ? [Sonda()] : []),

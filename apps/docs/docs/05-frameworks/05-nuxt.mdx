@@ -1,0 +1,49 @@
+---
+title: Nuxt
+description: Add the Vite plugin and prerender Stet content by crawling linked Nuxt routes.
+icon: component
+---
+
+Nuxt builds with Vite, so the [plugin](/reference/codegen) generates the typed
+client before development and production builds. You need an organization API
+key in `STET_API_KEY`; the [quickstart](/quickstart) covers creating one.
+
+<Steps>
+
+<Step title="Add the plugin">
+
+```ts nuxt.config.ts
+import { stet } from '@stetcms/vite';
+
+const hasStetApiKey = process.env.STET_API_KEY !== undefined;
+
+export default defineNuxtConfig({
+  vite: { plugins: [stet()] },
+  nitro: {
+    prerender: {
+      crawlLinks: hasStetApiKey,
+      routes: hasStetApiKey ? ['/', '/blog'] : [],
+    },
+  },
+});
+```
+
+Commit the generated client so a keyless checkout still type-checks. Keep its
+imports in server routes and expose content to pages through server API routes,
+so the key never reaches the browser.
+
+</Step>
+
+<Step title="Link every content page">
+
+Render links to each collection entry from `/blog`. Nitro starts with `/` and
+`/blog`, follows those links, and writes the discovered pages during
+`nuxt build`. If Stet is unavailable while a key is configured, the build
+fails rather than deploying an incomplete site.
+
+</Step>
+
+</Steps>
+
+The [Nuxt example](https://github.com/jamiedavenport/stet/tree/main/examples/nuxt)
+is this guide as a running app.

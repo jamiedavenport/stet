@@ -80,6 +80,9 @@ jobs:
       SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
       SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
       SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+      # The production build prerenders Stet's own blog. Unlike ordinary
+      # keyless verification builds, a deploy must never publish an empty one.
+      STET_API_KEY: ${{ secrets.STET_API_KEY }}
     steps:
       - uses: actions/checkout@v7
       - uses: voidzero-dev/setup-vp@v1
@@ -87,6 +90,12 @@ jobs:
           node-version: '24'
           cache: true
       - run: vp install --frozen-lockfile
+      - name: Require the prerender key
+        run: |
+          if [ -z "$STET_API_KEY" ]; then
+            echo "STET_API_KEY is required to prerender the production blog"
+            exit 1
+          fi
       # Applies committed migrations once the repo switches off push-based
       # schema changes (internal/db/README.md). Guarded because wrangler
       # errors on a missing migrations directory rather than no-opping.

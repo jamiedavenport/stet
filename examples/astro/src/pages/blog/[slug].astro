@@ -1,13 +1,25 @@
 ---
 import Layout from '@/layouts/Layout.astro';
 import { stet } from '@/stet.gen';
+import type { PostsEntry } from '@/stet.gen';
+
+export const prerender = true;
+
+export async function getStaticPaths() {
+  if (process.env.STET_API_KEY === undefined || process.env.STET_API_KEY === '') {
+    return [];
+  }
+  const posts = await stet.posts.list();
+  return posts.map((post) => ({ params: { slug: post.slug }, props: { post } }));
+}
 
 const { slug } = Astro.params;
 if (slug === undefined) {
   throw new Error('Route without a slug parameter.');
 }
 
-const post = await stet.posts.get(slug);
+const prerenderedPost = Astro.props.post as PostsEntry | undefined;
+const post = prerenderedPost ?? (await stet.posts.get(slug));
 ---
 
 <Layout title={`${post.title} · Stet example`}>

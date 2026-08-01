@@ -1,9 +1,21 @@
 import { fileURLToPath } from 'node:url';
 import { stet } from '@stetcms/vite';
 
+const hasStetApiKey = process.env.STET_API_KEY !== undefined && process.env.STET_API_KEY !== '';
+const prerenderRoutes: string[] = [];
+if (hasStetApiKey) {
+  prerenderRoutes.push('/', '/blog');
+}
+
 export default defineNuxtConfig({
   compatibilityDate: '2026-08-01',
   css: ['~/assets/main.css'],
+  nitro: {
+    prerender: {
+      crawlLinks: hasStetApiKey,
+      routes: prerenderRoutes,
+    },
+  },
   vite: {
     plugins: [
       // Reads stet.config.ts: regenerates server/stet.gen.ts from the content
