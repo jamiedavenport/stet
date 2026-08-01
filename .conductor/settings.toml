@@ -1,0 +1,13 @@
+"$schema" = "https://conductor.build/schemas/settings.repo.schema.json"
+
+[scripts]
+setup = """
+vp install
+cp "$CONDUCTOR_ROOT_PATH/apps/web/.dev.vars" apps/web/.dev.vars
+vp run -r build
+"""
+run_mode = "concurrent"
+
+[scripts.run.web]
+command = "PORT=$CONDUCTOR_PORT vp run web#dev"
+icon = "cloud"
