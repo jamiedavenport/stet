@@ -6,9 +6,11 @@ import type { Doc } from 'yjs';
 
 import { loadDocumentState, parseRoomName, saveDocument, syncEntryBodyText } from './document';
 import type { DocumentRoom } from './document';
+import { entryIdFromPage } from './entry';
 import { bumpContentVersion } from './version';
 
-const storageKey = 'ydoc';
+const legacyStorageKey = 'ydoc';
+const entryStorageKey = 'ydoc:field-ids';
 
 // How long edits collect before the document is mirrored to D1. The Durable
 // Object's own storage is written on every save (see callbackOptions below);
@@ -29,7 +31,7 @@ export class PagePresenceRoom extends YServer {
   };
 
   async onLoad(): Promise<void> {
-    const stored = await this.ctx.storage.get<Uint8Array>(storageKey);
+    const stored = await this.ctx.storage.get<Uint8Array>(this.storageKey());
     if (stored !== undefined) {
       applyUpdate(this.document, stored);
       return;
@@ -49,7 +51,7 @@ export class PagePresenceRoom extends YServer {
   // it. Errors here are swallowed by y-partyserver, which is why the D1 write
   // happens on the alarm instead.
   async onSave(): Promise<void> {
-    await this.ctx.storage.put(storageKey, encodeStateAsUpdate(this.document));
+    await this.ctx.storage.put(this.storageKey(), encodeStateAsUpdate(this.document));
 
     // A due-but-unfired alarm is one the runtime has abandoned (it retries a
     // throwing handler at most six times, and what getAlarm() reports after
@@ -123,5 +125,9 @@ export class PagePresenceRoom extends YServer {
       throw new Error(`Room ${this.name} is not named "organizationId:page".`);
     }
     return room;
+  }
+
+  private storageKey(): string {
+    return entryIdFromPage(this.room().page) === null ? legacyStorageKey : entryStorageKey;
   }
 }
