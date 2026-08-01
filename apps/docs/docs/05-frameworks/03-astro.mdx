@@ -1,0 +1,78 @@
+---
+title: Astro
+description: Pass the Vite plugin through vite.plugins and read content in frontmatter; render on demand so edits appear on refresh.
+icon: rocket
+---
+
+Astro builds on Vite, so the [plugin](/reference/codegen) works unchanged:
+passed through `vite.plugins`, it writes `src/stet.gen.ts` before every build
+and dev-server start, and keeps watching while the dev server runs, so a field
+added in the Stet UI reaches your types a few seconds later.
+
+You need an organization API key in `STET_API_KEY`; the
+[quickstart](/quickstart) covers creating one.
+
+<Steps>
+
+<Step title="Install">
+
+```package-install
+@stetcms/vite @stetcms/client @astrojs/node
+```
+
+The adapter earns its place in step 2.
+
+</Step>
+
+<Step title="Add the plugin, and render on demand">
+
+```ts astro.config.ts
+import node from '@astrojs/node';
+import { stet } from '@stetcms/vite';
+import { defineConfig } from 'astro/config';
+
+export default defineConfig({
+  output: 'server',
+  adapter: node({ mode: 'standalone' }),
+  vite: {
+    plugins: [stet()],
+  },
+});
+```
+
+Stet content is live-only: what an editor saves is what the API serves.
+`output: 'server'` renders every page on request rather than at build time, so
+edits appear on the next refresh and prerendering never fetches content during
+`astro build`. Codegen (plus the [tracking-plan publish](/reference/analytics),
+if the config declares one) stays the only build-time contact with Stet;
+content itself is never fetched.
+
+</Step>
+
+<Step title="Read content in frontmatter">
+
+Frontmatter runs on the server, so the API key never reaches the browser:
+
+```astro src/pages/blog/index.astro
+---
+import { stet } from '../../stet.gen';
+
+const posts = await stet.posts.list();
+---
+
+<ul>
+  {posts.map((post) => <li>{post.title}</li>)}
+</ul>
+```
+
+Commit `src/stet.gen.ts`: it contains no secrets, and the project type-checks
+without a key or a reachable Stet, because the plugin
+[never fails a build](/reference/codegen) over either.
+
+</Step>
+
+</Steps>
+
+The
+[Astro example](https://github.com/jamiedavenport/stet/tree/main/examples/astro)
+is this guide as a running app, wired to a seeded local Stet.

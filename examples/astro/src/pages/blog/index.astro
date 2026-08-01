@@ -1,0 +1,23 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import { stet } from '@/stet.gen';
+
+const posts = await stet.posts.list();
+---
+
+<Layout title="Blog · Stet example">
+  <main>
+    <h1>Blog</h1>
+    {posts.length === 0 ? <p class="muted">No posts yet. Write one in Stet.</p> : null}
+    {
+      posts.map((post) => (
+        <article>
+          <h2>
+            <a href={`/blog/${post.slug}`}>{post.title}</a>
+          </h2>
+          {post.fields.summary == null ? null : <p>{post.fields.summary}</p>}
+        </article>
+      ))
+    }
+  </main>
+</Layout>

@@ -1,0 +1,29 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import { stet } from '@/stet.gen';
+
+const { slug } = Astro.params;
+if (slug === undefined) {
+  throw new Error('Route without a slug parameter.');
+}
+
+const post = await stet.posts.get(slug);
+---
+
+<Layout title={`${post.title} · Stet example`}>
+  <main>
+    <p>
+      <a href="/blog">← Blog</a>
+    </p>
+    <h1>{post.title}</h1>
+    <p class="muted">Updated {new Date(post.updatedAt).toLocaleDateString('en-GB')}</p>
+    {post.fields.cover && <img src={post.fields.cover.url} alt="" />}
+    {
+      post.fields.body == null ? (
+        <p class="muted">This post has no body yet.</p>
+      ) : (
+        <div set:html={post.fields.body.html} />
+      )
+    }
+  </main>
+</Layout>

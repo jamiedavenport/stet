@@ -1,0 +1,22 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import { stet } from '@/stet.gen';
+
+// Frontmatter runs on the server, so the organization API key (STET_API_KEY)
+// never reaches the browser.
+const landing = await stet.landing.get();
+---
+
+<Layout title="Stet example">
+  <main>
+    <h1>{landing.fields.headline ?? landing.title}</h1>
+    {landing.fields.pitch == null ? null : <div set:html={landing.fields.pitch.html} />}
+    <p>
+      <a href="/blog">Read the blog →</a>
+    </p>
+    <p class="muted">
+      This page renders the “Landing” map; the blog renders the “Posts” collection. Both are typed
+      from the model built in the Stet UI.
+    </p>
+  </main>
+</Layout>

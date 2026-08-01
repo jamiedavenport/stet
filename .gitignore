@@ -21,6 +21,7 @@ apps/web/public/og
 apps/docs/public
 internal/api/openapi.json
 
+.astro
 .blume
 .source
 .tanstack
