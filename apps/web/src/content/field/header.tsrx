@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from '@repo/ui/components/dropdown-menu';
 import { Popover, PopoverContent, PopoverTrigger } from '@repo/ui/components/popover';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
 import {
   CaretDownIcon,
   CaretLeftIcon,
@@ -29,11 +29,14 @@ import {
   optionColors,
 } from '@repo/content/schema';
 import type { FieldType, SelectOption } from '@repo/content/schema';
+import { slugify } from '@repo/content/slug';
 import { addRowClasses } from '#/content/add-row';
+import { FieldChangeDialog } from '#/content/field/change-dialog.tsrx';
 import { createField, deleteField, moveField, updateField } from '#/content/field/functions';
 import { contentModelQuery } from '#/content/model/functions';
 import type { ModelField } from '#/content/model/functions';
 import { optionDotClasses } from '#/content/field/option-colors';
+import { actionCountQuery } from '#/developers/deprecations';
 import { useAppRoute } from '#/use-app-route';
 
 type FieldHeaderProps = {
@@ -46,12 +49,14 @@ type FieldHeaderProps = {
 /** A field's name, opening its settings: rename, options, move, delete. */
 export function FieldHeader({ field, orientation = 'column', onChanged }: FieldHeaderProps) @{
   const { activeOrganization } = useAppRoute();
+  const queryClient = useQueryClient();
   const model = useSuspenseQuery(contentModelQuery(activeOrganization.id)).data;
   const [open, setOpen] = useState(false);
   const [name, setName] = useState(field.name);
   const [options, setOptions] = useState(field.config.options ?? []);
-  // The name last written, so committing on Enter and again on the blur that
-  // closing causes is one rename, not two.
+  const [renameOpen, setRenameOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  // The name last written, so repeated saves are one rename rather than two.
   const saved = useRef(field.name);
   // Refetching the model rebuilds the table's columns, which remounts this
   // header and closes the popover mid-edit. So settings render from local
@@ -63,7 +68,11 @@ export function FieldHeader({ field, orientation = 'column', onChanged }: FieldH
   // the target collection has since been deleted.
   const target = model.types.find((candidate) => candidate.id === field.config.typeId);
 
-  const write = async (change: { name?: string; config?: { options: SelectOption[] } }) => {
+  const write = async (change: {
+    name?: string;
+    config?: { options: SelectOption[] };
+    note?: string;
+  }) => {
     const settled = updateField({ data: { id: field.id, ...change } });
     writing.current = settled;
     await settled;
@@ -81,8 +90,22 @@ export function FieldHeader({ field, orientation = 'column', onChanged }: FieldH
     if (next.length === 0 || next === saved.current) {
       return;
     }
+    if (slugify(next, '_') !== field.key) {
+      setRenameOpen(true);
+      return;
+    }
     saved.current = next;
     await write({ name: next });
+  };
+
+  const confirmRename = async (note: string) => {
+    const next = name.trim();
+    saved.current = next;
+    await write({ name: next, note });
+    setRenameOpen(false);
+    setOpen(false);
+    await refresh();
+    await refreshActionCount();
   };
 
   // Closing from here is our own state change, which Base UI does not report
@@ -105,11 +128,21 @@ export function FieldHeader({ field, orientation = 'column', onChanged }: FieldH
     await refresh();
   };
 
-  const remove = async () => {
-    await deleteField({ data: { id: field.id } });
+  const remove = async (note: string) => {
+    await deleteField({ data: { id: field.id, note } });
+    setDeleteOpen(false);
+    setOpen(false);
     await refresh();
+    await refreshActionCount();
   };
 
+  const refreshActionCount = async () => {
+    await queryClient.invalidateQueries({
+      queryKey: actionCountQuery(activeOrganization.id).queryKey,
+    });
+  };
+
+  <>
   <Popover
     open={open}
     onOpenChange={(next) => {
@@ -128,7 +161,6 @@ export function FieldHeader({ field, orientation = 'column', onChanged }: FieldH
           value={name}
           aria-label={"Field name"}
           onChange={(event) => setName(event.target.value)}
-          onBlur={() => void rename()}
           onKeyDown={(event) => {
             if (event.key === 'Enter') {
               event.preventDefault();
@@ -136,6 +168,9 @@ export function FieldHeader({ field, orientation = 'column', onChanged }: FieldH
             }
           }}
         />
+        <Button type="button" size="sm" variant="outline" onClick={() => void submit()}>
+          {"Save"}
+        </Button>
       </div>
       <p className="text-xs text-muted-foreground">
         {`${fieldTypeLabels[field.type]} · `}
@@ -147,39 +182,59 @@ export function FieldHeader({ field, orientation = 'column', onChanged }: FieldH
       @if (hasOptions) {
         <OptionsEditor options={options} onSave={saveOptions} />
       }
-      <div className="flex items-center gap-1 border-t pt-2">
-        <Button
-          variant="ghost"
-          size="icon-sm"
-          aria-label={orientation === 'row' ? 'Move up' : 'Move left'}
-          onClick={() => void move('left')}
-        >
-          @if (orientation === 'row') {
-            <CaretUpIcon className="size-4" />
-          }
-          @if (orientation === 'column') {
-            <CaretLeftIcon className="size-4" />
-          }
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon-sm"
-          aria-label={orientation === 'row' ? 'Move down' : 'Move right'}
-          onClick={() => void move('right')}
-        >
-          @if (orientation === 'row') {
-            <CaretDownIcon className="size-4" />
-          }
-          @if (orientation === 'column') {
-            <CaretRightIcon className="size-4" />
-          }
-        </Button>
-        <Button variant="destructive" size="sm" className="ml-auto" onClick={() => void remove()}>
+      <div className="flex items-center justify-between gap-2 border-t pt-2">
+        <div className="flex items-center gap-1">
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            aria-label={orientation === 'row' ? 'Move up' : 'Move left'}
+            onClick={() => void move('left')}
+          >
+            @if (orientation === 'row') {
+              <CaretUpIcon className="size-4" />
+            }
+            @if (orientation === 'column') {
+              <CaretLeftIcon className="size-4" />
+            }
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            aria-label={orientation === 'row' ? 'Move down' : 'Move right'}
+            onClick={() => void move('right')}
+          >
+            @if (orientation === 'row') {
+              <CaretDownIcon className="size-4" />
+            }
+            @if (orientation === 'column') {
+              <CaretRightIcon className="size-4" />
+            }
+          </Button>
+        </div>
+        <Button variant="destructive" size="sm" onClick={() => setDeleteOpen(true)}>
           {"Delete field"}
         </Button>
       </div>
     </PopoverContent>
   </Popover>
+  <FieldChangeDialog
+    open={renameOpen}
+    title={`Rename ${field.key}?`}
+    description={"The current key will remain as a deprecated alias and an Action will be created for engineering."}
+    confirmLabel={"Rename field"}
+    onOpenChange={setRenameOpen}
+    onConfirm={confirmRename}
+  />
+  <FieldChangeDialog
+    open={deleteOpen}
+    title={`Delete ${field.name}?`}
+    description={"Editors will stop seeing this field. Its key and values remain available until engineering completes the Action."}
+    confirmLabel={"Delete field"}
+    destructive={true}
+    onOpenChange={setDeleteOpen}
+    onConfirm={remove}
+  />
+  </>
 }
 
 /** Select options: rename inline, recolor by clicking the dot, add, remove. */

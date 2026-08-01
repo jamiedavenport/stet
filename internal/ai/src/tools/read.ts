@@ -95,8 +95,14 @@ export function contentReadTools(organizationId: string): ToolSet {
             : await loadLiveDocument({ organizationId, page: entryPage(row.id) });
         const bodies: Record<string, string | null> = {};
         for (const field of richText) {
-          bodies[field.key] = doc === null ? null : bodyMarkdown(doc, field.key);
+          bodies[field.key] = doc === null ? null : bodyMarkdown(doc, field.id);
         }
+        const stored = parseValues(row.values);
+        const values = Object.fromEntries(
+          fields
+            .filter((field) => stored[field.id] !== undefined)
+            .map((field) => [field.key, stored[field.id]]),
+        );
         return {
           id: row.id,
           slug: row.slug,
@@ -108,7 +114,7 @@ export function contentReadTools(organizationId: string): ToolSet {
             type: field.type,
             config: parseConfig(field.config),
           })),
-          values: parseValues(row.values),
+          values,
           bodies,
           updatedAt: row.updatedAt.toISOString(),
         };

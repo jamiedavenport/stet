@@ -5,7 +5,7 @@ import { drizzle } from 'drizzle-orm/better-sqlite3';
 import { generateSQLiteDrizzleJson, generateSQLiteMigration } from 'drizzle-kit/api';
 import { beforeEach, describe, expect, it } from 'vite-plus/test';
 
-import { listDeprecatedFields, purgeField } from './deprecations';
+import { completeFieldAction, listFieldActions } from './deprecations';
 import { createEntry } from './entries';
 import { createField, deleteField } from './fields';
 import { createContentType } from './model';
@@ -73,18 +73,18 @@ describe('deleteField', () => {
     });
     // The promise a deletion keeps: the key is retired, not emptied, so a page
     // reading it renders exactly as it did before someone deleted the column.
-    expect(parseValues(row?.values ?? '{}')[field.key]).toBe('A subtitle');
+    expect(parseValues(row?.values ?? '{}')[field.id]).toBe('A subtitle');
   });
 });
 
-describe('listDeprecatedFields', () => {
+describe('listFieldActions', () => {
   it('names the deleted field, who deleted it, and what still depends on it', async () => {
     const { field } = await seedDeprecation();
 
-    const [deprecation] = await listDeprecatedFields(organizationId);
+    const [deprecation] = await listFieldActions(organizationId);
     expect(deprecation.key).toBe(field.key);
     expect(deprecation.typeSlug).toBe('posts');
-    expect(deprecation.deletedBy).toBe('Ada');
+    expect(deprecation.createdBy).toBe('Ada');
     expect(deprecation.entriesWithValue).toBe(1);
   });
 
@@ -96,14 +96,15 @@ describe('listDeprecatedFields', () => {
     );
     await createField(organizationId, { typeId: type.id, name: 'Subtitle', type: 'text' }, editor);
 
-    expect(await listDeprecatedFields(organizationId)).toHaveLength(0);
+    expect(await listFieldActions(organizationId)).toHaveLength(0);
   });
 });
 
-describe('purgeField', () => {
+describe('completeFieldAction', () => {
   it('erases the tombstone, so the key leaves the generated client', async () => {
     const { field } = await seedDeprecation();
-    await purgeField(organizationId, field.id, editor);
+    const [action] = await listFieldActions(organizationId);
+    await completeFieldAction(organizationId, action.id, editor);
 
     const row = await db.query.contentField.findFirst({
       where: eq(schema.contentField.id, field.id),
@@ -113,17 +114,19 @@ describe('purgeField', () => {
 
   it('erases the values entries were still carrying', async () => {
     const { field, entry } = await seedDeprecation();
-    await purgeField(organizationId, field.id, editor);
+    const [action] = await listFieldActions(organizationId);
+    await completeFieldAction(organizationId, action.id, editor);
 
     const row = await db.query.contentEntry.findFirst({
       where: eq(schema.contentEntry.id, entry.id),
     });
-    expect(parseValues(row?.values ?? '{}')).not.toHaveProperty(field.key);
+    expect(parseValues(row?.values ?? '{}')).not.toHaveProperty(field.id);
   });
 
   it('erases the copies the history holds', async () => {
     const { field, entry } = await seedDeprecation();
-    await purgeField(organizationId, field.id, editor);
+    const [action] = await listFieldActions(organizationId);
+    await completeFieldAction(organizationId, action.id, editor);
 
     const revisions = await db.query.contentRevision.findMany({
       where: eq(schema.contentRevision.entryId, entry.id),
@@ -132,13 +135,14 @@ describe('purgeField', () => {
     // from coming back under a key the model no longer has.
     expect(revisions.length).toBeGreaterThan(0);
     for (const revision of revisions) {
-      expect(parseValues(revision.values)).not.toHaveProperty(field.key);
+      expect(parseValues(revision.values)).not.toHaveProperty(field.id);
     }
   });
 
   it('hands the key back, now that nothing is stored under it', async () => {
-    const { type, field } = await seedDeprecation();
-    await purgeField(organizationId, field.id, editor);
+    const { type } = await seedDeprecation();
+    const [action] = await listFieldActions(organizationId);
+    await completeFieldAction(organizationId, action.id, editor);
 
     const replacement = await createField(
       organizationId,
@@ -148,20 +152,13 @@ describe('purgeField', () => {
     expect(replacement.key).toBe('subtitle');
   });
 
-  it('refuses a field that is still in the model', async () => {
+  it('is a no-op for an unknown or already completed action', async () => {
     const type = await createContentType(
       organizationId,
       { name: 'Posts', kind: 'collection' },
       editor,
     );
-    const field = await createField(
-      organizationId,
-      { typeId: type.id, name: 'Subtitle', type: 'text' },
-      editor,
-    );
-
-    await expect(purgeField(organizationId, field.id, editor)).rejects.toThrow(
-      'Deleted field not found',
-    );
+    await createField(organizationId, { typeId: type.id, name: 'Subtitle', type: 'text' }, editor);
+    await expect(completeFieldAction(organizationId, 'missing', editor)).resolves.toBeUndefined();
   });
 });

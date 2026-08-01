@@ -40,6 +40,7 @@ export function wipe(db: Db): void {
     schema.notificationSettings,
     schema.contentRevision,
     schema.contentEntry,
+    schema.contentFieldKey,
     schema.contentField,
     schema.contentType,
     schema.document,

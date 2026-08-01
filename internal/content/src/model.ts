@@ -28,13 +28,23 @@ export async function readContentModel(organizationId: string) {
   const fields =
     typeIds.length === 0
       ? []
-      : await db.query.contentField.findMany({
-          where: and(
-            inArray(schema.contentField.typeId, typeIds),
-            isNull(schema.contentField.deletedAt),
-          ),
-          orderBy: asc(schema.contentField.position),
-        });
+      : await db
+          .select({ field: schema.contentField, key: schema.contentFieldKey.key })
+          .from(schema.contentField)
+          .innerJoin(
+            schema.contentFieldKey,
+            and(
+              eq(schema.contentFieldKey.fieldId, schema.contentField.id),
+              eq(schema.contentFieldKey.status, 'canonical'),
+            ),
+          )
+          .where(
+            and(
+              inArray(schema.contentField.typeId, typeIds),
+              isNull(schema.contentField.deletedAt),
+            ),
+          )
+          .orderBy(asc(schema.contentField.position));
   const counts =
     typeIds.length === 0
       ? []
@@ -53,10 +63,10 @@ export async function readContentModel(organizationId: string) {
       kind: type.kind === 'map' ? ('map' as const) : ('collection' as const),
       entries: entryCounts.get(type.id) ?? 0,
       fields: fields
-        .filter((field) => field.typeId === type.id)
-        .map((field) => ({
+        .filter(({ field }) => field.typeId === type.id)
+        .map(({ field, key }) => ({
           id: field.id,
-          key: field.key,
+          key,
           name: field.name,
           type: fieldTypeSchema.parse(field.type),
           config: parseConfig(field.config),

@@ -45,7 +45,7 @@ export function BodyEditor({ room, user, field }: BodyEditorProps) @{
       extensions: bodyEditorExtensions({
         room,
         user: { ...user, color: caretColor(user.id) },
-        field: bodyField(field.key),
+        field: bodyField(field.id),
         onInsertImage: () => handlers.current.insertImage(),
         onDropFiles: (files) => handlers.current.dropFiles(files),
       }),
@@ -56,7 +56,7 @@ export function BodyEditor({ room, user, field }: BodyEditorProps) @{
         },
       },
     },
-    [room, field.key],
+    [room, field.id],
   );
 
   <div className="flex min-h-0 flex-1 flex-col">

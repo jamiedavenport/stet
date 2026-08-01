@@ -7,6 +7,7 @@ import {
   SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
+  SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
@@ -19,6 +20,7 @@ import { NotificationBell } from '#/notifications/notification-bell.tsrx';
 import { OrgSwitcher } from '#/organization/org-switcher.tsrx';
 import { UserMenu } from '#/account/user-menu.tsrx';
 import { contentModelQuery } from '#/content/model/functions';
+import { actionCountQuery } from '#/developers/deprecations';
 import { NewContentMenu } from '#/content/model/new-menu.tsrx';
 import { isCurrent, navPath, sidebarNavigation } from '#/navigation';
 import { useCommandMenu } from '#/search/command-menu-context.tsrx';
@@ -29,6 +31,7 @@ export function AppSidebar() @{
   const commandMenu = useCommandMenu();
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   const { data: model } = useSuspenseQuery(contentModelQuery(activeOrganization.id));
+  const { data: actionCount } = useSuspenseQuery(actionCountQuery(activeOrganization.id));
 
   const groups = sidebarNavigation({ memberRole, content: model.types });
 
@@ -54,6 +57,9 @@ export function AppSidebar() @{
                     <item.icon weight="duotone" />
                     <span>{item.label}</span>
                   </SidebarMenuButton>
+                  @if (item.to === '/app/developers/actions' && actionCount > 0) {
+                    <SidebarMenuBadge className="tabular-nums">{actionCount}</SidebarMenuBadge>
+                  }
                 </SidebarMenuItem>
               }
               @if (group.id === 'home') {

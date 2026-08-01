@@ -26,8 +26,8 @@ export function entryIdFromPage(page: string): string | null {
 }
 
 /** The Yjs root one rich text field's body lives under. */
-export function bodyField(fieldKey: string): string {
-  return `body:${fieldKey}`;
+export function bodyField(fieldId: string): string {
+  return `body:${fieldId}`;
 }
 
 /**
@@ -35,8 +35,8 @@ export function bodyField(fieldKey: string): string {
  * The same accessor works on a live room's doc and on one rehydrated from
  * the database.
  */
-export function bodyFragment(doc: Doc, fieldKey: string): XmlFragment {
-  return doc.getXmlFragment(bodyField(fieldKey));
+export function bodyFragment(doc: Doc, fieldId: string): XmlFragment {
+  return doc.getXmlFragment(bodyField(fieldId));
 }
 
 /**

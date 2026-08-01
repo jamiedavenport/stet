@@ -54,11 +54,18 @@ async function seedEntry() {
   await db.insert(schema.contentField).values({
     id: 'field-1',
     typeId: type.id,
-    key: 'summary',
     name: 'Summary',
     type: 'text',
     config: '{}',
     position: 0,
+    createdAt: new Date(),
+  });
+  await db.insert(schema.contentFieldKey).values({
+    id: 'key-1',
+    fieldId: 'field-1',
+    typeId: type.id,
+    key: 'summary',
+    status: 'canonical',
     createdAt: new Date(),
   });
   const entry = await createEntry(
@@ -90,7 +97,7 @@ describe('entry revisions', () => {
     const values = await db.query.contentRevision.findFirst({
       where: eq(schema.contentRevision.entryId, entry.id),
     });
-    expect(JSON.parse(values?.values ?? '{}')).toEqual({ summary: 'Dusk' });
+    expect(JSON.parse(values?.values ?? '{}')).toEqual({ 'field-1': 'Dusk' });
   });
 
   it('starts a new revision when someone else edits', async () => {
@@ -124,7 +131,7 @@ describe('entry revisions', () => {
       where: eq(schema.contentEntry.id, entry.id),
     });
     expect(restored?.title).toBe('First light');
-    expect(JSON.parse(restored?.values ?? '{}')).toEqual({ summary: 'Morning' });
+    expect(JSON.parse(restored?.values ?? '{}')).toEqual({ 'field-1': 'Morning' });
     // The searchable mirror follows the restored values, not the replaced ones.
     expect(restored?.fieldText).toBe('Morning');
 

@@ -24,8 +24,13 @@ export type ContentModel = {
       options: { name: string }[];
       /** Slug of the collection a reference field points at. */
       collection?: string;
-      /** Deleted from the model: emitted as a deprecation, never dropped. */
-      deprecated?: { at: string; by?: string };
+      deprecated?: {
+        reason: 'deleted' | 'renamed';
+        at: string;
+        by?: string;
+        note?: string;
+        renamedTo?: string;
+      };
     }[];
   }[];
 };
@@ -89,10 +94,22 @@ function fieldTsType(field: ModelField): string {
  * knows when it happened and who to ask. The date is the ISO day rather than a
  * locale format, which would make the generated file differ between machines.
  */
-function deprecationNote(deprecation: { at: string; by?: string }): string {
+type Deprecation = NonNullable<ModelField['deprecated']>;
+
+function deprecationNote(deprecation: Deprecation): string {
   const who = deprecation.by === undefined ? '' : ` by ${deprecation.by}`;
   const when = deprecation.at.slice(0, 10);
-  return `@deprecated Deleted from the content model on ${when}${who}; entries still return the last value it held, until it is purged.`;
+  const context = deprecation.note === undefined ? '' : ` ${safeDoc(deprecation.note)}`;
+  if (deprecation.reason === 'renamed') {
+    const target =
+      deprecation.renamedTo === undefined ? 'the new key' : `\`${deprecation.renamedTo}\``;
+    return `@deprecated Renamed to ${target} on ${when}${who}; this alias returns its current value until the Action is completed.${context}`;
+  }
+  return `@deprecated Deleted from the content model on ${when}${who}; entries still return the last value it held until the Action is completed.${context}`;
+}
+
+function safeDoc(note: string): string {
+  return note.replaceAll('*/', '*\\/').replaceAll(/\s+/g, ' ').trim();
 }
 
 /**

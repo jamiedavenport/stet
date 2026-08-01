@@ -27,6 +27,7 @@ export const updateField = createServerFn({ method: 'POST' })
       id: z.string(),
       name: z.string().min(1).max(80).optional(),
       config: fieldConfigSchema.optional(),
+      note: z.string().max(500).optional(),
     }),
   )
   .handler(async ({ data, context }) =>
@@ -40,7 +41,12 @@ export const moveField = createServerFn({ method: 'POST' })
 
 export const deleteField = createServerFn({ method: 'POST' })
   .middleware([organizationMiddleware])
-  .validator(z.object({ id: z.string() }))
+  .validator(z.object({ id: z.string(), note: z.string().max(500).optional() }))
   .handler(async ({ data, context }) =>
-    fields.deleteField(context.organizationId, data.id, appActor(context.session.user.id)),
+    fields.deleteField(
+      context.organizationId,
+      data.id,
+      appActor(context.session.user.id),
+      data.note,
+    ),
   );

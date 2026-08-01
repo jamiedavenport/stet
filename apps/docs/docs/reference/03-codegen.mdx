@@ -141,12 +141,12 @@ Four things are worth knowing about the output:
 - **Reference fields carry a doc comment** naming the collection they point at.
   The type is the same shape whatever the target, so the doc comment is where
   your editor tells you what to pass the slug to.
-- **Deleted fields become deprecations**, not removals. See below.
+- **Deleted and renamed keys become deprecations**, not removals. See below.
 - **Type names are derived from slugs**: `case-studies` becomes
   `CaseStudiesEntry`. A slug starting with a digit is prefixed (`Stet…Entry`)
   so the identifier stays legal.
 
-### Deleted fields are deprecated, not dropped
+### Retired keys are deprecated, not dropped
 
 When someone deletes a field in the Stet UI, the key stays in your generated
 types, marked `@deprecated`:
@@ -155,7 +155,7 @@ types, marked `@deprecated`:
 export type PostsEntry = ContentEntryBase & {
   fields: {
     body?: string | null;
-    /** @deprecated Deleted from the content model on 2026-03-12 by Ada Lovelace; entries still return the last value it held, until it is purged. */
+    /** @deprecated Deleted from the content model on 2026-03-12 by Ada Lovelace; entries still return the last value it held until the Action is completed. */
     subtitle?: string | null;
   };
 };
@@ -175,11 +175,17 @@ Entries keep the last value a deprecated field held and go on returning it, so
 the page reading the key renders as it always did. A type that still compiles
 over a value that has vanished is only half a promise; this is the other half.
 
-The value goes when someone purges the field from **Developers → Danger zone**
-(see [Content model](/content-model)). That takes the key out of the model, so
+The value goes when someone completes the field migration under
+**Developers → Actions** (see [Content model](/content-model)). That takes the
+key out of the model, so
 the next generated client drops it rather than deprecating it, and the reads
 that were struck through become type errors. That is the point at which they
 should be: a developer chose it, knowing what still referred to the key.
+
+A rename follows the same contract. The old key is emitted with a deprecation
+that points to the current key, and both return the current field value. Rename
+chains can leave several aliases pointing to one canonical key until each
+Action is completed.
 
 ### How fields are typed
 

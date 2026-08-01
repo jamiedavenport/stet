@@ -6,10 +6,8 @@ import type { ContentEntryBase, ContentAsset, ContentReference, ContentRichText 
 export type PostsEntry = ContentEntryBase & {
   fields: {
     "summary"?: string | null;
-    /** @deprecated Deleted from the content model on 2026-07-31; entries still return the last value it held, until it is purged. */
     "body"?: ContentRichText | null;
     "author"?: { id: string; name: string } | null;
-    /** @deprecated Deleted from the content model on 2026-07-31 by Seed User; entries still return the last value it held, until it is purged. */
     "cover"?: ContentAsset | null;
     "topic"?: "Engineering" | "Design" | "Process" | "Writing" | null;
     "tags"?: ("Craft" | "Onboarding" | "Performance" | "Testing" | "Measurement" | "Releases")[] | null;

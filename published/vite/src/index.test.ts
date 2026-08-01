@@ -115,7 +115,11 @@ describe('renderContentModule', () => {
                 name: 'Subtitle',
                 type: 'text',
                 options: [],
-                deprecated: { at: '2026-03-12T09:41:00.000Z', by: 'Ada Lovelace' },
+                deprecated: {
+                  reason: 'deleted',
+                  at: '2026-03-12T09:41:00.000Z',
+                  by: 'Ada Lovelace',
+                },
               },
             ],
           },
@@ -127,7 +131,7 @@ describe('renderContentModule', () => {
     expect(deleted).toContain('"subtitle"?: string | null;');
     expect(deleted).toContain(
       '/** @deprecated Deleted from the content model on 2026-03-12 by Ada Lovelace; ' +
-        'entries still return the last value it held, until it is purged. */',
+        'entries still return the last value it held until the Action is completed. */',
     );
     // Only the deleted one is marked.
     expect(deleted.split('@deprecated')).toHaveLength(2);
@@ -147,7 +151,7 @@ describe('renderContentModule', () => {
                 name: 'Subtitle',
                 type: 'text',
                 options: [],
-                deprecated: { at: '2026-03-12T09:41:00.000Z' },
+                deprecated: { reason: 'deleted', at: '2026-03-12T09:41:00.000Z' },
               },
             ],
           },
@@ -158,8 +162,42 @@ describe('renderContentModule', () => {
 
     expect(deleted).toContain(
       '/** @deprecated Deleted from the content model on 2026-03-12; ' +
-        'entries still return the last value it held, until it is purged. */',
+        'entries still return the last value it held until the Action is completed. */',
     );
+  });
+
+  it('points a renamed alias at the current key and includes its note', () => {
+    const renamed = renderContentModule(
+      {
+        types: [
+          {
+            slug: 'posts',
+            name: 'Posts',
+            kind: 'collection',
+            fields: [
+              {
+                key: 'cover',
+                name: 'Cover',
+                type: 'asset',
+                options: [],
+                deprecated: {
+                  reason: 'renamed',
+                  at: '2026-08-01T09:41:00.000Z',
+                  renamedTo: 'hero_image',
+                  note: 'Use the new image treatment.',
+                },
+              },
+              { key: 'hero_image', name: 'Hero image', type: 'asset', options: [] },
+            ],
+          },
+        ],
+      },
+      'http://localhost:3000',
+    );
+
+    expect(renamed).toContain('@deprecated Renamed to `hero_image`');
+    expect(renamed).toContain('Use the new image treatment.');
+    expect(renamed).toContain('"hero_image"?: ContentAsset | null;');
   });
 
   it('keeps the reference doc when a reference field is deprecated', () => {
@@ -177,7 +215,11 @@ describe('renderContentModule', () => {
                 type: 'reference',
                 options: [],
                 collection: 'authors',
-                deprecated: { at: '2026-03-12T09:41:00.000Z', by: 'Ada Lovelace' },
+                deprecated: {
+                  reason: 'deleted',
+                  at: '2026-03-12T09:41:00.000Z',
+                  by: 'Ada Lovelace',
+                },
               },
             ],
           },

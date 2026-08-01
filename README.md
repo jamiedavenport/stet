@@ -25,11 +25,11 @@ const landing = await stet.landing.get(); // a map
 Every field, its type and its options come from what marketing built. When someone deletes a field, it does not vanish from the contract:
 
 ```ts
-/** @deprecated Deleted from the content model on 2026-07-31 by Ada Lovelace; entries still return the last value it held, until it is purged. */
+/** @deprecated Deleted from the content model on 2026-07-31 by Ada Lovelace; entries still return the last value it held until the Action is completed. */
 cover?: ContentAsset | null;
 ```
 
-The key stays, the editor strikes it through, and entries keep returning the last value the field held until someone deliberately purges it under Developers → Danger zone. Generation cannot fail your build either: if it cannot reach Stet, it keeps the last file and warns.
+The key stays, the editor strikes it through, and entries keep returning its value until engineering completes the migration under Developers → Actions. Renames work the same way: the old key becomes a live deprecated alias for the new one. Generation cannot fail your build either: if it cannot reach Stet, it keeps the last file and warns.
 
 That is the whole idea. Changes cross the gap between the two teams as information, never as breakage, and each side migrates on its own schedule.
 

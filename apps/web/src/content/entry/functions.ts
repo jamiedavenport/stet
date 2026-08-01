@@ -40,12 +40,20 @@ async function typeWithFields(organizationId: string, where: { slug?: string; id
   };
 }
 
-function toEntry(row: typeof schema.contentEntry.$inferSelect) {
+type PublicField = { id: string; key: string };
+
+function toEntry(row: typeof schema.contentEntry.$inferSelect, fields: PublicField[]) {
+  const stored = parseValues(row.values);
+  const values = Object.fromEntries(
+    fields
+      .filter((field) => stored[field.id] !== undefined)
+      .map((field) => [field.key, stored[field.id]]),
+  );
   return {
     id: row.id,
     slug: row.slug,
     title: row.title,
-    values: parseValues(row.values),
+    values,
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
   };
@@ -61,7 +69,7 @@ const getEntries = createServerFn({ method: 'GET' })
       where: eq(schema.contentEntry.typeId, type.id),
       orderBy: asc(schema.contentEntry.createdAt),
     });
-    const mapped = rows.map(toEntry);
+    const mapped = rows.map((row) => toEntry(row, type.fields));
     const lookup = await buildCellLookup(
       context.organizationId,
       type.fields,
@@ -96,7 +104,7 @@ const getEntry = createServerFn({ method: 'GET' })
       throw notFound();
     }
     const type = await typeWithFields(context.organizationId, { id: row.typeId });
-    const entry = toEntry(row);
+    const entry = toEntry(row, type.fields);
     const lookup = await buildCellLookup(context.organizationId, type.fields, [entry.values]);
     return { type, entry, lookup };
   });
@@ -126,7 +134,7 @@ const getMapEntry = createServerFn({ method: 'GET' })
     if (row === undefined) {
       throw notFound();
     }
-    const entry = toEntry(row);
+    const entry = toEntry(row, type.fields);
     const lookup = await buildCellLookup(context.organizationId, type.fields, [entry.values]);
     return { type, entry, lookup };
   });

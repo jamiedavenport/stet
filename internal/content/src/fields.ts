@@ -1,15 +1,14 @@
 import { recordAudit } from '@repo/audit';
 import type { Actor } from '@repo/audit';
-import { and, database, eq, inArray, schema } from '@repo/db';
-import { entryPage } from '@repo/realtime/entry';
+import { and, database, eq, schema } from '@repo/db';
 import { recordContentChange } from '@repo/webhooks/content';
 
 import { liveFields, requireContentType, requireField } from './access';
 import { broadcastContentChange } from './broadcast';
-import { isReferenceType, parseValues, valuesText } from './schema';
+import { cleanNote, executeTogether, rekeyField } from './field-keys';
+import { isReferenceType } from './schema';
 import type { FieldConfig, FieldType } from './schema';
 import { slugify, uniqueSlug } from './slug';
-import { moveEntryBody } from './write-body';
 
 // Field domain operations, shared by the server functions and the AI
 // assistant's tools. Server-only, like ./access: callers authenticate,
@@ -32,24 +31,36 @@ export async function createField(
       throw new Error('A reference field must point at a collection');
     }
   }
-  // Tombstones count as siblings: a new field must not take a deleted one's
-  // key and inherit the values entries still hold under it.
   const siblings = await db.query.contentField.findMany({
     where: eq(schema.contentField.typeId, type.id),
-    columns: { key: true, position: true },
+    columns: { position: true },
   });
-  const key = uniqueSlug(slugify(input.name, '_'), new Set(siblings.map((f) => f.key)), '_');
+  const keys = await db.query.contentFieldKey.findMany({
+    where: eq(schema.contentFieldKey.typeId, type.id),
+    columns: { key: true },
+  });
+  const key = uniqueSlug(slugify(input.name, '_'), new Set(keys.map((row) => row.key)), '_');
   const id = crypto.randomUUID();
-  await db.insert(schema.contentField).values({
-    id,
-    typeId: type.id,
-    key,
-    name: input.name,
-    type: input.type,
-    config: JSON.stringify(config),
-    position: siblings.length === 0 ? 0 : Math.max(...siblings.map((f) => f.position)) + 1,
-    createdAt: new Date(),
-  });
+  const createdAt = new Date();
+  await executeTogether(db, [
+    db.insert(schema.contentField).values({
+      id,
+      typeId: type.id,
+      name: input.name,
+      type: input.type,
+      config: JSON.stringify(config),
+      position: siblings.length === 0 ? 0 : Math.max(...siblings.map((f) => f.position)) + 1,
+      createdAt,
+    }),
+    db.insert(schema.contentFieldKey).values({
+      id: crypto.randomUUID(),
+      fieldId: id,
+      typeId: type.id,
+      key,
+      status: 'canonical',
+      createdAt,
+    }),
+  ]);
   await recordAudit({
     organizationId,
     actor,
@@ -71,7 +82,7 @@ export async function createField(
 
 export async function updateField(
   organizationId: string,
-  input: { id: string; name?: string; config?: FieldConfig },
+  input: { id: string; name?: string; config?: FieldConfig; note?: string },
   actor: Actor,
 ): Promise<{ key: string }> {
   const db = await database();
@@ -79,13 +90,10 @@ export async function updateField(
   const type = await requireContentType(organizationId, field.typeId);
   const name = input.name ?? field.name;
   const renamed = name !== field.name;
-  // The key is the name in API form, so a rename carries it along, taking
-  // everything written under the old key with it.
-  const key = renamed ? await rekey(organizationId, field, name) : field.key;
+  const key = renamed ? await rekeyField(field, name, input.note, actor) : field.key;
   await db
     .update(schema.contentField)
     .set({
-      key,
       name,
       config: input.config === undefined ? field.config : JSON.stringify(input.config),
     })
@@ -95,7 +103,7 @@ export async function updateField(
     actor,
     action: 'field.update',
     subject: { type: 'field', id: field.id, label: name },
-    details: renamed ? { from: field.name, to: name } : {},
+    details: renamed ? { from: field.name, to: name, fromKey: field.key, toKey: key } : {},
     coalesceMs: 10 * 60_000,
   });
   await recordContentChange(organizationId, {
@@ -108,69 +116,6 @@ export async function updateField(
   });
   await broadcastContentChange(organizationId, type);
   return { key };
-}
-
-type StoredField = Awaited<ReturnType<typeof requireField>>;
-
-/**
- * Gives a renamed field the key its new name earns and moves the content
- * stored under the old one: values live in each entry's JSON, rich text
- * bodies in their own root of the entry's realtime document.
- */
-async function rekey(organizationId: string, field: StoredField, name: string): Promise<string> {
-  const db = await database();
-  // Tombstones included, for the reason createField includes them.
-  const siblings = await db.query.contentField.findMany({
-    where: eq(schema.contentField.typeId, field.typeId),
-    columns: { id: true, key: true },
-  });
-  const taken = new Set(
-    siblings.filter((sibling) => sibling.id !== field.id).map((sibling) => sibling.key),
-  );
-  const key = uniqueSlug(slugify(name, '_'), taken, '_');
-  if (key === field.key) {
-    return key;
-  }
-
-  const entries = await db.query.contentEntry.findMany({
-    where: eq(schema.contentEntry.typeId, field.typeId),
-    columns: { id: true, values: true },
-  });
-  for (const entry of entries) {
-    const values = parseValues(entry.values);
-    if (!(field.key in values)) {
-      continue;
-    }
-    const moved = { ...values, [key]: values[field.key] };
-    delete moved[field.key];
-    await db
-      .update(schema.contentEntry)
-      .set({ values: JSON.stringify(moved), fieldText: valuesText(moved) })
-      .where(eq(schema.contentEntry.id, entry.id));
-  }
-
-  if (field.type === 'rich_text' && entries.length > 0) {
-    // Only entries whose document has been flushed can hold a body, so the
-    // rest need no room woken to find out they have nothing to move.
-    const written = await db.query.document.findMany({
-      where: and(
-        eq(schema.document.organizationId, organizationId),
-        inArray(
-          schema.document.page,
-          entries.map((entry) => entryPage(entry.id)),
-        ),
-      ),
-      columns: { page: true },
-    });
-    const pages = new Set(written.map((row) => row.page));
-    for (const entry of entries) {
-      if (pages.has(entryPage(entry.id))) {
-        await moveEntryBody({ organizationId, entryId: entry.id, from: field.key, to: key });
-      }
-    }
-  }
-
-  return key;
 }
 
 export async function moveField(
@@ -205,16 +150,35 @@ export async function moveField(
  * what lets a developer's build survive a deletion made in the UI and migrate
  * on its own schedule.
  */
-export async function deleteField(organizationId: string, id: string, actor: Actor): Promise<void> {
+export async function deleteField(
+  organizationId: string,
+  id: string,
+  actor: Actor,
+  note?: string,
+): Promise<void> {
   const field = await requireField(organizationId, id);
   const type = await requireContentType(organizationId, field.typeId);
   const db = await database();
-  // Stale keys left in entry values are dropped on read, so entries are
-  // not rewritten here.
-  await db
-    .update(schema.contentField)
-    .set({ deletedAt: new Date(), deletedBy: actor.userId })
-    .where(eq(schema.contentField.id, field.id));
+  const deletedAt = new Date();
+  await executeTogether(db, [
+    db.update(schema.contentField).set({ deletedAt }).where(eq(schema.contentField.id, field.id)),
+    db
+      .update(schema.contentFieldKey)
+      .set({
+        status: 'deprecated',
+        kind: 'deleted',
+        oldName: field.name,
+        note: cleanNote(note),
+        deprecatedAt: deletedAt,
+        deprecatedBy: actor.userId,
+      })
+      .where(
+        and(
+          eq(schema.contentFieldKey.fieldId, field.id),
+          eq(schema.contentFieldKey.status, 'canonical'),
+        ),
+      ),
+  ]);
   await recordAudit({
     organizationId,
     actor,

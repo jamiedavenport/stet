@@ -112,17 +112,17 @@ Thirteen tools, the same ones the in-app assistant runs.
 
 ### Writing
 
-| Tool                | What it does                                                                                                                   |
-| ------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| `createContentType` | Creates a collection or map, optionally with its fields in one call. Slugs and keys are derived from the names.                |
-| `updateContentType` | Renames a collection or map, or changes its slug.                                                                              |
-| `deleteContentType` | Deletes a collection or map and every entry in it. Irreversible.                                                               |
-| `addField`          | Adds a field to a collection or map.                                                                                           |
-| `deleteField`       | Deletes a field. Values under it are dropped, and generated clients see the key [deprecated](/reference/codegen), not removed. |
-| `createEntry`       | Creates an entry in a collection, with a title and optionally field values.                                                    |
-| `updateEntry`       | Changes an entry's title, slug, or field values. Values merge key by key.                                                      |
-| `deleteEntry`       | Deletes an entry and its rich text bodies. Irreversible.                                                                       |
-| `writeBody`         | Writes a rich text body from markdown, replacing it or appending to it.                                                        |
+| Tool                | What it does                                                                                                                                             |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `createContentType` | Creates a collection or map, optionally with its fields in one call. Slugs and keys are derived from the names.                                          |
+| `updateContentType` | Renames a collection or map, or changes its slug.                                                                                                        |
+| `deleteContentType` | Deletes a collection or map and every entry in it. Irreversible.                                                                                         |
+| `addField`          | Adds a field to a collection or map.                                                                                                                     |
+| `deleteField`       | Deletes a field from editing. Values remain available, and generated clients see the key [deprecated](/reference/codegen) until its Action is completed. |
+| `createEntry`       | Creates an entry in a collection, with a title and optionally field values.                                                                              |
+| `updateEntry`       | Changes an entry's title, slug, or field values. Values merge key by key.                                                                                |
+| `deleteEntry`       | Deletes an entry and its rich text bodies. Irreversible.                                                                                                 |
+| `writeBody`         | Writes a rich text body from markdown, replacing it or appending to it.                                                                                  |
 
 `writeBody` goes through the same live document as the editor, so anyone with
 that entry open watches the text arrive rather than finding it later.
