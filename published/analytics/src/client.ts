@@ -33,6 +33,11 @@ export type AnalyticsOptions = {
   fetch?: typeof globalThis.fetch;
 };
 
+export type PageviewOptions = {
+  /** Router template for this URL, e.g. `/blog/[slug]`. */
+  route?: string;
+};
+
 export type Analytics<TPlan extends AnalyticsTypes> = {
   /** Record an event from the tracking plan. Never throws and never rejects. */
   track: <K extends keyof TPlan['$types']['events'] & string>(
@@ -40,7 +45,7 @@ export type Analytics<TPlan extends AnalyticsTypes> = {
     ...args: TrackArgs<TPlan['$types']['events'][K]>
   ) => void;
   /** Record a pageview. Called for you unless `autoPageviews` is off. */
-  pageview: (url?: string) => void;
+  pageview: (url?: string, options?: PageviewOptions) => void;
   /** Merge props into the context sent with every later batch. */
   setContext: (context: Record<string, unknown>) => void;
   /** Send anything queued now. Resolves once the request settles. */
@@ -109,7 +114,7 @@ export function createAnalytics<TPlan extends AnalyticsTypes>(
     enqueue({ name, props: props ?? {}, timestamp: Date.now(), ...envelope() });
   }
 
-  function pageview(url?: string): void {
+  function pageview(url?: string, pageviewOptions?: PageviewOptions): void {
     const envelopeUrl = url ?? (isBrowser ? window.location.href : undefined);
     // Routers commonly push the same URL twice on a redirect or a re-render;
     // counting that as two views would overstate every such page.
@@ -123,6 +128,7 @@ export function createAnalytics<TPlan extends AnalyticsTypes>(
       timestamp: Date.now(),
       ...envelope(),
       ...(envelopeUrl === undefined ? {} : { url: envelopeUrl }),
+      ...(pageviewOptions?.route === undefined ? {} : { route: pageviewOptions.route }),
     });
   }
 

@@ -132,6 +132,11 @@ knows; ask it.
 A repeated view of the same URL counts once either way, so the double-invoked
 effects of React Strict Mode do not inflate anything.
 
+Pass the router's parameterized template as `route` when it exposes one. Stet
+then groups `/blog/first` and `/blog/second` under `/blog/[slug]`. Templates
+are framework-native: `$slug`, `[slug]`, and `:slug` all work. When `route` is
+absent, Stet groups by the concrete pathname as before.
+
 ```ts
 export const analytics = createAnalytics<(typeof config)['analytics']>({
   endpoint: '/api/analytics',
@@ -151,14 +156,17 @@ every other one. Every snippet below passes it explicitly for that reason.
 ### TanStack Router
 
 ```tsx
-import { useLocation } from '@tanstack/react-router';
+import { useLocation, useRouterState } from '@tanstack/react-router';
 import { useEffect } from 'react';
 
 export function usePageviews() {
   const location = useLocation();
+  const route = useRouterState({
+    select: (state) => state.matches.at(-1)?.fullPath,
+  });
   useEffect(() => {
-    analytics.pageview(`${window.location.origin}${location.href}`);
-  }, [location.href]);
+    analytics.pageview(`${window.location.origin}${location.href}`, { route });
+  }, [location.href, route]);
 }
 ```
 
@@ -183,6 +191,8 @@ export function Pageviews() {
 
 Render it in `app/layout.tsx`. `useSearchParams` opts the subtree into client
 rendering, so wrap it in `<Suspense>` to keep the rest of the layout static.
+The App Router does not expose its route template to client components, so
+this falls back to the concrete pathname unless your app supplies one.
 
 ### React Router
 
@@ -206,7 +216,7 @@ In `+layout.svelte`:
 ```svelte
 <script>
   import { afterNavigate } from '$app/navigation';
-  afterNavigate(({ to }) => analytics.pageview(to?.url.href));
+  afterNavigate(({ to }) => analytics.pageview(to?.url.href, { route: to?.route.id ?? undefined }));
 </script>
 ```
 
@@ -217,7 +227,8 @@ In a client-only plugin, `plugins/analytics.client.ts`:
 ```ts
 export default defineNuxtPlugin(() => {
   useRouter().afterEach((to) => {
-    analytics.pageview(`${window.location.origin}${to.fullPath}`);
+    const route = to.matched.at(-1)?.path;
+    analytics.pageview(`${window.location.origin}${to.fullPath}`, { route });
   });
 });
 ```
@@ -232,6 +243,10 @@ event fires after the swap, when `window.location` is already the new page:
 ```ts
 document.addEventListener('astro:page-load', () => analytics.pageview());
 ```
+
+Astro 5 exposes the current template as `Astro.routePattern` while rendering.
+Pass it into the client script and then as `route` when you want parameterized
+grouping.
 
 ## Context vs metadata
 
@@ -290,6 +305,8 @@ call it yourself.
 ### `@stetcms/analytics/client`
 
 `createAnalytics(options)` → `{ track, pageview, setContext, flush }`.
+`pageview(url?, { route? })` keeps the concrete URL for deduplication and uses
+the optional framework route template for grouping.
 
 | Option          | Default  | Meaning                                    |
 | --------------- | -------- | ------------------------------------------ |

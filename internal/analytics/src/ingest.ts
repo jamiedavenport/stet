@@ -27,6 +27,7 @@ export type IngestEvent = {
   name: string;
   timestamp: number;
   url?: string;
+  route?: string;
   referrer?: string;
   visitor?: string | null;
   country?: string | null;
@@ -101,21 +102,25 @@ export async function insertEvents(
   options: { watermark: number; now: number },
 ): Promise<number> {
   const latest = options.now + FUTURE_SLACK_MS;
-  const rows: NewEventRow[] = incoming.map((event) => ({
-    name: event.name,
-    timestamp: Math.min(Math.max(event.timestamp, options.watermark), latest),
-    ...urlParts(event.url),
-    referrer: hostOf(event.referrer),
-    visitor: event.visitor ?? null,
-    country: event.country ?? null,
-    region: event.region ?? null,
-    city: event.city ?? null,
-    device: event.device ?? null,
-    browser: event.browser ?? null,
-    os: event.os ?? null,
-    props: JSON.stringify(event.props),
-    context: JSON.stringify(event.context),
-  }));
+  const rows: NewEventRow[] = incoming.map((event) => {
+    const parts = urlParts(event.url);
+    return {
+      name: event.name,
+      timestamp: Math.min(Math.max(event.timestamp, options.watermark), latest),
+      ...parts,
+      route: event.route ?? parts.path,
+      referrer: hostOf(event.referrer),
+      visitor: event.visitor ?? null,
+      country: event.country ?? null,
+      region: event.region ?? null,
+      city: event.city ?? null,
+      device: event.device ?? null,
+      browser: event.browser ?? null,
+      os: event.os ?? null,
+      props: JSON.stringify(event.props),
+      context: JSON.stringify(event.context),
+    };
+  });
 
   for (let index = 0; index < rows.length; index += INSERT_CHUNK) {
     await db.insert(events).values(rows.slice(index, index + INSERT_CHUNK));

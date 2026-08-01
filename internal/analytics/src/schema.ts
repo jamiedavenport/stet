@@ -18,6 +18,8 @@ export const events = sqliteTable(
     timestamp: integer('timestamp').notNull(),
     /** Pathname of the page the event happened on, e.g. `/pricing`. */
     path: text('path'),
+    /** Router template for the page, falling back to `path` when absent. */
+    route: text('route'),
     /** Referrer hostname, e.g. `news.ycombinator.com`. */
     referrer: text('referrer'),
     utmSource: text('utm_source'),
@@ -75,16 +77,20 @@ export const rollupState = sqliteTable('rollup_state', {
 });
 
 /**
- * The schema as SQL. The Durable Object applies these to itself on wake and
- * the tests apply them to an in-memory database, so both run the same DDL.
- *
- * Pre-release, changing a table means editing it here and accepting that
- * existing stores keep the old shape until they are reset. Once instances are
- * deployed by other people this needs committed migrations instead, the same
- * switch internal/db documents.
+ * Ordered application migrations. Each organization's Durable Object applies
+ * missing entries on wake, while tests run the same statements against fresh
+ * in-memory databases.
  */
-export const schemaStatements: readonly string[] = [
-  `CREATE TABLE IF NOT EXISTS events (
+export type SchemaMigration = {
+  id: number;
+  statements: readonly string[];
+};
+
+export const schemaMigrations: readonly SchemaMigration[] = [
+  {
+    id: 1,
+    statements: [
+      `CREATE TABLE IF NOT EXISTS events (
     id TEXT PRIMARY KEY NOT NULL,
     name TEXT NOT NULL,
     timestamp INTEGER NOT NULL,
@@ -103,17 +109,34 @@ export const schemaStatements: readonly string[] = [
     props TEXT NOT NULL DEFAULT '{}',
     context TEXT NOT NULL DEFAULT '{}'
   )`,
-  `CREATE INDEX IF NOT EXISTS events_timestamp_idx ON events (timestamp)`,
-  `CREATE INDEX IF NOT EXISTS events_name_timestamp_idx ON events (name, timestamp)`,
-  `CREATE TABLE IF NOT EXISTS rollups (
+      `CREATE INDEX IF NOT EXISTS events_timestamp_idx ON events (timestamp)`,
+      `CREATE INDEX IF NOT EXISTS events_name_timestamp_idx ON events (name, timestamp)`,
+      `CREATE TABLE IF NOT EXISTS rollups (
     bucket INTEGER NOT NULL,
     dimension TEXT NOT NULL,
     key TEXT NOT NULL,
     count INTEGER NOT NULL,
     PRIMARY KEY (bucket, dimension, key)
   )`,
-  `CREATE TABLE IF NOT EXISTS rollup_state (
+      `CREATE TABLE IF NOT EXISTS rollup_state (
     id INTEGER PRIMARY KEY NOT NULL,
     rolled_up_to INTEGER NOT NULL
   )`,
+    ],
+  },
+  {
+    id: 2,
+    statements: [
+      `ALTER TABLE events ADD COLUMN route TEXT`,
+      `UPDATE events SET route = path WHERE route IS NULL`,
+      `INSERT INTO rollups (bucket, dimension, key, count)
+       SELECT bucket, 'route', key, count
+       FROM rollups
+       WHERE dimension = 'path'
+       ON CONFLICT (bucket, dimension, key) DO UPDATE SET count = excluded.count`,
+    ],
+  },
 ];
+
+/** Applies the latest shape directly in unit tests and other fresh SQLite databases. */
+export const schemaStatements = schemaMigrations.flatMap((migration) => migration.statements);

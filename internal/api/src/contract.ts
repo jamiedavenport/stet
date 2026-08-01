@@ -389,6 +389,8 @@ export const analyticsEventSchema = z.object({
   /** Epoch milliseconds, stamped in the browser when the event happened. */
   timestamp: z.number().int().nonnegative(),
   url: z.string().optional(),
+  /** Router template for the URL, e.g. `/blog/[slug]`. */
+  route: z.string().min(1).max(500).optional(),
   referrer: z.string().optional(),
 });
 

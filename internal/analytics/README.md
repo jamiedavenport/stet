@@ -45,9 +45,11 @@ the retention window.
 ## Dimensions
 
 `DIMENSIONS` in `dimensions.ts` maps each breakdown to the column it counts:
-`event`, `path`, `referrer`, `country`, `device`, `browser`, `os`, `source`,
-`campaign`. One mapping drives ingest, rollup and query, so adding a
-breakdown is a line there plus a column on `events`.
+`event`, `path`, `route`, `referrer`, `country`, `device`, `browser`, `os`,
+`source`, `campaign`. `route` is the framework's parameterized template and
+falls back to `path` when the client does not send one. One mapping drives
+ingest, rollup and query, so adding a breakdown is a line there plus a column
+on `events`.
 
 `event` counts every event; the rest count page views only, because mixing
 custom events into "top pages" makes the number mean nothing in particular.
@@ -92,11 +94,10 @@ resets the local D1 database as well, and seed both again.
 
 ## Schema changes
 
-`schemaStatements` is applied by the Durable Object on wake and by the tests
-to an in-memory database, so both run the same DDL. Pre-release, changing a
-table means editing it there and accepting that existing stores keep the old
-shape until reset. Once other people deploy their own instances this needs
-committed migrations, the same switch [internal/db](../db) documents.
+`schemaMigrations` is applied in order when a Durable Object wakes, before it
+accepts work. A private table records which migrations that organization's
+SQLite database has already applied. Tests flatten the same migrations into
+`schemaStatements` for fresh in-memory databases.
 
 ## Tests
 

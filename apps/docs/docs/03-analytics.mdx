@@ -71,6 +71,11 @@ only thing that knows what a navigation is. The
 [reference](/reference/analytics#pageviews-in-a-single-page-app) has the
 snippet.
 
+Pass the router's parameterized template alongside the concrete URL when it
+is available. This groups pages such as `/blog/first` and `/blog/second`
+together while preserving the real URL for deduplication. Without a template,
+the dashboard falls back to the concrete pathname.
+
 ## Type safety
 
 `track` is typed from the plan, so a misspelled event, a missing prop, or a

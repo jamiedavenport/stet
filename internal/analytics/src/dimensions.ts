@@ -17,6 +17,7 @@ export const RETENTION_MS = 90 * DAY_MS;
 export const DIMENSIONS = {
   event: events.name,
   path: events.path,
+  route: events.route,
   referrer: events.referrer,
   country: events.country,
   region: events.region,

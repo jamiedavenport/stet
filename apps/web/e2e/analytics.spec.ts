@@ -23,9 +23,6 @@ test('records events through the API and charts them on the dashboard', async ({
   // demand, which is well past the default timeout on a cold dev server.
   test.setTimeout(120_000);
 
-  // Asserted as a delta against the totals rather than by looking for a path
-  // in "Top pages": that list is capped at ten rows, so on any store holding
-  // real traffic a freshly added path would rank below the fold.
   await gotoHydrated(page, '/app/analytics');
   await expect(page.getByRole('heading', { name: 'Analytics', level: 1 })).toBeVisible();
   await expect(page.getByTestId('stat-pageviews')).not.toHaveText('—');
@@ -42,14 +39,16 @@ test('records events through the API and charts them on the dashboard', async ({
           name: '$pageview',
           props: {},
           timestamp: now,
-          url: `https://example.com/e2e-analytics?utm_source=e2e&token=secret`,
+          url: `https://example.com/e2e-analytics/first?utm_source=e2e&token=secret`,
+          route: '/e2e-analytics/$slug',
           referrer: 'https://news.ycombinator.com/item?id=1',
         },
         {
           name: '$pageview',
           props: {},
           timestamp: now + 10,
-          url: 'https://example.com/e2e-analytics',
+          url: 'https://example.com/e2e-analytics/second',
+          route: '/e2e-analytics/$slug',
         },
       ],
     },
@@ -60,6 +59,7 @@ test('records events through the API and charts them on the dashboard', async ({
   await gotoHydrated(page, '/app/analytics');
   await expect(page.getByTestId('stat-pageviews')).not.toHaveText('—');
   expect(await views(page)).toBe(before + 2);
+  await expect(page.getByText('/e2e-analytics/$slug', { exact: true })).toBeVisible();
 });
 
 test('rejects events without an organization key', async ({ request }) => {

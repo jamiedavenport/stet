@@ -57,6 +57,14 @@ describe('analytics handler', () => {
     expect(headers?.['x-api-key']).toBe('stet_key');
   });
 
+  it('forwards an optional route template', async () => {
+    const { handler, forwarded } = harness();
+    const event = batch().events[0];
+    await handler(post({ context: {}, events: [{ ...event, route: '/checkout/[plan]' }] }));
+
+    expect(forwarded[0]?.body.events[0]?.route).toBe('/checkout/[plan]');
+  });
+
   it('derives metadata the browser never sent', async () => {
     const { handler, forwarded } = harness();
     await handler(post(batch(), { 'cf-ipcountry': 'GB' }));
