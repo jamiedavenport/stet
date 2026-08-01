@@ -1,0 +1,1 @@
+{"name":"stet-astro-example","private":true,"scripts":{"dev":"astro dev","build":"astro build","start":"astro start"},"dependencies":{"astro":"^4.10.0","@stetcms/astro":"workspace:*"}}
