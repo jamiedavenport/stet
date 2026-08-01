@@ -30,7 +30,7 @@ function Post() {
       <p className="muted">
         Updated {new Date(post.updatedAt).toLocaleDateString('en-GB', { timeZone: 'UTC' })}
       </p>
-      {post.fields.cover && <img src={post.fields.cover.url} alt="" />}
+      {post.fields.cover == null ? null : <img src={post.fields.cover.url} alt={post.title} />}
       {post.fields.body == null ? (
         <p className="muted">This post has no body yet.</p>
       ) : (
