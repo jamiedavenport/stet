@@ -49,7 +49,7 @@ export function entryTypeName(slug: string): string {
   const pascal = slug
     .split(/[^a-zA-Z0-9]+/)
     .filter((part) => part.length > 0)
-    .map((part) => part[0].toUpperCase() + part.slice(1))
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join('');
   return /^[A-Za-z]/.test(pascal) ? `${pascal}Entry` : `Stet${pascal}Entry`;
 }

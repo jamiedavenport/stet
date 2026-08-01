@@ -88,6 +88,7 @@ catalog:
   '@phosphor-icons/react': ^2.1.10
   marked: ^17.0.6
   next: ^16.2.12
+  nuxt: ^4.5.1
   open: ^11.0.0
   package-manager-detector: ^1.8.0
   partyserver: ^0.5.8
@@ -116,6 +117,8 @@ catalog:
   use-stick-to-bottom: ^1.1.6
   vitest: ^4.1.9
   vite-plus: 0.2.2
+  vue: ^3.5.40
+  vue-tsc: ^3.3.9
   wrangler: ^4.113.0
   y-partyserver: ^2.2.0
   y-protocols: ^1.0.7

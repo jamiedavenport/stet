@@ -14,11 +14,6 @@ a {
   color: inherit;
 }
 
-img {
-  max-width: 100%;
-  height: auto;
-}
-
 nav {
   display: flex;
   gap: 1rem;
