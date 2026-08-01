@@ -38,7 +38,7 @@ Local secrets go in `.dev.vars` (see [CONTRIBUTING.md](../../CONTRIBUTING.md)). 
 
 The ssr dep-scan workaround that used to live in `vite.config.ts` (rebuilding TSRX's `.tsrx` scan config against the ssr environment, plus the `tsrx-core.d.ts` types bridge) was deleted when `@tsrx/vite-plugin-react@0.0.89` moved its dep-scan registration from `config()` to `configEnvironment()`, which reaches every environment that discovers dependencies.
 
-Verify a change in this area by clearing `node_modules/.vite`, starting the dev server, recording `deps_ssr/_metadata.json`, then requesting every marketing route. The entry count and the `hash` must both be unchanged, and the log must contain no `optimized dependencies changed` line. The failure mode is the dev server dying within minutes on `The file does not exist at ".../deps_ssr/<chunk>.js"`: a dep discovered at request time re-optimizes `deps_ssr`, which renames shared chunks workerd is mid-import on.
+Verify a change in this area by clearing `node_modules/.vite`, starting the dev server, recording `deps_ssr/_metadata.json`, then requesting every marketing route. The entry count and the `hash` must both be unchanged, and the log must contain no `optimized dependencies changed` line. The failure mode is the dev server dying within minutes on `The file does not exist at ".../deps_ssr/<chunk>.js"`: a dep discovered at request time re-optimizes `deps_ssr`, which renames shared chunks while workerd is importing them.
 
 Two upstream amplifiers still exist:
 
