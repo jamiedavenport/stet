@@ -10,6 +10,10 @@ Stet is a CMS where marketing owns the content model and engineering gets a type
 
 Developer-first tools keep the model in the repository, so every new field is a ticket, a pull request and a deploy. Marketer-first tools keep it in a UI and hand developers an untyped API, so the first sign of a change is a broken page. Stet keeps the model in the UI and generates the contract from it.
 
+## Demo
+
+https://github.com/user-attachments/assets/99d8736c-eb7f-4ce6-981b-c40cbe6c5144
+
 ## The contract
 
 `stet.gen.ts` is written by the Vite plugin from your live content model, and regenerated whenever that model changes:
