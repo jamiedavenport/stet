@@ -8,6 +8,9 @@ packages:
 catalogMode: prefer
 
 catalog:
+  '@astrojs/check': ^0.9.10
+  '@astrojs/node': ^11.0.3
+  astro: ^7.1.6
   '@policystack/react': ^1.2.0
   '@policystack/sdk': ^1.2.0
   '@policystack/vite': ^1.2.0

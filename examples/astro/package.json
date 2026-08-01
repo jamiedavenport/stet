@@ -1,0 +1,24 @@
+{
+  "name": "@examples/astro",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "STET_API_KEY=stet_seed_key_for_local_development_only astro dev --port 3004",
+    "build": "astro build",
+    "tc": "astro check"
+  },
+  "dependencies": {
+    "@astrojs/node": "catalog:",
+    "@stetcms/analytics": "workspace:*",
+    "@stetcms/client": "workspace:*",
+    "@stetcms/config": "workspace:*",
+    "astro": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@astrojs/check": "catalog:",
+    "@stetcms/vite": "workspace:*",
+    "typescript": "catalog:"
+  }
+}

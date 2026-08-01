@@ -1,0 +1,29 @@
+---
+import '../styles.css';
+
+type Props = {
+  title: string;
+};
+
+const { title } = Astro.props;
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+  </head>
+  <body>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/blog">Blog</a>
+    </nav>
+    <slot />
+    <!-- In the layout, so every page is counted. Loading the client records
+         the pageview: each Astro navigation is a real page load. -->
+    <script>
+      import '../analytics';
+    </script>
+  </body>
+</html>

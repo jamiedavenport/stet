@@ -32,6 +32,8 @@ export default defineConfig({
 });
 ```
 
+Frameworks that build on Vite need nothing extra — in Astro, the same plugin goes through `vite.plugins` in `astro.config.ts` and both jobs run unchanged.
+
 Everything is configured in `stet.config.ts` (see [`@stetcms/config`](https://docs.stetcms.com/reference/configuration)), which the CLI reads too:
 
 ```ts
@@ -72,7 +74,7 @@ Each option overrides the same key in `stet.config.ts`; leave them off and the c
 | `watch`  | `true`                            | Regenerate every few seconds while the dev server runs. Never affects builds. |
 | `config` | auto-detected                     | Path to `stet.config.ts`, relative to root.                                   |
 
-See [`examples/tanstack`](https://github.com/jamiedavenport/stet/tree/main/examples/tanstack) for a complete TanStack Start app built on the generated client.
+See [`examples/tanstack`](https://github.com/jamiedavenport/stet/tree/main/examples/tanstack) and [`examples/astro`](https://github.com/jamiedavenport/stet/tree/main/examples/astro) for complete TanStack Start and Astro apps built on the generated client.
 
 ## License
 

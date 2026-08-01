@@ -28,7 +28,8 @@ Three steps. The dev servers are the user's to run; this only sorts out the data
 
    Add `-- --days 7` for a quicker rehearsal.
 
-Then `pnpm --filter @examples/tanstack dev` for the example site on 3001.
+Then `pnpm --filter @examples/tanstack dev` for the example site on 3001, or
+`pnpm --filter @examples/astro dev` for the Astro one on 3004.
 
 ## Why the state directory goes
 
