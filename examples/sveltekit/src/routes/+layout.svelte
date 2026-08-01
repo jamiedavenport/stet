@@ -1,7 +1,9 @@
 <script lang="ts">
   import '$lib/styles.css';
 
-  let { children } = $props();
+  import type { LayoutProps } from './$types';
+
+  let { children }: LayoutProps = $props();
 </script>
 
 <nav>
