@@ -1,5 +1,11 @@
 import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
-import { Card, CardContent, CardHeader, CardTitle } from '@repo/ui/components/card';
+import {
+  Table,
+  TableBody,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@repo/ui/components/table';
 
 import { useBreadcrumbs } from '#/components/breadcrumbs';
 import { PageHeader } from '#/components/page-header.tsrx';
@@ -23,20 +29,30 @@ export function Actions() @{
     ]);
   };
 
-  <div className="flex w-full max-w-2xl flex-col gap-6">
+  <div className="flex w-full max-w-5xl flex-col gap-6">
     <PageHeader
       title={"Actions"}
       description={"Update downstream code before removing deprecated field keys."}
     />
-    <Card>
-      <CardHeader>
-        <CardTitle>{"Field migrations"}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        @if (data.length === 0) {
-          <p className="text-base text-pretty text-muted-foreground sm:text-sm">{"No downstream migrations need attention."}</p>
-        } @else {
-          <ul role="list" className="flex flex-col divide-y">
+    @if (data.length === 0) {
+      <p className="border-t py-10 text-base text-pretty text-muted-foreground sm:text-sm">
+        {"No downstream migrations need attention."}
+      </p>
+    } @else {
+      <div className="-mx-6 [&_td:first-child]:pl-6 [&_td:last-child]:pr-6 [&_th:first-child]:pl-6 [&_th:last-child]:pr-6">
+        <Table className="border-b">
+          <TableHeader>
+            <TableRow>
+              <TableHead>{"Field"}</TableHead>
+              <TableHead>{"Content type"}</TableHead>
+              <TableHead>{"Change"}</TableHead>
+              <TableHead>{"Note"}</TableHead>
+              <TableHead>
+                <span className="sr-only">{"Actions"}</span>
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             @for (const action of data; key action.id) {
               <ActionRow
                 action={action}
@@ -44,9 +60,9 @@ export function Actions() @{
                 onCompleted={refresh}
               />
             }
-          </ul>
-        }
-      </CardContent>
-    </Card>
+          </TableBody>
+        </Table>
+      </div>
+    }
   </div>
 }

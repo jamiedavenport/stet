@@ -13,6 +13,7 @@ import {
 import { Badge } from '@repo/ui/components/badge';
 import { Button } from '@repo/ui/components/button';
 import { FieldError } from '@repo/ui/components/field';
+import { TableCell, TableRow } from '@repo/ui/components/table';
 
 import type { ActionsData } from '#/developers/deprecations';
 import { completeAction } from '#/developers/deprecations';
@@ -80,26 +81,34 @@ export function ActionRow({
     }
   };
 
-  <li className="flex flex-col gap-4 py-5 first:pt-0 last:pb-0">
-    <div className="flex flex-wrap items-center gap-2">
-      <span className="text-base font-medium sm:text-sm">{action.name}</span>
-      <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-xs">{action.key}</code>
-      <Badge variant="outline">{action.kind === 'renamed' ? "Renamed" : "Deleted"}</Badge>
-      <span className="text-xs text-muted-foreground">{action.typeName}</span>
-    </div>
-    @if (action.kind === 'renamed' && action.canonicalKey !== null) {
-      <p className="text-base text-pretty text-muted-foreground sm:text-sm">
-        {"Use "}<code>{action.canonicalKey}</code>{" instead. The old key still returns its current value."}
-      </p>
-    }
-    @if (action.note !== null) {
-      <div className="flex flex-col gap-1 rounded-lg bg-muted/60 p-3">
-        <p className="text-sm font-medium">{"Note from content"}</p>
-        <p className="text-base text-pretty text-muted-foreground sm:text-sm">{action.note}</p>
+  <TableRow>
+    <TableCell className="py-3">
+      <div className="flex flex-col gap-1">
+        <p className="text-sm font-medium">{action.name}</p>
+        <p className="font-mono text-sm text-muted-foreground">{action.key}</p>
       </div>
-    }
-    <div className="flex flex-col items-start gap-2">
-      <div className="flex flex-wrap items-center gap-2">
+    </TableCell>
+    <TableCell className="text-sm">{action.typeName}</TableCell>
+    <TableCell>
+      <div className="flex flex-col items-start gap-1.5">
+        <Badge variant={action.kind === 'renamed' ? 'secondary' : 'destructive'}>
+          {action.kind === 'renamed' ? "Renamed" : "Deleted"}
+        </Badge>
+        @if (action.kind === 'renamed' && action.canonicalKey !== null) {
+          <p className="text-sm text-muted-foreground">
+            {"Now "}<code className="font-mono">{action.canonicalKey}</code>
+          </p>
+        }
+      </div>
+    </TableCell>
+    <TableCell className="max-w-xs whitespace-normal">
+      <p className="text-sm text-pretty text-muted-foreground">
+        {action.note ?? 'No note provided.'}
+      </p>
+    </TableCell>
+    <TableCell className="py-3 text-right">
+      <div className="flex flex-col items-end gap-2">
+        <div className="flex items-center justify-end gap-2">
         <Button type="button" size="sm" variant="outline" onClick={() => void copy()}>
           {copied ? "Prompt copied" : "Copy agent prompt"}
         </Button>
@@ -120,13 +129,14 @@ export function ActionRow({
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+        </div>
+        @if (failed) {
+          <FieldError className="max-w-64 whitespace-normal text-right">{"Nothing was removed. Try again."}</FieldError>
+        }
+        @if (copyFailed) {
+          <FieldError className="max-w-64 whitespace-normal text-right">{"The prompt could not be copied. Try again."}</FieldError>
+        }
       </div>
-      @if (failed) {
-        <FieldError>{"Nothing was removed. Try again."}</FieldError>
-      }
-      @if (copyFailed) {
-        <FieldError>{"The prompt could not be copied. Try again."}</FieldError>
-      }
-    </div>
-  </li>
+    </TableCell>
+  </TableRow>
 }

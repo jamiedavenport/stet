@@ -65,7 +65,7 @@ export function FieldChangeDialog({
   };
 
   <AlertDialog open={open} onOpenChange={changeOpen}>
-    <AlertDialogContent>
+    <AlertDialogContent className="flex flex-col gap-5">
       <AlertDialogHeader>
         <AlertDialogTitle>{title}</AlertDialogTitle>
         <AlertDialogDescription>{description}</AlertDialogDescription>
@@ -81,7 +81,7 @@ export function FieldChangeDialog({
       @if (failed) {
         <FieldError>{"The field was not changed. Try again."}</FieldError>
       }
-      <AlertDialogFooter>
+      <AlertDialogFooter className="mt-0">
         <AlertDialogCancel disabled={pending}>{"Cancel"}</AlertDialogCancel>
         <Button
           type="button"
