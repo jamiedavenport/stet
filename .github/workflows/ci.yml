@@ -35,6 +35,8 @@ jobs:
       # Bundle size budgets; measures the dist output of the build above.
       - run: vp run web#size
       - run: vp run docs#size
+      # Internal links, heading anchors and assets across the docs pages.
+      - run: vp run docs#validate
 
   e2e:
     runs-on: ubuntu-latest
