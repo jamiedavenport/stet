@@ -57,11 +57,17 @@ export function ActionRow({
   onCompleted: () => Promise<void>;
 }) @{
   const [copied, setCopied] = useState(false);
+  const [copyFailed, setCopyFailed] = useState(false);
   const [failed, setFailed] = useState(false);
 
   const copy = async () => {
-    await navigator.clipboard.writeText(agentPrompt(action));
-    setCopied(true);
+    setCopyFailed(false);
+    try {
+      await navigator.clipboard.writeText(agentPrompt(action));
+      setCopied(true);
+    } catch {
+      setCopyFailed(true);
+    }
   };
 
   const complete = async () => {
@@ -117,6 +123,9 @@ export function ActionRow({
       </div>
       @if (failed) {
         <FieldError>{"Nothing was removed. Try again."}</FieldError>
+      }
+      @if (copyFailed) {
+        <FieldError>{"The prompt could not be copied. Try again."}</FieldError>
       }
     </div>
   </li>

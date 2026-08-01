@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -9,6 +8,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@repo/ui/components/alert-dialog';
+import { Button } from '@repo/ui/components/button';
+import { FieldError } from '@repo/ui/components/field';
 import { Textarea } from '@repo/ui/components/textarea';
 
 export function FieldChangeDialog({
@@ -29,17 +30,41 @@ export function FieldChangeDialog({
   onConfirm: (note: string) => Promise<void>;
 }) @{
   const [note, setNote] = useState('');
+  const [pending, setPending] = useState(false);
+  const [failed, setFailed] = useState(false);
   let actionVariant: 'default' | 'destructive-solid' = 'default';
   if (destructive) {
     actionVariant = 'destructive-solid';
   }
 
-  const confirm = async () => {
-    await onConfirm(note);
-    setNote('');
+  const changeOpen = (next: boolean) => {
+    if (pending && !next) {
+      return;
+    }
+    if (!next) {
+      setNote('');
+      setFailed(false);
+    }
+    onOpenChange(next);
   };
 
-  <AlertDialog open={open} onOpenChange={onOpenChange}>
+  const confirm = async () => {
+    if (pending) {
+      return;
+    }
+    setPending(true);
+    setFailed(false);
+    try {
+      await onConfirm(note);
+      setNote('');
+    } catch {
+      setFailed(true);
+    } finally {
+      setPending(false);
+    }
+  };
+
+  <AlertDialog open={open} onOpenChange={changeOpen}>
     <AlertDialogContent>
       <AlertDialogHeader>
         <AlertDialogTitle>{title}</AlertDialogTitle>
@@ -53,11 +78,19 @@ export function FieldChangeDialog({
         placeholder={"Optional note for engineering"}
         onChange={(event) => setNote(event.target.value)}
       />
+      @if (failed) {
+        <FieldError>{"The field was not changed. Try again."}</FieldError>
+      }
       <AlertDialogFooter>
-        <AlertDialogCancel>{"Cancel"}</AlertDialogCancel>
-        <AlertDialogAction variant={actionVariant} onClick={() => void confirm()}>
+        <AlertDialogCancel disabled={pending}>{"Cancel"}</AlertDialogCancel>
+        <Button
+          type="button"
+          variant={actionVariant}
+          disabled={pending}
+          onClick={() => void confirm()}
+        >
           {confirmLabel}
-        </AlertDialogAction>
+        </Button>
       </AlertDialogFooter>
     </AlertDialogContent>
   </AlertDialog>

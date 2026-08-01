@@ -197,6 +197,7 @@ describe('renderContentModule', () => {
 
     expect(renamed).toContain('@deprecated Renamed to `hero_image`');
     expect(renamed).toContain('Use the new image treatment.');
+    expect(renamed).toContain('"cover"?: ContentAsset | null;');
     expect(renamed).toContain('"hero_image"?: ContentAsset | null;');
   });
 

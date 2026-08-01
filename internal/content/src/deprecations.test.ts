@@ -78,14 +78,13 @@ describe('deleteField', () => {
 });
 
 describe('listFieldActions', () => {
-  it('names the deleted field, who deleted it, and what still depends on it', async () => {
+  it('names the deleted field and who deleted it', async () => {
     const { field } = await seedDeprecation();
 
     const [deprecation] = await listFieldActions(organizationId);
     expect(deprecation.key).toBe(field.key);
     expect(deprecation.typeSlug).toBe('posts');
     expect(deprecation.createdBy).toBe('Ada');
-    expect(deprecation.entriesWithValue).toBe(1);
   });
 
   it('leaves live fields out', async () => {
@@ -160,5 +159,34 @@ describe('completeFieldAction', () => {
     );
     await createField(organizationId, { typeId: type.id, name: 'Subtitle', type: 'text' }, editor);
     await expect(completeFieldAction(organizationId, 'missing', editor)).resolves.toBeUndefined();
+  });
+
+  it("cannot complete another organization's action", async () => {
+    const foreignOrganizationId = 'org-2';
+    await db.insert(schema.organization).values({
+      id: foreignOrganizationId,
+      name: 'Org Two',
+      slug: 'org-two',
+      createdAt: new Date(),
+    });
+    const type = await createContentType(
+      foreignOrganizationId,
+      { name: 'Pages', kind: 'collection' },
+      editor,
+    );
+    const field = await createField(
+      foreignOrganizationId,
+      { typeId: type.id, name: 'Summary', type: 'text' },
+      editor,
+    );
+    await deleteField(foreignOrganizationId, field.id, editor);
+    const [action] = await listFieldActions(foreignOrganizationId);
+
+    await expect(completeFieldAction(organizationId, action.id, editor)).rejects.toThrow(
+      'Content type not found',
+    );
+    expect(
+      await db.query.contentField.findFirst({ where: eq(schema.contentField.id, field.id) }),
+    ).toBeDefined();
   });
 });

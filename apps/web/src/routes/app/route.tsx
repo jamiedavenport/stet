@@ -9,6 +9,7 @@ import { AssistantPanel, AssistantTrigger } from '#/ai/assistant-panel.tsrx';
 import { AppSidebar } from '#/components/app-sidebar.tsrx';
 import { Breadcrumbs, BreadcrumbsProvider } from '#/components/breadcrumbs';
 import { ensureContentModel } from '#/content/model/functions';
+import { actionCountQuery } from '#/developers/deprecations';
 import { CommandMenu } from '#/search/command-menu';
 import { CommandMenuProvider } from '#/search/command-menu-context.tsrx';
 import { ImpersonationBanner } from '#/admin/impersonation-banner.tsrx';
@@ -42,8 +43,12 @@ export const Route = createFileRoute('/app')({
     }
 
     const member = await ensureActiveMember(context.queryClient, activeOrganization.id);
-    // The sidebar and command menu render the content model on every page.
-    await ensureContentModel(context.queryClient, activeOrganization.id);
+    // The sidebar and command menu render these on every page. Preloading both
+    // keeps either suspense query from holding up the app shell by itself.
+    await Promise.all([
+      ensureContentModel(context.queryClient, activeOrganization.id),
+      context.queryClient.ensureQueryData(actionCountQuery(activeOrganization.id)),
+    ]);
 
     return { session, organizations, activeOrganization, memberRole: member.role };
   },

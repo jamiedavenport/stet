@@ -242,12 +242,12 @@ export async function restoreEntryRevision(
   const bodies = JSON.parse(revision.bodies) as Record<string, string>;
   const saved = await loadDocument({ organizationId, page: entryPage(entry.id) });
   const currentKeys = saved === null ? [] : Object.keys(documentBodies(saved.doc));
-  for (const fieldKey of new Set([...Object.keys(bodies), ...currentKeys])) {
+  for (const fieldId of new Set([...Object.keys(bodies), ...currentKeys])) {
     await writeEntryBody({
       organizationId,
       entryId: entry.id,
-      fieldKey,
-      markdown: bodies[fieldKey] ?? '',
+      fieldId,
+      markdown: bodies[fieldId] ?? '',
     });
   }
 

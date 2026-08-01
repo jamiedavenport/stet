@@ -23,7 +23,6 @@ export type FieldAction = {
   canonicalKey: string | null;
   createdAt: Date;
   createdBy: string | null;
-  entriesWithValue: number | null;
 };
 
 export async function countFieldActions(organizationId: string): Promise<number> {
@@ -63,7 +62,6 @@ export async function listFieldActions(organizationId: string): Promise<FieldAct
     )
     .orderBy(desc(schema.contentFieldKey.deprecatedAt));
   const canonical = await canonicalKeys(rows.map((row) => row.field.id));
-  const counts = await valueCounts(rows.map((row) => row.field));
   return rows.map(({ key, field, type, by }) => ({
     id: key.id,
     fieldId: field.id,
@@ -77,7 +75,6 @@ export async function listFieldActions(organizationId: string): Promise<FieldAct
     canonicalKey: canonical.get(field.id) ?? null,
     createdAt: key.deprecatedAt ?? new Date(0),
     createdBy: by,
-    entriesWithValue: field.type === 'rich_text' ? null : (counts.get(field.id) ?? 0),
   }));
 }
 
@@ -94,34 +91,15 @@ async function canonicalKeys(fieldIds: string[]): Promise<Map<string, string>> {
         eq(schema.contentFieldKey.kind, 'deleted'),
       ),
     ),
-    columns: { fieldId: true, key: true },
+    columns: { fieldId: true, key: true, status: true },
   });
-  return new Map(rows.map((row) => [row.fieldId, row.key]));
-}
-
-async function valueCounts(
-  fields: (typeof schema.contentField.$inferSelect)[],
-): Promise<Map<string, number>> {
-  const counts = new Map<string, number>();
-  const uniqueFields = [...new Map(fields.map((field) => [field.id, field])).values()];
-  const typeIds = [...new Set(uniqueFields.map((field) => field.typeId))];
-  if (typeIds.length === 0) {
-    return counts;
-  }
-  const db = await database();
-  const entries = await db.query.contentEntry.findMany({
-    where: inArray(schema.contentEntry.typeId, typeIds),
-    columns: { typeId: true, values: true },
-  });
-  for (const entry of entries) {
-    const values = parseValues(entry.values);
-    for (const field of uniqueFields) {
-      if (field.typeId === entry.typeId && values[field.id] !== undefined) {
-        counts.set(field.id, (counts.get(field.id) ?? 0) + 1);
-      }
+  const keys = new Map<string, string>();
+  for (const row of rows) {
+    if (!keys.has(row.fieldId) || row.status === 'canonical') {
+      keys.set(row.fieldId, row.key);
     }
   }
-  return counts;
+  return keys;
 }
 
 /** Completes one Action. Repeating a completed action is a harmless no-op. */
