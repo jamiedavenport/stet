@@ -35,7 +35,8 @@ Routes come from the filesystem with numeric filename prefixes stripped, so
 
 Three tabs divide the site, each scoped to a route prefix:
 
-- **Guides** (`/`): the loose pages at the top level.
+- **Guides** (`/`): the loose pages at the top level, plus the framework
+  guides grouped under `05-frameworks/`.
 - **Reference** (`/reference`): one page per published package, plus the CLI.
 - **API** (`/api`): generated at build time from `internal/api/openapi.json`,
   which is itself generated from the oRPC contract. Regenerate it with

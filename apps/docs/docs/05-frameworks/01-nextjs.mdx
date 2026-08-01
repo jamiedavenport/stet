@@ -1,0 +1,100 @@
+---
+title: Next.js
+description: Generate the typed client with the CLI, read content in server components, and wire codegen into next build.
+icon: app-window
+---
+
+Next.js does not build with Vite, so codegen runs through the
+[CLI](/reference/cli) instead of the plugin. `stet generate` writes the same
+`src/stet.gen.ts`, and your build script runs it before `next build`.
+
+You need an organization API key in `STET_API_KEY`; the
+[quickstart](/quickstart) covers creating one.
+
+<Steps>
+
+<Step title="Install">
+
+```package-install
+@stetcms/client @stetcms/cli server-only
+```
+
+`@stetcms/client` is what the generated file imports at runtime.
+`@stetcms/cli` does the codegen and works as a dev dependency. `server-only`
+earns its place in step 3.
+
+</Step>
+
+<Step title="Configure and generate">
+
+```bash
+npx stet init
+npx stet generate
+```
+
+`init` writes a `stet.config.ts`; `generate` fetches your content model and
+writes `src/stet.gen.ts`. Commit the generated file: it contains no secrets,
+and with it the project type-checks without a key or a reachable Stet.
+
+</Step>
+
+<Step title="Read content in server components">
+
+Route every import of the generated client through one module that declares
+itself server-only:
+
+```ts src/lib/stet.ts
+import 'server-only';
+
+export * from '../stet.gen';
+```
+
+```tsx src/app/blog/page.tsx
+import { stet } from '../../lib/stet';
+
+export default async function Blog() {
+  const posts = await stet.posts.list();
+  return (
+    <ul>
+      {posts.map((post) => (
+        <li key={post.id}>{post.title}</li>
+      ))}
+    </ul>
+  );
+}
+```
+
+Importing the client from a client component is now a build error instead of
+an API key in the browser bundle.
+
+Stet content is live-only: what an editor saves is what the API serves. Render
+on request rather than at build time, so edits appear on the next refresh and
+`next build` never needs a running Stet:
+
+```ts src/app/layout.tsx
+export const dynamic = 'force-dynamic';
+```
+
+</Step>
+
+<Step title="Wire it into the build">
+
+```json package.json
+{
+  "scripts": {
+    "build": "stet generate && next build"
+  }
+}
+```
+
+Every build now starts from the current content model. For environments that
+build without a key, [`--if-key`](/reference/cli#stet-generate) succeeds and
+keeps the committed client instead of failing.
+
+</Step>
+
+</Steps>
+
+The
+[Next.js example](https://github.com/jamiedavenport/stet/tree/main/examples/nextjs)
+is this guide as a running app, wired to a seeded local Stet.
