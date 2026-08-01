@@ -86,13 +86,24 @@ on an entry are the ones your content team defined. Both autocomplete.
 
 The plugin runs with no configuration. Add `stet.config.ts` at your project
 root when you want to move the generated file, pin an origin, or declare an
-[analytics tracking plan](/analytics):
+[analytics tracking plan](/analytics). The CLI writes one for you:
+
+```bash
+npx stet init
+```
 
 ```ts stet.config.ts
 import { defineStet } from '@stetcms/config';
+// import { defineAnalytics, event } from '@stetcms/analytics';
+// import { z } from 'zod';
 
 export default defineStet({
-  output: 'src/lib/stet.gen.ts',
+  output: 'src/stet.gen.ts',
+
+  // A typed tracking plan, published with `stet sync`.
+  // analytics: defineAnalytics({
+  //   events: { signup: event({ plan: z.enum(['free', 'paid']) }) },
+  // }),
 });
 ```
 

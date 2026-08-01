@@ -33,7 +33,8 @@
   },
   "scripts": {
     "build": "vp pack",
-    "tc": "tsc --noEmit"
+    "tc": "tsc --noEmit",
+    "test": "vp test run"
   },
   "dependencies": {
     "@clack/prompts": "catalog:",
@@ -45,6 +46,7 @@
     "commander": "catalog:",
     "conf": "catalog:",
     "open": "catalog:",
+    "package-manager-detector": "catalog:",
     "picocolors": "catalog:"
   },
   "devDependencies": {

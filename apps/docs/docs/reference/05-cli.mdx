@@ -31,9 +31,71 @@ The commands split by what they need, and it is worth knowing which is which:
 | Account-scoped      | `login`, `logout`, `whoami` | A session from `stet login`, stored on this machine           |
 
 An API key belongs in CI. A login belongs on your laptop. Neither substitutes
-for the other.
+for the other. `init` needs neither.
 
 ## Commands
+
+### stet init
+
+Writes a `stet.config.ts` to start from. The only command that talks to
+nothing: no key, no session, no network, so it is the first thing you can run.
+
+```bash
+npx stet init
+```
+
+<TypeTable
+  type={{
+    '--config <path>': {
+      type: 'string',
+      description: 'Where to write the config.',
+      default: './stet.config.ts',
+    },
+    '--output <path>': {
+      type: 'string',
+      description: 'Where the generated content client should go. Written into the config.',
+      default: 'src/stet.gen.ts, or stet.gen.ts without a src directory',
+    },
+    '--force': { type: 'boolean', description: 'Overwrite an existing config.' },
+  }}
+/>
+
+The file it writes sets `output` and carries the
+[analytics](/reference/analytics) block commented out, so the shape is there to
+uncomment when you want a tracking plan:
+
+```ts stet.config.ts
+import { defineStet } from '@stetcms/config';
+// import { defineAnalytics, event } from '@stetcms/analytics';
+// import { z } from 'zod';
+
+export default defineStet({
+  output: 'src/stet.gen.ts',
+
+  // A typed tracking plan, published with `stet sync`.
+  // analytics: defineAnalytics({
+  //   events: { signup: event({ plan: z.enum(['free', 'paid']) }) },
+  // }),
+});
+```
+
+There is no `apiKey` in it on purpose: a key written into a committed file is a
+key in your git history. `init` prints the `STET_API_KEY` export instead, along
+with the install command for your package manager. It does not touch your
+`package.json`.
+
+The rest of what it prints depends on the project. One that builds with Vite is
+told to install the [plugin](/reference/codegen) and add `stet()` to
+`vite.config.ts`; anywhere else — Next.js, another bundler, a CI checkout — is
+told to install [`@stetcms/client`](/reference/client) and run `stet generate`,
+because the plugin would do nothing there.
+
+Without `--force` an existing config is never replaced, and detection uses the
+[same candidates](/reference/configuration) the plugin resolves, so writing to
+the default location cannot shadow a `src/stet.config.ts` with a new file at the
+root. An explicit `--config` goes exactly where you point it, which can be
+somewhere that resolver never looks; when it is, the command warns that the file
+it just wrote will go unread.
 
 ### stet generate
 

@@ -3,6 +3,7 @@ import { Command } from 'commander';
 
 import pkg from '../package.json' with { type: 'json' };
 import { generateCommand } from '#/commands/generate';
+import { initCommand } from '#/commands/init';
 import { loginCommand } from '#/commands/login';
 import { logoutCommand } from '#/commands/logout';
 import { orgCommand } from '#/commands/org';
@@ -14,6 +15,7 @@ const program = new Command();
 program.name('stet').description('Stet from the command line').version(pkg.version);
 
 program.addCommand(generateCommand);
+program.addCommand(initCommand);
 program.addCommand(loginCommand);
 program.addCommand(logoutCommand);
 program.addCommand(orgCommand);

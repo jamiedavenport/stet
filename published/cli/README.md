@@ -18,6 +18,28 @@ npx @stetcms/cli login
 
 ## Usage
 
+### `stet init`
+
+Write a `stet.config.ts` to start from, with the analytics block present but commented out. No network calls, so it works before you have a key.
+
+```bash
+npx stet init
+```
+
+| Flag              | Description                                                            |
+| ----------------- | ---------------------------------------------------------------------- |
+| `--config <path>` | Where to write the config. Defaults to `./stet.config.ts`.             |
+| `--output <path>` | Where the generated content client should go. Written into the config. |
+| `--force`         | Overwrite an existing config.                                          |
+
+`--output` defaults to `src/stet.gen.ts` when the project has a `src` directory and `stet.gen.ts` when it does not.
+
+Without `--force`, an existing config is never replaced. Detection looks in every place [`@stetcms/vite`](https://docs.stetcms.com/reference/codegen) and this CLI look, so writing to the default location cannot shadow the config your project already loads: with `--force` and no `--config`, it overwrites the file it found rather than adding one at the root. An explicit `--config` is honoured as given, and if that path is somewhere the resolver will not look, the command says so rather than leaving you a config nothing reads.
+
+The next steps it prints depend on the project. A project that builds with Vite is told to install the plugin and add `stet()` to `vite.config.ts`; anywhere else — Next.js, another bundler, a CI checkout — is told to install [`@stetcms/client`](https://docs.stetcms.com/reference/client) and run `stet generate`. The install line follows whichever package manager the project uses.
+
+The config carries no `apiKey`. Export `STET_API_KEY` instead, so the file stays safe to commit. `init` does not edit your `package.json`.
+
 ### `stet generate`
 
 Generate the typed content client from your organization's content model, exactly as [`@stetcms/vite`](https://docs.stetcms.com/reference/codegen) does at build time. Use it where there is no Vite: Next.js apps, other bundlers, or CI.
