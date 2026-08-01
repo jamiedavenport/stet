@@ -120,6 +120,10 @@ describe('browser client', () => {
     await analytics.flush();
 
     expect(sent[0]?.events.map((event) => event.route)).toEqual([undefined, undefined]);
+    expect(sent[0]?.events.map((event) => event.url)).toEqual([
+      'https://example.com/blog/first',
+      'https://example.com/blog/second',
+    ]);
   });
 
   it('rejects a call that does not match the plan', () => {

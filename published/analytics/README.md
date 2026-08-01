@@ -235,7 +235,7 @@ export default defineNuxtPlugin(() => {
 
 ### Astro
 
-Astro navigations are full page loads, so the default is already correct. With
+Astro navigations are full-page loads, so the default is already correct. With
 view transitions enabled, render the current pattern and read it after each
 page swap:
 
@@ -247,7 +247,7 @@ page swap:
 
   document.addEventListener('astro:page-load', () => {
     const route = document.querySelector('meta[name="stet-route"]')?.getAttribute('content');
-    analytics.pageview(undefined, { route: route ?? undefined });
+    analytics.pageview(window.location.href, { route: route ?? undefined });
   });
 </script>
 ```
