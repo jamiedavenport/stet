@@ -1,27 +1,15 @@
 import { createFileRoute } from '@tanstack/react-router';
 
-import { useBreadcrumbs } from '#/components/breadcrumbs';
-import { PageHeader } from '#/components/page-header.tsrx';
+import { analyticsOverviewQuery } from '#/analytics/functions';
+import { HomePage } from '#/home/home-page.tsrx';
+import { recentEntriesQuery } from '#/home/functions';
 
 export const Route = createFileRoute('/app/')({
-  component: Home,
+  loader: async ({ context }) => {
+    await Promise.all([
+      context.queryClient.ensureQueryData(recentEntriesQuery(context.activeOrganization.id)),
+      context.queryClient.ensureQueryData(analyticsOverviewQuery('7d')),
+    ]);
+  },
+  component: HomePage,
 });
-
-function Home() {
-  useBreadcrumbs([{ label: 'Home' }]);
-  const { session, activeOrganization } = Route.useRouteContext();
-  const email = session.user.email;
-  const organizationName = activeOrganization.name;
-
-  return (
-    <div className="flex w-full flex-col gap-6">
-      <PageHeader
-        title={'Welcome back'}
-        description={`Signed in as ${email} in ${organizationName}.`}
-      />
-      <p className="max-w-md text-sm text-pretty text-muted-foreground">
-        {'Open a collection from the sidebar, or press ⌘K to jump to anything.'}
-      </p>
-    </div>
-  );
-}

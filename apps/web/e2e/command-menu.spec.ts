@@ -18,7 +18,8 @@ function input(page: Page) {
 
 async function openMenu(page: Page) {
   await gotoHydrated(page, '/app');
-  await page.getByRole('button', { name: 'Search' }).click();
+  // Scoped to the sidebar: the home page's quick actions offer Search too.
+  await page.locator('[data-sidebar="sidebar"]').getByRole('button', { name: 'Search' }).click();
   await expect(menu(page)).toBeVisible();
   // Base UI moves focus once the open transition settles, and every keystroke
   // in these specs depends on it having landed.
