@@ -5,8 +5,6 @@ import { cloudflare } from '@cloudflare/vite-plugin';
 import { policyStack } from '@policystack/vite';
 import { cronsConfig } from '@repo/crons/config';
 import { workflowsConfig } from '@repo/workflows/config';
-import { createDepScanTransformPlugin } from '@tsrx/core/vite/dep-scan';
-import { compile } from '@tsrx/react';
 import { sentryVitePlugin } from '@sentry/vite-plugin';
 import { stet } from '@stetcms/vite';
 import tailwindcss from '@tailwindcss/vite';
@@ -41,28 +39,12 @@ const config = (command: 'build' | 'serve') =>
   defineConfig({
     optimizeDeps: { include: routerDeps },
     environments: {
-      // @tsrx/vite-plugin-react registers its dep scan through `config()`,
-      // which only reaches the client environment, so the ssr scanner
-      // externalizes every component and discovers what they import at request
-      // time instead. Re-optimizing then renames the shared chunks workerd is
-      // mid-import on and kills the dev server. Both keys are one unit: the
-      // extension makes the scanner read `.tsrx`, the plugin makes it parse.
-      // See "Upstream workarounds" in README.md.
+      // Top-level optimizeDeps only reaches the client environment, so the
+      // ssr scanner needs its own include list. The `.tsrx` scan config comes
+      // from @tsrx/vite-plugin-react's `configEnvironment()` hook.
       ssr: {
         optimizeDeps: {
           include: routerDeps,
-          extensions: ['.tsrx'],
-          rolldownOptions: {
-            transform: { jsx: { importSource: 'react' } },
-            plugins: [
-              createDepScanTransformPlugin({
-                name: 'stet:tsrx-ssr-dep-scan',
-                filter: /\.tsrx$/,
-                compile,
-                imports: ['react/jsx-runtime'],
-              }),
-            ],
-          },
         },
       },
     },
