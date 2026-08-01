@@ -4,7 +4,6 @@
 setup = """
 vp install
 cp "$CONDUCTOR_ROOT_PATH/apps/web/.dev.vars" apps/web/.dev.vars
-vp run -r build
 """
 run_mode = "concurrent"
 
