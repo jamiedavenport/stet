@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { BreakdownCard } from '#/analytics/breakdown-card.tsrx';
 import { analyticsOverviewQuery, breakdownPanels, rangeKeys, ranges } from '#/analytics/functions';
 import type { RangeKey } from '#/analytics/functions';
-import { TrafficChart } from '#/analytics/traffic-chart';
+import { TrafficChart } from '#/analytics/traffic-chart.tsrx';
 import { useBreadcrumbs } from '#/components/breadcrumbs';
 import { PageHeader } from '#/components/page-header.tsrx';
 

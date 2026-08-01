@@ -27,7 +27,15 @@ export type OverviewQuery = Range & { interval: Interval; limit?: number };
 
 export type Overview = {
   totals: Totals;
-  timeseries: { bucket: number; views: number; visitors: number }[];
+  /** Traffic counts grouped into UTC-aligned hour or day buckets. */
+  timeseries: {
+    /** Epoch milliseconds at the start of the bucket. */
+    bucket: number;
+    /** Page views recorded within the bucket. */
+    views: number;
+    /** Distinct day-scoped visitor digests seen within the bucket. */
+    visitors: number;
+  }[];
   breakdowns: Record<Dimension, BreakdownRow[]>;
 };
 
