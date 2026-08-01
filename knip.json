@@ -12,10 +12,7 @@
     "examples/nextjs": {
       // `stet generate` loads it; no module imports it.
       "entry": ["stet.config.ts"],
-      "ignore": ["src/stet.gen.ts"],
-      // The scripts run the CLI's built entry by path (pnpm cannot link the
-      // bin before dist exists), which knip does not connect to the package.
-      "ignoreDependencies": ["@stetcms/cli"]
+      "ignore": ["src/stet.gen.ts"]
     },
     "internal/*": {},
     "published/*": {},

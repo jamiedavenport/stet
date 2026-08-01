@@ -63,18 +63,14 @@ CLI.
 ## The build is the point
 
 ```json
-"build": "node ../../published/cli/dist/index.mjs generate --if-key && next build"
+"build": "stet generate --if-key && next build"
 ```
 
-In your own project this is `stet generate --if-key && next build`, because
-npm installs the `stet` bin ready-built. Inside this monorepo the scripts call
-the CLI's built entry by path instead: pnpm cannot link the bin at install
-time, before `@stetcms/cli` has compiled its gitignored `dist`.
-
-With `STET_API_KEY` set, every build starts from the current content model;
-plain `stet generate && next build` is all a keyed CI needs. `--if-key` makes
-the same script pass where no key exists (such as this repository's CI), by
-keeping the committed `src/stet.gen.ts` instead of failing.
+In your own project, where CI has `STET_API_KEY`, plain
+`stet generate && next build` is all you need: every build starts from the
+current content model. `--if-key` makes the same script pass where no key
+exists (such as this repository's CI), by keeping the committed
+`src/stet.gen.ts` instead of failing.
 
 ## Point it somewhere else
 

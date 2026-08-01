@@ -139,8 +139,13 @@ This package lives in the [Stet monorepo](https://github.com/jamiedavenport/stet
 
 ```bash
 vp install
-vp run build --filter @stetcms/cli
+vp run cli#build
 ```
+
+The `stet` bin is `bin/stet.mjs`, a committed launcher that defers to the
+bundled `dist/index.mjs`. It exists so pnpm can link the bin at install time
+inside the monorepo, where `dist` is gitignored and only exists after the
+build above; before that build it exits with a message saying to run it.
 
 ## License
 
