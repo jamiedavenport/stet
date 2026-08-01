@@ -29,6 +29,9 @@ test('records events through the API and charts them on the dashboard', async ({
   const before = await views(page);
 
   const now = Date.now();
+  const route = `/e2e-analytics/${now}/$slug`;
+  const firstPath = `/e2e-analytics/${now}/first`;
+  const secondPath = `/e2e-analytics/${now}/second`;
   const ingest = await request.post('/api/v1/events', {
     headers: keyHeader,
     data: {
@@ -39,16 +42,16 @@ test('records events through the API and charts them on the dashboard', async ({
           name: '$pageview',
           props: {},
           timestamp: now,
-          url: `https://example.com/e2e-analytics/first?utm_source=e2e&token=secret`,
-          route: '/e2e-analytics/$slug',
+          url: `https://example.com${firstPath}?utm_source=e2e&token=secret`,
+          route,
           referrer: 'https://news.ycombinator.com/item?id=1',
         },
         {
           name: '$pageview',
           props: {},
           timestamp: now + 10,
-          url: 'https://example.com/e2e-analytics/second',
-          route: '/e2e-analytics/$slug',
+          url: `https://example.com${secondPath}`,
+          route,
         },
       ],
     },
@@ -59,7 +62,10 @@ test('records events through the API and charts them on the dashboard', async ({
   await gotoHydrated(page, '/app/analytics');
   await expect(page.getByTestId('stat-pageviews')).not.toHaveText('—');
   expect(await views(page)).toBe(before + 2);
-  await expect(page.getByText('/e2e-analytics/$slug', { exact: true })).toBeVisible();
+  const routeRow = page.getByText(route, { exact: true }).locator('xpath=ancestor::li');
+  await expect(routeRow).toContainText('2');
+  await expect(page.getByText(firstPath, { exact: true })).toHaveCount(0);
+  await expect(page.getByText(secondPath, { exact: true })).toHaveCount(0);
 });
 
 test('rejects events without an organization key', async ({ request }) => {

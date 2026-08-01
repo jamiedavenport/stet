@@ -14,6 +14,7 @@
 
 import { PAGEVIEW } from './events';
 import type { AnalyticsTypes, TrackArgs } from './types';
+import { isValidRoute } from './wire';
 import type { ClientBatch, WireEvent } from './wire';
 
 export type { AnalyticsTypes } from './types';
@@ -122,14 +123,17 @@ export function createAnalytics<TPlan extends AnalyticsTypes>(
       return;
     }
     lastPageviewUrl = envelopeUrl;
-    enqueue({
+    const event: WireEvent = {
       name: PAGEVIEW,
       props: {},
       timestamp: Date.now(),
       ...envelope(),
       ...(envelopeUrl === undefined ? {} : { url: envelopeUrl }),
-      ...(pageviewOptions?.route === undefined ? {} : { route: pageviewOptions.route }),
-    });
+    };
+    if (isValidRoute(pageviewOptions?.route)) {
+      event.route = pageviewOptions.route;
+    }
+    enqueue(event);
   }
 
   if (isBrowser) {

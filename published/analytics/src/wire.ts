@@ -6,6 +6,10 @@ export const MAX_BATCH_EVENTS = 100;
 const MAX_NAME_LENGTH = 120;
 const MAX_ROUTE_LENGTH = 500;
 
+export function isValidRoute(route: unknown): route is string {
+  return typeof route === 'string' && route.length > 0 && route.length <= MAX_ROUTE_LENGTH;
+}
+
 /** One event as it travels from the browser to the route you mounted. */
 export type WireEvent = {
   name: string;
@@ -76,10 +80,7 @@ function parseEvent(
   if (url !== undefined && typeof url !== 'string') {
     return { ok: false, error: `events[${index}].url must be a string` };
   }
-  if (
-    route !== undefined &&
-    (typeof route !== 'string' || route.length === 0 || route.length > MAX_ROUTE_LENGTH)
-  ) {
+  if (route !== undefined && !isValidRoute(route)) {
     return {
       ok: false,
       error: `events[${index}].route must be 1 to ${MAX_ROUTE_LENGTH} characters`,
@@ -88,17 +89,17 @@ function parseEvent(
   if (referrer !== undefined && typeof referrer !== 'string') {
     return { ok: false, error: `events[${index}].referrer must be a string` };
   }
-  return {
-    ok: true,
-    value: {
-      name,
-      props: isRecord(props) ? props : {},
-      timestamp,
-      ...(typeof url === 'string' ? { url } : {}),
-      ...(typeof route === 'string' ? { route } : {}),
-      ...(typeof referrer === 'string' ? { referrer } : {}),
-    },
+  const event: WireEvent = {
+    name,
+    props: isRecord(props) ? props : {},
+    timestamp,
+    ...(typeof url === 'string' ? { url } : {}),
+    ...(typeof referrer === 'string' ? { referrer } : {}),
   };
+  if (typeof route === 'string') {
+    event.route = route;
+  }
+  return { ok: true, value: event };
 }
 
 /**

@@ -65,6 +65,21 @@ describe('analytics handler', () => {
     expect(forwarded[0]?.body.events[0]?.route).toBe('/checkout/[plan]');
   });
 
+  it.each([
+    { route: undefined, accepted: true },
+    { route: 'x'.repeat(500), accepted: true },
+    { route: '', accepted: false },
+    { route: 'x'.repeat(501), accepted: false },
+    { route: 42, accepted: false },
+  ])('validates route templates: $route', async ({ route, accepted }) => {
+    const { handler, fetch } = harness();
+    const event = batch().events[0];
+    const response = await handler(post({ context: {}, events: [{ ...event, route }] }));
+
+    expect(response.status).toBe(accepted ? 200 : 400);
+    expect(fetch).toHaveBeenCalledTimes(accepted ? 1 : 0);
+  });
+
   it('derives metadata the browser never sent', async () => {
     const { handler, forwarded } = harness();
     await handler(post(batch(), { 'cf-ipcountry': 'GB' }));

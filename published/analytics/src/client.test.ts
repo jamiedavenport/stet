@@ -113,6 +113,15 @@ describe('browser client', () => {
     ]);
   });
 
+  it('omits invalid route templates so the pathname remains the fallback', async () => {
+    const { analytics, sent } = harness();
+    analytics.pageview('https://example.com/blog/first', { route: '' });
+    analytics.pageview('https://example.com/blog/second', { route: 'x'.repeat(501) });
+    await analytics.flush();
+
+    expect(sent[0]?.events.map((event) => event.route)).toEqual([undefined, undefined]);
+  });
+
   it('rejects a call that does not match the plan', () => {
     const { analytics } = harness();
     // @ts-expect-error 'plan' is required for signup.

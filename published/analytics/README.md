@@ -235,18 +235,25 @@ export default defineNuxtPlugin(() => {
 
 ### Astro
 
-Astro navigations are full page loads, so the default is already correct and
-there is nothing to add. With view transitions enabled the client script runs
-only once, so listen instead — and here a bare call _is_ right, because the
-event fires after the swap, when `window.location` is already the new page:
+Astro navigations are full page loads, so the default is already correct. With
+view transitions enabled, render the current pattern and read it after each
+page swap:
 
-```ts
-document.addEventListener('astro:page-load', () => analytics.pageview());
+```astro
+<meta name="stet-route" content={Astro.routePattern} />
+
+<script>
+  import { analytics } from '../analytics';
+
+  document.addEventListener('astro:page-load', () => {
+    const route = document.querySelector('meta[name="stet-route"]')?.getAttribute('content');
+    analytics.pageview(undefined, { route: route ?? undefined });
+  });
+</script>
 ```
 
-Astro 5 exposes the current template as `Astro.routePattern` while rendering.
-Pass it into the client script and then as `route` when you want parameterized
-grouping.
+Astro 5 exposes the template as `Astro.routePattern` while rendering. The meta
+element is replaced during navigation, so the listener reads the new pattern.
 
 ## Context vs metadata
 
@@ -305,7 +312,7 @@ call it yourself.
 ### `@stetcms/analytics/client`
 
 `createAnalytics(options)` → `{ track, pageview, setContext, flush }`.
-`pageview(url?, { route? })` keeps the concrete URL for deduplication and uses
+`pageview(url?, options?: { route? })` keeps the concrete URL for deduplication and uses
 the optional framework route template for grouping.
 
 | Option          | Default  | Meaning                                    |
