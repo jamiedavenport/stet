@@ -14,9 +14,10 @@ Vite, so `@stetcms/vite` goes straight into `vite.plugins` in
   copy matches the model below so the app type-checks without a running
   server.
 
-Pages read content in frontmatter, which runs on the server: with
-`output: 'server'` every page renders on demand, so the organization API key
-stays out of the browser and an edit in Stet shows up on the next refresh.
+Pages read content in frontmatter, which runs on the server, so the
+organization API key stays out of the browser. Fixed pages set
+`prerender = true`; the dynamic route returns every post from
+`getStaticPaths`, so a production build writes the whole blog.
 
 ## Run it against a local Stet
 
@@ -50,6 +51,12 @@ dev server runs and regenerates the client within a few seconds. The retired
 key stays as a `@deprecated` alias that still returns the value, so stale
 reads are struck through in your editor rather than breaking the page, and
 the type check fails only once the migration is completed in Stet.
+
+## Prerendering
+
+Run `vp run build` with `STET_API_KEY` to fetch the current collection and
+prerender every post. A configured content request that fails also fails the
+build. Without a key, the example still produces a keyless fallback build.
 
 ## Point it somewhere else
 

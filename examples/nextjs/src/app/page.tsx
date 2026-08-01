@@ -1,9 +1,13 @@
 import Link from 'next/link';
 
-import { stet } from '@/lib/stet';
+import { getLanding } from '@/lib/content';
 
 export default async function Home() {
-  const landing = await stet.landing.get();
+  const landing = await getLanding();
+
+  if (landing === undefined) {
+    return <main>Set STET_API_KEY to prerender this page.</main>;
+  }
 
   return (
     <main>

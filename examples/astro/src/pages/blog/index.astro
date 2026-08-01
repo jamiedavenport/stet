@@ -2,7 +2,10 @@
 import Layout from '@/layouts/Layout.astro';
 import { stet } from '@/stet.gen';
 
-const posts = await stet.posts.list();
+export const prerender = true;
+
+const hasStetApiKey = process.env.STET_API_KEY !== undefined && process.env.STET_API_KEY !== '';
+const posts = hasStetApiKey ? await stet.posts.list() : [];
 ---
 
 <Layout title="Blog · Stet example">

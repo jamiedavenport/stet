@@ -6,9 +6,8 @@ import { defineConfig } from 'astro/config';
 // TanStack example uses, passed through `vite.plugins`. No Astro-specific
 // integration is needed.
 //
-// `output: 'server'` renders every page on demand, which keeps content reads
-// at request time (an edit in Stet shows up on the next refresh) and means
-// `astro build` never needs a running Stet.
+// `output: 'server'` leaves other routes available on demand. The content
+// pages opt into prerendering in their frontmatter.
 export default defineConfig({
   output: 'server',
   adapter: node({ mode: 'standalone' }),

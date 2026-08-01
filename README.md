@@ -76,14 +76,14 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the full setup and workflow, and [DEP
 
 ## Repository layout
 
-| Path          | What it holds                                                             |
-| ------------- | ------------------------------------------------------------------------- |
-| `apps/web`    | The application and marketing site, as one Cloudflare Worker              |
-| `apps/docs`   | The documentation site                                                    |
-| `published/`  | The packages published to npm: client, Vite plugin, analytics, CLI        |
-| `internal/`   | Workspace packages the app is built from, not published                   |
-| `dogfooding/` | Stet running on Stet: the parts of the app that consume `published/`      |
-| `examples/`   | TanStack Start, Next.js and Astro blogs that consume the generated client |
+| Path          | What it holds                                                                              |
+| ------------- | ------------------------------------------------------------------------------------------ |
+| `apps/web`    | The application and marketing site, as one Cloudflare Worker                               |
+| `apps/docs`   | The documentation site                                                                     |
+| `published/`  | The packages published to npm: client, Vite plugin, analytics, CLI                         |
+| `internal/`   | Workspace packages the app is built from, not published                                    |
+| `dogfooding/` | Stet running on Stet: the parts of the app that consume `published/`                       |
+| `examples/`   | TanStack Start, Next.js, Astro, SvelteKit and Nuxt blogs that consume the generated client |
 
 ## Principles
 

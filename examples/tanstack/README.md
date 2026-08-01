@@ -16,6 +16,8 @@ that content performs.
   server.
 - `src/routes/api.analytics.ts` mounts the analytics handler, so events reach
   Stet through this app rather than from the browser.
+- Production builds with `STET_API_KEY` prerender `/`, `/blog`, and every
+  linked post. A keyless build remains available for repository CI.
 
 ## Run it against a local Stet
 
@@ -69,6 +71,12 @@ wrong type, and the build fails before the browser is involved:
 analytics.track('post.read'); // missing slug
 analytics.track('post.reed', { slug }); // no such event
 ```
+
+## Prerendering
+
+`tanstackStart({ prerender: { enabled: hasStetApiKey, crawlLinks: true } })`
+starts at `/` and follows the blog links during `vp run build`. A failed Stet
+request fails the configured build instead of publishing an incomplete blog.
 
 ## Point it somewhere else
 

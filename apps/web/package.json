@@ -5,9 +5,7 @@
   "type": "module",
   "scripts": {
     "analyze": "ANALYZE=1 vp build",
-    "build": "tsx --env-file-if-exists=.dev.vars --tsconfig og/tsconfig.json og/generate.ts && vp build",
     "cf-typegen": "wrangler types",
-    "deploy": "vp build && wrangler deploy",
     "migrate": "wrangler d1 migrations apply stet-db --local",
     "migrate:remote": "wrangler d1 migrations apply stet-db --remote",
     "dev": "vp dev",

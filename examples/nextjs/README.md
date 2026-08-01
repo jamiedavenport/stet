@@ -19,6 +19,8 @@ builds in the UI, and App Router server components load content through it.
   it starts with `import 'server-only'`. The API key never reaches the
   browser, and importing the client from a client component is a build error
   rather than a leak.
+- `generateStaticParams` returns every post slug, so Next.js emits each post
+  during the production build.
 
 ## Run it against a local Stet
 
@@ -48,8 +50,8 @@ builds in the UI, and App Router server components load content through it.
    ```
 
 4. Sign in at `http://localhost:3000` as `seed@example.com` /
-   `seed-password-123` and edit content; every route renders on request, so a
-   saved edit appears on the next refresh.
+   `seed-password-123` and edit content. Development reflects saved edits;
+   production reflects the snapshot from its latest build.
 
 Any other organization works too: mint a key under Developers → API keys in the
 Stet app, copy it while it is shown, and run
@@ -68,9 +70,10 @@ CLI.
 
 In your own project, where CI has `STET_API_KEY`, plain
 `stet generate && next build` is all you need: every build starts from the
-current content model. `--if-key` makes the same script pass where no key
-exists (such as this repository's CI), by keeping the committed
-`src/stet.gen.ts` instead of failing.
+current content model and `generateStaticParams` emits every post. `--if-key`
+makes the same script pass where no key exists, by keeping the committed
+client and keeping the routes request-rendered. Configured content failures
+fail the build.
 
 ## Point it somewhere else
 

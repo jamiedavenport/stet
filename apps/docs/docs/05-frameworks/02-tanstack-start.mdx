@@ -1,6 +1,6 @@
 ---
 title: TanStack Start
-description: Add the Vite plugin and read content through server functions; the client regenerates as the model changes.
+description: Add the Vite plugin, read content through server functions, and prerender linked content pages.
 icon: route
 ---
 
@@ -30,8 +30,16 @@ import { tanstackStart } from '@tanstack/react-start/plugin/vite';
 import viteReact from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 
+const hasStetApiKey = process.env.STET_API_KEY !== undefined && process.env.STET_API_KEY !== '';
+
 export default defineConfig({
-  plugins: [stet(), tanstackStart(), viteReact()],
+  plugins: [
+    stet(),
+    tanstackStart({
+      prerender: { enabled: hasStetApiKey, crawlLinks: true },
+    }),
+    viteReact(),
+  ],
 });
 ```
 
@@ -63,6 +71,10 @@ export const Route = createFileRoute('/blog/')({
 Commit `src/stet.gen.ts`: it contains no secrets, and the project type-checks
 without a key or a reachable Stet, because the plugin
 [never fails a build](/reference/codegen) over either.
+
+With `STET_API_KEY` set, TanStack Start fetches `/`, follows internal links,
+and writes each discovered page into the client build. A configured content
+request that fails also fails the build, preventing a partial deployment.
 
 </Step>
 

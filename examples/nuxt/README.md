@@ -15,6 +15,8 @@ see the TanStack example for the analytics integration.
   copy matches the model below so the app type-checks without a running
   server. It lives under `server/` because only server routes may import it:
   pages fetch through `/api/*`, so the API key never reaches the browser.
+- Nitro prerendering starts at `/` and `/blog`, then crawls every linked post
+  when `STET_API_KEY` is present.
 
 ## What Nuxt changes
 
@@ -55,6 +57,12 @@ Stet app, copy it while it is shown, and pass it as `STET_API_KEY`.
 Rename a field in the Stet UI and watch: the plugin polls the model while the
 dev server runs, regenerates the client within a few seconds, and stale field
 access fails the type check instead of the page.
+
+## Prerendering
+
+Run `vp run build` with `STET_API_KEY` to make Nitro prerender the landing
+page, blog, and every post it discovers. A configured content request that
+fails also fails the build. Without a key, Nitro leaves those routes dynamic.
 
 ## Point it somewhere else
 

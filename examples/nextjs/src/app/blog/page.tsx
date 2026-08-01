@@ -1,9 +1,9 @@
 import Link from 'next/link';
 
-import { stet } from '@/lib/stet';
+import { listPosts } from '@/lib/content';
 
 export default async function Blog() {
-  const posts = await stet.posts.list();
+  const posts = await listPosts();
 
   return (
     <main>

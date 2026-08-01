@@ -1,6 +1,6 @@
 ---
 title: Astro
-description: Pass the Vite plugin through vite.plugins and read content in frontmatter; render on demand so edits appear on refresh.
+description: Pass the Vite plugin through vite.plugins and prerender collection entries with getStaticPaths.
 icon: rocket
 ---
 
@@ -24,7 +24,7 @@ The adapter earns its place in step 2.
 
 </Step>
 
-<Step title="Add the plugin, and render on demand">
+<Step title="Add the plugin">
 
 ```ts astro.config.ts
 import node from '@astrojs/node';
@@ -39,13 +39,6 @@ export default defineConfig({
   },
 });
 ```
-
-Stet content is live-only: what an editor saves is what the API serves.
-`output: 'server'` renders every page on request rather than at build time, so
-edits appear on the next refresh and prerendering never fetches content during
-`astro build`. Codegen (plus the [tracking-plan publish](/reference/analytics),
-if the config declares one) stays the only build-time contact with Stet;
-content itself is never fetched.
 
 </Step>
 
@@ -68,6 +61,36 @@ const posts = await stet.posts.list();
 Commit `src/stet.gen.ts`: it contains no secrets, and the project type-checks
 without a key or a reachable Stet, because the plugin
 [never fails a build](/reference/codegen) over either.
+
+</Step>
+
+<Step title="Prerender content routes">
+
+Set fixed pages to prerender and return every collection slug from
+`getStaticPaths`:
+
+```astro src/pages/blog/[slug].astro
+---
+import { stet } from '../../stet.gen';
+
+export const prerender = true;
+
+export async function getStaticPaths() {
+  if (process.env.STET_API_KEY === undefined || process.env.STET_API_KEY === '') {
+    return [];
+  }
+  const posts = await stet.posts.list();
+  return posts.map((post) => ({ params: { slug: post.slug }, props: { post } }));
+}
+
+const { post } = Astro.props;
+---
+
+<h1>{post.title}</h1>
+```
+
+Astro now writes one HTML page per post during `astro build`. If Stet is
+unavailable while a key is configured, the build fails.
 
 </Step>
 

@@ -20,6 +20,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - uses: voidzero-dev/setup-vp@v1
         with:
           node-version: '24'
@@ -42,6 +44,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       # The e2e setup shells out to pnpm (seed script), so put it on PATH.
       - uses: pnpm/action-setup@v6
       - uses: voidzero-dev/setup-vp@v1
@@ -82,6 +86,18 @@ jobs:
       SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
     steps:
       - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      # The production build prerenders Stet's own blog. Unlike ordinary
+      # keyless verification builds, a deploy must never publish an empty one.
+      - name: Require the prerender key
+        env:
+          STET_API_KEY: ${{ secrets.STET_API_KEY }}
+        run: |
+          if [ -z "$STET_API_KEY" ]; then
+            echo "STET_API_KEY is required to prerender the production blog"
+            exit 1
+          fi
       - uses: voidzero-dev/setup-vp@v1
         with:
           node-version: '24'
@@ -97,4 +113,6 @@ jobs:
             echo "No migrations directory; skipping"
           fi
       - run: vp run web#deploy
+        env:
+          STET_API_KEY: ${{ secrets.STET_API_KEY }}
       - run: vp run docs#deploy
