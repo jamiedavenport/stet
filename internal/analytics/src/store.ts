@@ -8,7 +8,7 @@ import { getWatermark, hasRawEvents, insertEvents, pruneEvents, runRollup } from
 import type { IngestEvent } from './ingest';
 import { breakdown, timeseries, totals, visitorTimeseries } from './queries';
 import type { BreakdownRow, Interval, Range, TimeseriesPoint, Totals } from './queries';
-import { schemaStatements } from './schema';
+import { schemaMigrations } from './schema';
 
 /** How often a store holding raw events rolls up and prunes. */
 const ROLLUP_INTERVAL_MS = HOUR_MS;
@@ -58,9 +58,7 @@ export class AnalyticsStore extends DurableObject<AnalyticsEnv> {
     // A constructor cannot await; blockConcurrencyWhile holds back every
     // request, including the one that woke this instance, until it settles.
     void ctx.blockConcurrencyWhile(async () => {
-      for (const statement of schemaStatements) {
-        ctx.storage.sql.exec(statement);
-      }
+      migrate(ctx.storage);
       this.watermark = await getWatermark(this.db);
     });
   }
@@ -110,5 +108,29 @@ export class AnalyticsStore extends DurableObject<AnalyticsEnv> {
     if (await hasRawEvents(this.db)) {
       await this.ctx.storage.setAlarm(now + ROLLUP_INTERVAL_MS);
     }
+  }
+}
+
+function migrate(storage: DurableObjectStorage): void {
+  storage.sql.exec(`CREATE TABLE IF NOT EXISTS _sql_schema_migrations (
+    id INTEGER PRIMARY KEY NOT NULL,
+    applied_at TEXT NOT NULL DEFAULT (datetime('now'))
+  )`);
+  const applied = new Set(
+    [...storage.sql.exec<{ id: number }>('SELECT id FROM _sql_schema_migrations')].map(
+      (row) => row.id,
+    ),
+  );
+
+  for (const migration of schemaMigrations) {
+    if (applied.has(migration.id)) {
+      continue;
+    }
+    storage.transactionSync(() => {
+      for (const statement of migration.statements) {
+        storage.sql.exec(statement);
+      }
+      storage.sql.exec('INSERT INTO _sql_schema_migrations (id) VALUES (?)', migration.id);
+    });
   }
 }

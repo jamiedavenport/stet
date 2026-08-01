@@ -123,6 +123,19 @@ describe('breakdowns', () => {
     expect(JSON.stringify(row)).not.toContain('secret-token');
   });
 
+  it('groups by route templates and falls back to the concrete path', async () => {
+    await ingest([
+      pageview(0, { url: 'https://example.com/blog/first', route: '/blog/[slug]' }),
+      pageview(1, { url: 'https://example.com/blog/second', route: '/blog/[slug]' }),
+      pageview(2, { url: 'https://example.com/pricing' }),
+    ]);
+
+    expect(await breakdown(db, 'route', { from: T0, to: T0 + HOUR_MS })).toEqual([
+      { key: '/blog/[slug]', count: 2 },
+      { key: '/pricing', count: 1 },
+    ]);
+  });
+
   it('reduces referrers to their hostname and keeps the odd ones verbatim', async () => {
     await ingest([
       pageview(0, { referrer: 'https://news.ycombinator.com/item?id=1' }),
@@ -204,6 +217,7 @@ describe('rollups', () => {
     return {
       series: await timeseries(db, { ...range, interval: 'hour' }),
       paths: await breakdown(db, 'path', range),
+      routes: await breakdown(db, 'route', range),
       referrers: await breakdown(db, 'referrer', range),
       byEvent: await breakdown(db, 'event', range),
     };

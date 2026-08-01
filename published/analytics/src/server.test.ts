@@ -57,6 +57,32 @@ describe('analytics handler', () => {
     expect(headers?.['x-api-key']).toBe('stet_key');
   });
 
+  it('forwards an optional route template', async () => {
+    const { handler, forwarded } = harness();
+    const event = batch().events[0];
+    await handler(post({ context: {}, events: [{ ...event, route: '/checkout/[plan]' }] }));
+
+    expect(forwarded[0]?.body.events[0]?.route).toBe('/checkout/[plan]');
+  });
+
+  it.each([
+    { route: undefined, status: 200, calls: 1 },
+    { route: 'x'.repeat(500), status: 200, calls: 1, forwardedRoute: 'x'.repeat(500) },
+    { route: '', status: 400, calls: 0 },
+    { route: 'x'.repeat(501), status: 400, calls: 0 },
+    { route: 42, status: 400, calls: 0 },
+  ])('validates route templates: $route', async ({ route, status, calls, forwardedRoute }) => {
+    const { handler, forwarded, fetch } = harness();
+    const event = batch().events[0];
+    const response = await handler(post({ context: {}, events: [{ ...event, route }] }));
+
+    expect(response.status).toBe(status);
+    expect(fetch).toHaveBeenCalledTimes(calls);
+    if (forwardedRoute !== undefined) {
+      expect(forwarded[0]?.body.events[0]?.route).toBe(forwardedRoute);
+    }
+  });
+
   it('derives metadata the browser never sent', async () => {
     const { handler, forwarded } = harness();
     await handler(post(batch(), { 'cf-ipcountry': 'GB' }));

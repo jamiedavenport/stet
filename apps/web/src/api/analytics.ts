@@ -16,6 +16,7 @@ function toIngestEvent(
     props: Record<string, unknown>;
     timestamp: number;
     url?: string;
+    route?: string;
     referrer?: string;
   },
   metadata: AnalyticsMetadata,
@@ -25,6 +26,7 @@ function toIngestEvent(
     name: event.name,
     timestamp: event.timestamp,
     url: event.url,
+    route: event.route,
     referrer: event.referrer,
     visitor: metadata.visitor ?? null,
     country: metadata.country ?? null,

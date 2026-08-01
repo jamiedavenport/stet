@@ -79,7 +79,7 @@ export function analyticsOverviewQuery(range: RangeKey) {
 
 /** The breakdowns the dashboard shows, in the order it shows them. */
 export const breakdownPanels = [
-  { dimension: 'path', title: 'Top pages', empty: 'No pages yet.' },
+  { dimension: 'route', title: 'Top pages', empty: 'No pages yet.' },
   { dimension: 'referrer', title: 'Referrers', empty: 'No referrers yet.' },
   { dimension: 'event', title: 'Events', empty: 'No events yet.' },
   { dimension: 'country', title: 'Countries', empty: 'No countries yet.', icon: 'country' },

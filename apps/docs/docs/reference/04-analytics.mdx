@@ -158,10 +158,10 @@ has to reach the browser.
       description:
         'Record an event from the plan. A misspelled name, a missing prop, or a prop of the wrong type is a compile error. Never throws and never rejects.',
     },
-    'pageview(url?)': {
+    'pageview(url?, options?)': {
       type: 'void',
       description:
-        'Record a pageview. Called for you unless autoPageviews is off. Repeating the current URL is ignored, so a redirect or re-render is not two views.',
+        'Record a pageview. options.route can carry the router template used for grouping. Repeating the current URL is ignored, so a redirect or re-render is not two views.',
     },
     'setContext(context)': {
       type: 'void',
@@ -202,6 +202,18 @@ export const analytics = createAnalytics<(typeof config)['analytics']>({
 
 router.subscribe('onResolved', () => analytics.pageview());
 ```
+
+When the router exposes its parameterized template, pass that separately from
+the concrete URL:
+
+```ts
+analytics.pageview(location.href, { route: '/blog/[slug]' });
+```
+
+The concrete URL remains the deduplication key. The template groups different
+parameter values into one dashboard row. If it is missing, Stet groups by the
+concrete pathname as before. Route syntax is framework-native, so `$slug`,
+`[slug]`, and `:slug` are all valid.
 
 #### Tracking from your server
 

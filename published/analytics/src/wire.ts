@@ -4,6 +4,11 @@ export { DEFAULT_ORIGIN } from '@stetcms/config';
 export const MAX_BATCH_EVENTS = 100;
 
 const MAX_NAME_LENGTH = 120;
+const MAX_ROUTE_LENGTH = 500;
+
+export function isValidRoute(route: unknown): route is string {
+  return typeof route === 'string' && route.length > 0 && route.length <= MAX_ROUTE_LENGTH;
+}
 
 /** One event as it travels from the browser to the route you mounted. */
 export type WireEvent = {
@@ -12,6 +17,8 @@ export type WireEvent = {
   /** Epoch milliseconds, stamped in the browser when the event happened. */
   timestamp: number;
   url?: string;
+  /** Router template for the URL, e.g. `/blog/[slug]`. */
+  route?: string;
   referrer?: string;
 };
 
@@ -57,7 +64,7 @@ function parseEvent(
   if (!isRecord(value)) {
     return { ok: false, error: `events[${index}] is not an object` };
   }
-  const { name, props, timestamp, url, referrer } = value;
+  const { name, props, timestamp, url, route, referrer } = value;
   if (typeof name !== 'string' || name === '' || name.length > MAX_NAME_LENGTH) {
     return {
       ok: false,
@@ -73,19 +80,26 @@ function parseEvent(
   if (url !== undefined && typeof url !== 'string') {
     return { ok: false, error: `events[${index}].url must be a string` };
   }
+  if (route !== undefined && !isValidRoute(route)) {
+    return {
+      ok: false,
+      error: `events[${index}].route must be 1 to ${MAX_ROUTE_LENGTH} characters`,
+    };
+  }
   if (referrer !== undefined && typeof referrer !== 'string') {
     return { ok: false, error: `events[${index}].referrer must be a string` };
   }
-  return {
-    ok: true,
-    value: {
-      name,
-      props: isRecord(props) ? props : {},
-      timestamp,
-      ...(typeof url === 'string' ? { url } : {}),
-      ...(typeof referrer === 'string' ? { referrer } : {}),
-    },
+  const event: WireEvent = {
+    name,
+    props: isRecord(props) ? props : {},
+    timestamp,
+    ...(typeof url === 'string' ? { url } : {}),
+    ...(typeof referrer === 'string' ? { referrer } : {}),
   };
+  if (typeof route === 'string') {
+    event.route = route;
+  }
+  return { ok: true, value: event };
 }
 
 /**

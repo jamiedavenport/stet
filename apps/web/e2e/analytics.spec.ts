@@ -23,15 +23,15 @@ test('records events through the API and charts them on the dashboard', async ({
   // demand, which is well past the default timeout on a cold dev server.
   test.setTimeout(120_000);
 
-  // Asserted as a delta against the totals rather than by looking for a path
-  // in "Top pages": that list is capped at ten rows, so on any store holding
-  // real traffic a freshly added path would rank below the fold.
   await gotoHydrated(page, '/app/analytics');
   await expect(page.getByRole('heading', { name: 'Analytics', level: 1 })).toBeVisible();
   await expect(page.getByTestId('stat-pageviews')).not.toHaveText('—');
   const before = await views(page);
 
   const now = Date.now();
+  const route = `/e2e-analytics/${now}/$slug`;
+  const firstPath = `/e2e-analytics/${now}/first`;
+  const secondPath = `/e2e-analytics/${now}/second`;
   const ingest = await request.post('/api/v1/events', {
     headers: keyHeader,
     data: {
@@ -42,14 +42,16 @@ test('records events through the API and charts them on the dashboard', async ({
           name: '$pageview',
           props: {},
           timestamp: now,
-          url: `https://example.com/e2e-analytics?utm_source=e2e&token=secret`,
+          url: `https://example.com${firstPath}?utm_source=e2e&token=secret`,
+          route,
           referrer: 'https://news.ycombinator.com/item?id=1',
         },
         {
           name: '$pageview',
           props: {},
           timestamp: now + 10,
-          url: 'https://example.com/e2e-analytics',
+          url: `https://example.com${secondPath}`,
+          route,
         },
       ],
     },
@@ -60,6 +62,10 @@ test('records events through the API and charts them on the dashboard', async ({
   await gotoHydrated(page, '/app/analytics');
   await expect(page.getByTestId('stat-pageviews')).not.toHaveText('—');
   expect(await views(page)).toBe(before + 2);
+  const routeRow = page.getByText(route, { exact: true }).locator('xpath=ancestor::li');
+  await expect(routeRow).toContainText('2');
+  await expect(page.getByText(firstPath, { exact: true })).toHaveCount(0);
+  await expect(page.getByText(secondPath, { exact: true })).toHaveCount(0);
 });
 
 test('rejects events without an organization key', async ({ request }) => {
