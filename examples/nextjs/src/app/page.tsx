@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-import { stet } from '../lib/stet';
+import { stet } from '@/lib/stet';
 
 export default async function Home() {
   const landing = await stet.landing.get();

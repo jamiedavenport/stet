@@ -46,11 +46,11 @@ itself server-only:
 ```ts src/lib/stet.ts
 import 'server-only';
 
-export * from '../stet.gen';
+export * from '@/stet.gen';
 ```
 
 ```tsx src/app/blog/page.tsx
-import { stet } from '../../lib/stet';
+import { stet } from '@/lib/stet';
 
 export default async function Blog() {
   const posts = await stet.posts.list();
