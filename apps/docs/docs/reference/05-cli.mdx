@@ -125,6 +125,11 @@ stet generate
       type: 'string',
       description: 'Path to stet.config.ts. Auto-detected by default.',
     },
+    '--if-key': {
+      type: 'boolean',
+      description: 'Succeed without generating when no API key is set.',
+      default: 'false',
+    },
   }}
 />
 
@@ -135,6 +140,12 @@ so the CLI writes exactly where your dev server does.
 Unlike the plugin, `generate` **fails loudly**: no key or an unreachable API
 exits non-zero. A build that silently kept a stale client is right for a dev
 server and wrong for CI.
+
+`--if-key` softens exactly one of those failures, for build scripts like
+`stet generate --if-key && next build` that must also pass where no
+`STET_API_KEY` exists and the committed generated client is the one to build
+against. Without a key it says so and succeeds; with one, an unreachable API or
+a rejected key still fails.
 
 ### stet sync
 

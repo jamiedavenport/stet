@@ -1,4 +1,3 @@
-import { createStetClient, safe } from '@stetcms/client';
 import { Command } from 'commander';
 
 import { resolveOrigin } from '#/client';
@@ -10,6 +9,12 @@ export const orgCommand = new Command('org')
   .option('--url <url>', 'Origin of the Stet deployment')
   .option('--json', 'Print the organization as JSON')
   .action(async (options: { apiKey?: string; url?: string; json?: boolean }) => {
+    // Imported when the command runs, not when the CLI starts: the client's
+    // root entry is the one import plain Node cannot follow to workspace
+    // TypeScript (it reaches @repo/api), and a static import here would take
+    // every other command down with it when the CLI runs inside this repo.
+    const { createStetClient, safe } = await import('@stetcms/client');
+
     const apiKey = options.apiKey ?? process.env.STET_API_KEY;
     if (apiKey === undefined || apiKey === '') {
       ui.fail('No API key. Pass --api-key or set STET_API_KEY.');
