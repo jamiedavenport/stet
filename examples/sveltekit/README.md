@@ -47,8 +47,10 @@ Any other organization works too: mint a key under Developers → API keys in th
 Stet app, copy it while it is shown, and pass it as `STET_API_KEY`.
 
 Rename a field in the Stet UI and watch: the plugin polls the model while the
-dev server runs, regenerates the client within a few seconds, and stale field
-access fails the type check instead of the page.
+dev server runs and regenerates the client within a few seconds. The old key
+keeps working as a `@deprecated` alias — struck through in your editor — until
+the rename Action is completed in Stet, at which point stale field access
+fails the type check instead of the page.
 
 ## Analytics
 

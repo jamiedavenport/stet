@@ -3,4 +3,4 @@
 ---
 
 Link the new SvelteKit example from the README, alongside the TanStack Start
-one, as proof the plugin drops into any Vite-based framework unchanged.
+one; the plugin dropped into both frameworks unchanged.

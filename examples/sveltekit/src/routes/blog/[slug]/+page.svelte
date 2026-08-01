@@ -17,7 +17,11 @@
     <a href="/blog">← Blog</a>
   </p>
   <h1>{data.post.title}</h1>
-  <p class="muted">Updated {new Date(data.post.updatedAt).toLocaleDateString('en-GB')}</p>
+  <!-- A fixed time zone, so the server and the browser render the same
+       calendar day and hydration has nothing to disagree about. -->
+  <p class="muted">
+    Updated {new Date(data.post.updatedAt).toLocaleDateString('en-GB', { timeZone: 'UTC' })}
+  </p>
   {#if data.post.fields.cover != null}
     <img src={data.post.fields.cover.url} alt="" />
   {/if}
