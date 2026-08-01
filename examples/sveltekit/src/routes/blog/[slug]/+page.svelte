@@ -1,15 +1,7 @@
 <script lang="ts">
-  import { analytics } from '$lib/analytics';
   import type { PageProps } from './$types';
 
   let { data }: PageProps = $props();
-
-  // The pageview is automatic; this is the custom event on top of it. `slug`
-  // is checked against the plan, so renaming the prop fails the build here
-  // rather than quietly producing a column of nulls in the dashboard.
-  $effect(() => {
-    analytics.track('post.read', { slug: data.post.slug });
-  });
 </script>
 
 <main>

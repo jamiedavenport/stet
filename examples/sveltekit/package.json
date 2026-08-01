@@ -10,10 +10,8 @@
     "tc": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json"
   },
   "dependencies": {
-    "@stetcms/analytics": "workspace:*",
     "@stetcms/client": "workspace:*",
-    "@stetcms/config": "workspace:*",
-    "zod": "catalog:"
+    "@stetcms/config": "workspace:*"
   },
   "devDependencies": {
     "@stetcms/vite": "workspace:*",

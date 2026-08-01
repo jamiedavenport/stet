@@ -19,6 +19,11 @@
       "entry": ["stet.config.ts"],
       "ignore": ["src/stet.gen.ts"]
     },
+    "examples/sveltekit": {
+      // `@stetcms/vite` loads it by path; no module imports it.
+      "entry": ["stet.config.ts"],
+      "ignore": ["src/**/stet.gen.ts"]
+    },
     "internal/*": {},
     "published/*": {},
     "apps/web": {
