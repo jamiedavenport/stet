@@ -14,7 +14,7 @@ export type GenerateOptions = CommandOptions & {
 /** The command's whole body, extracted so tests can drive it without a process. */
 export async function runGenerate(options: GenerateOptions): Promise<void> {
   const { origin, apiKey, output } = await settleOptions(options);
-  if (apiKey === undefined) {
+  if (apiKey === undefined || apiKey === '') {
     if (options.ifKey === true) {
       // Mirrors @stetcms/vite, which never fails a keyless build: a checkout
       // without STET_API_KEY builds against the committed generated client.

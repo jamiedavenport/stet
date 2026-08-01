@@ -69,7 +69,8 @@ an API key in the browser bundle.
 
 Stet content is live-only: what an editor saves is what the API serves. Render
 on request rather than at build time, so edits appear on the next refresh and
-`next build` never needs a running Stet:
+prerendering never fetches content during `next build`. Codegen is the one
+build-time contact with Stet, and step 4 makes it explicit:
 
 ```ts src/app/layout.tsx
 export const dynamic = 'force-dynamic';

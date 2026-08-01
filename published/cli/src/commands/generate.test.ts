@@ -57,6 +57,16 @@ describe('runGenerate', () => {
     await expect(runGenerate({})).rejects.toThrow('No API key');
   });
 
+  it('treats an empty key as missing, like stet org does', async () => {
+    settled({ apiKey: '', output: await output() });
+
+    await expect(runGenerate({})).rejects.toThrow('No API key');
+
+    settled({ apiKey: '', output: await output() });
+    await runGenerate({ ifKey: true });
+    expect(fetchContentModel).not.toHaveBeenCalled();
+  });
+
   it('succeeds without a key under --if-key, leaving the committed client alone', async () => {
     const target = await output();
     settled({ output: target });

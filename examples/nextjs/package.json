@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "STET_API_KEY=stet_seed_key_for_local_development_only next dev --port 3002",
-    "generate": "STET_API_KEY=stet_seed_key_for_local_development_only stet generate",
-    "build": "pnpm exec stet generate --if-key && next build",
+    "generate": "STET_API_KEY=stet_seed_key_for_local_development_only node ../../published/cli/dist/index.mjs generate",
+    "build": "node ../../published/cli/dist/index.mjs generate --if-key && next build",
     "start": "STET_API_KEY=stet_seed_key_for_local_development_only next start --port 3002",
     "tc": "next typegen && tsc --noEmit"
   },
