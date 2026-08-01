@@ -74,7 +74,7 @@ Each option overrides the same key in `stet.config.ts`; leave them off and the c
 | `watch`  | `true`                            | Regenerate every few seconds while the dev server runs. Never affects builds. |
 | `config` | auto-detected                     | Path to `stet.config.ts`, relative to root.                                   |
 
-See [`examples/tanstack`](https://github.com/jamiedavenport/stet/tree/main/examples/tanstack) and [`examples/astro`](https://github.com/jamiedavenport/stet/tree/main/examples/astro) for complete TanStack Start and Astro apps built on the generated client.
+See [`examples/tanstack`](https://github.com/jamiedavenport/stet/tree/main/examples/tanstack), [`examples/astro`](https://github.com/jamiedavenport/stet/tree/main/examples/astro) and [`examples/sveltekit`](https://github.com/jamiedavenport/stet/tree/main/examples/sveltekit) for complete TanStack Start, Astro and SvelteKit apps built on the generated client.
 
 ## License
 

@@ -1,0 +1,40 @@
+:root {
+  color-scheme: light dark;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  line-height: 1.6;
+}
+
+body {
+  margin: 0 auto;
+  max-width: 42rem;
+  padding: 3rem 1.5rem;
+}
+
+a {
+  color: inherit;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+nav {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 3rem;
+  font-size: 0.9rem;
+}
+
+article + article {
+  margin-top: 2rem;
+}
+
+h1 {
+  letter-spacing: -0.02em;
+}
+
+.muted {
+  opacity: 0.65;
+  font-size: 0.9rem;
+}

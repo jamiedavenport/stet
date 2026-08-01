@@ -7,7 +7,7 @@
     },
     "apps/*": {},
     "examples/*": {
-      "ignore": ["src/stet.gen.ts"]
+      "ignore": ["src/**/stet.gen.ts"]
     },
     "examples/astro": {
       // `@stetcms/vite` loads it by path; no module imports it.
@@ -18,6 +18,11 @@
       // `stet generate` loads it; no module imports it.
       "entry": ["stet.config.ts"],
       "ignore": ["src/stet.gen.ts"]
+    },
+    "examples/sveltekit": {
+      // `@stetcms/vite` loads it by path; no module imports it.
+      "entry": ["stet.config.ts"],
+      "ignore": ["src/**/stet.gen.ts"]
     },
     "internal/*": {},
     "published/*": {},

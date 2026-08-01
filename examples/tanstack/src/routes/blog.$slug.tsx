@@ -25,7 +25,11 @@ function Post() {
         <Link to="/blog">← Blog</Link>
       </p>
       <h1>{post.title}</h1>
-      <p className="muted">Updated {new Date(post.updatedAt).toLocaleDateString('en-GB')}</p>
+      {/* A fixed time zone, so the server and the browser render the same
+          calendar day and hydration has nothing to disagree about. */}
+      <p className="muted">
+        Updated {new Date(post.updatedAt).toLocaleDateString('en-GB', { timeZone: 'UTC' })}
+      </p>
       {post.fields.cover && <img src={post.fields.cover.url} alt="" />}
       {post.fields.body == null ? (
         <p className="muted">This post has no body yet.</p>

@@ -1,0 +1,86 @@
+---
+title: SvelteKit
+description: Add the Vite plugin, generate the client into $lib/server, and read content in +page.server.ts files.
+icon: flame
+---
+
+SvelteKit builds with Vite, so the [plugin](/reference/codegen) does all the
+codegen: it regenerates the client before every build and dev-server start,
+and keeps watching while the dev server runs, so a field added in the Stet UI
+reaches your types a few seconds later.
+
+You need an organization API key in `STET_API_KEY`; the
+[quickstart](/quickstart) covers creating one.
+
+<Steps>
+
+<Step title="Install">
+
+```package-install
+@stetcms/vite @stetcms/client
+```
+
+</Step>
+
+<Step title="Add the plugin">
+
+```ts vite.config.ts
+import { stet } from '@stetcms/vite';
+import { sveltekit } from '@sveltejs/kit/vite';
+import { defineConfig } from 'vite';
+
+export default defineConfig({
+  plugins: [stet(), sveltekit()],
+});
+```
+
+Point the output into `$lib/server`, so SvelteKit itself refuses to bundle
+the generated client into browser code:
+
+```ts stet.config.ts
+import { defineStet } from '@stetcms/config';
+
+export default defineStet({ output: 'src/lib/server/stet.gen.ts' });
+```
+
+</Step>
+
+<Step title="Read content in +page.server.ts">
+
+Server `load` functions run on the server, so the API key never reaches the
+browser — and because the client lives in `$lib/server`, importing it from a
+component is a build error rather than a leak:
+
+```ts src/routes/blog/+page.server.ts
+import { stet } from '$lib/server/stet.gen';
+
+import type { PageServerLoad } from './$types';
+
+export const load: PageServerLoad = async () => {
+  return { posts: await stet.posts.list() };
+};
+```
+
+```svelte src/routes/blog/+page.svelte
+<script lang="ts">
+  import type { PageProps } from './$types';
+
+  let { data }: PageProps = $props();
+</script>
+
+{#each data.posts as post (post.id)}
+  <a href="/blog/{post.slug}">{post.title}</a>
+{/each}
+```
+
+Commit `src/lib/server/stet.gen.ts`: it contains no secrets, and the project
+type-checks without a key or a reachable Stet, because the plugin
+[never fails a build](/reference/codegen) over either.
+
+</Step>
+
+</Steps>
+
+The
+[SvelteKit example](https://github.com/jamiedavenport/stet/tree/main/examples/sveltekit)
+is this guide as a running app.

@@ -26,3 +26,4 @@ internal/api/openapi.json
 .source
 .tanstack
 .content-collections
+.svelte-kit

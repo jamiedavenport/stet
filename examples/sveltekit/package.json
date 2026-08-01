@@ -1,0 +1,26 @@
+{
+  "name": "@examples/sveltekit",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "STET_API_KEY=stet_seed_key_for_local_development_only vp dev --port 3003",
+    "build": "vp build",
+    "postinstall": "svelte-kit sync",
+    "tc": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json"
+  },
+  "dependencies": {
+    "@stetcms/client": "workspace:*",
+    "@stetcms/config": "workspace:*"
+  },
+  "devDependencies": {
+    "@stetcms/vite": "workspace:*",
+    "@sveltejs/adapter-auto": "catalog:",
+    "@sveltejs/kit": "catalog:",
+    "@sveltejs/vite-plugin-svelte": "catalog:",
+    "svelte": "catalog:",
+    "svelte-check": "catalog:",
+    "typescript": "catalog:",
+    "vite": "npm:@voidzero-dev/vite-plus-core@0.2.2"
+  }
+}
