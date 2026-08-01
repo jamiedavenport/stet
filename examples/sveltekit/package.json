@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "STET_API_KEY=stet_seed_key_for_local_development_only vp dev --port 3003",
     "build": "vp build",
+    "postinstall": "svelte-kit sync",
     "tc": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json"
   },
   "dependencies": {
