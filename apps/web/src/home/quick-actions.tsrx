@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Button } from '@repo/ui/components/button';
+import { FieldError } from '@repo/ui/components/field';
 import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
 import { useRouter } from '@tanstack/react-router';
 import { MagnifyingGlassIcon, PlusIcon } from '@phosphor-icons/react';
@@ -25,6 +26,7 @@ export function QuickActions() @{
   const { data: model } = useSuspenseQuery(contentModelQuery(activeOrganization.id));
 
   const [creating, setCreating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const collections = model.types
     .filter((type) => type.kind === 'collection')
@@ -34,6 +36,7 @@ export function QuickActions() @{
     if (creating) {
       return;
     }
+    setError(null);
     setCreating(true);
     try {
       const created = await createEntry({ data: { typeId } });
@@ -49,12 +52,15 @@ export function QuickActions() @{
         to: '/app/c/$collection/$entry',
         params: { collection: typeSlug, entry: created.id },
       });
+    } catch (createError) {
+      setError(createError instanceof Error ? createError.message : "Creating the entry failed");
     } finally {
       setCreating(false);
     }
   };
 
-  <div role="group" aria-label="Quick actions" className="flex flex-wrap items-center gap-2">
+  <div className="flex flex-col gap-2">
+    <div role="group" aria-label="Quick actions" className="flex flex-wrap items-center gap-2">
     @for (const collection of collections; key collection.id) {
       <Button
         variant="outline"
@@ -76,5 +82,9 @@ export function QuickActions() @{
       {"Search"}
       <kbd className="pointer-events-none font-sans text-xs text-muted-foreground">{"⌘K"}</kbd>
     </Button>
+    </div>
+    @if (error !== null) {
+      <FieldError>{error}</FieldError>
+    }
   </div>
 }

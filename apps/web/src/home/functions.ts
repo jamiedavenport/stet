@@ -52,13 +52,13 @@ const getRecentEntries = createServerFn({ method: 'GET' })
           .filter((authorId): authorId is string => typeof authorId === 'string'),
       ),
     ];
-    const authors =
-      authorIds.length === 0
-        ? []
-        : await db
-            .select({ id: schema.user.id, name: schema.user.name, image: schema.user.image })
-            .from(schema.user)
-            .where(inArray(schema.user.id, authorIds));
+    let authors: { id: string; name: string; image: string | null }[] = [];
+    if (authorIds.length > 0) {
+      authors = await db
+        .select({ id: schema.user.id, name: schema.user.name, image: schema.user.image })
+        .from(schema.user)
+        .where(inArray(schema.user.id, authorIds));
+    }
     const authorById = new Map(authors.map((author) => [author.id, author]));
     const editorByEntry = new Map(
       revisions
@@ -67,7 +67,11 @@ const getRecentEntries = createServerFn({ method: 'GET' })
     );
 
     return rows.map((row) => {
-      const editor = editorByEntry.get(row.id);
+      const author = editorByEntry.get(row.id);
+      let editor: { name: string; image: string | null } | null = null;
+      if (author !== undefined) {
+        editor = { name: author.name, image: author.image ?? null };
+      }
       return {
         id: row.id,
         title: row.title,
@@ -78,7 +82,7 @@ const getRecentEntries = createServerFn({ method: 'GET' })
           name: row.typeName,
           kind: row.typeKind === 'map' ? ('map' as const) : ('collection' as const),
         },
-        editor: editor === undefined ? null : { name: editor.name, image: editor.image ?? null },
+        editor,
       };
     });
   });
