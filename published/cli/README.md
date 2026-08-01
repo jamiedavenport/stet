@@ -34,9 +34,11 @@ npx stet init
 
 `--output` defaults to `src/stet.gen.ts` when the project has a `src` directory and `stet.gen.ts` when it does not.
 
-Without `--force`, an existing config is never replaced: the command looks in every place [`@stetcms/vite`](https://docs.stetcms.com/reference/codegen) and this CLI look, so it will not leave you with a second config that nothing reads. With `--force` and no `--config`, it overwrites the file it found rather than adding one at the root.
+Without `--force`, an existing config is never replaced. Detection looks in every place [`@stetcms/vite`](https://docs.stetcms.com/reference/codegen) and this CLI look, so writing to the default location cannot shadow the config your project already loads: with `--force` and no `--config`, it overwrites the file it found rather than adding one at the root. An explicit `--config` is honoured as given, and if that path is somewhere the resolver will not look, the command says so rather than leaving you a config nothing reads.
 
-The config carries no `apiKey`. Export `STET_API_KEY` instead, so the file stays safe to commit.
+The next steps it prints depend on the project. A project that builds with Vite is told to install the plugin and add `stet()` to `vite.config.ts`; anywhere else — Next.js, another bundler, a CI checkout — is told to install [`@stetcms/client`](https://docs.stetcms.com/reference/client) and run `stet generate`. The install line follows whichever package manager the project uses.
+
+The config carries no `apiKey`. Export `STET_API_KEY` instead, so the file stays safe to commit. `init` does not edit your `package.json`.
 
 ### `stet generate`
 

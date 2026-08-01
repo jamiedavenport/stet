@@ -22,8 +22,14 @@ export function fail(message: string): never {
   process.exit(1);
 }
 
+/** A boxed, titled aside: several lines the reader is meant to act on. */
 export function note(message: string, title: string): void {
   clackNote(message, title);
+}
+
+/** Something worth knowing that is not a failure, so the command carries on. */
+export function warn(message: string): void {
+  log.warn(pc.yellow(message));
 }
 
 export function showVerification(verificationUri: string, userCode: string): void {

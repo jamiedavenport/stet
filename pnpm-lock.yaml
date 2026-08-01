@@ -445,6 +445,9 @@ catalogs:
     open:
       specifier: ^11.0.0
       version: 11.0.0
+    package-manager-detector:
+      specifier: ^1.8.0
+      version: 1.8.0
     partyserver:
       specifier: ^0.5.8
       version: 0.5.8
@@ -1743,6 +1746,9 @@ importers:
       open:
         specifier: 'catalog:'
         version: 11.0.0
+      package-manager-detector:
+        specifier: 'catalog:'
+        version: 1.8.0
       picocolors:
         specifier: 'catalog:'
         version: 1.1.1
@@ -8962,6 +8968,9 @@ packages:
 
   package-manager-detector@1.7.0:
     resolution: {integrity: sha512-xg1eHpwYL/D/HEdWw2goFZP6vV0FH7W+PZ5rFkGjdIDLtxq7EkzBUeT3m+lndYCt8wKbmofUu1MUdMCXkCk9ZQ==}
+
+  package-manager-detector@1.8.0:
+    resolution: {integrity: sha512-yQA4H19AmPEoMUeavPMDIe1higySl/gH/yaQrkT/s07Qp+7pp2hYz30N3z2l5BkjVkF9Ow6o0wjJamm2y7Sn0A==}
 
   pagefind@1.5.2:
     resolution: {integrity: sha512-XTUaK0hXMCu2jszWE584JGQT7y284TmMV9l/HX3rnG5uo3rHI/uHU56XTyyyPFjeWEBxECbAi0CaFDJOONtG0Q==}
@@ -18134,6 +18143,8 @@ snapshots:
       quansync: 0.2.11
 
   package-manager-detector@1.7.0: {}
+
+  package-manager-detector@1.8.0: {}
 
   pagefind@1.5.2:
     optionalDependencies:

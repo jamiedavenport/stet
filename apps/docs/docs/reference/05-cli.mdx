@@ -84,9 +84,18 @@ key in your git history. `init` prints the `STET_API_KEY` export instead, along
 with the install command for your package manager. It does not touch your
 `package.json`.
 
+The rest of what it prints depends on the project. One that builds with Vite is
+told to install the [plugin](/reference/codegen) and add `stet()` to
+`vite.config.ts`; anywhere else — Next.js, another bundler, a CI checkout — is
+told to install [`@stetcms/client`](/reference/client) and run `stet generate`,
+because the plugin would do nothing there.
+
 Without `--force` an existing config is never replaced, and detection uses the
-[same candidates](/reference/configuration) the plugin resolves, so `init` will
-not shadow a `src/stet.config.ts` with a new file at the root.
+[same candidates](/reference/configuration) the plugin resolves, so writing to
+the default location cannot shadow a `src/stet.config.ts` with a new file at the
+root. An explicit `--config` goes exactly where you point it, which can be
+somewhere that resolver never looks; when it is, the command warns that the file
+it just wrote will go unread.
 
 ### stet generate
 

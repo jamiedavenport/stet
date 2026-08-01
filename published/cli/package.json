@@ -46,6 +46,7 @@
     "commander": "catalog:",
     "conf": "catalog:",
     "open": "catalog:",
+    "package-manager-detector": "catalog:",
     "picocolors": "catalog:"
   },
   "devDependencies": {
