@@ -6,7 +6,12 @@ import { analytics } from '../analytics';
 export default defineNuxtPlugin(() => {
   const router = useRouter();
 
-  router.afterEach((to) => {
+  router.afterEach((to, _from, failure) => {
+    // afterEach also runs for aborted and redirected navigations, with the
+    // failure set; nobody saw those pages, so they are not pageviews.
+    if (failure != null) {
+      return;
+    }
     // The router's URL, not window.location: when this hook runs the router
     // has already advanced and window.location has not, so letting the client
     // read it would label every pageview with the previous page.

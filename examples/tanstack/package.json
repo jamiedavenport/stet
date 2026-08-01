@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "STET_API_KEY=stet_seed_key_for_local_development_only vp dev --port 3001",
+    "dev": "STET_API_KEY=\"${STET_API_KEY:-stet_seed_key_for_local_development_only}\" vp dev --port 3001",
     "build": "vp build",
     "tc": "tsc --noEmit"
   },
