@@ -122,7 +122,9 @@ const config = (command: 'build' | 'serve') =>
 // `vp run` sets it to "development" (and sometimes the string "null") before
 // loading this config, so it must be assigned unconditionally: `??=` sees a
 // non-nullish value and leaves the dev runtime in production bundles.
+// Object.assign rather than `=`: examples/nextjs puts Next's types in the
+// workspace lint program, and they declare NODE_ENV readonly.
 export default defineConfig(({ command }) => {
-  process.env.NODE_ENV = command === 'build' ? 'production' : 'development';
+  Object.assign(process.env, { NODE_ENV: command === 'build' ? 'production' : 'development' });
   return config(command);
 });

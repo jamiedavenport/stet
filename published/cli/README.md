@@ -55,8 +55,11 @@ stet generate --key stet_... --url https://stet.example.com --output lib/stet.ge
 | `--key <api-key>` | Organization API key. Defaults to `$STET_API_KEY`.                   |
 | `--output <path>` | Where the generated module goes. Defaults to `src/stet.gen.ts`.      |
 | `--config <path>` | Path to `stet.config.ts`. Auto-detected by default.                  |
+| `--if-key`        | Succeed without generating when no API key is set.                   |
 
 `--url`, `--key` and `--output` each override the matching key in `stet.config.ts`; `--config` chooses which file that is. Both this CLI and the Vite plugin read it (see [`@stetcms/config`](https://docs.stetcms.com/reference/configuration)).
+
+`--if-key` exists for build scripts, so `stet generate --if-key && next build` can run in environments that have no `STET_API_KEY`, such as a CI job building against a committed generated client. It is the same behaviour [`@stetcms/vite`](https://docs.stetcms.com/reference/codegen) has without a key: say so, keep the file on disk, and carry on. Only the missing key is forgiven; with a key set, an unreachable server or a rejected key still fails the command.
 
 The generated file imports [`@stetcms/client`](https://docs.stetcms.com/reference/client), so add that to your app's dependencies. It never contains the key: at runtime the client reads `STET_API_KEY` from the environment again, so the file is safe to commit. It reads `STET_ORIGIN` at runtime too, falling back to the origin it was generated against.
 
@@ -136,8 +139,13 @@ This package lives in the [Stet monorepo](https://github.com/jamiedavenport/stet
 
 ```bash
 vp install
-vp run build --filter @stetcms/cli
+vp run cli#build
 ```
+
+The `stet` bin is `bin/stet.mjs`, a committed launcher that defers to the
+bundled `dist/index.mjs`. It exists so pnpm can link the bin at install time
+inside the monorepo, where `dist` is gitignored and only exists after the
+build above; before that build it exits with a message saying to run it.
 
 ## License
 

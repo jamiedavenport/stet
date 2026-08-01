@@ -22,9 +22,10 @@
     "directory": "published/cli"
   },
   "bin": {
-    "stet": "./dist/index.mjs"
+    "stet": "./bin/stet.mjs"
   },
   "files": [
+    "bin",
     "dist"
   ],
   "type": "module",

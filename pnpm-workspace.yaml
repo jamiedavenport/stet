@@ -81,6 +81,7 @@ catalog:
   jiti: ^2.7.0
   '@phosphor-icons/react': ^2.1.10
   marked: ^17.0.6
+  next: ^16.2.12
   open: ^11.0.0
   package-manager-detector: ^1.8.0
   partyserver: ^0.5.8
@@ -91,6 +92,7 @@ catalog:
   react-dom: ^19.2.7
   recharts: ^3.8.0
   resend: ^6.17.2
+  server-only: ^0.0.1
   shadcn: ^4.13.1
   shiki: ^4.3.1
   size-limit: ^12.1.0
