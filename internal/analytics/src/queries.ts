@@ -93,6 +93,40 @@ export async function timeseries(
   return points;
 }
 
+/** Distinct visitor digests per bucket, read from retained raw events. */
+export async function visitorTimeseries(
+  db: AnalyticsDb,
+  query: Range & { interval: Interval },
+): Promise<TimeseriesPoint[]> {
+  const step = stepOf(query.interval);
+  const first = Math.trunc(query.from / step) * step;
+  if ((query.to - first) / step > MAX_BUCKETS) {
+    return Promise.reject(new Error(`range exceeds ${MAX_BUCKETS} ${query.interval} buckets`));
+  }
+
+  const rows = await db
+    .select({
+      bucket: bucketExpr(events.timestamp, step),
+      total: countDistinct(events.visitor),
+    })
+    .from(events)
+    .where(
+      and(
+        gte(events.timestamp, query.from),
+        lt(events.timestamp, query.to),
+        isNotNull(events.visitor),
+      ),
+    )
+    .groupBy(bucketExpr(events.timestamp, step));
+  const totals = new Map(rows.map((row) => [row.bucket, row.total]));
+
+  const points: TimeseriesPoint[] = [];
+  for (let bucket = first; bucket < query.to; bucket += step) {
+    points.push({ bucket, count: totals.get(bucket) ?? 0 });
+  }
+  return points;
+}
+
 /** The top values of one dimension over a range, largest first. */
 export async function breakdown(
   db: AnalyticsDb,

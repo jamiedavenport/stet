@@ -118,6 +118,7 @@ catalog:
   hast-util-from-html: ^2.0.3
   hast-util-sanitize: ^5.0.2
   hast-util-to-html: ^9.0.5
+  country-flag-icons: ^1.6.20
 
 overrides:
   vite: npm:@voidzero-dev/vite-plus-core@0.2.2

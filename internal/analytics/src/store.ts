@@ -6,7 +6,7 @@ import { DIMENSION_NAMES, HOUR_MS } from './dimensions';
 import type { Dimension } from './dimensions';
 import { getWatermark, hasRawEvents, insertEvents, pruneEvents, runRollup } from './ingest';
 import type { IngestEvent } from './ingest';
-import { breakdown, timeseries, totals } from './queries';
+import { breakdown, timeseries, totals, visitorTimeseries } from './queries';
 import type { BreakdownRow, Interval, Range, TimeseriesPoint, Totals } from './queries';
 import { schemaStatements } from './schema';
 
@@ -27,8 +27,15 @@ export type OverviewQuery = Range & { interval: Interval; limit?: number };
 
 export type Overview = {
   totals: Totals;
-  /** Page views per bucket. */
-  timeseries: TimeseriesPoint[];
+  /** Traffic counts grouped into UTC-aligned hour or day buckets. */
+  timeseries: {
+    /** Epoch milliseconds at the start of the bucket. */
+    bucket: number;
+    /** Page views recorded within the bucket. */
+    views: number;
+    /** Distinct day-scoped visitor digests seen within the bucket. */
+    visitors: number;
+  }[];
   breakdowns: Record<Dimension, BreakdownRow[]>;
 };
 
@@ -76,9 +83,18 @@ export class AnalyticsStore extends DurableObject<AnalyticsEnv> {
     for (const dimension of DIMENSION_NAMES) {
       breakdowns[dimension] = await breakdown(this.db, dimension, { ...query, limit });
     }
+    const [summary, views, visitors] = await Promise.all([
+      totals(this.db, query),
+      timeseries(this.db, query),
+      visitorTimeseries(this.db, query),
+    ]);
     return {
-      totals: await totals(this.db, query),
-      timeseries: await timeseries(this.db, query),
+      totals: summary,
+      timeseries: views.map((point, index) => ({
+        bucket: point.bucket,
+        views: point.count,
+        visitors: visitors[index]?.count ?? 0,
+      })),
       breakdowns,
     };
   }

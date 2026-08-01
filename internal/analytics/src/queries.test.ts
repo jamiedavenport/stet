@@ -7,7 +7,7 @@ import { beforeEach, describe, expect, it } from 'vite-plus/test';
 import { DAY_MS, HOUR_MS } from './dimensions';
 import { getWatermark, hasRawEvents, insertEvents, pruneEvents, runRollup } from './ingest';
 import type { IngestEvent } from './ingest';
-import { breakdown, timeseries, totals, uniqueVisitors } from './queries';
+import { breakdown, timeseries, totals, uniqueVisitors, visitorTimeseries } from './queries';
 import { events, rollupState, schemaStatements } from './schema';
 
 // A fixed hour boundary keeps every bucket assertion readable.
@@ -80,6 +80,25 @@ describe('timeseries', () => {
     await expect(
       timeseries(db, { from: T0, to: T0 + 2000 * HOUR_MS, interval: 'hour' }),
     ).rejects.toThrow(/exceeds/);
+  });
+
+  it('counts each visitor once per bucket and fills gaps', async () => {
+    await ingest([
+      pageview(0, { visitor: 'a' }),
+      pageview(1, { visitor: 'a' }),
+      pageview(2, { visitor: 'b' }),
+      pageview(2 * HOUR_MS, { visitor: 'a' }),
+    ]);
+    const points = await visitorTimeseries(db, {
+      from: T0,
+      to: T0 + 3 * HOUR_MS,
+      interval: 'hour',
+    });
+    expect(points).toEqual([
+      { bucket: T0, count: 2 },
+      { bucket: T0 + HOUR_MS, count: 0 },
+      { bucket: T0 + 2 * HOUR_MS, count: 1 },
+    ]);
   });
 });
 
