@@ -22,7 +22,7 @@ export async function readContentModel(organizationId: string) {
   const db = await database();
   const types = await db.query.contentType.findMany({
     where: eq(schema.contentType.organizationId, organizationId),
-    orderBy: asc(schema.contentType.createdAt),
+    orderBy: asc(schema.contentType.position),
   });
   const typeIds = types.map((type) => type.id);
   const fields =
@@ -90,11 +90,18 @@ function isUniqueViolation(error: unknown): boolean {
 
 export async function createContentType(
   organizationId: string,
-  input: { name: string; kind: 'collection' | 'map' },
+  input: { name: string; kind: 'collection' | 'map'; slug?: string },
   actor: Actor,
 ): Promise<{ id: string; slug: string }> {
   const db = await database();
   const id = crypto.randomUUID();
+  const requestedSlug = input.slug;
+  if (
+    requestedSlug !== undefined &&
+    (slugify(requestedSlug) !== requestedSlug || requestedSlug.length > 80)
+  ) {
+    throw new Error('Content type slug must be a lowercase URL slug of at most 80 characters');
+  }
   let slug = '';
   // Slug uniquing is read-then-insert, so two people creating at once can
   // compute the same slug; the unique index rejects the loser, who re-reads
@@ -102,9 +109,13 @@ export async function createContentType(
   for (let attempt = 0; ; attempt += 1) {
     const existing = await db.query.contentType.findMany({
       where: eq(schema.contentType.organizationId, organizationId),
-      columns: { slug: true },
+      columns: { slug: true, position: true },
     });
-    slug = uniqueSlug(slugify(input.name), new Set(existing.map((type) => type.slug)));
+    const taken = new Set(existing.map((type) => type.slug));
+    if (requestedSlug !== undefined && taken.has(requestedSlug)) {
+      throw new Error(`A content type with the slug "${requestedSlug}" already exists`);
+    }
+    slug = requestedSlug ?? uniqueSlug(slugify(input.name), taken);
     try {
       await db.insert(schema.contentType).values({
         id,
@@ -112,11 +123,13 @@ export async function createContentType(
         slug,
         name: input.name,
         kind: input.kind,
+        position:
+          existing.length === 0 ? 0 : Math.max(...existing.map((type) => type.position)) + 1,
         createdAt: new Date(),
       });
       break;
     } catch (error) {
-      if (attempt >= 2 || !isUniqueViolation(error)) {
+      if (requestedSlug !== undefined || attempt >= 2 || !isUniqueViolation(error)) {
         throw error;
       }
     }

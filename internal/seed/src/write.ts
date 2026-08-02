@@ -51,6 +51,7 @@ function writeModel(db: Db, organizationId: string, now: Date): void {
         slug: seedContent.posts.slug,
         name: seedContent.posts.name,
         kind: 'collection',
+        position: 0,
         createdAt: now,
       },
       {
@@ -59,9 +60,8 @@ function writeModel(db: Db, organizationId: string, now: Date): void {
         slug: seedContent.landing.slug,
         name: seedContent.landing.name,
         kind: 'map',
-        // After posts, so the model (and the client generated from it) keeps a
-        // stable order across reseeds.
-        createdAt: new Date(now.getTime() + 1000),
+        position: 1,
+        createdAt: now,
       },
     ])
     .run();

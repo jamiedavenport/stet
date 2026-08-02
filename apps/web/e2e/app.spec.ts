@@ -1,3 +1,5 @@
+import { readFile } from 'node:fs/promises';
+
 import { seedContent, seedOrganization, seedUser } from '@repo/db/seed-data';
 import { expect, test } from '@playwright/test';
 
@@ -61,4 +63,27 @@ test('inviting a member shows a pending invitation', async ({ page }) => {
   await page.getByRole('button', { name: 'Invite' }).click();
 
   await expect(page.getByText(email)).toBeVisible();
+});
+
+test('organization owners export a content-free model kit', async ({ page }) => {
+  await gotoHydrated(page, '/app/organization');
+
+  const pending = page.waitForEvent('download');
+  await page.getByRole('button', { name: 'Export model kit' }).click();
+  const download = await pending;
+  const path = await download.path();
+  expect(path).not.toBeNull();
+  const kit = JSON.parse(await readFile(path ?? '', 'utf8')) as Record<string, unknown>;
+
+  expect(download.suggestedFilename()).toBe('seed-org-model.stet-kit.json');
+  expect(kit).toMatchObject({
+    format: 'stet-model-kit',
+    version: 1,
+    name: 'Seed Org model',
+  });
+  expect(kit).toHaveProperty('types');
+  expect(kit).not.toHaveProperty('entries');
+  expect(kit).not.toHaveProperty('members');
+  expect(kit).not.toHaveProperty('webhooks');
+  expect(kit).not.toHaveProperty('analytics');
 });

@@ -9,6 +9,8 @@
     "./deprecations": "./src/deprecations.ts",
     "./entries": "./src/entries.ts",
     "./fields": "./src/fields.ts",
+    "./kit-schema": "./src/kit-schema.ts",
+    "./kits": "./src/kits.ts",
     "./model": "./src/model.ts",
     "./prune-revisions": "./src/prune-revisions.ts",
     "./revisions": "./src/revisions.ts",

@@ -36,6 +36,7 @@ beforeEach(async () => {
     slug: 'posts',
     name: 'Posts',
     kind: 'collection',
+    position: 0,
     createdAt: now,
   });
 });

@@ -328,7 +328,7 @@ const getContentModel = os.content.model.use(authenticated).handler(async ({ con
   const db = await database();
   const types = await db.query.contentType.findMany({
     where: eq(schema.contentType.organizationId, context.organizationId),
-    orderBy: asc(schema.contentType.createdAt),
+    orderBy: asc(schema.contentType.position),
   });
   const withFields = await Promise.all(
     types.map(async (type) => ({ ...type, fields: await loadModelFields(type.id) })),

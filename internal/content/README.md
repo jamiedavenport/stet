@@ -3,6 +3,8 @@
 The content domain: the operations behind collections, maps, fields, entries, and rich text bodies. `apps/web`'s server functions and `@repo/ai`'s agent tools both run this code, which is what keeps a change made in chat identical to one made in the UI.
 
 - `./schema`: field types, per-type config, and entry value parsing (client-safe).
+- `./kit-schema`: the client-safe, versioned JSON format for portable model kits.
+- `./kits`: exports the canonical model and applies a kit to an empty organization in two passes, remapping reference and select-option ids.
 - `./slug`: slug and key derivation (client-safe).
 - `./model`, `./fields`, `./entries`: server-only operations over the content model and entries. Callers authenticate and resolve the organization first; every function takes it as the first argument, and an `Actor` (see `@repo/audit`) last, so every change records who made it and through which surface.
 - Every operation here also calls `recordContentChange` from `@repo/webhooks/content`, which batches the organization's changes into one `content.changed` webhook per window. Emitting from this package rather than the server functions is what makes an edit from chat, the public API, or an import trigger a customer's rebuild exactly as one made in the UI does.
