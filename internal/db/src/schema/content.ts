@@ -20,7 +20,6 @@ export const contentType = sqliteTable(
     name: text('name').notNull(),
     /** 'collection' holds many entries; 'map' holds exactly one. */
     kind: text('kind').notNull(),
-    position: integer('position').notNull(),
     createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
   },
   (table) => [uniqueIndex('content_type_slug_idx').on(table.organizationId, table.slug)],

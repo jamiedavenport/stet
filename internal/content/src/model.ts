@@ -22,7 +22,7 @@ export async function readContentModel(organizationId: string) {
   const db = await database();
   const types = await db.query.contentType.findMany({
     where: eq(schema.contentType.organizationId, organizationId),
-    orderBy: asc(schema.contentType.position),
+    orderBy: [asc(schema.contentType.createdAt), asc(schema.contentType.slug)],
   });
   const typeIds = types.map((type) => type.id);
   const fields =
@@ -109,7 +109,7 @@ export async function createContentType(
   for (let attempt = 0; ; attempt += 1) {
     const existing = await db.query.contentType.findMany({
       where: eq(schema.contentType.organizationId, organizationId),
-      columns: { slug: true, position: true },
+      columns: { slug: true },
     });
     const taken = new Set(existing.map((type) => type.slug));
     if (requestedSlug !== undefined && taken.has(requestedSlug)) {
@@ -123,8 +123,6 @@ export async function createContentType(
         slug,
         name: input.name,
         kind: input.kind,
-        position:
-          existing.length === 0 ? 0 : Math.max(...existing.map((type) => type.position)) + 1,
         createdAt: new Date(),
       });
       break;

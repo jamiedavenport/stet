@@ -99,8 +99,8 @@ describe('model kits', () => {
       name: 'Agency base model',
     });
     expect(Object.hasOwn(kit, 'entries')).toBe(false);
-    expect(kit.types.map(({ slug }) => slug)).toEqual(['authors', 'posts', 'home']);
-    expect(kit.types[1]?.fields).toEqual([
+    expect(kit.types.map(({ slug }) => slug).sort()).toEqual(['authors', 'home', 'posts']);
+    expect(kit.types.find(({ slug }) => slug === 'posts')?.fields).toEqual([
       {
         name: 'Status',
         key: 'publication_status',
@@ -126,10 +126,14 @@ describe('model kits', () => {
     await applyModelKit(targetId, kit, editor);
 
     const model = await readContentModel(targetId);
-    expect(model.types.map(({ name, slug, kind }) => ({ name, slug, kind }))).toEqual([
+    expect(
+      model.types
+        .map(({ name, slug, kind }) => ({ name, slug, kind }))
+        .sort((left, right) => left.slug.localeCompare(right.slug)),
+    ).toEqual([
       { name: 'People', slug: 'authors', kind: 'collection' },
-      { name: 'Writing', slug: 'posts', kind: 'collection' },
       { name: 'Home page', slug: 'home', kind: 'map' },
+      { name: 'Writing', slug: 'posts', kind: 'collection' },
     ]);
     const authors = model.types.find((type) => type.slug === 'authors');
     const posts = model.types.find((type) => type.slug === 'posts');
@@ -144,7 +148,11 @@ describe('model kits', () => {
       where: eq(schema.contentEntry.organizationId, targetId),
     });
     expect(entries).toHaveLength(1);
-    expect(entries[0]).toMatchObject({ typeId: model.types[2]?.id, slug: 'default', values: '{}' });
+    expect(entries[0]).toMatchObject({
+      typeId: model.types.find((type) => type.slug === 'home')?.id,
+      slug: 'default',
+      values: '{}',
+    });
   });
 
   it('refuses to apply a kit to a non-empty organization', async () => {
