@@ -1,3 +1,5 @@
+import { readFile } from 'node:fs/promises';
+
 import { seedInvitation, seedOrganization, seedUser } from '@repo/db/seed-data';
 import { expect, test } from '@playwright/test';
 
@@ -21,6 +23,87 @@ test('sign up creates an account, org, and signs in', async ({ page }) => {
   await page.getByRole('button', { name: 'Create organization' }).click();
 
   await expect(page.getByText(`Signed in as ${email}`)).toBeVisible();
+});
+
+test('creates an organization from a model kit without content', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  const email = `delivered+kit-${Date.now()}@resend.dev`;
+  const organizationName = `Kit Org ${Date.now()}`;
+  const kit = {
+    format: 'stet-model-kit',
+    version: 1,
+    name: 'Agency website',
+    types: [
+      {
+        name: 'Authors',
+        slug: 'authors',
+        kind: 'collection',
+        fields: [{ name: 'Name', key: 'display_name', type: 'text' }],
+      },
+      {
+        name: 'Posts',
+        slug: 'posts',
+        kind: 'collection',
+        fields: [
+          {
+            name: 'Status',
+            key: 'status',
+            type: 'select',
+            options: [{ name: 'Draft', color: 'gray' }],
+          },
+          { name: 'Author', key: 'author', type: 'reference', collection: 'authors' },
+        ],
+      },
+    ],
+  };
+
+  await gotoHydrated(page, '/sign/up');
+  await page.getByLabel('Name').fill('Kit Test');
+  await page.getByLabel('Email').fill(email);
+  await page.getByLabel('Password').fill('a-strong-password');
+  await page.getByRole('button', { name: 'Create account' }).click();
+
+  await expect(page.getByText('Create an organization')).toBeVisible();
+  await page.getByLabel('Name').fill(organizationName);
+  await page.getByLabel('Model kit (optional)').setInputFiles({
+    name: 'agency.stet-kit.json',
+    mimeType: 'application/json',
+    buffer: Buffer.from(JSON.stringify(kit)),
+  });
+  await expect(page.getByText('2 collections, 0 maps, and 3 fields.')).toBeVisible();
+  await page.getByRole('button', { name: 'Create organization' }).click();
+
+  await expect(page.getByText(`Signed in as ${email}`)).toBeVisible();
+  await page.setViewportSize({ width: 1280, height: 720 });
+  await expect(page.getByRole('link', { name: 'Authors' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Posts' })).toBeVisible();
+
+  // Round-trip through export to prove import created full definitions, not
+  // just the types: the Status options and the Author reference survive.
+  await gotoHydrated(page, '/app/organization');
+  const pending = page.waitForEvent('download');
+  await page.getByRole('button', { name: 'Export model kit' }).click();
+  const download = await pending;
+  const path = await download.path();
+  expect(path).not.toBeNull();
+  const exported = JSON.parse(await readFile(path ?? '', 'utf8')) as {
+    types: Array<{ slug: string; fields: unknown[] }>;
+  };
+  const posts = exported.types.find((type) => type.slug === 'posts');
+  expect(posts?.fields).toEqual([
+    expect.objectContaining({
+      name: 'Status',
+      key: 'status',
+      type: 'select',
+      options: [{ name: 'Draft', color: 'gray' }],
+    }),
+    expect.objectContaining({
+      name: 'Author',
+      key: 'author',
+      type: 'reference',
+      collection: 'authors',
+    }),
+  ]);
 });
 
 test('sign in with seeded credentials', async ({ page }) => {

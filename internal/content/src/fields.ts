@@ -16,7 +16,7 @@ import { slugify, uniqueSlug } from './slug';
 
 export async function createField(
   organizationId: string,
-  input: { typeId: string; name: string; type: FieldType; config?: FieldConfig },
+  input: { typeId: string; name: string; key?: string; type: FieldType; config?: FieldConfig },
   actor: Actor,
 ): Promise<{ id: string; key: string }> {
   const db = await database();
@@ -39,7 +39,18 @@ export async function createField(
     where: eq(schema.contentFieldKey.typeId, type.id),
     columns: { key: true },
   });
-  const key = uniqueSlug(slugify(input.name, '_'), new Set(keys.map((row) => row.key)), '_');
+  const requestedKey = input.key;
+  if (
+    requestedKey !== undefined &&
+    (slugify(requestedKey, '_') !== requestedKey || requestedKey.length > 80)
+  ) {
+    throw new Error('Field key must be a lowercase API key of at most 80 characters');
+  }
+  const taken = new Set(keys.map((row) => row.key));
+  if (requestedKey !== undefined && taken.has(requestedKey)) {
+    throw new Error(`A field with the key "${requestedKey}" already exists`);
+  }
+  const key = requestedKey ?? uniqueSlug(slugify(input.name, '_'), taken, '_');
   const id = crypto.randomUUID();
   const createdAt = new Date();
   await executeTogether(db, [

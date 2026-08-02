@@ -1,3 +1,5 @@
+import { readFile } from 'node:fs/promises';
+
 import { seedContent, seedOrganization, seedUser } from '@repo/db/seed-data';
 import { expect, test } from '@playwright/test';
 
@@ -61,4 +63,47 @@ test('inviting a member shows a pending invitation', async ({ page }) => {
   await page.getByRole('button', { name: 'Invite' }).click();
 
   await expect(page.getByText(email)).toBeVisible();
+});
+
+test('organization owners export a content-free model kit', async ({ page }) => {
+  await gotoHydrated(page, '/app/organization');
+
+  const pending = page.waitForEvent('download');
+  await page.getByRole('button', { name: 'Export model kit' }).click();
+  const download = await pending;
+  const path = await download.path();
+  expect(path).not.toBeNull();
+  const kit = JSON.parse(await readFile(path ?? '', 'utf8')) as Record<string, unknown>;
+
+  expect(download.suggestedFilename()).toBe('seed-org-model.stet-kit.json');
+  expect(kit).toMatchObject({
+    format: 'stet-model-kit',
+    version: 1,
+    name: 'Seed Org model',
+  });
+  // The kit carries real definitions, not just type shells: the seeded Posts
+  // collection with its select options and its self-reference intact.
+  const types = kit.types as Array<{ slug: string; fields: unknown[] }>;
+  const posts = types.find((type) => type.slug === seedContent.posts.slug);
+  expect(posts).toMatchObject({ name: seedContent.posts.name, kind: 'collection' });
+  expect(posts?.fields).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        name: 'Topic',
+        key: 'topic',
+        type: 'select',
+        options: expect.arrayContaining([{ name: 'Engineering', color: 'blue' }]),
+      }),
+      expect.objectContaining({
+        name: 'Related',
+        key: 'related',
+        type: 'multi_reference',
+        collection: seedContent.posts.slug,
+      }),
+    ]),
+  );
+  expect(kit).not.toHaveProperty('entries');
+  expect(kit).not.toHaveProperty('members');
+  expect(kit).not.toHaveProperty('webhooks');
+  expect(kit).not.toHaveProperty('analytics');
 });
