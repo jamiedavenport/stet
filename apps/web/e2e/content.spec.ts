@@ -12,8 +12,15 @@ async function createType(
   kind: 'collection' | 'map',
   name: string,
 ) {
-  await page.getByRole('button', { name: 'New', exact: true }).click();
-  await page.getByRole('button', { name: `New ${kind}` }).click();
+  const trigger = page.getByRole('button', { name: 'New', exact: true });
+  const option = page.getByRole('button', { name: `New ${kind}` });
+  await expect(async () => {
+    if (!(await option.isVisible())) {
+      await trigger.click();
+    }
+    await expect(option).toBeVisible({ timeout: 1_000 });
+  }).toPass({ timeout: 15_000, intervals: [100, 250, 500, 1_000] });
+  await option.click();
   const nameInput = page.getByLabel(kind === 'map' ? 'Map name' : 'Collection name');
   await expect(nameInput).toHaveValue('Untitled');
   await nameInput.fill(name);

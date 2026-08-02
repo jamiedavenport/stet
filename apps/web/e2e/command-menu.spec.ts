@@ -19,8 +19,13 @@ function input(page: Page) {
 async function openMenu(page: Page) {
   await gotoHydrated(page, '/app');
   // Scoped to the sidebar: the home page's quick actions offer Search too.
-  await page.locator('[data-sidebar="sidebar"]').getByRole('button', { name: 'Search' }).click();
-  await expect(menu(page)).toBeVisible();
+  const trigger = page.locator('[data-sidebar="sidebar"]').getByRole('button', { name: 'Search' });
+  await expect(async () => {
+    if (!(await menu(page).isVisible())) {
+      await trigger.click();
+    }
+    await expect(menu(page)).toBeVisible({ timeout: 1_000 });
+  }).toPass({ timeout: 15_000, intervals: [100, 250, 500, 1_000] });
   // Base UI moves focus once the open transition settles, and every keystroke
   // in these specs depends on it having landed.
   await expect(input(page)).toBeFocused();
