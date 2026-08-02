@@ -1,6 +1,6 @@
 {
   "name": "@stetcms/cli",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Command line interface for Stet, the CMS for marketing and engineering: generate a typed content client and publish your tracking plan.",
   "keywords": [
     "cli",

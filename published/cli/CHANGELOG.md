@@ -1,5 +1,42 @@
 # @stetcms/cli
 
+## 0.2.0
+
+### Minor Changes
+
+- 7fb04d4: Add `--if-key` to `stet generate`: succeed without generating when no API key is set, so build scripts like `stet generate --if-key && next build` also pass in environments that build against the committed generated client. With a key set, failures still fail.
+- 80e8a95: Add `stet logout` and standardize command errors through the shared UI.
+- a75e5f8: Add `stet init`, which writes a `stet.config.ts` to start from and refuses to overwrite an existing one without `--force`.
+
+### Patch Changes
+
+- 01cabe9: Package metadata now describes what these packages are to someone who has never
+  heard of Stet, and every README links into the documentation.
+
+  Each `description` names the category once, and the keyword sets carry `cms`,
+  `headless-cms` and `stetcms` so an npm search for the category finds them at all;
+  previously the only shared keyword was `stet`, a brand with nothing behind it yet.
+  `homepage` now points at each package's reference page on docs.stetcms.com rather
+  than at a GitHub copy of the README the reader is already looking at, and the
+  cross-links between packages follow it there.
+
+  `@stetcms/analytics`, `@stetcms/client` and `@stetcms/config` declare
+  `sideEffects: false`, so bundlers can drop unused exports from consumer builds.
+  `@stetcms/client` declares `engines.node >= 20`, which the other four already did.
+
+- Updated dependencies [8bb7bf3]
+- Updated dependencies [cff3654]
+- Updated dependencies [5d6757e]
+- Updated dependencies [868549f]
+- Updated dependencies [043344d]
+- Updated dependencies [dface7a]
+- Updated dependencies [01cabe9]
+- Updated dependencies [fbb6c1e]
+  - @stetcms/vite@0.2.0
+  - @stetcms/analytics@0.2.0
+  - @stetcms/client@0.2.0
+  - @stetcms/config@0.1.1
+
 ## 0.1.0
 
 ### Minor Changes

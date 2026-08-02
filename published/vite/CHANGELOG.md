@@ -1,5 +1,47 @@
 # @stetcms/vite
 
+## 0.2.0
+
+### Minor Changes
+
+- dface7a: Rich text fields now contain both sanitised HTML and markdown. Generated clients
+  type them as `ContentRichText`, and the content client resolves Stet asset URLs
+  inside both representations so bodies can be rendered without another markdown
+  dependency.
+
+### Patch Changes
+
+- 8bb7bf3: Link the new SvelteKit example from the README, alongside the TanStack Start
+  one; the plugin dropped into both frameworks unchanged.
+- 01cabe9: Package metadata now describes what these packages are to someone who has never
+  heard of Stet, and every README links into the documentation.
+
+  Each `description` names the category once, and the keyword sets carry `cms`,
+  `headless-cms` and `stetcms` so an npm search for the category finds them at all;
+  previously the only shared keyword was `stet`, a brand with nothing behind it yet.
+  `homepage` now points at each package's reference page on docs.stetcms.com rather
+  than at a GitHub copy of the README the reader is already looking at, and the
+  cross-links between packages follow it there.
+
+  `@stetcms/analytics`, `@stetcms/client` and `@stetcms/config` declare
+  `sideEffects: false`, so bundlers can drop unused exports from consumer builds.
+  `@stetcms/client` declares `engines.node >= 20`, which the other four already did.
+
+- fbb6c1e: Link the new Astro example from the README, alongside the TanStack Start one,
+  and say outright that frameworks building on Vite need nothing extra: in
+  Astro the plugin goes through `vite.plugins` and both jobs — client codegen
+  and tracking-plan publish — run unchanged. Verified against a seeded local
+  Stet.
+- Updated dependencies [cff3654]
+- Updated dependencies [5d6757e]
+- Updated dependencies [868549f]
+- Updated dependencies [043344d]
+- Updated dependencies [dface7a]
+- Updated dependencies [01cabe9]
+  - @stetcms/analytics@0.2.0
+  - @stetcms/client@0.2.0
+  - @stetcms/config@0.1.1
+
 ## 0.1.0
 
 ### Minor Changes

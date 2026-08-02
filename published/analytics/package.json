@@ -1,6 +1,6 @@
 {
   "name": "@stetcms/analytics",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Cookieless, type-safe product analytics routed through your own backend. Part of Stet, the CMS for marketing and engineering.",
   "keywords": [
     "analytics",

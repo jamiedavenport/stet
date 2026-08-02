@@ -1,5 +1,41 @@
 # @stetcms/analytics
 
+## 0.2.0
+
+### Minor Changes
+
+- 868549f: Added `enabled` to `createAnalyticsHandler`, so tracking can be switched off without taking the organization API key away.
+
+  The key was the only switch: no key meant no events. That works until the same key is needed for something else, which it is as soon as a project generates its content client, because then it is real on every developer's machine and their browsing lands in the project the dashboards read. `enabled` separates the two. It defaults to whether a key resolved, so nothing changes for a deployment that does not set it, and a disabled handler answers `200 { accepted: 0 }` while still validating each batch against the plan.
+
+- 043344d: Accept an optional framework route template on pageviews so analytics can group
+  parameterized routes while retaining the concrete URL for deduplication.
+
+### Patch Changes
+
+- cff3654: Document that the analytics client runs on a server as well as in a browser.
+  It already guarded its listeners and automatic pageviews behind a `window`
+  check, but nothing said so, which left server-side events looking like a gap
+  in the package. Give it an absolute `endpoint` and it posts to the route you
+  already mounted, so signups and subscriptions can be recorded where they
+  happen without a second way to hold your API key.
+- 01cabe9: Package metadata now describes what these packages are to someone who has never
+  heard of Stet, and every README links into the documentation.
+
+  Each `description` names the category once, and the keyword sets carry `cms`,
+  `headless-cms` and `stetcms` so an npm search for the category finds them at all;
+  previously the only shared keyword was `stet`, a brand with nothing behind it yet.
+  `homepage` now points at each package's reference page on docs.stetcms.com rather
+  than at a GitHub copy of the README the reader is already looking at, and the
+  cross-links between packages follow it there.
+
+  `@stetcms/analytics`, `@stetcms/client` and `@stetcms/config` declare
+  `sideEffects: false`, so bundlers can drop unused exports from consumer builds.
+  `@stetcms/client` declares `engines.node >= 20`, which the other four already did.
+
+- Updated dependencies [01cabe9]
+  - @stetcms/config@0.1.1
+
 ## 0.1.0
 
 ### Minor Changes

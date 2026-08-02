@@ -1,5 +1,35 @@
 # @stetcms/client
 
+## 0.2.0
+
+### Minor Changes
+
+- dface7a: Rich text fields now contain both sanitised HTML and markdown. Generated clients
+  type them as `ContentRichText`, and the content client resolves Stet asset URLs
+  inside both representations so bodies can be rendered without another markdown
+  dependency.
+
+### Patch Changes
+
+- 5d6757e: Make `entryTypeName` index-free so the codegen source type-checks in projects
+  with `noUncheckedIndexedAccess`, such as Nuxt's generated tsconfig.
+- 01cabe9: Package metadata now describes what these packages are to someone who has never
+  heard of Stet, and every README links into the documentation.
+
+  Each `description` names the category once, and the keyword sets carry `cms`,
+  `headless-cms` and `stetcms` so an npm search for the category finds them at all;
+  previously the only shared keyword was `stet`, a brand with nothing behind it yet.
+  `homepage` now points at each package's reference page on docs.stetcms.com rather
+  than at a GitHub copy of the README the reader is already looking at, and the
+  cross-links between packages follow it there.
+
+  `@stetcms/analytics`, `@stetcms/client` and `@stetcms/config` declare
+  `sideEffects: false`, so bundlers can drop unused exports from consumer builds.
+  `@stetcms/client` declares `engines.node >= 20`, which the other four already did.
+
+- Updated dependencies [01cabe9]
+  - @stetcms/config@0.1.1
+
 ## 0.1.0
 
 ### Minor Changes
