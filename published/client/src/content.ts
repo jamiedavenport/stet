@@ -1,3 +1,5 @@
+import { createORPCErrorFromJson, isORPCErrorJson } from '@orpc/client';
+
 import { DEFAULT_ORIGIN } from './codegen';
 
 export { DEFAULT_ORIGIN };
@@ -139,6 +141,31 @@ function resolveAssetUrls(payload: unknown, origin: string): unknown {
 }
 
 /**
+ * The human message a failed request carries, if any. The API answers an error
+ * with an oRPC error body: a JSON object carrying the `message` the contract
+ * writes for a person (`UNAUTHORIZED` explains the missing `x-api-key` header;
+ * `QUOTA_EXCEEDED`, `RATE_LIMITED` and `NOT_FOUND` each say what happened).
+ * Surfacing it turns a bare status code into a sentence that names the cause.
+ *
+ * The body is validated and read with oRPC's own `isORPCErrorJson` /
+ * `createORPCErrorFromJson`, so the shape check and the `code`-based message
+ * fallback match the server rather than being reimplemented here.
+ *
+ * Returns `undefined` when the body is empty, not JSON, or not an oRPC error
+ * (a proxy's HTML error page, say), so the caller keeps the status-only message.
+ */
+async function errorMessage(response: Response): Promise<string | undefined> {
+  let body: unknown;
+  try {
+    body = await response.json();
+  } catch {
+    // Empty or non-JSON body — the status-only message is the best we have.
+    return undefined;
+  }
+  return isORPCErrorJson(body) ? createORPCErrorFromJson(body).message : undefined;
+}
+
+/**
  * The model-shaped client `stet.gen.ts` instantiates: `stet.posts.list()`,
  * `stet.posts.get('hello-world')`, `stet.landing.get()`. The type parameter
  * narrows which keys exist and what their entries look like; the runtime is
@@ -155,7 +182,9 @@ export function createContentClient<M extends ContentModelShape>(
       headers: options.apiKey === undefined ? {} : { 'x-api-key': options.apiKey },
     });
     if (!response.ok) {
-      throw new Error(`Stet request ${path} failed with status ${response.status}.`);
+      const summary = `Stet request ${path} failed with status ${response.status}.`;
+      const detail = await errorMessage(response);
+      throw new Error(detail === undefined ? summary : `${summary} ${detail}`);
     }
     return resolveAssetUrls(await response.json(), origin);
   };
