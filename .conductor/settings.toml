@@ -10,7 +10,7 @@ setup = """
 if [ ! -f apps/web/.dev.vars ]; then
   cp apps/web/.dev.vars.example apps/web/.dev.vars
 fi
-vp install
+pnpm install --frozen-lockfile
 pnpm seed
 """
 run_mode = "concurrent"
