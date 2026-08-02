@@ -1,6 +1,6 @@
 {
   "name": "@stetcms/config",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "The shape of stet.config.ts, shared by the Vite plugin and CLI of Stet, the CMS for marketing and engineering.",
   "keywords": [
     "cms",

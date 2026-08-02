@@ -1,6 +1,6 @@
 {
   "name": "@stetcms/client",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Typed content and REST client for Stet, the CMS for marketing and engineering.",
   "keywords": [
     "api",
