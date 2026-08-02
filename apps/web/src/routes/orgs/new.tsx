@@ -36,9 +36,16 @@ function NewOrganization() {
   const [kit, setKit] = useState<ModelKit | null>(null);
   const [kitError, setKitError] = useState<string | null>(null);
   const [kitFileName, setKitFileName] = useState<string | null>(null);
+  // Submission is blocked while a selected file is still being read, so a
+  // fast submit cannot create the organization without its kit.
+  const [kitLoading, setKitLoading] = useState(false);
 
+  // The length cap mirrors createOrganizationSchema on the server.
   const newOrgSchema = z.object({
-    name: z.string().min(1, 'Enter an organization name'),
+    name: z
+      .string()
+      .min(1, 'Enter an organization name')
+      .max(80, 'Organization names are at most 80 characters'),
   });
 
   const form = useAppForm({
@@ -46,7 +53,7 @@ function NewOrganization() {
     validators: { onSubmit: newOrgSchema },
     onSubmit: async ({ value }) => {
       setFormError(null);
-      if (kitError !== null) {
+      if (kitError !== null || kitLoading) {
         return;
       }
       try {
@@ -70,6 +77,7 @@ function NewOrganization() {
       setKitError('That model kit is larger than 1 MB.');
       return;
     }
+    setKitLoading(true);
     try {
       const parsed = modelKitSchema.safeParse(JSON.parse(await file.text()));
       if (!parsed.success) {
@@ -79,6 +87,8 @@ function NewOrganization() {
       setKit(parsed.data);
     } catch {
       setKitError('That file is not valid JSON.');
+    } finally {
+      setKitLoading(false);
     }
   };
 
@@ -141,7 +151,7 @@ function NewOrganization() {
                 <form.SubmitButton
                   label={'Create organization'}
                   pendingLabel={'Creating…'}
-                  disabled={kitError !== null}
+                  disabled={kitError !== null || kitLoading}
                 />
               </form.AppForm>
             </FieldGroup>

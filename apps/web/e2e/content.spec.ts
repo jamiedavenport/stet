@@ -16,7 +16,8 @@ async function createType(
   const option = page.getByRole('button', { name: `New ${kind}` });
   await expect(async () => {
     if (!(await option.isVisible())) {
-      await trigger.click();
+      // Bounded so a hung actionability wait cannot outlive the retry deadline.
+      await trigger.click({ timeout: 1_000 });
     }
     await expect(option).toBeVisible({ timeout: 1_000 });
   }).toPass({ timeout: 15_000, intervals: [100, 250, 500, 1_000] });

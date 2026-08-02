@@ -1,6 +1,7 @@
 import { applyModelKit, exportModelKit as exportKit } from '@repo/content/kits';
 import { modelKitSchema } from '@repo/content/kit-schema';
 import { database, eq, schema } from '@repo/db';
+import { log } from '@repo/logging';
 import { createServerFn } from '@tanstack/react-start';
 import { z } from 'zod';
 
@@ -70,8 +71,13 @@ export const createOrganization = createServerFn({ method: 'POST' })
           headers: context.headers,
           body: { organizationId: organization.id },
         });
-      } catch {
-        // The original import error is actionable; cleanup is best-effort.
+      } catch (cleanupError) {
+        // The original import error is the actionable one; a failed cleanup
+        // leaves a partial organization behind, so it must be findable.
+        log.error(
+          'organization',
+          `model kit rollback failed to delete organization ${organization.id}: ${String(cleanupError)}`,
+        );
       }
       throw error;
     }

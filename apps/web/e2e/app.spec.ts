@@ -81,7 +81,27 @@ test('organization owners export a content-free model kit', async ({ page }) => 
     version: 1,
     name: 'Seed Org model',
   });
-  expect(kit).toHaveProperty('types');
+  // The kit carries real definitions, not just type shells: the seeded Posts
+  // collection with its select options and its self-reference intact.
+  const types = kit.types as Array<{ slug: string; fields: unknown[] }>;
+  const posts = types.find((type) => type.slug === seedContent.posts.slug);
+  expect(posts).toMatchObject({ name: seedContent.posts.name, kind: 'collection' });
+  expect(posts?.fields).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        name: 'Topic',
+        key: 'topic',
+        type: 'select',
+        options: expect.arrayContaining([{ name: 'Engineering', color: 'blue' }]),
+      }),
+      expect.objectContaining({
+        name: 'Related',
+        key: 'related',
+        type: 'multi_reference',
+        collection: seedContent.posts.slug,
+      }),
+    ]),
+  );
   expect(kit).not.toHaveProperty('entries');
   expect(kit).not.toHaveProperty('members');
   expect(kit).not.toHaveProperty('webhooks');

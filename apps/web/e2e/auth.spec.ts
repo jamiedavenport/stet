@@ -1,3 +1,5 @@
+import { readFile } from 'node:fs/promises';
+
 import { seedInvitation, seedOrganization, seedUser } from '@repo/db/seed-data';
 import { expect, test } from '@playwright/test';
 
@@ -75,6 +77,33 @@ test('creates an organization from a model kit without content', async ({ page }
   await page.setViewportSize({ width: 1280, height: 720 });
   await expect(page.getByRole('link', { name: 'Authors' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Posts' })).toBeVisible();
+
+  // Round-trip through export to prove import created full definitions, not
+  // just the types: the Status options and the Author reference survive.
+  await gotoHydrated(page, '/app/organization');
+  const pending = page.waitForEvent('download');
+  await page.getByRole('button', { name: 'Export model kit' }).click();
+  const download = await pending;
+  const path = await download.path();
+  expect(path).not.toBeNull();
+  const exported = JSON.parse(await readFile(path ?? '', 'utf8')) as {
+    types: Array<{ slug: string; fields: unknown[] }>;
+  };
+  const posts = exported.types.find((type) => type.slug === 'posts');
+  expect(posts?.fields).toEqual([
+    expect.objectContaining({
+      name: 'Status',
+      key: 'status',
+      type: 'select',
+      options: [{ name: 'Draft', color: 'gray' }],
+    }),
+    expect.objectContaining({
+      name: 'Author',
+      key: 'author',
+      type: 'reference',
+      collection: 'authors',
+    }),
+  ]);
 });
 
 test('sign in with seeded credentials', async ({ page }) => {

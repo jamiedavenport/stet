@@ -22,7 +22,8 @@ async function openMenu(page: Page) {
   const trigger = page.locator('[data-sidebar="sidebar"]').getByRole('button', { name: 'Search' });
   await expect(async () => {
     if (!(await menu(page).isVisible())) {
-      await trigger.click();
+      // Bounded so a hung actionability wait cannot outlive the retry deadline.
+      await trigger.click({ timeout: 1_000 });
     }
     await expect(menu(page)).toBeVisible({ timeout: 1_000 });
   }).toPass({ timeout: 15_000, intervals: [100, 250, 500, 1_000] });
