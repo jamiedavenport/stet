@@ -18,7 +18,7 @@ catalog:
   '@better-auth/api-key': ^1.6.25
   '@better-auth/passkey': ^1.6.25
   '@better-auth/stripe': ^1.6.25
-  '@ai-sdk/react': ^3.0.235
+  '@ai-sdk/react': ^4.0.50
   '@base-ui/react': ^1.6.0
   '@changesets/cli': ^2.31.1
   '@clack/prompts': ^1.7.0
