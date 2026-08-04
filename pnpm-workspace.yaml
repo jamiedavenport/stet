@@ -14,7 +14,7 @@ catalog:
   '@policystack/react': ^1.2.0
   '@policystack/sdk': ^1.2.0
   '@policystack/vite': ^1.2.0
-  '@ai-sdk/anthropic': ^3.0.99
+  '@ai-sdk/anthropic': ^4.0.27
   '@better-auth/api-key': ^1.6.25
   '@better-auth/passkey': ^1.6.25
   '@better-auth/stripe': ^1.6.25
