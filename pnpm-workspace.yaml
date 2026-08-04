@@ -74,7 +74,7 @@ catalog:
   '@types/react-dom': ^19.2.3
   '@vitejs/plugin-react': ^6.0.3
   agents: ^0.17.4
-  ai: ^6.0.233
+  ai: ^7.0.47
   better-auth: ^1.6.25
   better-sqlite3: ^12.11.1
   class-variance-authority: ^0.7.1
