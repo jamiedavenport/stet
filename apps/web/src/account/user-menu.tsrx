@@ -1,4 +1,5 @@
 import { authClient } from '@repo/auth/client';
+import { brand } from '@repo/brand';
 import { useQueryClient } from '@tanstack/react-query';
 import { Avatar, AvatarFallback, AvatarImage } from '@repo/ui/components/avatar';
 import {
@@ -17,7 +18,7 @@ import {
   useSidebar,
 } from '@repo/ui/components/sidebar';
 import { Link, useRouter } from '@tanstack/react-router';
-import { CaretUpDownIcon, SignOutIcon } from '@phosphor-icons/react';
+import { BookOpenIcon, CaretUpDownIcon, SignOutIcon } from '@phosphor-icons/react';
 
 import { accountNavigation } from '#/navigation';
 import { imageSrc } from '#/files/urls';
@@ -77,6 +78,12 @@ export function UserMenu() @{
                 {item.label}
               </DropdownMenuItem>
             }
+            <DropdownMenuItem
+              render={<a href={brand.docs} target="_blank" rel="noreferrer" />}
+            >
+              <BookOpenIcon />
+              {"Documentation"}
+            </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => void signOut()}>
