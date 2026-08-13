@@ -99,6 +99,37 @@ test('collections: model, table editing, and the entry editor', async ({ page })
   await expect(page.getByText('Hello World')).toBeVisible();
 });
 
+test('collection deletion explains the consequences and requires confirmation', async ({
+  page,
+}) => {
+  const name = `Disposable ${Date.now()}`;
+
+  await gotoHydrated(page, '/app');
+  await createType(page, 'collection', name);
+  await page.getByRole('button', { name: 'New entry' }).click();
+
+  await page.getByRole('button', { name: 'Collection actions' }).click();
+  await page.getByRole('menuitem', { name: 'Delete collection' }).click();
+
+  const dialog = page.getByRole('alertdialog');
+  await expect(dialog).toBeVisible();
+  await expect(dialog.getByRole('heading')).toHaveText(`Delete ${name} and all its content?`);
+  await expect(dialog).toContainText(
+    'This permanently deletes the collection, its fields, every entry, all revision history, and all rich text. This action cannot be undone.',
+  );
+
+  await dialog.getByRole('button', { name: 'Cancel' }).click();
+  await expect(dialog).toBeHidden();
+  await expect(page.getByLabel('Collection name')).toHaveValue(name);
+
+  await page.getByRole('button', { name: 'Collection actions' }).click();
+  await page.getByRole('menuitem', { name: 'Delete collection' }).click();
+  await dialog.getByRole('button', { name: 'Delete collection' }).click();
+
+  await expect(page).toHaveURL(/\/app$/);
+  await expect(page.getByRole('link', { name, exact: true })).toBeHidden();
+});
+
 // Every write bumps the collection's realtime room server-side, so a table
 // follows a change it did not make. Two tabs is what a test can stage; the
 // same bump is what carries a write from the API or an agent to an editor.

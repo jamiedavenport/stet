@@ -1,7 +1,24 @@
-import type { ReactNode } from 'react';
+import { type ReactNode, useState } from 'react';
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@repo/ui/components/alert-dialog';
 import { Button } from '@repo/ui/components/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@repo/ui/components/dropdown-menu';
+import { FieldError } from '@repo/ui/components/field';
 import { Input } from '@repo/ui/components/input';
-import { TrashIcon } from '@phosphor-icons/react';
+import { DotsThreeIcon, TrashIcon } from '@phosphor-icons/react';
+import { useMutation } from '@tanstack/react-query';
 
 import { deleteContentType, updateContentType } from '#/content/model/functions';
 
@@ -24,6 +41,16 @@ const commitOnEnter = (event: React.KeyboardEvent<HTMLInputElement>) => {
 /** A collection or map page's header: name and slug edited in place. */
 export function TypeHeader(props: TypeHeaderProps) @{
   const { type } = props;
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const deletion = useMutation({
+    mutationFn: () => deleteContentType({ data: { id: type.id } }),
+    onSuccess: async () => {
+      setDeleteOpen(false);
+      // Leave before invalidating: a refetch on this page would hit not-found.
+      await props.onDeleted();
+      await props.onChanged();
+    },
+  });
 
   const rename = async (name: string) => {
     if (name.trim().length === 0 || name.trim() === type.name) {
@@ -43,11 +70,14 @@ export function TypeHeader(props: TypeHeaderProps) @{
     await props.onChanged();
   };
 
-  const remove = async () => {
-    await deleteContentType({ data: { id: type.id } });
-    // Leave before invalidating: a refetch on this page would hit not-found.
-    await props.onDeleted();
-    await props.onChanged();
+  const changeDeleteOpen = (open: boolean) => {
+    if (deletion.isPending && !open) {
+      return;
+    }
+    if (!open) {
+      deletion.reset();
+    }
+    setDeleteOpen(open);
   };
 
   <div className="-mx-6 flex items-center gap-3 border-b px-6 pb-5">
@@ -71,15 +101,69 @@ export function TypeHeader(props: TypeHeaderProps) @{
     />
     <div className="ml-auto flex items-center gap-2">
       {props.children}
-      <Button
-        variant="ghost"
-        size="icon-sm"
-        aria-label={type.kind === 'map' ? `Delete ${type.name}` : `Delete ${type.name} and entries`}
-        className="text-muted-foreground hover:text-destructive"
-        onClick={() => void remove()}
-      >
-        <TrashIcon className="size-4" />
-      </Button>
+      <DropdownMenu>
+        <DropdownMenuTrigger
+          render={
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon-sm"
+              aria-label={type.kind === 'map' ? 'Map actions' : 'Collection actions'}
+              className="relative"
+            />
+          }
+        >
+          <span
+            className="pointer-fine:hidden absolute top-1/2 left-1/2 size-[max(100%,3rem)] -translate-1/2"
+            aria-hidden="true"
+          />
+          <DotsThreeIcon className="size-4 shrink-0" />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-44">
+          <DropdownMenuItem variant="destructive" onClick={() => setDeleteOpen(true)}>
+            <TrashIcon className="size-4 shrink-0" />
+            {type.kind === 'map' ? 'Delete map' : 'Delete collection'}
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <AlertDialog open={deleteOpen} onOpenChange={changeDeleteOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {type.kind === 'map'
+                ? `Delete ${type.name}?`
+                : `Delete ${type.name} and all its content?`}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {type.kind === 'map'
+                ? 'This permanently deletes the map, its fields, content, revision history, and rich text. This action cannot be undone.'
+                : 'This permanently deletes the collection, its fields, every entry, all revision history, and all rich text. This action cannot be undone.'}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          @if (deletion.isError) {
+            <FieldError>
+              {type.kind === 'map'
+                ? 'The map was not deleted. Try again.'
+                : 'The collection was not deleted. Try again.'}
+            </FieldError>
+          }
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deletion.isPending}>{"Cancel"}</AlertDialogCancel>
+            <Button
+              type="button"
+              variant="destructive-solid"
+              disabled={deletion.isPending}
+              onClick={() => deletion.mutate()}
+            >
+              {deletion.isPending
+                ? 'Deleting…'
+                : type.kind === 'map'
+                  ? 'Delete map'
+                  : 'Delete collection'}
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   </div>
 }
