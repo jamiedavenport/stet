@@ -18,6 +18,7 @@ import {
 import { FieldError } from '@repo/ui/components/field';
 import { Input } from '@repo/ui/components/input';
 import { DotsThreeIcon, TrashIcon } from '@phosphor-icons/react';
+import { useMutation } from '@tanstack/react-query';
 
 import { deleteContentType, updateContentType } from '#/content/model/functions';
 
@@ -41,8 +42,15 @@ const commitOnEnter = (event: React.KeyboardEvent<HTMLInputElement>) => {
 export function TypeHeader(props: TypeHeaderProps) @{
   const { type } = props;
   const [deleteOpen, setDeleteOpen] = useState(false);
-  const [deletePending, setDeletePending] = useState(false);
-  const [deleteFailed, setDeleteFailed] = useState(false);
+  const deletion = useMutation({
+    mutationFn: () => deleteContentType({ data: { id: type.id } }),
+    onSuccess: async () => {
+      setDeleteOpen(false);
+      // Leave before invalidating: a refetch on this page would hit not-found.
+      await props.onDeleted();
+      await props.onChanged();
+    },
+  });
 
   const rename = async (name: string) => {
     if (name.trim().length === 0 || name.trim() === type.name) {
@@ -62,32 +70,12 @@ export function TypeHeader(props: TypeHeaderProps) @{
     await props.onChanged();
   };
 
-  const remove = async () => {
-    if (deletePending) {
-      return;
-    }
-    setDeletePending(true);
-    setDeleteFailed(false);
-    try {
-      await deleteContentType({ data: { id: type.id } });
-    } catch {
-      setDeletePending(false);
-      setDeleteFailed(true);
-      return;
-    }
-    setDeleteOpen(false);
-    // Leave before invalidating: a refetch on this page would hit not-found.
-    await props.onDeleted();
-    await props.onChanged();
-    setDeletePending(false);
-  };
-
   const changeDeleteOpen = (open: boolean) => {
-    if (deletePending && !open) {
+    if (deletion.isPending && !open) {
       return;
     }
     if (!open) {
-      setDeleteFailed(false);
+      deletion.reset();
     }
     setDeleteOpen(open);
   };
@@ -152,7 +140,7 @@ export function TypeHeader(props: TypeHeaderProps) @{
                 : 'This permanently deletes the collection, its fields, every entry, all revision history, and all rich text. This action cannot be undone.'}
             </AlertDialogDescription>
           </AlertDialogHeader>
-          @if (deleteFailed) {
+          @if (deletion.isError) {
             <FieldError>
               {type.kind === 'map'
                 ? 'The map was not deleted. Try again.'
@@ -160,14 +148,14 @@ export function TypeHeader(props: TypeHeaderProps) @{
             </FieldError>
           }
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={deletePending}>{"Cancel"}</AlertDialogCancel>
+            <AlertDialogCancel disabled={deletion.isPending}>{"Cancel"}</AlertDialogCancel>
             <Button
               type="button"
               variant="destructive-solid"
-              disabled={deletePending}
-              onClick={() => void remove()}
+              disabled={deletion.isPending}
+              onClick={() => deletion.mutate()}
             >
-              {deletePending
+              {deletion.isPending
                 ? 'Deleting…'
                 : type.kind === 'map'
                   ? 'Delete map'
