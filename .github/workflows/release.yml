@@ -30,7 +30,7 @@ jobs:
       # While unreleased changesets exist this maintains a "Version Packages"
       # PR; once that PR merges it builds published/* and publishes to npm,
       # then creates a GitHub release per new tag.
-      - uses: changesets/action@v1
+      - uses: changesets/action@v2
         with:
           version: pnpm run changeset:version
           publish: pnpm run release
