@@ -81,13 +81,13 @@ const usage = await usageReport(organizationId); // [{ feature, used, cap, windo
 
 `can` and `require` accept an optional `n` for headroom checks (`members.can(orgId, 5)`). `consume` is one conditional upsert, so concurrent requests cannot race past the cap. `BillingError` carries a `code` (`feature-unavailable` or `limit-reached`), the `plan`, and the `feature`; callers map it onto their layer's error shape. Where the checks run today:
 
-| Layer            | Location                                                                                  |
-| ---------------- | ----------------------------------------------------------------------------------------- |
-| Better Auth      | `membershipLimit` + `beforeCreateInvitation` in `@repo/auth` use `members`                |
-| Worker routes    | `apps/web/src/server.ts` gates the AI agent WebSocket with `ai`                           |
-| Public API       | the authenticated middleware consumes one `apiRequests` unit per request (429 over cap)   |
-| Server functions | `getOrgBilling` in `apps/web/src/organization/functions.ts` resolves plan, catalog, usage |
-| UI               | the billing card on `/app/organization` and the upgrade prompt on `/chat`                 |
+| Layer            | Location                                                                                                             |
+| ---------------- | -------------------------------------------------------------------------------------------------------------------- |
+| Better Auth      | `membershipLimit` + `beforeCreateInvitation` in `@repo/auth` use `members`                                           |
+| Worker routes    | `apps/web/src/server.ts` gates the AI agent WebSocket with `ai`                                                      |
+| Public API       | metered procedures consume one `apiRequests` unit per request (429 over cap); content delivery is temporarily exempt |
+| Server functions | `getOrgBilling` in `apps/web/src/organization/functions.ts` resolves plan, catalog, usage                            |
+| UI               | the billing card on `/app/organization` and the upgrade prompt on `/chat`                                            |
 
 `GET /api/v1/org/billing` reports the plan, subscription state, and the usage report.
 

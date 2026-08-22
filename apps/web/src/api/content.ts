@@ -3,7 +3,7 @@ import { loadDocument } from '@repo/realtime/document';
 import { entryPage } from '@repo/realtime/entry';
 import { ORPCError } from '@orpc/server';
 
-import { authenticated, os } from '#/api/implementer';
+import { keyed, os } from '#/api/implementer';
 import { publicAssetUrl } from '#/files/urls';
 import { fieldTypeSchema, isReferenceType, parseConfig, parseValues } from '@repo/content/schema';
 import type { FieldValue } from '@repo/content/schema';
@@ -324,7 +324,7 @@ function resolveValue(field: Field, value: FieldValue | undefined, targets: Targ
   return value;
 }
 
-const getContentModel = os.content.model.use(authenticated).handler(async ({ context }) => {
+const getContentModel = os.content.model.use(keyed).handler(async ({ context }) => {
   const db = await database();
   const types = await db.query.contentType.findMany({
     where: eq(schema.contentType.organizationId, context.organizationId),
@@ -340,7 +340,7 @@ const getContentModel = os.content.model.use(authenticated).handler(async ({ con
   return { types: withFields.map((type) => publicType(type, referenceSlugs)) };
 });
 
-const listContent = os.content.list.use(authenticated).handler(async ({ input, context }) => {
+const listContent = os.content.list.use(keyed).handler(async ({ input, context }) => {
   const db = await database();
   const type = await loadType(context.organizationId, input.type);
   const rows = await db.query.contentEntry.findMany({
@@ -359,7 +359,7 @@ const listContent = os.content.list.use(authenticated).handler(async ({ input, c
   };
 });
 
-const getContent = os.content.get.use(authenticated).handler(async ({ input, context }) => {
+const getContent = os.content.get.use(keyed).handler(async ({ input, context }) => {
   const db = await database();
   const type = await loadType(context.organizationId, input.type);
   const row = await db.query.contentEntry.findFirst({

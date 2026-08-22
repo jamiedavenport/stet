@@ -92,8 +92,9 @@
   // Cron triggers and workflows are generated from the @repo/crons and
   // @repo/workflows registries in the root vite.config.ts.
   // Per-colo token buckets (no storage, no cost). AUTH_RATE_LIMIT throttles
-  // the credential endpoints per IP+path; API_RATE_LIMIT throttles /api/v1
-  // per API key. Limits are generous enough for the e2e suite from one IP.
+  // the credential endpoints per IP+path; API_RATE_LIMIT throttles non-content
+  // /api/v1 requests per API key. Content delivery is temporarily exempt.
+  // Limits are generous enough for the e2e suite from one IP.
   "ratelimits": [
     {
       "name": "AUTH_RATE_LIMIT",

@@ -72,7 +72,7 @@ wrangler secret put TURNSTILE_SITE_KEY
 wrangler secret put TURNSTILE_SECRET_KEY
 ```
 
-Rate limits for the credential endpoints, the public API, and analytics ingest are configured in `wrangler.jsonc` (`ratelimits`); adjust the budgets there. Ingest has its own, far larger budget and does not spend the organization's API request quota: it is one request per browser batch, so a busy site makes orders of magnitude more of them than it makes content reads.
+Rate limits for the credential endpoints, the non-content public API, and analytics ingest are configured in `wrangler.jsonc` (`ratelimits`); adjust the budgets there. Content delivery is temporarily exempt from the public API limit and the organization's API request quota. Ingest has its own, far larger budget and does not spend that quota: it is one request per browser batch.
 
 Update the vars in `wrangler.jsonc`:
 
