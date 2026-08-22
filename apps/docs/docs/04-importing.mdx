@@ -1,0 +1,89 @@
+---
+title: Import an existing site
+description: Discover a public site, review the proposed content model, and extract its entries into Stet without hiding the importer's current limits.
+icon: download
+sidebar:
+  order: 4.5
+---
+
+Stet can discover the public pages on an existing site, propose a content model
+from them, and extract those pages into entries. The import is a guided draft:
+you review the proposed structure and a sample extraction before anything is
+created.
+
+:::warning[Know the limits before importing]
+The importer uses ordinary HTTP requests and strips HTML. It does not run a
+browser, so static and server-rendered sites—most blogs—work best. Sites whose
+content appears only after client-side JavaScript runs may extract poorly.
+
+Images keep their original, publicly reachable URLs; they are not copied into
+Stet storage. Retrying a workflow batch can also create duplicate entries
+because imports do not yet have a retry ledger.
+:::
+
+## Before you start
+
+The importer can read only published pages that are reachable without signing
+in. Check that the source site's pages and sitemap are publicly available, and
+keep the source online while the import runs so body images continue to load.
+
+## Run an import
+
+<Steps>
+
+<Step title="Enter the source site">
+
+Open **Import** in Stet and enter the site's public URL. Stet first looks for a
+`sitemap.xml`, including sitemap indexes. If it cannot find one, it falls back
+to same-origin links on the page you entered. Discovery is capped at 300
+pages.
+
+</Step>
+
+<Step title="Review the discovered groups">
+
+Stet groups URLs by their first path segment. These groups help distinguish
+sections such as `/blog`, `/docs`, or `/news` before a content model is
+proposed. Remove pages or groups that should not become managed content.
+
+</Step>
+
+<Step title="Correct the proposed model">
+
+The importer samples the discovered pages and proposes collections, maps, and
+fields. Treat this as a draft. Rename types, change fields, and correct the
+mapping before continuing; the proposal is inferred from rendered content,
+not from the source CMS's schema.
+
+</Step>
+
+<Step title="Check the extraction preview">
+
+The preview extracts a sample with the proposed model. Check titles, dates,
+field values, and body structure. If the sample is incomplete, revise the
+model or stop the import rather than assuming the remaining pages will be
+different.
+
+</Step>
+
+<Step title="Import the entries">
+
+Confirm the reviewed plan to create the model and extract the pages. Pages run
+sequentially so entry slugs and select options remain consistent. Imported
+authors become text fields because the source authors do not correspond to
+Stet members.
+
+</Step>
+
+</Steps>
+
+## After the import
+
+Review representative entries from every discovered group. In particular,
+check pages that relied on scripts, remote images, unusual layouts, or repeated
+URL slugs. If a batch fails, inspect what was already created before retrying:
+without an import ledger, a retry can append a suffix and create a second entry
+instead of updating the first.
+
+Once the content is correct, continue with the [content model](/content-model)
+to understand the fields now available to editors and generated clients.
