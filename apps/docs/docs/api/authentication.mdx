@@ -48,10 +48,11 @@ recognised, and an MCP token does not open the REST API. Keep the two apart.
 
 ## Rate limits
 
-The public API and analytics ingest have separate budgets. Ingest is far
+Content delivery (`/model` and `/content/*`) is temporarily exempt from both
+the public API rate limit and the organization's API request quota. Other
+public API requests and analytics ingest have separate budgets. Ingest is far
 larger and does not spend the organization's API request quota: it is one
-request per browser batch, so a busy site makes orders of magnitude more of
-them than it makes content reads.
+request per browser batch.
 
 An exhausted budget answers `429`.
 

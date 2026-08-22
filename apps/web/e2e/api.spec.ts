@@ -125,3 +125,46 @@ test('billing endpoint reports the plan and usage, metering its own requests', a
   const apiRequests = usage.find((row) => row.feature === 'apiRequests');
   expect(apiRequests?.used).toBeGreaterThanOrEqual(1);
 });
+
+test('content delivery is neither rate limited nor counted toward request quota', async ({
+  request,
+}) => {
+  test.slow();
+  const suffix = `${Date.now()}-${crypto.randomUUID().slice(0, 8)}`;
+  const organizationResponse = await request.post('/api/auth/organization/create', {
+    data: { name: `Content delivery ${suffix}`, slug: `content-delivery-${suffix}` },
+    headers: originHeader,
+  });
+  expect(organizationResponse.status()).toBe(200);
+  const organization = (await organizationResponse.json()) as { id: string };
+
+  const keyResponse = await request.post('/api/auth/api-key/create', {
+    data: { name: 'unmetered-content-key', organizationId: organization.id },
+    headers: originHeader,
+  });
+  expect(keyResponse.status()).toBe(200);
+  const key = ((await keyResponse.json()) as { key: string }).key;
+  const headers = { 'x-api-key': key };
+
+  const billingBefore = await request.get('/api/v1/org/billing', { headers });
+  expect(billingBefore.status()).toBe(200);
+  const beforeUsage = (await billingBefore.json()) as {
+    usage: Array<{ feature: string; used: number }>;
+  };
+  expect(beforeUsage.usage.find((row) => row.feature === 'apiRequests')?.used).toBe(1);
+
+  // One more than the API_RATE_LIMIT budget proves these never enter that
+  // bucket. Running concurrently keeps the regression inexpensive.
+  const responses = await Promise.all(
+    Array.from({ length: 121 }, () => request.get('/api/v1/model', { headers })),
+  );
+  expect(responses.every((response) => response.status() === 200)).toBe(true);
+
+  const billingAfter = await request.get('/api/v1/org/billing', { headers });
+  expect(billingAfter.status()).toBe(200);
+  const afterUsage = (await billingAfter.json()) as {
+    usage: Array<{ feature: string; used: number }>;
+  };
+  // The billing checks meter themselves; the 121 model reads in between do not.
+  expect(afterUsage.usage.find((row) => row.feature === 'apiRequests')?.used).toBe(2);
+});

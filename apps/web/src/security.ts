@@ -85,10 +85,19 @@ function isAnalyticsPath(pathname: string): boolean {
   );
 }
 
+/** Content delivery is temporarily exempt from the public API burst limit. */
+function isContentPath(pathname: string): boolean {
+  return (
+    pathname === '/api/v1/model' ||
+    pathname === '/api/v1/content' ||
+    pathname.startsWith('/api/v1/content/')
+  );
+}
+
 /**
- * Throttles the public API per key (falling back to IP for unauthenticated
- * probes). This bounds abuse per colo; the billing quota in @repo/billing
- * remains the durable monthly cap.
+ * Throttles the non-content public API per key (falling back to IP for
+ * unauthenticated probes). This bounds abuse per colo; the billing quota in
+ * @repo/billing remains the durable monthly cap for metered procedures.
  *
  * Analytics gets its own, far larger budget, on both the ingest endpoint and
  * the route this app mounts for its own browser events: one request per
@@ -97,11 +106,14 @@ function isAnalyticsPath(pathname: string): boolean {
  * show up as silently missing data rather than as an error anyone could act on.
  */
 export async function enforceApiRateLimit(request: Request): Promise<Response | null> {
+  const pathname = new URL(request.url).pathname;
+  if (isContentPath(pathname)) {
+    return null;
+  }
+
   const key =
     request.headers.get('x-api-key') ?? request.headers.get('cf-connecting-ip') ?? 'local';
-  const limiter = isAnalyticsPath(new URL(request.url).pathname)
-    ? env.INGEST_RATE_LIMIT
-    : env.API_RATE_LIMIT;
+  const limiter = isAnalyticsPath(pathname) ? env.INGEST_RATE_LIMIT : env.API_RATE_LIMIT;
   const { success } = await limiter.limit({ key });
   if (success) {
     return null;

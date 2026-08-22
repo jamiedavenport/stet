@@ -16,8 +16,8 @@ export const organizationSchema = z.object({
 
 export type Organization = z.infer<typeof organizationSchema>;
 
-// The worker throttles every /api/v1 request per key (or IP) before the oRPC
-// handler runs, so this error applies to the whole surface, health included.
+// The worker throttles non-content /api/v1 requests per key (or IP) before the
+// oRPC handler runs. Content delivery is temporarily exempt.
 // Exported so the worker's 429 response can carry the exact declared body.
 export const rateLimitError = {
   RATE_LIMITED: {
@@ -314,8 +314,14 @@ const contentNotFound = {
   NOT_FOUND: { message: 'No content type with that slug in this organization.' },
 } as const;
 
+// Content delivery currently authenticates the key without spending request
+// quota or passing through the Worker's API rate-limit binding.
+const contentAuthErrors = {
+  UNAUTHORIZED: authErrors.UNAUTHORIZED,
+} as const;
+
 const getContentModel = oc
-  .errors(authErrors)
+  .errors(contentAuthErrors)
   .route({
     method: 'GET',
     path: '/model',
@@ -329,7 +335,7 @@ const getContentModel = oc
   .output(z.object({ types: z.array(contentTypeSchema) }));
 
 const listContent = oc
-  .errors({ ...authErrors, ...contentNotFound })
+  .errors({ ...contentAuthErrors, ...contentNotFound })
   .route({
     method: 'GET',
     path: '/content/{type}',
@@ -344,7 +350,7 @@ const listContent = oc
 
 const getContent = oc
   .errors({
-    ...authErrors,
+    ...contentAuthErrors,
     NOT_FOUND: { message: 'No such content type or entry in this organization.' },
   })
   .route({
